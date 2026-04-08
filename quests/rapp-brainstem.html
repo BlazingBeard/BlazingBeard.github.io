@@ -55,6 +55,13 @@
   .rocket-anim{position:fixed;font-size:40px;z-index:999;pointer-events:none}
   .banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(240,241,243,.97);border:2px solid var(--green);border-radius:16px;padding:32px 56px;text-align:center;z-index:999;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 12px 48px rgba(0,0,0,.15)}.banner.show{transform:translate(-50%,-50%) scale(1)}.banner h1{font-size:28px;margin-bottom:8px}.banner p{color:var(--text-muted);font-size:15px}
   .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-track{background:transparent}.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .rar-card{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(59,130,246,.12));border:1px solid rgba(139,92,246,.3);text-decoration:none;transition:all .2s;cursor:pointer;margin-top:4px}
+  .rar-card:hover{border-color:rgba(139,92,246,.6);background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(59,130,246,.2));transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.15)}
+  .rar-card-icon{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .rar-card-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .rar-card-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+  .rar-card-name{font-size:14px;color:var(--text-bright);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rar-card-arrow{margin-left:auto;color:var(--text-muted);font-size:18px;flex-shrink:0}
   .credit{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-muted);opacity:.6;pointer-events:none;letter-spacing:.3px;z-index:5}
 </style>
 </head>
@@ -73,7 +80,7 @@
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel"><div class="panel-header"><div class="emoji-big" id="panelEmoji"></div><div class="meta"><h2 id="panelTitle"></h2><div class="time" id="panelTime"></div></div><button class="panel-close" onclick="closePanel()">✕</button></div><div class="panel-body" id="panelBody"></div></div>
 <div class="banner" id="banner"><h1>🧬 Training Complete!</h1><p>You've mastered your brainstem.<br>Your rappter is fully grown.</p></div>
-<div class="credit">RAPP Brainstem — Training Quest · Generated 2026-04-08 11:05</div>
+<div class="credit">RAPP Brainstem — Training Quest · Generated 2026-04-08 11:13</div>
 <script>
 const CHECKPOINTS = [
   {
@@ -218,7 +225,9 @@ const CHECKPOINTS = [
         "text": "Verification is tool calls, not assertions."
       }
     ],
-    "learn": "Anvil agent, parameters: action, task_id, project_dir, command, files"
+    "learn": "Anvil agent, parameters: action, task_id, project_dir, command, files",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/anvil_agent"
   },
   {
     "id": "agent-borg",
@@ -234,7 +243,9 @@ const CHECKPOINTS = [
         "text": "We are the Borg. Your technological distinctiveness will be added to our own."
       }
     ],
-    "learn": "Borg agent, parameters: see description"
+    "learn": "Borg agent, parameters: see description",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/borg_agent"
   },
   {
     "id": "agent-bridge",
@@ -250,7 +261,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the Bridge agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "Bridge agent, parameters: see description"
+    "learn": "Bridge agent, parameters: see description",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/bridge_agent"
   },
   {
     "id": "agent-cardsmith",
@@ -270,7 +283,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the CardSmith agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "CardSmith agent, parameters: action, agent_name"
+    "learn": "CardSmith agent, parameters: action, agent_name",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/cardsmith_agent"
   },
   {
     "id": "agent-demo-video",
@@ -286,7 +301,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the Demo Video agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "Demo Video agent, parameters: see description"
+    "learn": "Demo Video agent, parameters: see description",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/demo_video_agent"
   },
   {
     "id": "agent-experiment",
@@ -306,7 +323,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the Experiment agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "Experiment agent, parameters: action, prompt, prompts, personas"
+    "learn": "Experiment agent, parameters: action, prompt, prompts, personas",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/experiment_agent"
   },
   {
     "id": "agent-githubtrending",
@@ -326,7 +345,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the GitHubTrending agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "GitHubTrending agent, parameters: language, since"
+    "learn": "GitHubTrending agent, parameters: language, since",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/github_trending_agent"
   },
   {
     "id": "agent-hackernews",
@@ -346,7 +367,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the HackerNews agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "HackerNews agent, parameters: query, url"
+    "learn": "HackerNews agent, parameters: query, url",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/hacker_news_agent"
   },
   {
     "id": "agent-holonaming",
@@ -362,7 +385,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the HoloNaming agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "HoloNaming agent, parameters: see description"
+    "learn": "HoloNaming agent, parameters: see description",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/holo_naming_agent"
   },
   {
     "id": "agent-personafactory",
@@ -382,7 +407,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the PersonaFactory agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "PersonaFactory agent, parameters: action, personality, expertise, assertiveness, social_style"
+    "learn": "PersonaFactory agent, parameters: action, personality, expertise, assertiveness, social_style",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/persona_factory_agent"
   },
   {
     "id": "agent-telegram",
@@ -398,7 +425,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the Telegram agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "Telegram agent, parameters: see description"
+    "learn": "Telegram agent, parameters: see description",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/telegram_agent"
   },
   {
     "id": "agent-tinyworld",
@@ -418,7 +447,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the TinyWorld agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "TinyWorld agent, parameters: action, topic, personas, rounds"
+    "learn": "TinyWorld agent, parameters: action, topic, personas, rounds",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/tinyworld_agent"
   },
   {
     "id": "agent-video",
@@ -434,7 +465,9 @@ const CHECKPOINTS = [
         "text": "Tell me everything about the Video agent \u2014 what does it do and how do I use it?"
       }
     ],
-    "learn": "Video agent, parameters: see description"
+    "learn": "Video agent, parameters: see description",
+    "rar_url": "https://kody-w.github.io/RAR/",
+    "rar_name": "@borg/video_agent"
   },
   {
     "id": "agent-anatomy",
@@ -631,7 +664,7 @@ function getActiveIndex(){for(let i=0;i<CHECKPOINTS.length;i++){if(!isComplete(C
 function renderPath(){const svg=document.getElementById('pathSvg'),w=window.innerWidth,h=window.innerHeight-52;svg.setAttribute('viewBox','0 0 '+w+' '+h);let html='';const pts=POSITIONS.map(p=>({x:p.x/100*w,y:p.y/100*h}));const ai=getActiveIndex();for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],cx1=a.x+(b.x-a.x)*.6,cy1=a.y,cx2=a.x+(b.x-a.x)*.4,cy2=b.y;const d='M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y;const done=isComplete(CHECKPOINTS[i].id)&&isComplete(CHECKPOINTS[i+1].id);const partial=isComplete(CHECKPOINTS[i].id)&&!isComplete(CHECKPOINTS[i+1].id);const active=i===ai-1||i===ai;if(done)html+='<path d="'+d+'" fill="none" stroke="var(--green)" stroke-width="3" stroke-opacity=".5"/>';else if(partial||active)html+='<path d="'+d+'" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-opacity=".4" stroke-dasharray="8 6"><animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.5s" repeatCount="indefinite"/></path>';else html+='<path d="'+d+'" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 8" stroke-opacity=".5"/>'}svg.innerHTML=html}
 function renderNodes(){document.querySelectorAll('.node').forEach(n=>n.remove());const map=document.getElementById('questMap'),ai=getActiveIndex();CHECKPOINTS.forEach((cp,i)=>{const pos=POSITIONS[i];if(!pos)return;const node=document.createElement('div');node.className='node';if(isComplete(cp.id))node.classList.add('complete');else if(i===ai)node.classList.add('active');node.style.left=pos.x+'%';node.style.top='calc('+pos.y+'% + 0px)';const isLocked=i>ai&&!isComplete(cp.id);node.innerHTML='<div class="ring"></div><div class="inner"><span class="emoji">'+(isLocked?'🔒':cp.emoji)+'</span><svg class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>'+(isLocked?'<span class="lock"></span>':'')+'</div><div class="label">'+cp.title+'</div>';node.addEventListener('click',()=>openPanel(i));map.appendChild(node)})}
 let currentPanel=-1;
-function openPanel(idx){currentPanel=idx;const cp=CHECKPOINTS[idx];document.getElementById('panelEmoji').textContent=cp.emoji;document.getElementById('panelTitle').textContent=cp.title;document.getElementById('panelTime').textContent=cp.time?'⏱ '+cp.time:'';let html='<div class="desc">'+cp.desc+'</div>';if(cp.substeps){html+='<ol class="substeps">';cp.substeps.forEach(s=>html+='<li>'+s+'</li>');html+='</ol>'}if(cp.copies){html+='<div class="copy-group">';cp.copies.forEach(c=>{html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">'+c.label+'</div><div class="copy-block"><span class="copy-text">'+escHtml(c.text)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(c.text)+'\')" title="Copy">📋</button></div></div>'});html+='</div>'}if(cp.copyText&&!cp.copies){html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+(cp.copyLabel||'Copy')+'</div><div class="copy-block"><span class="copy-text">'+escHtml(cp.copyText)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(cp.copyText)+'\')" title="Copy">📋</button></div></div>'}if(cp.learn){html+='<div style="font-size:13px;color:var(--text-muted)">📚 <b>What you learn:</b> '+cp.learn+'</div>'}const checked=isComplete(cp.id);html+='<button class="toggle-done '+(checked?'checked':'')+'" onclick="toggleDone(\''+cp.id+'\',this)"><span class="dot">'+(checked?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':'')+'</span><span>'+(cp.toggle||'Done ✓')+'</span></button>';if(cp.stuck){html+='<div><button class="stuck-toggle" onclick="this.nextElementSibling.classList.toggle(\'open\')">🆘 I\'m stuck</button><div class="stuck-content"><p>'+cp.stuck+'</p></div></div>'}document.getElementById('panelBody').innerHTML=html;document.getElementById('overlay').classList.add('open');document.getElementById('panel').classList.add('open')}
+function openPanel(idx){currentPanel=idx;const cp=CHECKPOINTS[idx];document.getElementById('panelEmoji').textContent=cp.emoji;document.getElementById('panelTitle').textContent=cp.title;document.getElementById('panelTime').textContent=cp.time?'⏱ '+cp.time:'';let html='<div class="desc">'+cp.desc+'</div>';if(cp.substeps){html+='<ol class="substeps">';cp.substeps.forEach(s=>html+='<li>'+s+'</li>');html+='</ol>'}if(cp.copies){html+='<div class="copy-group">';cp.copies.forEach(c=>{html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">'+c.label+'</div><div class="copy-block"><span class="copy-text">'+escHtml(c.text)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(c.text)+'\')" title="Copy">📋</button></div></div>'});html+='</div>'}if(cp.copyText&&!cp.copies){html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+(cp.copyLabel||'Copy')+'</div><div class="copy-block"><span class="copy-text">'+escHtml(cp.copyText)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(cp.copyText)+'\')" title="Copy">📋</button></div></div>'}if(cp.learn){html+='<div style="font-size:13px;color:var(--text-muted)">📚 <b>What you learn:</b> '+cp.learn+'</div>'}if(cp.rar_url){html+='<a href="'+cp.rar_url+'" target="_blank" rel="noopener" class="rar-card"><div class="rar-card-icon">🧩</div><div class="rar-card-info"><div class="rar-card-label">RAPP Agent Repository</div><div class="rar-card-name">'+escHtml(cp.rar_name)+'</div></div><div class="rar-card-arrow">→</div></a>'}const checked=isComplete(cp.id);html+='<button class="toggle-done '+(checked?'checked':'')+'" onclick="toggleDone(\''+cp.id+'\',this)"><span class="dot">'+(checked?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':'')+'</span><span>'+(cp.toggle||'Done ✓')+'</span></button>';if(cp.stuck){html+='<div><button class="stuck-toggle" onclick="this.nextElementSibling.classList.toggle(\'open\')">🆘 I\'m stuck</button><div class="stuck-content"><p>'+cp.stuck+'</p></div></div>'}document.getElementById('panelBody').innerHTML=html;document.getElementById('overlay').classList.add('open');document.getElementById('panel').classList.add('open')}
 function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');currentPanel=-1}
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function escAttr(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
