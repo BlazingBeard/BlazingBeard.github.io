@@ -68,6 +68,7 @@
 
   /* Card themes */
   .quest-card.af .quest-icon { background: linear-gradient(135deg, rgba(88,166,255,.15), rgba(188,140,255,.15)); }
+  .quest-card.brainstem .quest-icon { background: linear-gradient(135deg, rgba(63,185,80,.15), rgba(210,153,34,.15)); }
   .quest-card.coming .quest-icon { background: var(--bg3); }
   .quest-card.coming { opacity: 0.5; pointer-events: none; }
   .quest-card.coming::after { content: '🔒'; }
@@ -117,7 +118,7 @@
       </div>
     </a>
 
-    <div class="quest-card coming">
+    <a href="quests/rapp-brainstem.html" class="quest-card brainstem">
       <div class="quest-icon">🧠</div>
       <div class="quest-info">
         <h2>RAPP Brainstem</h2>
@@ -126,12 +127,14 @@
           Custom agents, memory, tool-calling, and hot-swap architecture.
         </div>
         <div class="quest-meta">
-          <span class="tag">Coming Soon</span>
+          <span class="tag highlight">23 checkpoints</span>
           <span class="tag">Python</span>
           <span class="tag">Local-First</span>
+          <span class="tag">Agent Server</span>
+          <span class="tag">Beginner → Advanced</span>
         </div>
       </div>
-    </div>
+    </a>
 
     <div class="quest-card coming">
       <div class="quest-icon">⚡</div>
