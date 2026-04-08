@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlazingBeard — Training Quests</title>
+<meta name="description" content="Interactive training quests for AI agent builders. Learn multi-agent systems, workflows, and orchestration patterns.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --bg3: #21262d;
+    --border: #30363d; --text: #e6edf3; --text-muted: #8b949e;
+    --blue: #58a6ff; --green: #3fb950; --orange: #d29922;
+    --purple: #bc8cff; --pink: #f778ba;
+  }
+  html, body { min-height: 100vh; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+
+  /* Subtle grid background */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(88,166,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,166,255,.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 80px 24px 60px; position: relative; z-index: 1; }
+
+  /* Header */
+  .hero { text-align: center; margin-bottom: 64px; }
+  .hero .icon { font-size: 64px; margin-bottom: 16px; display: block; }
+  .hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+  .hero h1 span { background: linear-gradient(135deg, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { font-size: 18px; color: var(--text-muted); max-width: 560px; margin: 0 auto; line-height: 1.6; }
+
+  /* Quest cards */
+  .quests { display: grid; gap: 24px; }
+  .quest-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; display: flex; gap: 24px; align-items: flex-start;
+    transition: all 0.3s ease; cursor: pointer; text-decoration: none; color: inherit;
+    position: relative; overflow: hidden;
+  }
+  .quest-card:hover {
+    border-color: var(--blue); transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(88,166,255,.12);
+  }
+  .quest-card::after {
+    content: '→'; position: absolute; right: 28px; top: 50%; transform: translateY(-50%);
+    font-size: 24px; color: var(--text-muted); transition: all 0.3s;
+  }
+  .quest-card:hover::after { color: var(--blue); right: 24px; }
+  .quest-icon {
+    width: 64px; height: 64px; border-radius: 14px; display: flex;
+    align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
+  }
+  .quest-info { flex: 1; padding-right: 32px; }
+  .quest-info h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .quest-info .subtitle { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px; }
+  .quest-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+  .quest-meta .tag {
+    font-size: 12px; padding: 4px 10px; border-radius: 20px;
+    background: var(--bg3); color: var(--text-muted); border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .quest-meta .tag.highlight { border-color: var(--blue); color: var(--blue); background: rgba(88,166,255,.08); }
+
+  /* Card themes */
+  .quest-card.af .quest-icon { background: linear-gradient(135deg, rgba(88,166,255,.15), rgba(188,140,255,.15)); }
+  .quest-card.coming .quest-icon { background: var(--bg3); }
+  .quest-card.coming { opacity: 0.5; pointer-events: none; }
+  .quest-card.coming::after { content: '🔒'; }
+
+  /* Footer */
+  .footer {
+    text-align: center; margin-top: 80px; padding-top: 32px;
+    border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px;
+  }
+  .footer a { color: var(--blue); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 28px; }
+    .hero p { font-size: 15px; }
+    .quest-card { flex-direction: column; gap: 16px; padding: 24px; }
+    .quest-icon { width: 48px; height: 48px; font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="hero">
+    <span class="icon">🔥</span>
+    <h1><span>BlazingBeard</span> Training Quests</h1>
+    <p>Interactive, gamified quests for learning AI agent frameworks. Pick a quest, track your progress, and level up.</p>
+  </div>
+
+  <div class="quests">
+    <a href="quests/agent-framework.html" class="quest-card af">
+      <div class="quest-icon">🤖</div>
+      <div class="quest-info">
+        <h2>Microsoft Agent Framework</h2>
+        <div class="subtitle">
+          From your first agent to full multi-agent orchestration.
+          Learn tools, workflows, handoff routing, group chat, and more.
+        </div>
+        <div class="quest-meta">
+          <span class="tag highlight">18 checkpoints</span>
+          <span class="tag">Python</span>
+          <span class="tag">Multi-Agent</span>
+          <span class="tag">Workflows</span>
+          <span class="tag">Beginner → Advanced</span>
+        </div>
+      </div>
+    </a>
+
+    <div class="quest-card coming">
+      <div class="quest-icon">🧠</div>
+      <div class="quest-info">
+        <h2>RAPP Brainstem</h2>
+        <div class="subtitle">
+          Build and deploy your own local-first AI agent server.
+          Custom agents, memory, tool-calling, and hot-swap architecture.
+        </div>
+        <div class="quest-meta">
+          <span class="tag">Coming Soon</span>
+          <span class="tag">Python</span>
+          <span class="tag">Local-First</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="quest-card coming">
+      <div class="quest-icon">⚡</div>
+      <div class="quest-info">
+        <h2>More Quests</h2>
+        <div class="subtitle">
+          Additional training quests are in the forge.
+          Have a framework you'd like covered? Open an issue.
+        </div>
+        <div class="quest-meta">
+          <span class="tag">Coming Soon</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Built with 🔥 by <a href="https://github.com/BlazingBeard">BlazingBeard</a> · Powered by <a href="https://github.com/BlazingBeard/holo">RAPP Brainstem</a></p>
+  </div>
+</div>
+
+</body>
+</html>

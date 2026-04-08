@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Agent Framework — Training Quest</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#eaecf0;--bg2:#f4f5f7;--blue:#0969da;--green:#1a7f37;--orange:#bf8700;--red:#cf222e;--text:#24292f;--text-muted:#57606a;--border:#c5ccd6;--panel-w:460px;--top-bar:52px}
+  html,body{height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#dfe2e6 0%,var(--bg) 100%);color:var(--text)}
+  .top-bar{position:fixed;top:0;left:0;right:0;height:var(--top-bar);background:rgba(234,236,240,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;z-index:100}
+  .top-bar .title{font-size:15px;font-weight:600;white-space:nowrap}.top-bar .title span{color:var(--blue)}
+  .progress-wrap{flex:1;max-width:420px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .progress-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .progress-label{font-size:13px;color:var(--text-muted);min-width:90px;text-align:right}
+  .btn-reset{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;transition:all .2s}.btn-reset:hover{border-color:var(--red);color:var(--red)}
+  .quest-map{position:fixed;top:var(--top-bar);left:0;right:0;bottom:0;overflow:hidden}
+  .quest-map svg.path-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .phase-label{position:absolute;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--text-muted);opacity:.55;pointer-events:none}
+  .phase-label.p1{top:82px;left:1%}.phase-label.p2{top:82px;left:23.2%}.phase-label.p3{top:82px;left:45.4%}.phase-label.p4{top:82px;left:67.7%}
+  .phase-divider{position:absolute;top:var(--top-bar);bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--border) 15%,var(--border) 85%,transparent);opacity:.6;pointer-events:none}
+  .phase-divider.d1{left:22.2%}.phase-divider.d2{left:44.4%}.phase-divider.d3{left:66.7%}
+  .node{position:absolute;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:10;transform:translate(-50%,-50%)}
+  .node .ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--border);transition:all .35s}
+  .node .inner{width:100%;height:100%;border-radius:50%;background:#f0f1f3;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;z-index:1;transition:all .35s;border:2px solid var(--border)}
+  .node.active .ring{border-color:var(--blue);box-shadow:0 0 20px rgba(88,166,255,.35);animation:pulse-ring 2s infinite}
+  .node.active .inner{border-color:var(--blue);background:rgba(88,166,255,.1);transform:scale(1.12)}.node.active .lock{display:none}
+  .node.complete .ring{border-color:var(--green);box-shadow:0 0 12px rgba(63,185,80,.25)}
+  .node.complete .inner{border-color:var(--green);background:rgba(63,185,80,.15)}.node.complete .lock{display:none}
+  .node:hover{transform:translate(-50%,-50%) scale(1.1)}
+  .node .label{position:absolute;top:calc(100% + 10px);white-space:nowrap;font-size:11px;font-weight:600;color:var(--text-muted);text-align:center;pointer-events:none;transition:color .3s}
+  .node.active .label{color:var(--blue)}.node.complete .label{color:var(--green)}
+  @keyframes pulse-ring{0%,100%{box-shadow:0 0 20px rgba(88,166,255,.25)}50%{box-shadow:0 0 32px rgba(88,166,255,.5)}}
+  .check-icon{display:none}.node.complete .check-icon{display:block}.node.complete .emoji{display:none}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}.overlay.open{opacity:1;pointer-events:auto}
+  .panel{position:fixed;top:0;right:0;bottom:0;width:var(--panel-w);max-width:92vw;background:#f0f1f3;border-left:1px solid var(--border);z-index:210;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.08)}.panel.open{transform:translateX(0)}
+  .panel-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+  .panel-header .emoji-big{font-size:32px;line-height:1}.panel-header .meta{flex:1}.panel-header .meta h2{font-size:18px;font-weight:700;margin-bottom:4px}.panel-header .meta .time{font-size:12px;color:var(--text-muted)}
+  .panel-close{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;padding:4px;line-height:1}.panel-close:hover{color:var(--text)}
+  .panel-body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:16px}.panel-body .desc{font-size:14px;line-height:1.55;color:var(--text)}
+  .copy-block{position:relative;background:#e4e6ea;border:1px solid var(--border);border-radius:8px;padding:12px 44px 12px 14px;font-family:'Cascadia Code','Fira Code',monospace;font-size:12.5px;line-height:1.5;color:var(--text);white-space:pre-wrap;word-break:break-word}
+  .copy-btn{position:absolute;top:8px;right:8px;background:#d5d8dd;border:none;color:var(--text-muted);width:30px;height:30px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}.copy-btn:hover{background:var(--blue);color:#fff}.copy-btn.copied{background:var(--green);color:#fff}
+  .toggle-done{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;border:2px solid var(--border);background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);transition:all .25s;width:100%}
+  .toggle-done .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
+  .toggle-done.checked{border-color:var(--green);background:rgba(63,185,80,.08)}.toggle-done.checked .dot{background:var(--green);border-color:var(--green)}
+  .substeps{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+  .substeps li{font-size:13px;color:var(--text-muted);padding-left:20px;position:relative;line-height:1.5}
+  .substeps li::before{content:'';position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%;border:2px solid var(--border)}
+  .stuck-toggle{background:none;border:none;color:var(--orange);font-size:13px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px}.stuck-toggle:hover{text-decoration:underline}
+  .stuck-content{max-height:0;overflow:hidden;transition:max-height .3s;font-size:13px;color:var(--text-muted);line-height:1.6}.stuck-content.open{max-height:500px}.stuck-content p{margin-top:8px}
+  .copy-group{display:flex;flex-direction:column;gap:8px}
+  .particle{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:999}
+  .confetti{position:fixed;width:10px;height:16px;pointer-events:none;z-index:999;border-radius:2px}
+  .rocket-anim{position:fixed;font-size:40px;z-index:999;pointer-events:none}
+  .banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(240,241,243,.97);border:2px solid var(--green);border-radius:16px;padding:32px 56px;text-align:center;z-index:999;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 12px 48px rgba(0,0,0,.15)}.banner.show{transform:translate(-50%,-50%) scale(1)}.banner h1{font-size:28px;margin-bottom:8px}.banner p{color:var(--text-muted);font-size:15px}
+  .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-track{background:transparent}.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .credit{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-muted);opacity:.6;pointer-events:none;letter-spacing:.3px;z-index:5}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="title"><span>Microsoft Agent Framework</span> — Training Quest</div>
+  <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div><div class="progress-label" id="progressLabel">0 of 18</div></div>
+  <button class="btn-reset" onclick="resetProgress()">Reset Progress</button>
+</div>
+<div class="phase-label p1">📦 Setup</div>
+<div class="phase-label p2">🤖 Core Agents</div>
+<div class="phase-label p3">⚙️ Workflows</div>
+<div class="phase-label p4">🏟️ Multi-Agent</div>
+<div class="phase-divider d1"></div><div class="phase-divider d2"></div><div class="phase-divider d3"></div>
+<div class="quest-map" id="questMap"><svg class="path-svg" id="pathSvg" preserveAspectRatio="none"></svg></div>
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel"><div class="panel-header"><div class="emoji-big" id="panelEmoji"></div><div class="meta"><h2 id="panelTitle"></h2><div class="time" id="panelTime"></div></div><button class="panel-close" onclick="closePanel()">✕</button></div><div class="panel-body" id="panelBody"></div></div>
+<div class="banner" id="banner"><h1>🏆 Quest Complete!</h1><p>You are now an Agent Architect.<br>Go build something extraordinary.</p></div>
+<div class="credit">Microsoft Agent Framework — Training Quest · Generated 2026-04-08 10:26</div>
+<script>
+const CHECKPOINTS = [
+  {
+    "id": "af-install",
+    "phase": 1,
+    "emoji": "\ud83d\udce6",
+    "title": "Install the Framework",
+    "time": "5 min",
+    "desc": "Install the Microsoft Agent Framework via pip. This pulls in all sub-packages including core, providers, orchestrations, and workflows.",
+    "toggle": "Framework installed \u2713",
+    "copies": [
+      {
+        "label": "Install",
+        "text": "pip install agent-framework"
+      },
+      {
+        "label": "Verify",
+        "text": "python -c \"import agent_framework; print('OK')\""
+      }
+    ],
+    "stuck": "On Windows, first install may take a minute. If you get permission errors, try: pip install --user agent-framework. Requires Python 3.10+."
+  },
+  {
+    "id": "af-provider",
+    "phase": 1,
+    "emoji": "\ud83d\udd11",
+    "title": "Choose Your LLM Provider",
+    "time": "5 min",
+    "desc": "You need at least one LLM provider. Options: OpenAI (API key), Azure AI Foundry (az login), or Ollama (free, local). Set the appropriate env var.",
+    "toggle": "Provider configured \u2713",
+    "copies": [
+      {
+        "label": "OpenAI",
+        "text": "export OPENAI_API_KEY=\"sk-...\""
+      },
+      {
+        "label": "Azure Foundry",
+        "text": "az login\nexport FOUNDRY_PROJECT_ENDPOINT=\"https://...\""
+      },
+      {
+        "label": "Ollama (free)",
+        "text": "ollama pull llama3.1 && ollama serve"
+      }
+    ],
+    "stuck": "Ollama is free and runs locally \u2014 install from ollama.ai, then 'ollama pull llama3.1'. For OpenAI, get a key from platform.openai.com. For Azure, run 'az login' and set your Foundry endpoint."
+  },
+  {
+    "id": "af-mental-model",
+    "phase": 1,
+    "emoji": "\ud83d\uddfa\ufe0f",
+    "title": "The Mental Model",
+    "time": "5 min",
+    "desc": "Understand the 4 layers: Chat Client (raw model call) \u2192 Agent (instructions + tools + conversation) \u2192 Workflow (deterministic executor graph) \u2192 Orchestration (multi-agent coordination). Rule of thumb: 1 task = Agent, predictable pipeline = Workflow, specialists collaborating = Orchestration.",
+    "toggle": "I understand the layers \u2713",
+    "copies": [
+      {
+        "label": "Read the docs",
+        "text": "https://learn.microsoft.com/agent-framework/overview/agent-framework-overview"
+      },
+      {
+        "label": "Quick start",
+        "text": "https://learn.microsoft.com/agent-framework/tutorials/quick-start"
+      }
+    ],
+    "stuck": "Chat Client = raw model access. Agent = instructions + tools + conversation. Workflow = deterministic DAG of executors. Orchestration = multi-agent patterns (sequential, concurrent, handoff, group chat).",
+    "learn": "Chat Client vs Agent vs Workflow vs Orchestration \u2014 when to use each"
+  },
+  {
+    "id": "af-async-basics",
+    "phase": 1,
+    "emoji": "\u26a1",
+    "title": "Async Basics",
+    "time": "3 min",
+    "desc": "All Agent Framework calls are async. Every script follows the same pattern: define an async main(), use await for agent calls, and run with asyncio.run(main()).",
+    "toggle": "Async pattern understood \u2713",
+    "copies": [
+      {
+        "label": "Async template",
+        "text": "import asyncio\nfrom agent_framework import Agent\n\nasync def main():\n    # Your agent code here\n    pass\n\nif __name__ == \"__main__\":\n    asyncio.run(main())"
+      }
+    ],
+    "stuck": "If you see 'coroutine was never awaited', you forgot to use 'await'. If you see 'async for' errors, make sure you're inside an async function."
+  },
+  {
+    "id": "af-hello-agent",
+    "phase": 2,
+    "emoji": "\ud83e\udd16",
+    "title": "Your First Agent",
+    "time": "5 min",
+    "desc": "Create an Agent with a name and instructions. Call agent.run() for a response, or use stream=True for real-time token streaming. This is the foundation of everything.",
+    "toggle": "First agent running \u2713",
+    "copies": [
+      {
+        "label": "Hello Agent",
+        "text": "from agent_framework import Agent\nfrom agent_framework.openai import OpenAIChatClient\n\nasync def main():\n    agent = Agent(\n        client=OpenAIChatClient(model=\"gpt-4o-mini\"),\n        name=\"MyAgent\",\n        instructions=\"You are a helpful, concise assistant.\",\n    )\n    result = await agent.run(\"What are the three laws of robotics?\")\n    print(result.text)"
+      },
+      {
+        "label": "Streaming",
+        "text": "async for chunk in agent.run(\"Explain multi-agent systems.\", stream=True):\n    if chunk.text:\n        print(chunk.text, end=\"\", flush=True)"
+      }
+    ],
+    "stuck": "Make sure your provider env vars are set. The Agent class is imported from agent_framework. Use OpenAIChatClient, FoundryChatClient, or OllamaChatClient depending on your provider.",
+    "learn": "Agent class, client parameter, instructions, run(), streaming"
+  },
+  {
+    "id": "af-tools",
+    "phase": 2,
+    "emoji": "\ud83d\udd27",
+    "title": "Add Tools to Your Agent",
+    "time": "10 min",
+    "desc": "Give your agent capabilities with the @tool decorator. Tools are Python functions the LLM can call. Use Annotated types for parameter descriptions. Set approval_mode for safety.",
+    "toggle": "Tools working \u2713",
+    "copies": [
+      {
+        "label": "Define a tool",
+        "text": "from agent_framework import tool\nfrom typing import Annotated\n\n@tool\ndef get_weather(\n    location: Annotated[str, \"City name\"]\n) -> str:\n    \"\"\"Get weather for a location.\"\"\"\n    return f\"Weather in {location}: 72\u00b0F, sunny\""
+      },
+      {
+        "label": "Agent with tools",
+        "text": "agent = Agent(\n    client=client,\n    name=\"WeatherBot\",\n    instructions=\"Use your tools to answer questions.\",\n    tools=[get_weather],\n)\nresult = await agent.run(\"What's the weather in Seattle?\")"
+      },
+      {
+        "label": "Approval mode",
+        "text": "@tool(approval_mode=\"always_require\")\ndef delete_file(path: Annotated[str, \"File path\"]) -> str:\n    \"\"\"Delete a file (dangerous!).\"\"\"\n    return f\"Deleted {path}\""
+      }
+    ],
+    "stuck": "Tools must return strings. Use Annotated[type, 'description'] for each parameter. approval_mode options: 'never_require' (safe), 'always_require' (dangerous actions).",
+    "learn": "@tool decorator, Annotated parameters, approval_mode, FunctionTool"
+  },
+  {
+    "id": "af-sessions",
+    "phase": 2,
+    "emoji": "\ud83e\udde0",
+    "title": "Multi-Turn Conversations",
+    "time": "8 min",
+    "desc": "Without sessions, each agent.run() is stateless. Pass an AgentSession to maintain conversation history across turns \u2014 the agent remembers what you said.",
+    "toggle": "Sessions working \u2713",
+    "copies": [
+      {
+        "label": "Session example",
+        "text": "from agent_framework import AgentSession\n\nsession = AgentSession()\n\nr1 = await agent.run(\"My name is Alex.\", session=session)\nprint(r1.text)\n\nr2 = await agent.run(\"What's my name?\", session=session)\nprint(r2.text)  # Should remember 'Alex'"
+      }
+    ],
+    "stuck": "Create one AgentSession and pass it to every agent.run() call in the conversation. The session stores the full message history.",
+    "learn": "AgentSession, conversation history, stateful vs stateless"
+  },
+  {
+    "id": "af-middleware",
+    "phase": 2,
+    "emoji": "\ud83d\udee1\ufe0f",
+    "title": "Middleware Pipeline",
+    "time": "10 min",
+    "desc": "Middleware intercepts agent behavior in layers. Three types: @agent_middleware (wraps entire runs), @chat_middleware (wraps LLM calls), @function_middleware (wraps tool calls). Use for logging, error handling, and usage tracking.",
+    "toggle": "Middleware understood \u2713",
+    "copies": [
+      {
+        "label": "Logging middleware",
+        "text": "from agent_framework import agent_middleware, AgentContext\n\n@agent_middleware\nasync def logger(ctx: AgentContext, call_next) -> None:\n    print(f\"Agent '{ctx.agent.name}' starting...\")\n    await call_next()\n    print(f\"Agent '{ctx.agent.name}' done.\")"
+      },
+      {
+        "label": "Tool logger",
+        "text": "from agent_framework import function_middleware, FunctionInvocationContext\n\n@function_middleware\nasync def tool_log(ctx: FunctionInvocationContext, call_next) -> None:\n    print(f\"Calling: {ctx.function.name}({ctx.arguments})\")\n    await call_next()\n    print(f\"Result: {ctx.result}\")"
+      },
+      {
+        "label": "Apply middleware",
+        "text": "agent = Agent(\n    client=client,\n    name=\"MyAgent\",\n    instructions=\"...\",\n    middleware=[logger, tool_log],\n)"
+      }
+    ],
+    "stuck": "Middleware wraps: Agent > Chat > Function (outer to inner). Always call 'await call_next()' to continue the pipeline. Skip it to short-circuit.",
+    "learn": "agent_middleware, chat_middleware, function_middleware, error recovery, audit trails"
+  },
+  {
+    "id": "af-first-workflow",
+    "phase": 3,
+    "emoji": "\u2699\ufe0f",
+    "title": "Your First Workflow",
+    "time": "10 min",
+    "desc": "A Workflow is a deterministic graph of Executors connected by edges. Executors are units of work \u2014 either classes (Executor + @handler) or functions (@executor). Use ctx.send_message() to pass data downstream, ctx.yield_output() to emit the final result.",
+    "toggle": "First workflow running \u2713",
+    "copies": [
+      {
+        "label": "Class executor",
+        "text": "from agent_framework import Executor, handler, WorkflowContext\n\nclass UpperCase(Executor):\n    @handler\n    async def process(self, text: str, ctx: WorkflowContext[str]) -> None:\n        await ctx.send_message(text.upper())"
+      },
+      {
+        "label": "Function executor",
+        "text": "from agent_framework import executor, WorkflowContext\nfrom typing_extensions import Never\n\n@executor(id=\"word_counter\")\nasync def word_counter(text: str, ctx: WorkflowContext[Never, str]) -> None:\n    await ctx.yield_output(f\"{len(text.split())} words\")"
+      },
+      {
+        "label": "Build & run",
+        "text": "from agent_framework import WorkflowBuilder\n\nupper = UpperCase(id=\"upper\")\nworkflow = (\n    WorkflowBuilder(start_executor=upper)\n    .add_edge(upper, word_counter)\n    .build()\n)\nevents = await workflow.run(\"hello world\")\nprint(events.get_outputs())"
+      }
+    ],
+    "stuck": "send_message() = pass data to the NEXT executor. yield_output() = emit the workflow's FINAL result. WorkflowContext[OutputType] sends downstream. WorkflowContext[Never, ResultType] only yields output (terminal node).",
+    "learn": "Executor, @handler, @executor, WorkflowBuilder, WorkflowContext, send_message vs yield_output"
+  },
+  {
+    "id": "af-conditional-routing",
+    "phase": 3,
+    "emoji": "\ud83d\udd00",
+    "title": "Conditional Routing",
+    "time": "8 min",
+    "desc": "Workflows can branch based on data. Add edges with condition= lambdas to route to different executors. This lets you build if/else logic directly in the workflow graph.",
+    "toggle": "Conditional routing working \u2713",
+    "copies": [
+      {
+        "label": "Conditional edges",
+        "text": "workflow = (\n    WorkflowBuilder(start_executor=classifier)\n    .add_edge(classifier, short_handler,\n             condition=lambda text: len(text.split()) <= 10)\n    .add_edge(classifier, long_handler,\n             condition=lambda text: len(text.split()) > 10)\n    .build()\n)"
+      }
+    ],
+    "stuck": "The condition lambda receives the output of the upstream executor. Return True to follow that edge. Multiple edges can be conditional \u2014 first matching one wins.",
+    "learn": "Edge conditions, branching, data-driven routing"
+  },
+  {
+    "id": "af-agents-in-workflows",
+    "phase": 3,
+    "emoji": "\ud83e\udd16\u2699\ufe0f",
+    "title": "Agents Inside Workflows",
+    "time": "10 min",
+    "desc": "The real power \u2014 put LLM agents as nodes in a deterministic workflow. Wrap an Agent in a custom Executor, call agent.run() in the handler, and connect them with edges. This combines the predictability of workflows with the intelligence of agents.",
+    "toggle": "Agents in workflows working \u2713",
+    "copies": [
+      {
+        "label": "Agent as executor",
+        "text": "class WriterNode(Executor):\n    def __init__(self, agent: Agent):\n        super().__init__(id=\"writer\")\n        self.agent = agent\n\n    @handler\n    async def write(self, topic: str, ctx: WorkflowContext[str]) -> None:\n        result = await self.agent.run(f\"Write about: {topic}\")\n        await ctx.send_message(result.text)"
+      },
+      {
+        "label": "Writer \u2192 Reviewer",
+        "text": "writer = WriterNode(writer_agent)\nreviewer = ReviewerNode(reviewer_agent)\n\nworkflow = (\n    WorkflowBuilder(start_executor=writer)\n    .add_edge(writer, reviewer)\n    .build()\n)\nevents = await workflow.run(\"multi-agent AI systems\")"
+      }
+    ],
+    "stuck": "Create a custom Executor subclass that holds an Agent. In the @handler method, call await self.agent.run() and pass the result with ctx.send_message().",
+    "learn": "AgentExecutor pattern, combining deterministic flow with LLM intelligence"
+  },
+  {
+    "id": "af-streaming-events",
+    "phase": 3,
+    "emoji": "\ud83d\udce1",
+    "title": "Streaming Workflow Events",
+    "time": "5 min",
+    "desc": "Monitor workflow execution in real-time. Use stream=True to get events as they happen: executor_invoked, executor_completed, output, request_info. Essential for debugging and UX.",
+    "toggle": "Streaming events working \u2713",
+    "copies": [
+      {
+        "label": "Stream events",
+        "text": "events = await workflow.run(\"input\", stream=True)\nasync for event in events:\n    match event.type:\n        case \"executor_invoked\":\n            print(f\"\u25b6 Starting: {event.executor_id}\")\n        case \"executor_completed\":\n            print(f\"\u2713 Done: {event.executor_id}\")\n        case \"output\":\n            print(f\"\ud83d\udce4 Output: {event.data}\")"
+      }
+    ],
+    "stuck": "Pass stream=True to workflow.run(). Event types: executor_invoked, executor_completed, output, request_info, status, handoff_sent.",
+    "learn": "WorkflowEvent types, real-time monitoring, debugging workflows"
+  },
+  {
+    "id": "af-sequential",
+    "phase": 4,
+    "emoji": "\u27a1\ufe0f",
+    "title": "Sequential Orchestration",
+    "time": "8 min",
+    "desc": "Chain agents linearly \u2014 each builds on the previous output. Use when steps DEPEND on each other: Writer \u2192 Reviewer \u2192 Editor. Shared conversation history flows through all participants.",
+    "toggle": "Sequential orchestration working \u2713",
+    "copies": [
+      {
+        "label": "Sequential pipeline",
+        "text": "from agent_framework.orchestrations import SequentialBuilder\n\npipeline = SequentialBuilder(\n    name=\"content_pipeline\",\n    participants=[researcher, writer, editor],\n).build()\n\nevents = await pipeline.run(\"Impact of open-source AI\")"
+      }
+    ],
+    "stuck": "Each agent appends to the shared message history. Order matters. Use when Agent B needs Agent A's output to do its work.",
+    "learn": "SequentialBuilder, linear agent chains, shared conversation context"
+  },
+  {
+    "id": "af-concurrent",
+    "phase": 4,
+    "emoji": "\u26a1",
+    "title": "Concurrent Orchestration",
+    "time": "8 min",
+    "desc": "Fan-out to multiple agents in parallel, then aggregate results. Use when subtasks are INDEPENDENT: Technical + Market + Risk analysis. All agents receive the same input simultaneously.",
+    "toggle": "Concurrent orchestration working \u2713",
+    "copies": [
+      {
+        "label": "Concurrent agents",
+        "text": "from agent_framework.orchestrations import ConcurrentBuilder\n\nparallel = ConcurrentBuilder(\n    name=\"idea_evaluation\",\n    participants=[tech_analyst, market_analyst, risk_analyst],\n).build()\n\nevents = await parallel.run(\"AI code review tool\")"
+      }
+    ],
+    "stuck": "All agents run in parallel on the same input. Default aggregator combines all messages. Use when agents don't need each other's output.",
+    "learn": "ConcurrentBuilder, fan-out/fan-in, parallel execution, result aggregation"
+  },
+  {
+    "id": "af-handoff",
+    "phase": 4,
+    "emoji": "\ud83e\udd1d",
+    "title": "Handoff Orchestration",
+    "time": "12 min",
+    "desc": "Smart routing \u2014 a triage agent evaluates the request and hands off to the right specialist. Auto-registered handoff tools let agents decide who handles the next turn. Full conversation history is preserved across handoffs.",
+    "toggle": "Handoff orchestration working \u2713",
+    "copies": [
+      {
+        "label": "Handoff example",
+        "text": "from agent_framework.orchestrations import HandoffBuilder\n\nsupport = HandoffBuilder(\n    name=\"customer_support\",\n    participants=[triage, billing, tech_support, account],\n).with_start_agent(triage).build()\n\nevents = await support.run(\"I was charged twice\")"
+      },
+      {
+        "label": "Triage instructions",
+        "text": "triage = Agent(\n    client=client, name=\"Triage\",\n    instructions=(\n        \"Determine the issue type and hand off to:\\n\"\n        \"- BillingSpecialist: payment/invoice issues\\n\"\n        \"- TechSupport: technical problems/bugs\\n\"\n        \"- AccountManager: account changes/upgrades\"\n    ),\n)"
+      }
+    ],
+    "stuck": "The triage agent's instructions must describe WHEN to hand off to each specialist. Handoff tools are auto-registered for each participant.",
+    "learn": "HandoffBuilder, triage routing, specialist agents, conversation preservation"
+  },
+  {
+    "id": "af-group-chat",
+    "phase": 4,
+    "emoji": "\ud83d\udcac",
+    "title": "Group Chat Orchestration",
+    "time": "10 min",
+    "desc": "Multi-agent discussion \u2014 a selector decides who speaks next. Use for debates, brainstorming, and panel discussions. Set max_turns to prevent circular conversations.",
+    "toggle": "Group chat working \u2713",
+    "copies": [
+      {
+        "label": "Group chat",
+        "text": "from agent_framework.orchestrations import GroupChatBuilder\n\ndiscussion = GroupChatBuilder(\n    name=\"product_planning\",\n    participants=[pm, engineer, designer],\n    max_turns=6,\n).build()\n\nevents = await discussion.run(\"Design an AI code review feature\")"
+      }
+    ],
+    "stuck": "The selector (LLM-based or function-based) picks the next speaker each round. Use max_turns to limit rounds. Agents see the full shared conversation.",
+    "learn": "GroupChatBuilder, multi-agent conversation, selector function, max_turns"
+  },
+  {
+    "id": "af-pattern-picker",
+    "phase": 4,
+    "emoji": "\ud83d\uddfa\ufe0f",
+    "title": "Choose the Right Pattern",
+    "time": "5 min",
+    "desc": "The most important skill \u2014 knowing WHEN to use each pattern. Sequential: steps depend on each other. Concurrent: independent subtasks. Handoff: route to specialists. Group Chat: debate/synthesis. Start simple, add complexity only when needed. More agents \u2260 better results.",
+    "toggle": "I know my patterns \u2713",
+    "copies": [
+      {
+        "label": "Decision guide",
+        "text": "# When to use which pattern:\n# Sequential  \u2192 each step refines the previous (Write \u2192 Review \u2192 Edit)\n# Concurrent  \u2192 independent analysis (Tech + Market + Risk)\n# Handoff     \u2192 route to the right specialist (Triage \u2192 Billing/Tech/Account)\n# Group Chat  \u2192 debate/brainstorm (PM + Engineer + Designer discuss)\n# Workflow    \u2192 deterministic data pipeline (no LLM needed at every step)"
+      }
+    ],
+    "stuck": "Start with the simplest pattern that could work. If one agent can do it, don't use multi-agent. If steps are independent, use concurrent. If they're dependent, use sequential. If routing is needed, use handoff.",
+    "learn": "Pattern selection, when to use sequential vs concurrent vs handoff vs group chat"
+  },
+  {
+    "id": "af-capstone",
+    "phase": 4,
+    "emoji": "\ud83c\udfc6",
+    "title": "Build a Multi-Agent System",
+    "time": "20 min",
+    "desc": "Your final challenge: build a complete multi-agent customer support system. Create a triage agent with a lookup_customer tool, a BillingBot with check_invoice, and a TechBot with restart_service. Wire them up with HandoffBuilder. Add middleware for audit logging. This is the real deal.",
+    "toggle": "Quest complete \u2014 I am an Agent Architect \ud83c\udfc6",
+    "copies": [
+      {
+        "label": "Capstone starter",
+        "text": "# Build the Aegis Support System:\n# 1. Define tools: lookup_customer, check_invoice, restart_service\n# 2. Create agents: Triage (routes), BillingBot, TechBot\n# 3. Add @function_middleware for audit logging\n# 4. Wire with HandoffBuilder\n# 5. Run and test with different customer queries\n\nfrom agent_framework import Agent, tool\nfrom agent_framework.orchestrations import HandoffBuilder\nfrom typing import Annotated"
+      },
+      {
+        "label": "Repo samples",
+        "text": "https://github.com/microsoft/agent-framework/tree/main/python/samples"
+      },
+      {
+        "label": "Community",
+        "text": "https://discord.gg/b5zjErwbQM"
+      }
+    ],
+    "stuck": "Check the repo samples at github.com/microsoft/agent-framework/tree/main/python/samples for working examples. The 03-workflows/orchestrations/ directory has handoff, sequential, concurrent, and group chat samples.",
+    "learn": "Combining tools + middleware + handoff orchestration into a production-ready multi-agent system"
+  }
+];
+const POSITIONS = [
+  {
+    "x": 4.7,
+    "y": 16.0
+  },
+  {
+    "x": 17.5,
+    "y": 38.0
+  },
+  {
+    "x": 4.7,
+    "y": 60.0
+  },
+  {
+    "x": 17.5,
+    "y": 82.0
+  },
+  {
+    "x": 27.0,
+    "y": 16.0
+  },
+  {
+    "x": 39.7,
+    "y": 38.0
+  },
+  {
+    "x": 27.0,
+    "y": 60.0
+  },
+  {
+    "x": 39.7,
+    "y": 82.0
+  },
+  {
+    "x": 49.2,
+    "y": 16.0
+  },
+  {
+    "x": 61.9,
+    "y": 38.0
+  },
+  {
+    "x": 49.2,
+    "y": 60.0
+  },
+  {
+    "x": 61.9,
+    "y": 82.0
+  },
+  {
+    "x": 73.1,
+    "y": 16.0
+  },
+  {
+    "x": 93.6,
+    "y": 29.2
+  },
+  {
+    "x": 73.1,
+    "y": 42.4
+  },
+  {
+    "x": 93.6,
+    "y": 55.6
+  },
+  {
+    "x": 73.1,
+    "y": 68.8
+  },
+  {
+    "x": 93.6,
+    "y": 82.0
+  }
+];
+const STORAGE_KEY = 'af-quest-' + btoa('Microsoft Agent Framework').slice(0,12);
+let state = loadState();
+function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);if(s)return JSON.parse(s)}catch(e){}return{completed:{}}}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function isComplete(id){return !!state.completed[id]}
+function completedCount(){return CHECKPOINTS.filter(c=>isComplete(c.id)).length}
+function render(){renderPath();renderNodes();updateProgress()}
+function updateProgress(){const n=completedCount(),t=CHECKPOINTS.length,p=Math.round(n/t*100);document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressLabel').textContent=n+' of '+t}
+function getActiveIndex(){for(let i=0;i<CHECKPOINTS.length;i++){if(!isComplete(CHECKPOINTS[i].id))return i}return CHECKPOINTS.length}
+function renderPath(){const svg=document.getElementById('pathSvg'),w=window.innerWidth,h=window.innerHeight-52;svg.setAttribute('viewBox','0 0 '+w+' '+h);let html='';const pts=POSITIONS.map(p=>({x:p.x/100*w,y:p.y/100*h}));const ai=getActiveIndex();for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],cx1=a.x+(b.x-a.x)*.6,cy1=a.y,cx2=a.x+(b.x-a.x)*.4,cy2=b.y;const d='M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y;const done=isComplete(CHECKPOINTS[i].id)&&isComplete(CHECKPOINTS[i+1].id);const partial=isComplete(CHECKPOINTS[i].id)&&!isComplete(CHECKPOINTS[i+1].id);const active=i===ai-1||i===ai;if(done)html+='<path d="'+d+'" fill="none" stroke="var(--green)" stroke-width="3" stroke-opacity=".5"/>';else if(partial||active)html+='<path d="'+d+'" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-opacity=".4" stroke-dasharray="8 6"><animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.5s" repeatCount="indefinite"/></path>';else html+='<path d="'+d+'" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 8" stroke-opacity=".5"/>'}svg.innerHTML=html}
+function renderNodes(){document.querySelectorAll('.node').forEach(n=>n.remove());const map=document.getElementById('questMap'),ai=getActiveIndex();CHECKPOINTS.forEach((cp,i)=>{const pos=POSITIONS[i];if(!pos)return;const node=document.createElement('div');node.className='node';if(isComplete(cp.id))node.classList.add('complete');else if(i===ai)node.classList.add('active');node.style.left=pos.x+'%';node.style.top='calc('+pos.y+'% + 0px)';const isLocked=i>ai&&!isComplete(cp.id);node.innerHTML='<div class="ring"></div><div class="inner"><span class="emoji">'+(isLocked?'🔒':cp.emoji)+'</span><svg class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>'+(isLocked?'<span class="lock"></span>':'')+'</div><div class="label">'+cp.title+'</div>';node.addEventListener('click',()=>openPanel(i));map.appendChild(node)})}
+let currentPanel=-1;
+function openPanel(idx){currentPanel=idx;const cp=CHECKPOINTS[idx];document.getElementById('panelEmoji').textContent=cp.emoji;document.getElementById('panelTitle').textContent=cp.title;document.getElementById('panelTime').textContent=cp.time?'⏱ '+cp.time:'';let html='<div class="desc">'+cp.desc+'</div>';if(cp.substeps){html+='<ol class="substeps">';cp.substeps.forEach(s=>html+='<li>'+s+'</li>');html+='</ol>'}if(cp.copies){html+='<div class="copy-group">';cp.copies.forEach(c=>{html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">'+c.label+'</div><div class="copy-block"><span class="copy-text">'+escHtml(c.text)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(c.text)+'\')" title="Copy">📋</button></div></div>'});html+='</div>'}if(cp.copyText&&!cp.copies){html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+(cp.copyLabel||'Copy')+'</div><div class="copy-block"><span class="copy-text">'+escHtml(cp.copyText)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(cp.copyText)+'\')" title="Copy">📋</button></div></div>'}if(cp.learn){html+='<div style="font-size:13px;color:var(--text-muted)">📚 <b>What you learn:</b> '+cp.learn+'</div>'}const checked=isComplete(cp.id);html+='<button class="toggle-done '+(checked?'checked':'')+'" onclick="toggleDone(\''+cp.id+'\',this)"><span class="dot">'+(checked?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':'')+'</span><span>'+(cp.toggle||'Done ✓')+'</span></button>';if(cp.stuck){html+='<div><button class="stuck-toggle" onclick="this.nextElementSibling.classList.toggle(\'open\')">🆘 I\'m stuck</button><div class="stuck-content"><p>'+cp.stuck+'</p></div></div>'}document.getElementById('panelBody').innerHTML=html;document.getElementById('overlay').classList.add('open');document.getElementById('panel').classList.add('open')}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');currentPanel=-1}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escAttr(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function copyText(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)}).catch(()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)})}
+function toggleDone(id,btn){if(isComplete(id)){delete state.completed[id];btn.classList.remove('checked');btn.querySelector('.dot').innerHTML=''}else{state.completed[id]=true;btn.classList.add('checked');btn.querySelector('.dot').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>';celebrate(id)}saveState();render()}
+function celebrate(id){const idx=CHECKPOINTS.findIndex(c=>c.id===id),pos=POSITIONS[idx];if(!pos)return;const x=pos.x/100*window.innerWidth,y=pos.y/100*(window.innerHeight-52)+52;spawnParticles(x,y,12);for(let p=1;p<=4;p++){const phase=CHECKPOINTS.filter(c=>c.phase===p);if(phase.every(c=>isComplete(c.id))&&id===phase[phase.length-1].id)setTimeout(()=>rocketAnimation(),400)}if(completedCount()===CHECKPOINTS.length)setTimeout(()=>{confettiExplosion();showBanner()},600)}
+function spawnParticles(cx,cy,count){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff'];for(let i=0;i<count;i++){const el=document.createElement('div');el.className='particle';el.style.left=cx+'px';el.style.top=cy+'px';el.style.background=colors[i%colors.length];document.body.appendChild(el);const angle=Math.random()*Math.PI*2,dist=40+Math.random()*60,dx=Math.cos(angle)*dist,dy=Math.sin(angle)*dist;el.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(0)',opacity:0}],{duration:600+Math.random()*400,easing:'cubic-bezier(.4,0,.2,1)'}).onfinish=()=>el.remove()}}
+function rocketAnimation(){const el=document.createElement('div');el.className='rocket-anim';el.textContent='🚀';el.style.left='-50px';el.style.bottom='60%';document.body.appendChild(el);el.animate([{transform:'translate(0,0) rotate(-30deg)',opacity:1},{transform:'translate('+(window.innerWidth+100)+'px,-'+(window.innerHeight/2)+'px) rotate(-30deg)',opacity:.8}],{duration:1400,easing:'cubic-bezier(.25,.1,.25,1)'}).onfinish=()=>el.remove()}
+function confettiExplosion(){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff','#f85149','#fff'];for(let i=0;i<60;i++){const el=document.createElement('div');el.className='confetti';el.style.background=colors[i%colors.length];el.style.left=Math.random()*window.innerWidth+'px';el.style.top='-20px';el.style.width=(6+Math.random()*8)+'px';el.style.height=(10+Math.random()*12)+'px';el.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(el);const x=(Math.random()-.5)*200,spin=Math.random()*720-360;el.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+x+'px,'+(window.innerHeight+40)+'px) rotate('+spin+'deg)',opacity:.6}],{duration:2000+Math.random()*1500,easing:'cubic-bezier(.25,.1,.25,1)',delay:Math.random()*300}).onfinish=()=>el.remove()}}
+function showBanner(){const b=document.getElementById('banner');b.classList.add('show');setTimeout(()=>b.classList.remove('show'),4000)}
+function resetProgress(){if(!confirm('Reset all progress? This cannot be undone.'))return;state={completed:{}};saveState();closePanel();render()}
+render();window.addEventListener('resize',()=>render());
+</script>
+</body>
+</html>
