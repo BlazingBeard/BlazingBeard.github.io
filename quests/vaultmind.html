@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VaultMind — Training Quest</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#eaecf0;--bg2:#f4f5f7;--blue:#0969da;--green:#1a7f37;--orange:#bf8700;--red:#cf222e;--text:#24292f;--text-muted:#57606a;--border:#c5ccd6;--panel-w:460px;--top-bar:52px}
+  html,body{height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#dfe2e6 0%,var(--bg) 100%);color:var(--text)}
+  .top-bar{position:fixed;top:0;left:0;right:0;height:var(--top-bar);background:rgba(234,236,240,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;z-index:100}
+  .top-bar .title{font-size:15px;font-weight:600;white-space:nowrap}.top-bar .title span{color:var(--blue)}
+  .progress-wrap{flex:1;max-width:420px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .progress-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .progress-label{font-size:13px;color:var(--text-muted);min-width:90px;text-align:right}
+  .btn-reset{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;transition:all .2s}.btn-reset:hover{border-color:var(--red);color:var(--red)}
+  .quest-map{position:fixed;top:var(--top-bar);left:0;right:0;bottom:0;overflow:hidden}
+  .quest-map svg.path-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .phase-label{position:absolute;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--text-muted);opacity:.55;pointer-events:none}
+  .phase-label.p1{top:82px;left:1%}.phase-label.p2{top:82px;left:23.7%}.phase-label.p3{top:82px;left:46.5%}.phase-label.p4{top:82px;left:73.7%}
+  .phase-divider{position:absolute;top:var(--top-bar);bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--border) 15%,var(--border) 85%,transparent);opacity:.6;pointer-events:none}
+  .phase-divider.d1{left:22.7%}.phase-divider.d2{left:45.5%}.phase-divider.d3{left:72.7%}
+  .node{position:absolute;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:10;transform:translate(-50%,-50%)}
+  .node .ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--border);transition:all .35s}
+  .node .inner{width:100%;height:100%;border-radius:50%;background:#f0f1f3;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;z-index:1;transition:all .35s;border:2px solid var(--border)}
+  .node.active .ring{border-color:var(--blue);box-shadow:0 0 20px rgba(88,166,255,.35);animation:pulse-ring 2s infinite}
+  .node.active .inner{border-color:var(--blue);background:rgba(88,166,255,.1);transform:scale(1.12)}.node.active .lock{display:none}
+  .node.complete .ring{border-color:var(--green);box-shadow:0 0 12px rgba(63,185,80,.25)}
+  .node.complete .inner{border-color:var(--green);background:rgba(63,185,80,.15)}.node.complete .lock{display:none}
+  .node:hover{transform:translate(-50%,-50%) scale(1.1)}
+  .node .label{position:absolute;top:calc(100% + 10px);white-space:nowrap;font-size:11px;font-weight:600;color:var(--text-muted);text-align:center;pointer-events:none;transition:color .3s}
+  .node.active .label{color:var(--blue)}.node.complete .label{color:var(--green)}
+  @keyframes pulse-ring{0%,100%{box-shadow:0 0 20px rgba(88,166,255,.25)}50%{box-shadow:0 0 32px rgba(88,166,255,.5)}}
+  .check-icon{display:none}.node.complete .check-icon{display:block}.node.complete .emoji{display:none}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}.overlay.open{opacity:1;pointer-events:auto}
+  .panel{position:fixed;top:0;right:0;bottom:0;width:var(--panel-w);max-width:92vw;background:#f0f1f3;border-left:1px solid var(--border);z-index:210;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.08)}.panel.open{transform:translateX(0)}
+  .panel-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+  .panel-header .emoji-big{font-size:32px;line-height:1}.panel-header .meta{flex:1}.panel-header .meta h2{font-size:18px;font-weight:700;margin-bottom:4px}.panel-header .meta .time{font-size:12px;color:var(--text-muted)}
+  .panel-close{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;padding:4px;line-height:1}.panel-close:hover{color:var(--text)}
+  .panel-body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:16px}.panel-body .desc{font-size:14px;line-height:1.55;color:var(--text)}
+  .copy-block{position:relative;background:#e4e6ea;border:1px solid var(--border);border-radius:8px;padding:12px 44px 12px 14px;font-family:'Cascadia Code','Fira Code',monospace;font-size:12.5px;line-height:1.5;color:var(--text);white-space:pre-wrap;word-break:break-word}
+  .copy-btn{position:absolute;top:8px;right:8px;background:#d5d8dd;border:none;color:var(--text-muted);width:30px;height:30px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}.copy-btn:hover{background:var(--blue);color:#fff}.copy-btn.copied{background:var(--green);color:#fff}
+  .toggle-done{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;border:2px solid var(--border);background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);transition:all .25s;width:100%}
+  .toggle-done .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
+  .toggle-done.checked{border-color:var(--green);background:rgba(63,185,80,.08)}.toggle-done.checked .dot{background:var(--green);border-color:var(--green)}
+  .substeps{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+  .substeps li{font-size:13px;color:var(--text-muted);padding-left:20px;position:relative;line-height:1.5}
+  .substeps li::before{content:'';position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%;border:2px solid var(--border)}
+  .stuck-toggle{background:none;border:none;color:var(--orange);font-size:13px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px}.stuck-toggle:hover{text-decoration:underline}
+  .stuck-content{max-height:0;overflow:hidden;transition:max-height .3s;font-size:13px;color:var(--text-muted);line-height:1.6}.stuck-content.open{max-height:500px}.stuck-content p{margin-top:8px}
+  .copy-group{display:flex;flex-direction:column;gap:8px}
+  .particle{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:999}
+  .confetti{position:fixed;width:10px;height:16px;pointer-events:none;z-index:999;border-radius:2px}
+  .rocket-anim{position:fixed;font-size:40px;z-index:999;pointer-events:none}
+  .banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(240,241,243,.97);border:2px solid var(--green);border-radius:16px;padding:32px 56px;text-align:center;z-index:999;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 12px 48px rgba(0,0,0,.15)}.banner.show{transform:translate(-50%,-50%) scale(1)}.banner h1{font-size:28px;margin-bottom:8px}.banner p{color:var(--text-muted);font-size:15px}
+  .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-track{background:transparent}.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .rar-card{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(59,130,246,.12));border:1px solid rgba(139,92,246,.3);text-decoration:none;transition:all .2s;cursor:pointer;margin-top:4px}
+  .rar-card:hover{border-color:rgba(139,92,246,.6);background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(59,130,246,.2));transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.15)}
+  .rar-card-icon{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .rar-card-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .rar-card-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+  .rar-card-name{font-size:14px;color:var(--text-bright);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rar-card-arrow{margin-left:auto;color:var(--text-muted);font-size:18px;flex-shrink:0}
+  .credit{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-muted);opacity:.6;pointer-events:none;letter-spacing:.3px;z-index:5}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="title"><span>VaultMind</span> — Training Quest</div>
+  <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div><div class="progress-label" id="progressLabel">0 of 22</div></div>
+  <button class="btn-reset" onclick="resetProgress()">Reset Progress</button>
+</div>
+<div class="phase-label p1">🥚 Foundations</div>
+<div class="phase-label p2">📚 Knowledge Base</div>
+<div class="phase-label p3">⚡ Team Mastery</div>
+<div class="phase-label p4">🧬 Automation</div>
+<div class="phase-divider d1"></div><div class="phase-divider d2"></div><div class="phase-divider d3"></div>
+<div class="quest-map" id="questMap"><svg class="path-svg" id="pathSvg" preserveAspectRatio="none"></svg></div>
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel"><div class="panel-header"><div class="emoji-big" id="panelEmoji"></div><div class="meta"><h2 id="panelTitle"></h2><div class="time" id="panelTime"></div></div><button class="panel-close" onclick="closePanel()">✕</button></div><div class="panel-body" id="panelBody"></div></div>
+<div class="banner" id="banner"><h1>🧠 VaultMind Mastered!</h1><p>Your second brain has a brain.<br>28 actions. Infinite possibilities.</p></div>
+<div class="credit">VaultMind — Training Quest · Generated 2026-04-08 13:05</div>
+<script>
+const CHECKPOINTS = [
+  {
+    "id": "vm-bootstrap",
+    "phase": 1,
+    "emoji": "\ud83d\ude80",
+    "title": "Bootstrap Your Vault",
+    "time": "5 min",
+    "desc": "VaultMind can auto-create your entire Obsidian vault structure and install 5 essential plugins (Templater, Dataview, Calendar, Kanban, Git). One command does it all.",
+    "toggle": "Vault bootstrapped \u2713",
+    "copies": [
+      {
+        "label": "Bootstrap vault",
+        "text": "Bootstrap my Obsidian vault with all plugins and configuration"
+      },
+      {
+        "label": "Set vault path",
+        "text": "Set OBSIDIAN_VAULT=C:\\\\Users\\\\me\\\\ObsidianVault in your .env file"
+      }
+    ],
+    "stuck": "Set OBSIDIAN_VAULT in your .env to point to your vault path. If Obsidian isn\\'t installed, get it from obsidian.md \u2014 it\\'s free. After bootstrap, open Obsidian and select your vault folder.",
+    "learn": "Vault directory structure: 00-inbox, 01-raw, 02-wiki, 03-people, 04-output, log",
+    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fvaultmind_agent",
+    "rar_name": "@borg/vaultmind_agent"
+  },
+  {
+    "id": "vm-add-person",
+    "phase": 1,
+    "emoji": "\ud83d\udc64",
+    "title": "Add Your First Person",
+    "time": "3 min",
+    "desc": "Create an onboarding profile with a full 30-60-90 day plan structure. VaultMind generates profile.md, three phase plans, priorities, metrics, training quest, and weekly sync folders.",
+    "toggle": "First person added \u2713",
+    "copies": [
+      {
+        "label": "Add a person",
+        "text": "Add Jane Smith as a Senior Engineer starting today"
+      },
+      {
+        "label": "Add with context",
+        "text": "Add Alex Chen as a Frontend Developer starting 2025-05-01, manager is Howard Hoy, context: joining from Google with React expertise"
+      }
+    ],
+    "stuck": "The name parameter is required. Role defaults to Team Member. Start date defaults to today. Check 03-people/ in your vault to see the generated folder structure.",
+    "learn": "30-60-90 day plan structure, profile frontmatter, auto-generated templates"
+  },
+  {
+    "id": "vm-roster",
+    "phase": 1,
+    "emoji": "\ud83d\udccb",
+    "title": "View the Team Roster",
+    "time": "2 min",
+    "desc": "See everyone on your team at a glance \u2014 status indicators (\ud83d\udfe2\ud83d\udfe1\ud83d\udd34), roles, start dates, day counts, and current 30-60-90 phase. Add a few more people first to make it interesting.",
+    "toggle": "Roster viewed \u2713",
+    "copies": [
+      {
+        "label": "View roster",
+        "text": "Show me everyone's status"
+      },
+      {
+        "label": "Add another person",
+        "text": "Add Bob Williams as a QA Engineer starting 2025-03-01"
+      }
+    ],
+    "learn": "Roster auto-updates when you add/retire people. Status colors reflect overdue items."
+  },
+  {
+    "id": "vm-check-in",
+    "phase": 1,
+    "emoji": "\ud83d\udcdd",
+    "title": "Check In On Someone",
+    "time": "3 min",
+    "desc": "Get a person\\'s full status snapshot: day count, phase, plan progress (X/Y tasks), NOW priorities, overdue items, and upcoming due dates. This is your go-to for 1:1 prep.",
+    "toggle": "Check-in done \u2713",
+    "copies": [
+      {
+        "label": "Check in",
+        "text": "Check in on Jane Smith"
+      },
+      {
+        "label": "Quick status",
+        "text": "What's Jane's current status and phase?"
+      }
+    ],
+    "learn": "Phase progression (30\u219260\u219290 days), task completion tracking, overdue detection"
+  },
+  {
+    "id": "vm-assign",
+    "phase": 1,
+    "emoji": "\ud83c\udfaf",
+    "title": "Assign Priority Tasks",
+    "time": "3 min",
+    "desc": "VaultMind uses a NOW/NEXT/LATER priority system. Assign tasks to any person at the right urgency level. NOW = this week, NEXT = soon, LATER = backlog.",
+    "toggle": "Task assigned \u2713",
+    "copies": [
+      {
+        "label": "Assign NOW task",
+        "text": "Assign Jane a NOW priority: Complete architecture review by Friday"
+      },
+      {
+        "label": "Assign NEXT task",
+        "text": "Assign Jane a NEXT priority: Set up CI/CD pipeline for the new service"
+      },
+      {
+        "label": "View priorities",
+        "text": "Show me the priority board for Jane"
+      }
+    ],
+    "stuck": "All three params are required: name, priority (now/next/later), and task (description). Use the priorities action to view the board after assigning.",
+    "learn": "NOW/NEXT/LATER priority framework, team-wide priority views"
+  },
+  {
+    "id": "vm-ingest",
+    "phase": 2,
+    "emoji": "\ud83d\udce5",
+    "title": "Ingest External Content",
+    "time": "5 min",
+    "desc": "Pull any webpage into your vault\\'s knowledge base. VaultMind fetches the URL, strips HTML, saves the raw content to 01-raw/, and creates a wiki stub in 02-wiki/concepts/.",
+    "toggle": "Content ingested \u2713",
+    "copies": [
+      {
+        "label": "Ingest a URL",
+        "text": "Ingest this article into my wiki: https://karpathy.github.io/2015/05/21/rnn-effectiveness/"
+      },
+      {
+        "label": "Ingest docs",
+        "text": "Ingest https://obsidian.md/about into my knowledge base"
+      }
+    ],
+    "stuck": "Provide a valid HTTP/HTTPS URL. The agent will fetch, clean HTML, and store both raw and wiki versions. Check 01-raw/ and 02-wiki/concepts/ after ingesting.",
+    "learn": "Content pipeline: URL \u2192 01-raw/ (full text) \u2192 02-wiki/concepts/ (summary article)"
+  },
+  {
+    "id": "vm-compile",
+    "phase": 2,
+    "emoji": "\ud83d\udcda",
+    "title": "Compile the Wiki",
+    "time": "3 min",
+    "desc": "Transform raw ingested content into structured wiki articles. Compile scans 01-raw/, extracts titles and topics, builds articles with wikilinks, and generates a master _index.md.",
+    "toggle": "Wiki compiled \u2713",
+    "copies": [
+      {
+        "label": "Compile wiki",
+        "text": "Compile my wiki from raw sources"
+      },
+      {
+        "label": "Check the index",
+        "text": "Show me the wiki index"
+      }
+    ],
+    "learn": "Wiki compilation pipeline, auto-generated wikilinks, the _index.md master list"
+  },
+  {
+    "id": "vm-query",
+    "phase": 2,
+    "emoji": "\ud83d\udd0d",
+    "title": "Search Your Knowledge Base",
+    "time": "2 min",
+    "desc": "Query the wiki by keyword. VaultMind scores articles by relevance and returns the top 5 matches with snippet previews. Build your second brain, then search it.",
+    "toggle": "Wiki searched \u2713",
+    "copies": [
+      {
+        "label": "Search wiki",
+        "text": "Search my wiki for neural networks"
+      },
+      {
+        "label": "Find a topic",
+        "text": "Query my knowledge base for Obsidian plugins"
+      }
+    ],
+    "learn": "Keyword-based search, relevance scoring, snippet extraction"
+  },
+  {
+    "id": "vm-health",
+    "phase": 2,
+    "emoji": "\ud83c\udfe5",
+    "title": "Run a Wiki Health Check",
+    "time": "3 min",
+    "desc": "Scan your entire wiki for problems: broken wikilinks, orphaned articles (no incoming links), stale content (>90 days old), and uncompiled raw files. Keep your knowledge base clean.",
+    "toggle": "Health check done \u2713",
+    "copies": [
+      {
+        "label": "Health check",
+        "text": "Run a health check on my wiki"
+      },
+      {
+        "label": "Fix issues",
+        "text": "What wiki issues need attention?"
+      }
+    ],
+    "learn": "Vault hygiene: broken links, orphans, stale content, uncompiled sources"
+  },
+  {
+    "id": "vm-paste",
+    "phase": 2,
+    "emoji": "\ud83d\udccb",
+    "title": "Quick-Paste Raw Notes",
+    "time": "2 min",
+    "desc": "Paste meeting notes, emails, or ideas directly into 01-raw/ without needing a URL. Great for capturing information on the fly. Run compile afterward to turn it into wiki articles.",
+    "toggle": "Notes pasted \u2713",
+    "copies": [
+      {
+        "label": "Paste notes",
+        "text": "Paste this into my vault: Today's standup \u2014 Jane finished the auth module, Bob is blocked on the API rate limit, Alex started the new dashboard design"
+      },
+      {
+        "label": "Paste with title",
+        "text": "Paste into my vault with title 'Sprint Retro Notes': What went well \u2014 fast deploys. What didn't \u2014 flaky tests. Action items \u2014 add retry logic to CI."
+      }
+    ],
+    "learn": "Quick capture workflow: paste \u2192 raw \u2192 compile \u2192 wiki"
+  },
+  {
+    "id": "vm-brief",
+    "phase": 3,
+    "emoji": "\u2600\ufe0f",
+    "title": "Generate a Morning Brief",
+    "time": "3 min",
+    "desc": "Start your day with a digest: per-person status, overdue items, upcoming milestones, phase boundary alerts, and who needs a check-in. Saves to 04-output/ for reference.",
+    "toggle": "Brief generated \u2713",
+    "copies": [
+      {
+        "label": "Morning brief",
+        "text": "Generate my morning brief"
+      },
+      {
+        "label": "Quick dashboard",
+        "text": "Give me a quick team status summary"
+      }
+    ],
+    "learn": "Morning workflow, overdue detection, phase boundary alerts, check-in recommendations"
+  },
+  {
+    "id": "vm-report",
+    "phase": 3,
+    "emoji": "\ud83d\udcca",
+    "title": "Build an HTML Dashboard",
+    "time": "3 min",
+    "desc": "Generate a beautiful interactive HTML team dashboard with status indicators, progress bars, phase distribution, NOW priorities preview, and an overdue heatmap. Opens in your browser automatically.",
+    "toggle": "Dashboard built \u2713",
+    "copies": [
+      {
+        "label": "Generate dashboard",
+        "text": "Generate the team dashboard"
+      },
+      {
+        "label": "View report",
+        "text": "Build me a 30-60-90 status report"
+      }
+    ],
+    "learn": "HTML report generation, status indicators (\ud83d\udfe2\ud83d\udfe1\ud83d\udd34), overdue heatmap visualization"
+  },
+  {
+    "id": "vm-okr",
+    "phase": 3,
+    "emoji": "\ud83c\udfaf",
+    "title": "Track OKRs",
+    "time": "4 min",
+    "desc": "Set objectives and key results for your team. Each person gets an okr.md with structured goals. View individual or team-wide OKR summaries to keep everyone aligned.",
+    "toggle": "OKRs tracked \u2713",
+    "copies": [
+      {
+        "label": "Add an objective",
+        "text": "Add OKR for Jane: objective is Ship v2.0 by end of quarter"
+      },
+      {
+        "label": "Add key result",
+        "text": "Add key result for Jane under Ship v2.0: Migrate 100% of API endpoints to new schema"
+      },
+      {
+        "label": "View team OKRs",
+        "text": "Show me all team OKRs"
+      }
+    ],
+    "stuck": "Add an objective first, then add key results to it. Use the name parameter to target a specific person. Without a name, you see the team-wide OKR summary.",
+    "learn": "OKR tracking: objectives with measurable key results, team-wide visibility"
+  },
+  {
+    "id": "vm-kanban",
+    "phase": 3,
+    "emoji": "\ud83d\udd04",
+    "title": "Create a Kanban Board",
+    "time": "3 min",
+    "desc": "Generate an Obsidian-compatible Kanban board from a person\\'s priorities. NOW/NEXT/LATER columns become drag-and-drop lanes in the Kanban plugin. Pure markdown, fully portable.",
+    "toggle": "Kanban created \u2713",
+    "copies": [
+      {
+        "label": "Generate kanban",
+        "text": "Create a Kanban board for Jane"
+      },
+      {
+        "label": "View in Obsidian",
+        "text": "Open the kanban.md file in Obsidian to see drag-and-drop columns"
+      }
+    ],
+    "learn": "Obsidian Kanban plugin format, priorities\u2192kanban conversion, visual task management"
+  },
+  {
+    "id": "vm-metrics",
+    "phase": 3,
+    "emoji": "\ud83d\udcc8",
+    "title": "View Person Metrics",
+    "time": "2 min",
+    "desc": "See performance metrics for any person: completion rate per phase, velocity (tasks/week), overdue count, and training progress. Data-driven 1:1 conversations.",
+    "toggle": "Metrics viewed \u2713",
+    "copies": [
+      {
+        "label": "View metrics",
+        "text": "Show me Jane's metrics"
+      },
+      {
+        "label": "Check velocity",
+        "text": "What's Jane's task completion velocity?"
+      }
+    ],
+    "learn": "Completion rate, velocity tracking, per-phase breakdown, training progress"
+  },
+  {
+    "id": "vm-retire",
+    "phase": 3,
+    "emoji": "\ud83c\udf93",
+    "title": "Retire a Completed Plan",
+    "time": "3 min",
+    "desc": "When someone finishes onboarding, retire their profile. VaultMind generates a final summary with duration, completion %, and archives the entire directory to 03-people/_archived/.",
+    "toggle": "Profile retired \u2713",
+    "copies": [
+      {
+        "label": "Retire a person",
+        "text": "Retire Bob's plan \u2014 he completed onboarding"
+      },
+      {
+        "label": "View archived",
+        "text": "Check 03-people/_archived/ for retired profiles"
+      }
+    ],
+    "learn": "Archival workflow, final summary generation, clean roster management"
+  },
+  {
+    "id": "vm-watch",
+    "phase": 4,
+    "emoji": "\ud83d\udce1",
+    "title": "Watch URLs for Changes",
+    "time": "3 min",
+    "desc": "Monitor external URLs for content changes. VaultMind tracks ETags, Last-Modified headers, and SHA256 hashes to detect updates. Perfect for tracking competitor blogs, docs, or feeds.",
+    "toggle": "URL watched \u2713",
+    "copies": [
+      {
+        "label": "Watch a URL",
+        "text": "Watch this URL for changes: https://blog.obsidian.md/feed/"
+      },
+      {
+        "label": "List watched URLs",
+        "text": "Show me all my watched URLs"
+      }
+    ],
+    "learn": "Content monitoring, change detection (ETag + SHA256), watch list management"
+  },
+  {
+    "id": "vm-jobs",
+    "phase": 4,
+    "emoji": "\u2699\ufe0f",
+    "title": "Configure Scheduled Jobs",
+    "time": "3 min",
+    "desc": "VaultMind has 6 automation jobs: morning_brief, content_watch, auto_review, wiki_health, phase_alert, and digest. Enable, disable, or view their status and history.",
+    "toggle": "Jobs configured \u2713",
+    "copies": [
+      {
+        "label": "View all jobs",
+        "text": "Show me the scheduled jobs"
+      },
+      {
+        "label": "Enable a job",
+        "text": "Enable the morning_brief job"
+      },
+      {
+        "label": "Configure",
+        "text": "Set up the content_watch job"
+      }
+    ],
+    "learn": "Job scheduler: 6 jobs (brief, watch, review, health, phase alerts, digest)"
+  },
+  {
+    "id": "vm-run-job",
+    "phase": 4,
+    "emoji": "\u25b6\ufe0f",
+    "title": "Manually Trigger a Job",
+    "time": "2 min",
+    "desc": "Run any scheduled job on demand. Great for testing your automation setup or getting an immediate digest without waiting for the schedule.",
+    "toggle": "Job triggered \u2713",
+    "copies": [
+      {
+        "label": "Run morning brief",
+        "text": "Run the morning_brief job now"
+      },
+      {
+        "label": "Run wiki health",
+        "text": "Manually trigger the wiki_health job"
+      },
+      {
+        "label": "Run digest",
+        "text": "Run the digest job to summarize vault changes"
+      }
+    ],
+    "learn": "Manual job execution, job status tracking (last run, last status, errors)"
+  },
+  {
+    "id": "vm-pause",
+    "phase": 4,
+    "emoji": "\u23f8\ufe0f",
+    "title": "Pause and Resume Jobs",
+    "time": "2 min",
+    "desc": "Toggle pause on any job without fully disabling it. Paused jobs keep their config and history but won\\'t run until resumed. Perfect for vacation mode.",
+    "toggle": "Job paused & resumed \u2713",
+    "copies": [
+      {
+        "label": "Pause a job",
+        "text": "Pause the content_watch job"
+      },
+      {
+        "label": "Resume it",
+        "text": "Resume the content_watch job"
+      }
+    ],
+    "learn": "Job lifecycle: enabled \u2192 paused \u2192 resumed, preserving configuration"
+  },
+  {
+    "id": "vm-training",
+    "phase": 4,
+    "emoji": "\ud83c\udfc6",
+    "title": "Design a Training Quest",
+    "time": "5 min",
+    "desc": "The ultimate meta-skill: design a personalized training quest for someone on your team. VaultMind reads their profile and training objectives, then guides the LLM to build custom checkpoints.",
+    "toggle": "Quest designed \u2713",
+    "copies": [
+      {
+        "label": "Design training",
+        "text": "Design a training quest for Jane Smith"
+      },
+      {
+        "label": "Build the HTML quest",
+        "text": "Build an interactive training quest for Jane from those checkpoints"
+      }
+    ],
+    "stuck": "First edit 03-people/{name}/training-quest.md to define learning objectives. Then use the training action to generate checkpoint JSON. Finally, use build_quest to render the interactive HTML.",
+    "learn": "Meta-learning: using VaultMind to create training quests for your team members"
+  },
+  {
+    "id": "vm-activity-log",
+    "phase": 4,
+    "emoji": "\ud83d\udcdc",
+    "title": "Master the Activity Log",
+    "time": "2 min",
+    "desc": "Every VaultMind action is logged to log/activity.md with timestamps. View recent history or add manual notes. Your vault\\'s memory of everything that happened.",
+    "toggle": "Log mastered \u2713",
+    "copies": [
+      {
+        "label": "View log",
+        "text": "Show me the activity log"
+      },
+      {
+        "label": "Add a note",
+        "text": "Log this: Completed Q2 planning session with the team"
+      }
+    ],
+    "learn": "Activity tracking, manual logging, audit trail for all vault operations"
+  }
+];
+const POSITIONS = [
+  {
+    "x": 4.8,
+    "y": 16.0
+  },
+  {
+    "x": 17.9,
+    "y": 32.5
+  },
+  {
+    "x": 4.8,
+    "y": 49.0
+  },
+  {
+    "x": 17.9,
+    "y": 65.5
+  },
+  {
+    "x": 4.8,
+    "y": 82.0
+  },
+  {
+    "x": 27.5,
+    "y": 16.0
+  },
+  {
+    "x": 40.6,
+    "y": 32.5
+  },
+  {
+    "x": 27.5,
+    "y": 49.0
+  },
+  {
+    "x": 40.6,
+    "y": 65.5
+  },
+  {
+    "x": 27.5,
+    "y": 82.0
+  },
+  {
+    "x": 50.9,
+    "y": 16.0
+  },
+  {
+    "x": 67.2,
+    "y": 29.2
+  },
+  {
+    "x": 50.9,
+    "y": 42.4
+  },
+  {
+    "x": 67.2,
+    "y": 55.6
+  },
+  {
+    "x": 50.9,
+    "y": 68.8
+  },
+  {
+    "x": 67.2,
+    "y": 82.0
+  },
+  {
+    "x": 78.2,
+    "y": 16.0
+  },
+  {
+    "x": 94.5,
+    "y": 29.2
+  },
+  {
+    "x": 78.2,
+    "y": 42.4
+  },
+  {
+    "x": 94.5,
+    "y": 55.6
+  },
+  {
+    "x": 78.2,
+    "y": 68.8
+  },
+  {
+    "x": 94.5,
+    "y": 82.0
+  }
+];
+const STORAGE_KEY = 'vaultmind-quest-' + btoa('VaultMind').slice(0,12);
+let state = loadState();
+function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);if(s)return JSON.parse(s)}catch(e){}return{completed:{}}}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function isComplete(id){return !!state.completed[id]}
+function completedCount(){return CHECKPOINTS.filter(c=>isComplete(c.id)).length}
+function render(){renderPath();renderNodes();updateProgress()}
+function updateProgress(){const n=completedCount(),t=CHECKPOINTS.length,p=Math.round(n/t*100);document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressLabel').textContent=n+' of '+t}
+function getActiveIndex(){for(let i=0;i<CHECKPOINTS.length;i++){if(!isComplete(CHECKPOINTS[i].id))return i}return CHECKPOINTS.length}
+function renderPath(){const svg=document.getElementById('pathSvg'),w=window.innerWidth,h=window.innerHeight-52;svg.setAttribute('viewBox','0 0 '+w+' '+h);let html='';const pts=POSITIONS.map(p=>({x:p.x/100*w,y:p.y/100*h}));const ai=getActiveIndex();for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],cx1=a.x+(b.x-a.x)*.6,cy1=a.y,cx2=a.x+(b.x-a.x)*.4,cy2=b.y;const d='M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y;const done=isComplete(CHECKPOINTS[i].id)&&isComplete(CHECKPOINTS[i+1].id);const partial=isComplete(CHECKPOINTS[i].id)&&!isComplete(CHECKPOINTS[i+1].id);const active=i===ai-1||i===ai;if(done)html+='<path d="'+d+'" fill="none" stroke="var(--green)" stroke-width="3" stroke-opacity=".5"/>';else if(partial||active)html+='<path d="'+d+'" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-opacity=".4" stroke-dasharray="8 6"><animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.5s" repeatCount="indefinite"/></path>';else html+='<path d="'+d+'" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 8" stroke-opacity=".5"/>'}svg.innerHTML=html}
+function renderNodes(){document.querySelectorAll('.node').forEach(n=>n.remove());const map=document.getElementById('questMap'),ai=getActiveIndex();CHECKPOINTS.forEach((cp,i)=>{const pos=POSITIONS[i];if(!pos)return;const node=document.createElement('div');node.className='node';if(isComplete(cp.id))node.classList.add('complete');else if(i===ai)node.classList.add('active');node.style.left=pos.x+'%';node.style.top='calc('+pos.y+'% + 0px)';const isLocked=i>ai&&!isComplete(cp.id);node.innerHTML='<div class="ring"></div><div class="inner"><span class="emoji">'+(isLocked?'🔒':cp.emoji)+'</span><svg class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>'+(isLocked?'<span class="lock"></span>':'')+'</div><div class="label">'+cp.title+'</div>';node.addEventListener('click',()=>openPanel(i));map.appendChild(node)})}
+let currentPanel=-1;
+function openPanel(idx){currentPanel=idx;const cp=CHECKPOINTS[idx];document.getElementById('panelEmoji').textContent=cp.emoji;document.getElementById('panelTitle').textContent=cp.title;document.getElementById('panelTime').textContent=cp.time?'⏱ '+cp.time:'';let html='<div class="desc">'+cp.desc+'</div>';if(cp.substeps){html+='<ol class="substeps">';cp.substeps.forEach(s=>html+='<li>'+s+'</li>');html+='</ol>'}if(cp.copies){html+='<div class="copy-group">';cp.copies.forEach(c=>{html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">'+c.label+'</div><div class="copy-block"><span class="copy-text">'+escHtml(c.text)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(c.text)+'\')" title="Copy">📋</button></div></div>'});html+='</div>'}if(cp.copyText&&!cp.copies){html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+(cp.copyLabel||'Copy')+'</div><div class="copy-block"><span class="copy-text">'+escHtml(cp.copyText)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(cp.copyText)+'\')" title="Copy">📋</button></div></div>'}if(cp.learn){html+='<div style="font-size:13px;color:var(--text-muted)">📚 <b>What you learn:</b> '+cp.learn+'</div>'}if(cp.rar_url){html+='<a href="'+cp.rar_url+'" target="_blank" rel="noopener" class="rar-card"><div class="rar-card-icon">🧩</div><div class="rar-card-info"><div class="rar-card-label">RAPP Agent Repository</div><div class="rar-card-name">'+escHtml(cp.rar_name)+'</div></div><div class="rar-card-arrow">→</div></a>'}const checked=isComplete(cp.id);html+='<button class="toggle-done '+(checked?'checked':'')+'" onclick="toggleDone(\''+cp.id+'\',this)"><span class="dot">'+(checked?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':'')+'</span><span>'+(cp.toggle||'Done ✓')+'</span></button>';if(cp.stuck){html+='<div><button class="stuck-toggle" onclick="this.nextElementSibling.classList.toggle(\'open\')">🆘 I\'m stuck</button><div class="stuck-content"><p>'+cp.stuck+'</p></div></div>'}document.getElementById('panelBody').innerHTML=html;document.getElementById('overlay').classList.add('open');document.getElementById('panel').classList.add('open')}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');currentPanel=-1}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escAttr(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function copyText(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)}).catch(()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)})}
+function toggleDone(id,btn){if(isComplete(id)){delete state.completed[id];btn.classList.remove('checked');btn.querySelector('.dot').innerHTML=''}else{state.completed[id]=true;btn.classList.add('checked');btn.querySelector('.dot').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>';celebrate(id)}saveState();render()}
+function celebrate(id){const idx=CHECKPOINTS.findIndex(c=>c.id===id),pos=POSITIONS[idx];if(!pos)return;const x=pos.x/100*window.innerWidth,y=pos.y/100*(window.innerHeight-52)+52;spawnParticles(x,y,12);for(let p=1;p<=4;p++){const phase=CHECKPOINTS.filter(c=>c.phase===p);if(phase.every(c=>isComplete(c.id))&&id===phase[phase.length-1].id)setTimeout(()=>rocketAnimation(),400)}if(completedCount()===CHECKPOINTS.length)setTimeout(()=>{confettiExplosion();showBanner()},600)}
+function spawnParticles(cx,cy,count){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff'];for(let i=0;i<count;i++){const el=document.createElement('div');el.className='particle';el.style.left=cx+'px';el.style.top=cy+'px';el.style.background=colors[i%colors.length];document.body.appendChild(el);const angle=Math.random()*Math.PI*2,dist=40+Math.random()*60,dx=Math.cos(angle)*dist,dy=Math.sin(angle)*dist;el.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(0)',opacity:0}],{duration:600+Math.random()*400,easing:'cubic-bezier(.4,0,.2,1)'}).onfinish=()=>el.remove()}}
+function rocketAnimation(){const el=document.createElement('div');el.className='rocket-anim';el.textContent='🚀';el.style.left='-50px';el.style.bottom='60%';document.body.appendChild(el);el.animate([{transform:'translate(0,0) rotate(-30deg)',opacity:1},{transform:'translate('+(window.innerWidth+100)+'px,-'+(window.innerHeight/2)+'px) rotate(-30deg)',opacity:.8}],{duration:1400,easing:'cubic-bezier(.25,.1,.25,1)'}).onfinish=()=>el.remove()}
+function confettiExplosion(){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff','#f85149','#fff'];for(let i=0;i<60;i++){const el=document.createElement('div');el.className='confetti';el.style.background=colors[i%colors.length];el.style.left=Math.random()*window.innerWidth+'px';el.style.top='-20px';el.style.width=(6+Math.random()*8)+'px';el.style.height=(10+Math.random()*12)+'px';el.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(el);const x=(Math.random()-.5)*200,spin=Math.random()*720-360;el.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+x+'px,'+(window.innerHeight+40)+'px) rotate('+spin+'deg)',opacity:.6}],{duration:2000+Math.random()*1500,easing:'cubic-bezier(.25,.1,.25,1)',delay:Math.random()*300}).onfinish=()=>el.remove()}}
+function showBanner(){const b=document.getElementById('banner');b.classList.add('show');setTimeout(()=>b.classList.remove('show'),4000)}
+function resetProgress(){if(!confirm('Reset all progress? This cannot be undone.'))return;state={completed:{}};saveState();closePanel();render()}
+render();window.addEventListener('resize',()=>render());
+</script>
+</body>
+</html>
