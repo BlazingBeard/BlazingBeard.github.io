@@ -18,9 +18,9 @@
   .quest-map{position:fixed;top:var(--top-bar);left:0;right:0;bottom:0;overflow:hidden}
   .quest-map svg.path-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   .phase-label{position:absolute;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--text-muted);opacity:.55;pointer-events:none}
-  .phase-label.p1{top:82px;left:1%}.phase-label.p2{top:82px;left:18.4%}.phase-label.p3{top:82px;left:33.4%}.phase-label.p4{top:82px;left:83.6%}
+  .phase-label.p1{top:82px;left:1%}.phase-label.p2{top:82px;left:34.3%}.phase-label.p3{top:82px;left:51%}.phase-label.p4{top:82px;left:67.7%}
   .phase-divider{position:absolute;top:var(--top-bar);bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--border) 15%,var(--border) 85%,transparent);opacity:.6;pointer-events:none}
-  .phase-divider.d1{left:17.4%}.phase-divider.d2{left:32.4%}.phase-divider.d3{left:82.6%}
+  .phase-divider.d1{left:33.3%}.phase-divider.d2{left:50%}.phase-divider.d3{left:66.7%}
   .node{position:absolute;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:10;transform:translate(-50%,-50%)}
   .node .ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--border);transition:all .35s}
   .node .inner{width:100%;height:100%;border-radius:50%;background:#f0f1f3;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;z-index:1;transition:all .35s;border:2px solid var(--border)}
@@ -53,7 +53,14 @@
   .particle{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:999}
   .confetti{position:fixed;width:10px;height:16px;pointer-events:none;z-index:999;border-radius:2px}
   .rocket-anim{position:fixed;font-size:40px;z-index:999;pointer-events:none}
-  .banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(240,241,243,.97);border:2px solid var(--green);border-radius:16px;padding:32px 56px;text-align:center;z-index:999;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 12px 48px rgba(0,0,0,.15)}.banner.show{transform:translate(-50%,-50%) scale(1)}.banner h1{font-size:28px;margin-bottom:8px}.banner p{color:var(--text-muted);font-size:15px}
+  .banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(240,241,243,.97);border:2px solid var(--green);border-radius:16px;padding:32px 56px;text-align:center;z-index:999;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 12px 48px rgba(0,0,0,.15);max-width:90vw}.banner.show{transform:translate(-50%,-50%) scale(1)}.banner h1{font-size:28px;margin-bottom:8px}.banner p{color:var(--text-muted);font-size:15px}
+  .badge-wrap{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .badge-wrap canvas{border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.12);max-width:100%;height:auto}
+  .badge-actions{display:flex;gap:10px}
+  .badge-btn{padding:10px 20px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+  .badge-btn:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px)}
+  .badge-btn.share{background:linear-gradient(135deg,#0969da,#1a7f37);color:#fff;border:none}
+  .badge-btn.share:hover{opacity:.9;transform:translateY(-1px)}
   .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-track{background:transparent}.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
   .rar-card{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(59,130,246,.12));border:1px solid rgba(139,92,246,.3);text-decoration:none;transition:all .2s;cursor:pointer;margin-top:4px}
   .rar-card:hover{border-color:rgba(139,92,246,.6);background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(59,130,246,.2));transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.15)}
@@ -79,7 +86,17 @@
 <div class="quest-map" id="questMap"><svg class="path-svg" id="pathSvg" preserveAspectRatio="none"></svg></div>
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel"><div class="panel-header"><div class="emoji-big" id="panelEmoji"></div><div class="meta"><h2 id="panelTitle"></h2><div class="time" id="panelTime"></div></div><button class="panel-close" onclick="closePanel()">✕</button></div><div class="panel-body" id="panelBody"></div></div>
-<div class="banner" id="banner"><h1>🧬 Training Complete!</h1><p>You've mastered your brainstem.<br>Your rappter is fully grown.</p></div>
+<div class="banner" id="banner">
+  <h1>🧬 Training Complete!</h1>
+  <p>You've mastered your brainstem.<br>Your rappter is fully grown.</p>
+  <div class="badge-wrap" id="badgeWrap" style="display:none">
+    <canvas id="badgeCanvas" width="600" height="315"></canvas>
+    <div class="badge-actions">
+      <button class="badge-btn" onclick="downloadBadge()">⬇ Download Badge</button>
+      <button class="badge-btn share" onclick="shareBadge()">📤 Share</button>
+    </div>
+  </div>
+</div>
 <div class="credit">RAPP Brainstem — Training Quest · Generated 2026-04-08 12:47</div>
 <script>
 const CHECKPOINTS = [
@@ -212,262 +229,58 @@ const CHECKPOINTS = [
     "stuck": "The agents panel is the \ud83e\udd16 icon in the top-right toolbar. Agents are *_agent.py files in agents/ (not subfolders). They reload from disk on every chat \u2014 no restart needed."
   },
   {
-    "id": "agent-anvil",
+    "id": "agent-hackernews",
     "phase": 3,
-    "emoji": "\ud83d\udd27",
-    "title": "Anvil",
+    "emoji": "\ud83d\udcf0",
+    "title": "HackerNews Agent",
     "time": "5 min",
-    "desc": "Evidence-first verification agent. Verifies code changes with",
-    "toggle": "Tried Anvil \u2713",
+    "desc": "Your first real agent in action! HackerNews fetches top stories from the HN Firebase API — titles, URLs, scores, and authors. Ask it for today\\'s top tech stories and watch tool-calling happen live.",
+    "toggle": "Tried HackerNews \u2713",
     "copies": [
       {
-        "label": "Verification is tool calls, not assertio...",
-        "text": "Verification is tool calls, not assertions."
+        "label": "Get top stories",
+        "text": "What are the top stories on Hacker News right now?"
+      },
+      {
+        "label": "Search HN",
+        "text": "Search Hacker News for articles about AI agents"
+      },
+      {
+        "label": "How it works",
+        "text": "Explain how the HackerNews agent works — show me the tool-calling flow"
       }
     ],
-    "learn": "Anvil agent, parameters: action, task_id, project_dir, command, files",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fanvil_agent",
-    "rar_name": "@borg/anvil_agent"
+    "learn": "How tool-calling works: LLM decides to call agent \u2192 perform() executes \u2192 result returns to conversation",
+    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fhacker_news_agent",
+    "rar_name": "@borg/hacker_news_agent",
+    "stuck": "Make sure brainstem is running on localhost:7071. The HackerNews agent calls the public HN API — no keys needed. If you don\\'t see it in your agents list, check that hacker_news_agent.py is in the agents/ folder."
   },
   {
     "id": "agent-borg",
     "phase": 3,
     "emoji": "\ud83d\udd2c",
-    "title": "Borg",
+    "title": "Learn a New Agent",
     "time": "5 min",
-    "desc": "The Borg agent.",
-    "toggle": "Tried Borg \u2713",
+    "desc": "The Borg agent assimilates new agents from any GitHub URL. Give it a repo and it downloads, analyzes, and installs the agent into your brainstem. This is how you grow your toolkit — resistance is futile.",
+    "toggle": "Assimilated an agent \u2713",
     "copies": [
       {
-        "label": "We are the Borg. Your technological dist...",
-        "text": "We are the Borg. Your technological distinctiveness will be added to our own."
+        "label": "Assimilate from GitHub",
+        "text": "Assimilate this agent: https://github.com/kody-w/RAR"
+      },
+      {
+        "label": "Browse RAR",
+        "text": "What agents are available in the RAPP Agent Repository?"
+      },
+      {
+        "label": "How Borg works",
+        "text": "Explain how the Borg agent works — how does it download and install new agents?"
       }
     ],
-    "learn": "Borg agent, parameters: see description",
+    "learn": "Agent distribution: GitHub repos \u2192 Borg assimilation \u2192 live in your brainstem. No restart needed.",
     "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fborg_agent",
-    "rar_name": "@borg/borg_agent"
-  },
-  {
-    "id": "agent-bridge",
-    "phase": 3,
-    "emoji": "\ud83d\udd27",
-    "title": "Bridge",
-    "time": "5 min",
-    "desc": "The Bridge agent.",
-    "toggle": "Tried Bridge \u2713",
-    "copies": [
-      {
-        "label": "What can Bridge do?",
-        "text": "Tell me everything about the Bridge agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "Bridge agent, parameters: see description",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fbridge_agent",
-    "rar_name": "@borg/bridge_agent"
-  },
-  {
-    "id": "agent-cardsmith",
-    "phase": 3,
-    "emoji": "\u2728",
-    "title": "CardSmith",
-    "time": "5 min",
-    "desc": "Forges Magic: The Gathering style trading cards for AI agents. Can forge individual agent cards, forge all cards at once, or link to the visual gallery.",
-    "toggle": "Tried CardSmith \u2713",
-    "copies": [
-      {
-        "label": "Try CardSmith",
-        "text": "Use the CardSmith agent to help me with something"
-      },
-      {
-        "label": "What can CardSmith do?",
-        "text": "Tell me everything about the CardSmith agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "CardSmith agent, parameters: action, agent_name",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fcardsmith_agent",
-    "rar_name": "@borg/cardsmith_agent"
-  },
-  {
-    "id": "agent-demo-video",
-    "phase": 3,
-    "emoji": "\u2728",
-    "title": "Demo Video",
-    "time": "5 min",
-    "desc": "The Demo Video agent.",
-    "toggle": "Tried Demo Video \u2713",
-    "copies": [
-      {
-        "label": "What can Demo Video do?",
-        "text": "Tell me everything about the Demo Video agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "Demo Video agent, parameters: see description",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fdemo_video_agent",
-    "rar_name": "@borg/demo_video_agent"
-  },
-  {
-    "id": "agent-experiment",
-    "phase": 3,
-    "emoji": "\u2728",
-    "title": "Experiment",
-    "time": "5 min",
-    "desc": "A/B tests across brainstem personalities. Sends the same prompt to",
-    "toggle": "Tried Experiment \u2713",
-    "copies": [
-      {
-        "label": "Try Experiment",
-        "text": "Use the Experiment agent to help me with something"
-      },
-      {
-        "label": "What can Experiment do?",
-        "text": "Tell me everything about the Experiment agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "Experiment agent, parameters: action, prompt, prompts, personas",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fexperiment_agent",
-    "rar_name": "@borg/experiment_agent"
-  },
-  {
-    "id": "agent-githubtrending",
-    "phase": 3,
-    "emoji": "\u2728",
-    "title": "GitHubTrending",
-    "time": "5 min",
-    "desc": "Fetches trending repositories from GitHub. Returns repo name, description, language, stars, and forks. Optionally filter by programming language or date range.",
-    "toggle": "Tried GitHubTrending \u2713",
-    "copies": [
-      {
-        "label": "Try GitHubTrending",
-        "text": "Use the GitHubTrending agent to help me with something"
-      },
-      {
-        "label": "What can GitHubTrending do?",
-        "text": "Tell me everything about the GitHubTrending agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "GitHubTrending agent, parameters: language, since",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fgithub_trending_agent",
-    "rar_name": "@borg/github_trending_agent"
-  },
-  {
-    "id": "agent-hackernews",
-    "phase": 3,
-    "emoji": "\ud83d\udd2c",
-    "title": "HackerNews",
-    "time": "5 min",
-    "desc": "Fetches top stories from Hacker News using the HN Firebase API (https://hacker-news.firebaseio.com/v0). Gets story IDs from topstories.json then fetches each item. Returns title, url, score, author.",
-    "toggle": "Tried HackerNews \u2713",
-    "copies": [
-      {
-        "label": "Try HackerNews",
-        "text": "Use the HackerNews agent to help me with something"
-      },
-      {
-        "label": "What can HackerNews do?",
-        "text": "Tell me everything about the HackerNews agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "HackerNews agent, parameters: query, url",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fhacker_news_agent",
-    "rar_name": "@borg/hacker_news_agent"
-  },
-  {
-    "id": "agent-holonaming",
-    "phase": 3,
-    "emoji": "\ud83d\udd27",
-    "title": "HoloNaming",
-    "time": "5 min",
-    "desc": "HOLO\\'s service registry and gateway. Generates Star Trek-themed",
-    "toggle": "Tried HoloNaming \u2713",
-    "copies": [
-      {
-        "label": "What can HoloNaming do?",
-        "text": "Tell me everything about the HoloNaming agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "HoloNaming agent, parameters: see description",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fholo_naming_agent",
-    "rar_name": "@borg/holo_naming_agent"
-  },
-  {
-    "id": "agent-personafactory",
-    "phase": 3,
-    "emoji": "\ud83c\udfa8",
-    "title": "PersonaFactory",
-    "time": "5 min",
-    "desc": "Creates new brainstem personalities from natural language descriptions.",
-    "toggle": "Tried PersonaFactory \u2713",
-    "copies": [
-      {
-        "label": "Try PersonaFactory",
-        "text": "Use the PersonaFactory agent to help me with something"
-      },
-      {
-        "label": "What can PersonaFactory do?",
-        "text": "Tell me everything about the PersonaFactory agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "PersonaFactory agent, parameters: action, personality, expertise, assertiveness, social_style",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fpersona_factory_agent",
-    "rar_name": "@borg/persona_factory_agent"
-  },
-  {
-    "id": "agent-telegram",
-    "phase": 3,
-    "emoji": "\ud83d\udd27",
-    "title": "Telegram",
-    "time": "5 min",
-    "desc": "The Telegram agent.",
-    "toggle": "Tried Telegram \u2713",
-    "copies": [
-      {
-        "label": "What can Telegram do?",
-        "text": "Tell me everything about the Telegram agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "Telegram agent, parameters: see description",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Ftelegram_agent",
-    "rar_name": "@borg/telegram_agent"
-  },
-  {
-    "id": "agent-tinyworld",
-    "phase": 3,
-    "emoji": "\u2694\ufe0f",
-    "title": "TinyWorld",
-    "time": "5 min",
-    "desc": "Multi-agent simulation environment. Makes brainstem personalities",
-    "toggle": "Tried TinyWorld \u2713",
-    "copies": [
-      {
-        "label": "Try TinyWorld",
-        "text": "Use the TinyWorld agent to help me with something"
-      },
-      {
-        "label": "What can TinyWorld do?",
-        "text": "Tell me everything about the TinyWorld agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "TinyWorld agent, parameters: action, topic, personas, rounds",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Ftinyworld_agent",
-    "rar_name": "@borg/tinyworld_agent"
-  },
-  {
-    "id": "agent-video",
-    "phase": 3,
-    "emoji": "\u2728",
-    "title": "Video",
-    "time": "5 min",
-    "desc": "The Video agent.",
-    "toggle": "Tried Video \u2713",
-    "copies": [
-      {
-        "label": "What can Video do?",
-        "text": "Tell me everything about the Video agent \u2014 what does it do and how do I use it?"
-      }
-    ],
-    "learn": "Video agent, parameters: see description",
-    "rar_url": "https://kody-w.github.io/RAR/store.html#agent/%40borg%2Fvideo_agent",
-    "rar_name": "@borg/video_agent"
+    "rar_name": "@borg/borg_agent",
+    "stuck": "Give Borg any GitHub URL containing a *_agent.py file. It will clone, analyze the tech stack, and install. After assimilation, the new agent is live on your next chat — no restart required."
   },
   {
     "id": "agent-anatomy",
@@ -559,98 +372,18 @@ const CHECKPOINTS = [
   }
 ];
 const POSITIONS = [
-  {
-    "x": 4.0,
-    "y": 16.0
-  },
-  {
-    "x": 13.4,
-    "y": 38.0
-  },
-  {
-    "x": 4.0,
-    "y": 60.0
-  },
-  {
-    "x": 13.4,
-    "y": 82.0
-  },
-  {
-    "x": 21.0,
-    "y": 16.0
-  },
-  {
-    "x": 28.7,
-    "y": 82.0
-  },
-  {
-    "x": 41.3,
-    "y": 16.0
-  },
-  {
-    "x": 73.7,
-    "y": 21.5
-  },
-  {
-    "x": 41.3,
-    "y": 27.0
-  },
-  {
-    "x": 73.7,
-    "y": 32.5
-  },
-  {
-    "x": 41.3,
-    "y": 38.0
-  },
-  {
-    "x": 73.7,
-    "y": 43.5
-  },
-  {
-    "x": 41.3,
-    "y": 49.0
-  },
-  {
-    "x": 73.7,
-    "y": 54.5
-  },
-  {
-    "x": 41.3,
-    "y": 60.0
-  },
-  {
-    "x": 73.7,
-    "y": 65.5
-  },
-  {
-    "x": 41.3,
-    "y": 71.0
-  },
-  {
-    "x": 73.7,
-    "y": 76.5
-  },
-  {
-    "x": 41.3,
-    "y": 82.0
-  },
-  {
-    "x": 86.6,
-    "y": 16.0
-  },
-  {
-    "x": 96.0,
-    "y": 38.0
-  },
-  {
-    "x": 86.6,
-    "y": 60.0
-  },
-  {
-    "x": 96.0,
-    "y": 82.0
-  }
+  {"x": 5, "y": 12},
+  {"x": 28.3, "y": 37.3},
+  {"x": 5, "y": 62.7},
+  {"x": 28.3, "y": 88},
+  {"x": 41.7, "y": 12},
+  {"x": 41.7, "y": 88},
+  {"x": 58.3, "y": 12},
+  {"x": 58.3, "y": 88},
+  {"x": 71.7, "y": 12},
+  {"x": 95, "y": 37.3},
+  {"x": 71.7, "y": 62.7},
+  {"x": 95, "y": 88}
 ];
 const STORAGE_KEY = 'brainstem-quest-' + btoa('RAPP Brainstem').slice(0,12);
 let state = loadState();
@@ -674,7 +407,80 @@ function celebrate(id){const idx=CHECKPOINTS.findIndex(c=>c.id===id),pos=POSITIO
 function spawnParticles(cx,cy,count){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff'];for(let i=0;i<count;i++){const el=document.createElement('div');el.className='particle';el.style.left=cx+'px';el.style.top=cy+'px';el.style.background=colors[i%colors.length];document.body.appendChild(el);const angle=Math.random()*Math.PI*2,dist=40+Math.random()*60,dx=Math.cos(angle)*dist,dy=Math.sin(angle)*dist;el.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(0)',opacity:0}],{duration:600+Math.random()*400,easing:'cubic-bezier(.4,0,.2,1)'}).onfinish=()=>el.remove()}}
 function rocketAnimation(){const el=document.createElement('div');el.className='rocket-anim';el.textContent='🚀';el.style.left='-50px';el.style.bottom='60%';document.body.appendChild(el);el.animate([{transform:'translate(0,0) rotate(-30deg)',opacity:1},{transform:'translate('+(window.innerWidth+100)+'px,-'+(window.innerHeight/2)+'px) rotate(-30deg)',opacity:.8}],{duration:1400,easing:'cubic-bezier(.25,.1,.25,1)'}).onfinish=()=>el.remove()}
 function confettiExplosion(){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff','#f85149','#fff'];for(let i=0;i<60;i++){const el=document.createElement('div');el.className='confetti';el.style.background=colors[i%colors.length];el.style.left=Math.random()*window.innerWidth+'px';el.style.top='-20px';el.style.width=(6+Math.random()*8)+'px';el.style.height=(10+Math.random()*12)+'px';el.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(el);const x=(Math.random()-.5)*200,spin=Math.random()*720-360;el.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+x+'px,'+(window.innerHeight+40)+'px) rotate('+spin+'deg)',opacity:.6}],{duration:2000+Math.random()*1500,easing:'cubic-bezier(.25,.1,.25,1)',delay:Math.random()*300}).onfinish=()=>el.remove()}}
-function showBanner(){const b=document.getElementById('banner');b.classList.add('show');setTimeout(()=>b.classList.remove('show'),4000)}
+function showBanner(){const b=document.getElementById('banner');b.classList.add('show');renderBadge();document.getElementById('badgeWrap').style.display='flex'}
+function renderBadge(){
+  const c=document.getElementById('badgeCanvas'),ctx=c.getContext('2d');
+  const w=600,h=315;
+  // Dark gradient background
+  const bg=ctx.createLinearGradient(0,0,w,h);
+  bg.addColorStop(0,'#0d1117');bg.addColorStop(0.5,'#161b22');bg.addColorStop(1,'#0d1117');
+  ctx.fillStyle=bg;ctx.beginPath();ctx.roundRect(0,0,w,h,16);ctx.fill();
+  // Accent border glow
+  ctx.strokeStyle='#1a7f37';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(1,1,w-2,h-2,16);ctx.stroke();
+  // Subtle grid pattern
+  ctx.strokeStyle='rgba(88,166,255,0.04)';ctx.lineWidth=1;
+  for(let x=0;x<w;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+  for(let y=0;y<h;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+  // Top accent bar
+  const bar=ctx.createLinearGradient(0,0,w,0);
+  bar.addColorStop(0,'#0969da');bar.addColorStop(0.5,'#1a7f37');bar.addColorStop(1,'#d29922');
+  ctx.fillStyle=bar;ctx.fillRect(0,0,w,3);
+  // Big emoji
+  ctx.font='64px serif';ctx.textAlign='center';ctx.fillText('🧬',300,80);
+  // Title
+  ctx.font='bold 28px "Segoe UI",system-ui,sans-serif';
+  ctx.fillStyle='#e6edf3';ctx.fillText('RAPP Brainstem',300,125);
+  // Subtitle
+  ctx.font='18px "Segoe UI",system-ui,sans-serif';
+  ctx.fillStyle='#3fb950';ctx.fillText('✅ Training Quest Complete',300,158);
+  // Stats line
+  ctx.font='14px "Segoe UI",system-ui,sans-serif';
+  ctx.fillStyle='#8b949e';
+  ctx.fillText('12 Checkpoints · 4 Phases · Local-First AI Agent Server',300,188);
+  // Date
+  const d=new Date();
+  const dateStr=d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  ctx.fillText('Completed '+dateStr,300,215);
+  // Divider line
+  const div=ctx.createLinearGradient(100,0,500,0);
+  div.addColorStop(0,'transparent');div.addColorStop(0.5,'#30363d');div.addColorStop(1,'transparent');
+  ctx.strokeStyle=div;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,235);ctx.lineTo(500,235);ctx.stroke();
+  // Footer
+  ctx.font='bold 13px "Segoe UI",system-ui,sans-serif';
+  ctx.fillStyle='#58a6ff';ctx.fillText('blazingbeard.github.io',300,262);
+  ctx.font='12px "Segoe UI",system-ui,sans-serif';
+  ctx.fillStyle='#6e7681';ctx.fillText('Powered by RAPP Brainstem · Built with 🔥 by BlazingBeard',300,285);
+}
+function downloadBadge(){
+  const c=document.getElementById('badgeCanvas');
+  const a=document.createElement('a');
+  a.download='rapp-brainstem-quest-complete.png';
+  a.href=c.toDataURL('image/png');
+  a.click();
+}
+function shareBadge(){
+  const c=document.getElementById('badgeCanvas');
+  c.toBlob(function(blob){
+    if(navigator.share&&navigator.canShare){
+      const file=new File([blob],'rapp-brainstem-quest-complete.png',{type:'image/png'});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({
+          title:'RAPP Brainstem Training Quest Complete!',
+          text:'I just completed the RAPP Brainstem Training Quest — 12 checkpoints, 4 phases, built my own local AI agent server! 🧬🔥\n\nTry it: https://blazingbeard.github.io/quests/rapp-brainstem.html',
+          files:[file]
+        }).catch(()=>{});
+        return;
+      }
+    }
+    // Fallback: copy share text
+    const text='I just completed the RAPP Brainstem Training Quest — 12 checkpoints, 4 phases, built my own local AI agent server! 🧬🔥\n\nTry it: https://blazingbeard.github.io/quests/rapp-brainstem.html';
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn=document.querySelector('.badge-btn.share');
+      const orig=btn.innerHTML;btn.innerHTML='✓ Copied to clipboard!';
+      setTimeout(()=>btn.innerHTML=orig,2000);
+    });
+  },'image/png');
+}
 function resetProgress(){if(!confirm('Reset all progress? This cannot be undone.'))return;state={completed:{}};saveState();closePanel();render()}
 render();window.addEventListener('resize',()=>render());
 </script>
