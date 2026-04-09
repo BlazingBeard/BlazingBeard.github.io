@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Native Development — Training Quest</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#eaecf0;--bg2:#f4f5f7;--blue:#0969da;--green:#1a7f37;--orange:#bf8700;--red:#cf222e;--text:#24292f;--text-muted:#57606a;--border:#c5ccd6;--panel-w:460px;--top-bar:52px}
+  html,body{height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#dfe2e6 0%,var(--bg) 100%);color:var(--text)}
+  .top-bar{position:fixed;top:0;left:0;right:0;height:var(--top-bar);background:rgba(234,236,240,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;z-index:100}
+  .top-bar .title{font-size:15px;font-weight:600;white-space:nowrap}.top-bar .title span{color:var(--blue)}
+  .progress-wrap{flex:1;max-width:420px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .progress-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .progress-label{font-size:13px;color:var(--text-muted);min-width:90px;text-align:right}
+  .btn-reset{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;transition:all .2s}.btn-reset:hover{border-color:var(--red);color:var(--red)}
+  .quest-map{position:fixed;top:var(--top-bar);left:0;right:0;bottom:0;overflow:hidden}
+  .quest-map svg.path-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .phase-label{position:absolute;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--text-muted);opacity:.55;pointer-events:none}
+  .phase-label.p1{top:82px;left:1%}.phase-label.p2{top:82px;left:21.0%}.phase-label.p3{top:82px;left:45.0%}.phase-label.p4{top:82px;left:69.0%}
+  .phase-divider{position:absolute;top:var(--top-bar);bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--border) 15%,var(--border) 85%,transparent);opacity:.6;pointer-events:none}
+  .phase-divider.d1{left:20.0%}.phase-divider.d2{left:44.0%}.phase-divider.d3{left:68.0%}
+  .node{position:absolute;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:10;transform:translate(-50%,-50%)}
+  .node .ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--border);transition:all .35s}
+  .node .inner{width:100%;height:100%;border-radius:50%;background:#f0f1f3;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;z-index:1;transition:all .35s;border:2px solid var(--border)}
+  .node.active .ring{border-color:var(--blue);box-shadow:0 0 20px rgba(88,166,255,.35);animation:pulse-ring 2s infinite}
+  .node.active .inner{border-color:var(--blue);background:rgba(88,166,255,.1);transform:scale(1.12)}.node.active .lock{display:none}
+  .node.complete .ring{border-color:var(--green);box-shadow:0 0 12px rgba(63,185,80,.25)}
+  .node.complete .inner{border-color:var(--green);background:rgba(63,185,80,.15)}.node.complete .lock{display:none}
+  .node:hover{transform:translate(-50%,-50%) scale(1.1)}
+  .node .label{position:absolute;top:calc(100% + 10px);white-space:nowrap;font-size:11px;font-weight:600;color:var(--text-muted);text-align:center;pointer-events:none;transition:color .3s}
+  .node.active .label{color:var(--blue)}.node.complete .label{color:var(--green)}
+  @keyframes pulse-ring{0%,100%{box-shadow:0 0 20px rgba(88,166,255,.25)}50%{box-shadow:0 0 32px rgba(88,166,255,.5)}}
+  .check-icon{display:none}.node.complete .check-icon{display:block}.node.complete .emoji{display:none}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}.overlay.open{opacity:1;pointer-events:auto}
+  .panel{position:fixed;top:0;right:0;bottom:0;width:var(--panel-w);max-width:92vw;background:#f0f1f3;border-left:1px solid var(--border);z-index:210;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.08)}.panel.open{transform:translateX(0)}
+  .panel-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+  .panel-header .emoji-big{font-size:32px;line-height:1}.panel-header .meta{flex:1}.panel-header .meta h2{font-size:18px;font-weight:700;margin-bottom:4px}.panel-header .meta .time{font-size:12px;color:var(--text-muted)}
+  .panel-close{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;padding:4px;line-height:1}.panel-close:hover{color:var(--text)}
+  .panel-body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:16px}.panel-body .desc{font-size:14px;line-height:1.55;color:var(--text)}
+  .copy-block{position:relative;background:#e4e6ea;border:1px solid var(--border);border-radius:8px;padding:12px 44px 12px 14px;font-family:'Cascadia Code','Fira Code',monospace;font-size:12.5px;line-height:1.5;color:var(--text);white-space:pre-wrap;word-break:break-word}
+  .copy-btn{position:absolute;top:8px;right:8px;background:#d5d8dd;border:none;color:var(--text-muted);width:30px;height:30px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}.copy-btn:hover{background:var(--blue);color:#fff}.copy-btn.copied{background:var(--green);color:#fff}
+  .toggle-done{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;border:2px solid var(--border);background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);transition:all .25s;width:100%}
+  .toggle-done .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
+  .toggle-done.checked{border-color:var(--green);background:rgba(63,185,80,.08)}.toggle-done.checked .dot{background:var(--green);border-color:var(--green)}
+  .substeps{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+  .substeps li{font-size:13px;color:var(--text-muted);padding-left:20px;position:relative;line-height:1.5}
+  .substeps li::before{content:'';position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%;border:2px solid var(--border)}
+  .stuck-toggle{background:none;border:none;color:var(--orange);font-size:13px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px}.stuck-toggle:hover{text-decoration:underline}
+  .stuck-content{max-height:0;overflow:hidden;transition:max-height .3s;font-size:13px;color:var(--text-muted);line-height:1.6}.stuck-content.open{max-height:500px}.stuck-content p{margin-top:8px}
+  .copy-group{display:flex;flex-direction:column;gap:8px}
+  .particle{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:999}
+  .confetti{position:fixed;width:10px;height:16px;pointer-events:none;z-index:999;border-radius:2px}
+  .rocket-anim{position:fixed;font-size:40px;z-index:999;pointer-events:none}
+  .banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(240,241,243,.97);border:2px solid var(--green);border-radius:16px;padding:32px 56px;text-align:center;z-index:999;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 12px 48px rgba(0,0,0,.15)}.banner.show{transform:translate(-50%,-50%) scale(1)}.banner h1{font-size:28px;margin-bottom:8px}.banner p{color:var(--text-muted);font-size:15px}
+  .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-track{background:transparent}.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .rar-card{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(59,130,246,.12));border:1px solid rgba(139,92,246,.3);text-decoration:none;transition:all .2s;cursor:pointer;margin-top:4px}
+  .rar-card:hover{border-color:rgba(139,92,246,.6);background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(59,130,246,.2));transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.15)}
+  .rar-card-icon{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .rar-card-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .rar-card-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+  .rar-card-name{font-size:14px;color:var(--text-bright);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rar-card-arrow{margin-left:auto;color:var(--text-muted);font-size:18px;flex-shrink:0}
+  .credit{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-muted);opacity:.6;pointer-events:none;letter-spacing:.3px;z-index:5}
+  /* ── Mobile ── */
+  @media(max-width:768px){
+    html,body{overflow:auto;height:auto}
+    .top-bar{padding:0 12px;height:48px}
+    .top-bar .title{font-size:13px}
+    .progress-wrap{max-width:none;gap:6px}
+    .progress-label{min-width:60px;font-size:12px}
+    .btn-reset{padding:4px 8px;font-size:11px}
+    :root{--top-bar:48px}
+    .quest-map,.phase-label,.phase-divider,.path-svg{display:none!important}
+    #mobileList{display:flex;flex-direction:column;padding:60px 16px 80px;gap:0}
+    .m-phase-header{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);padding:20px 0 10px;opacity:.7}
+    .m-phase-header:first-child{padding-top:0}
+    .m-item{display:flex;align-items:center;gap:14px;padding:14px 0;position:relative;cursor:pointer}
+    .m-item::before{content:'';position:absolute;left:24px;top:0;bottom:0;width:2px;background:var(--border);z-index:0}
+    .m-item:last-child::before{bottom:50%}
+    .m-phase-header+.m-item::before{top:50%}
+    .m-node{width:48px;height:48px;border-radius:50%;background:#f0f1f3;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;z-index:1;transition:all .3s}
+    .m-item.complete .m-node{border-color:var(--green);background:rgba(63,185,80,.15)}
+    .m-item.active .m-node{border-color:var(--blue);background:rgba(88,166,255,.1);box-shadow:0 0 12px rgba(88,166,255,.3)}
+    .m-item.locked .m-node{opacity:.5}
+    .m-text{flex:1;min-width:0}
+    .m-text .m-title{font-size:15px;font-weight:600;color:var(--text)}
+    .m-item.complete .m-title{color:var(--green)}
+    .m-item.active .m-title{color:var(--blue)}
+    .m-item.locked .m-title{color:var(--text-muted)}
+    .m-text .m-time{font-size:12px;color:var(--text-muted)}
+    .m-check{color:var(--green);font-size:18px;flex-shrink:0;opacity:0;transition:opacity .3s}
+    .m-item.complete .m-check{opacity:1}
+    .panel{width:100%;max-width:100%;border-left:none;border-radius:16px 16px 0 0;top:auto;bottom:0;max-height:85vh;transform:translateY(100%);box-shadow:0 -4px 24px rgba(0,0,0,.12)}.panel.open{transform:translateY(0)}
+    .panel-header{padding:16px}.panel-body{padding:16px;gap:12px}
+    .banner{padding:20px 24px}.banner h1{font-size:22px}.banner p{font-size:13px}
+    .badge-wrap canvas{max-width:280px}
+    .credit{position:relative;padding:20px 0;text-align:center;opacity:.6}
+  }
+  @media(min-width:769px){
+    #mobileList{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="title"><span>AI-Native Development</span> — Training Quest</div>
+  <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div><div class="progress-label" id="progressLabel">0 of 25</div></div>
+  <button class="btn-reset" onclick="resetProgress()">Reset Progress</button>
+</div>
+<div class="phase-label p1">🛠 Setup & First Build</div>
+<div class="phase-label p2">🛡 Rules & Guardrails</div>
+<div class="phase-label p3">🤖 Agents & Folder Rules</div>
+<div class="phase-label p4">🏆 Skills & Capstone</div>
+<div class="phase-divider d1"></div><div class="phase-divider d2"></div><div class="phase-divider d3"></div>
+<div class="quest-map" id="questMap"><svg class="path-svg" id="pathSvg" preserveAspectRatio="none"></svg></div>
+<div id="mobileList"></div>
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel"><div class="panel-header"><div class="emoji-big" id="panelEmoji"></div><div class="meta"><h2 id="panelTitle"></h2><div class="time" id="panelTime"></div></div><button class="panel-close" onclick="closePanel()">✕</button></div><div class="panel-body" id="panelBody"></div></div>
+<div class="banner" id="banner"><h1>🎓 AI-Native Developer!</h1><p>You’ve mastered AI-native development.<br>Go build something amazing.</p></div>
+<div class="credit">AI-Native Development — Training Quest · Generated 2026-04-09 09:28</div>
+<script>
+const CHECKPOINTS = [
+  {
+    "id": "setup-vscode",
+    "phase": 1,
+    "emoji": "\ud83d\udee0",
+    "title": "Set Up VS Code + Copilot",
+    "time": "5 min",
+    "desc": "Install VS Code and GitHub Copilot extension. Enable Agent Mode: open the chat sidebar (Ctrl+Shift+I), click the agent picker, and select Agent. This lets Copilot create and edit files \u2014 not just suggest code.",
+    "toggle": "Agent Mode is enabled \u2713",
+    "copies": [
+      {
+        "label": "Download VS Code",
+        "text": "https://code.visualstudio.com"
+      },
+      {
+        "label": "Open Chat shortcut",
+        "text": "Ctrl+Shift+I (Windows) / Cmd+Shift+I (Mac)"
+      }
+    ],
+    "stuck": "Make sure you have a GitHub Copilot subscription (free tier works). After installing the extension, sign in with your GitHub account. The Agent option appears in the mode picker at the bottom of the chat input. Agent mode is different from Ask (questions only) and Edit (targeted changes) \u2014 it lets Copilot plan and execute multi-step tasks autonomously. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 0: Getting Started</a>",
+    "learn": "Agent Mode lets Copilot plan and execute multi-step tasks, creating and editing files autonomously. Different from Ask (questions only) or Edit (targeted changes)."
+  },
+  {
+    "id": "create-project",
+    "phase": 1,
+    "emoji": "\ud83d\udcc1",
+    "title": "Create Project Structure",
+    "time": "3 min",
+    "desc": "Create a new folder for your project and let AI set up the file structure. You\u2019ll get specs/, app/, and README.md \u2014 all created by Copilot from a single prompt.",
+    "toggle": "Project structure created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #1: Create structure",
+        "text": "Create this folder and file structure in my project. Make all the files empty for now:\n\nspecs/PRD.md\nspecs/Tasks.md\napp/index.html\nREADME.md\n\nIf any folders don\u2019t exist, create them. Don\u2019t ask me questions\u2014just create everything."
+      }
+    ],
+    "stuck": "Open VS Code, go to File \u2192 Open Folder, create a new empty folder, then paste the prompt into Agent chat. You should see specs/ and app/ folders appear in the sidebar with empty files inside. If nothing happens, make sure you\u2019re in Agent mode (not Ask or Edit). \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 1, Steps 1\u20133</a>",
+    "learn": "This is the core AI-native pattern: describe what you want, AI makes it happen."
+  },
+  {
+    "id": "write-requirements",
+    "phase": 1,
+    "emoji": "\ud83d\udcdd",
+    "title": "Write Requirements with AI",
+    "time": "5 min",
+    "desc": "Tell AI what you want to build. It writes a proper PRD (Product Requirements Document) in specs/PRD.md with numbered requirements (R1, R2, etc.), features, and sample data.",
+    "toggle": "PRD.md has requirements \u2713",
+    "copies": [
+      {
+        "label": "Prompt #2: Write PRD",
+        "text": "Write a simple project description in specs/PRD.md for a prototype.\n\nInclude:\n- What the project is (2-3 sentences)\n- 5-6 specific features it needs\n- What sample data to use\n\nMake status obvious with colors: green = good, yellow = warning, red = critical.\nKeep it under half a page. Simple language."
+      }
+    ],
+    "stuck": "If the PRD is too complex, tell Copilot: \u2018Make the features simpler\u2019 or \u2018Remove the section about X.\u2019 Iterate until it matches your vision. Open specs/PRD.md to check \u2014 you should see numbered requirements (R1, R2, etc.) with clear descriptions. AI fills in details from your high-level idea; you give direction, AI adds structure. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 1, Step 4</a>",
+    "learn": "AI fills in the details from your high-level idea. You give direction, AI adds structure and specificity."
+  },
+  {
+    "id": "create-tasks",
+    "phase": 1,
+    "emoji": "\ud83d\udccb",
+    "title": "Create a Task List",
+    "time": "3 min",
+    "desc": "AI reads your PRD and breaks it into small, actionable tasks with checkboxes and verification steps. This becomes your build checklist.",
+    "toggle": "Tasks.md has checklist \u2713",
+    "copies": [
+      {
+        "label": "Prompt #3: Create tasks",
+        "text": "Read specs/PRD.md and create a task checklist in specs/Tasks.md.\n\nRules:\n- Each task should be small (one step)\n- Each task maps to requirement(s)\n- Each task has a \"Done when:\" verification line\n- Use checkbox format: [ ] Task description\n- Keep under 7 tasks"
+      }
+    ],
+    "stuck": "Open specs/Tasks.md to verify. Each task should have a checkbox, description, requirement mapping (like \u2018Satisfies: R1, R2\u2019), and a \u2018Done when:\u2019 verification line. Structured task lists produce better results than asking AI to \u2018build everything at once.\u2019 \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 1, Step 5</a>",
+    "learn": "Tasks guide AI\u2019s work. Structured task lists produce better results than asking AI to \u2018build everything at once.\u2019"
+  },
+  {
+    "id": "build-prototype",
+    "phase": 1,
+    "emoji": "\ud83d\ude80",
+    "title": "Watch AI Build Your App",
+    "time": "10 min",
+    "desc": "The magic moment \u2014 AI reads your task list, writes all the code, and creates a working web page with sample data and color-coded status. No coding required.",
+    "toggle": "Working prototype in browser \u2713",
+    "copies": [
+      {
+        "label": "Prompt #4: Build it",
+        "text": "Read specs/Tasks.md and implement the first 3 tasks by editing app/index.html.\n\nI don\u2019t know how to write code, so generate everything for me. Make it professional with modern styling.\n\nAfter you create the file, mark those tasks as complete in specs/Tasks.md by changing [ ] to [x]."
+      }
+    ],
+    "stuck": "Right-click app/index.html \u2192 Reveal in File Explorer \u2192 double-click to open in browser. If blank, tell Copilot: \u2018The page is blank. Add visible content with sample data.\u2019 Before clicking Accept, do a quick check: Does the code mention sample data? Do you see color references? AI isn\u2019t perfect \u2014 sometimes you need 2-3 attempts. Try: \u2018Create a basic HTML page with a title and sample data. Keep the styling simple.\u2019 \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 1, Steps 6\u20137</a>",
+    "learn": "You built a working app without writing code! Describe what you want in plain English \u2014 AI handles the rest."
+  },
+  {
+    "id": "add-interactivity",
+    "phase": 2,
+    "emoji": "\u26a1",
+    "title": "Add Interactive Features",
+    "time": "15 min",
+    "desc": "Make your prototype interactive: filters, detail views, editing. The key pattern is ONE TASK AT A TIME \u2014 use Prompt #7 repeatedly (4-5 times). Refresh browser after each.",
+    "toggle": "Interactive features working \u2713",
+    "copies": [
+      {
+        "label": "Prompt #5: Add requirements",
+        "text": "Update specs/PRD.md to add requirements R7-R12 for: filtering by status, detail panel on click, inline editing, and session data persistence.\n\nKeep everything already there."
+      },
+      {
+        "label": "Prompt #6: Update tasks",
+        "text": "Read updated specs/PRD.md and regenerate specs/Tasks.md.\n\nKeep tasks marked [x] as complete. Add new tasks for R7-R12. Keep total under 12."
+      },
+      {
+        "label": "Prompt #7: Next task (repeat 4-5x)",
+        "text": "Read specs/Tasks.md and find the next uncompleted task (marked with [ ]).\n\nImplement ONLY that one task.\n\nAfter implementing:\n1. Mark as [x] complete\n2. Add Progress Log entry with what changed and how to test\n\nDo not implement any other tasks."
+      }
+    ],
+    "stuck": "Run Prompt #7 repeatedly (4-5 times). Refresh browser after each run. If something breaks: \u2018The filter buttons work but the detail panel doesn\u2019t open. Fix the detail panel.\u2019 Each run adds one feature \u2014 check specs/Tasks.md to see progress logs. The key insight: one task at a time keeps things working. Asking for everything at once often produces errors. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 2: Add Interactive Features</a>",
+    "learn": "One task at a time produces more reliable results than asking AI to build everything at once."
+  },
+  {
+    "id": "handling-problems",
+    "phase": 2,
+    "emoji": "\ud83d\udd27",
+    "title": "When Things Go Wrong",
+    "time": "3 min",
+    "desc": "AI isn\u2019t perfect. Learn course-correction patterns: wrong task? \u2018Undo and implement only X.\u2019 Something broke? Describe exactly what\u2019s wrong. Not sure what changed? Ask for a bullet list.",
+    "toggle": "Know how to course-correct \u2713",
+    "copies": [
+      {
+        "label": "Wrong task",
+        "text": "Wait, I asked for [specific task]. Please undo and implement only: [paste the task]"
+      },
+      {
+        "label": "Something broke",
+        "text": "The filter buttons work but the detail panel doesn\u2019t open. Fix the detail panel without changing the filters."
+      },
+      {
+        "label": "What changed?",
+        "text": "List every change you just made in bullet points."
+      }
+    ],
+    "stuck": "Click Discard anytime and try a clearer prompt. The undo button is your friend. Start a new chat if context gets confused. If AI keeps making unwanted changes, be very specific: describe exactly what\u2019s working and exactly what\u2019s broken. AI responds better to \u2018The filter shows all items instead of just Red items\u2019 than \u2018it doesn\u2019t work.\u2019 \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 2: When Things Go Wrong</a>",
+    "learn": "Iteration is normal. Being specific about what\u2019s wrong leads to better fixes than vague \u2018fix it\u2019 prompts."
+  },
+  {
+    "id": "verify-all",
+    "phase": 2,
+    "emoji": "\u2705",
+    "title": "Let AI Verify Everything",
+    "time": "5 min",
+    "desc": "Instead of manually testing, ask AI to check every requirement against the implementation and create a verification report table with PASS/FAIL status and evidence.",
+    "toggle": "Verification report created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #8: Verify everything",
+        "text": "Read specs/PRD.md and check every requirement R1 through R12.\n\nAdd a \"Verification Report\" section at the bottom of specs/PRD.md:\n\n| Requirement | Status | Evidence |\n|-------------|--------|----------|\n| R1 | PASS or FAIL | How you verified it |\n\nIf any FAIL: explain what\u2019s missing, propose smallest fix, implement it."
+      }
+    ],
+    "stuck": "Open specs/PRD.md and scroll to the bottom. Most requirements should show PASS. If any show FAIL, AI will have proposed and implemented fixes automatically. This self-correcting workflow catches issues before manual testing \u2014 AI identifies its own gaps and fixes them. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 2, Step 11</a>",
+    "learn": "AI can identify its own gaps and fix them. This self-correcting loop catches issues before manual testing."
+  },
+  {
+    "id": "create-rules",
+    "phase": 2,
+    "emoji": "\ud83d\udee1",
+    "title": "Create AI Guardrails",
+    "time": "5 min",
+    "desc": "Without rules, AI can add databases, frameworks, or logins you never asked for. Create .github/copilot-instructions.md \u2014 a rules file AI reads automatically every conversation.",
+    "toggle": "Rules file created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #9: Create rules",
+        "text": "Create .github/copilot-instructions.md with rules:\n\nProject Overview: prototype, requirements in specs/PRD.md, tasks in specs/Tasks.md, app in app/index.html.\n\nHow to Make Changes: check PRD first, update Tasks.md, one task at a time.\n\nDo NOT: add backend/database, login/accounts, external APIs/services, secret keys, frameworks like React/Vue, changes not in requirements."
+      }
+    ],
+    "stuck": "This file is read automatically \u2014 no need to reference it in prompts. It persists across chat sessions. Check .github/copilot-instructions.md was created with 4 sections: Project Overview, How to Make Changes, Do NOT, and When Asked to Add Features. Pro tip: Ask Copilot to \u2018analyze this project and generate a copilot-instructions.md\u2019 \u2014 then customize it. Without rules, AI might add databases, frameworks, or login screens you never asked for! \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 3: Teach AI Your Rules</a>",
+    "learn": "Set constraints once, AI respects them forever. No reminding needed."
+  },
+  {
+    "id": "test-rules",
+    "phase": 2,
+    "emoji": "\ud83e\uddea",
+    "title": "Test Your Rules Work",
+    "time": "3 min",
+    "desc": "Ask for features that should be blocked (login, database, AI predictions). Watch Copilot refuse based on your rules and suggest safer alternatives.",
+    "toggle": "AI followed the rules \u2713",
+    "copies": [
+      {
+        "label": "Prompt #10: Test rules",
+        "text": "I want to add:\n- User login system\n- Database to store data\n- AI that predicts outcomes\n\nTell me: Which are allowed? Which are NOT, and why? What could you add instead that follows the rules?\n\nDon\u2019t make changes yet."
+      }
+    ],
+    "stuck": "AI should identify all three requests (login, database, AI predictions) as blocked. If it doesn\u2019t refuse, check .github/copilot-instructions.md has the \u2018Do NOT\u2019 section. Try starting a new chat \u2014 old context may override your rules. The rules file is an open standard that works across AI tools, not just GitHub Copilot. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 3, Step 14</a>",
+    "learn": "AI guardrails prevent scope creep and unwanted complexity \u2014 essential for project control."
+  },
+  {
+    "id": "create-agents-md",
+    "phase": 2,
+    "emoji": "\ud83d\udcc4",
+    "title": "Create AGENTS.md",
+    "time": "5 min",
+    "desc": "AGENTS.md provides project context for the GitHub Copilot coding agent (autonomous PR creator). It\u2019s an open standard used by 60,000+ projects. Think of it as onboarding docs for an AI teammate.",
+    "toggle": "AGENTS.md created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #11: Create AGENTS.md",
+        "text": "Create AGENTS.md at the project root.\n\nInclude:\n1. PROJECT CONTEXT \u2014 prototype, frontend-only\n2. BUILD AND TEST \u2014 no build step, open app/index.html in browser\n3. CODING STANDARDS \u2014 vanilla JS only, single HTML file\n4. WHAT NOT TO DO \u2014 no backend, no auth, no packages\n\nKeep it concise."
+      }
+    ],
+    "stuck": "AGENTS.md lives at the project root (not in .github/). It complements copilot-instructions.md: AGENTS.md = project context (build, test, architecture), copilot-instructions.md = coding rules (do/don\u2019t do). Both are read automatically. AGENTS.md is an open standard used by 60,000+ open source projects \u2014 it works with GitHub Copilot, Cursor, Windsurf, Devin, and more. Your instructions aren\u2019t locked to one tool. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 3, Step 15 & Part 5: AGENTS.md Deep Dive</a>",
+    "learn": "Two files, different purposes: AGENTS.md for project context (build, test, architecture). copilot-instructions.md for detailed rules (do/don\u2019t do). Both read automatically."
+  },
+  {
+    "id": "folder-rules",
+    "phase": 3,
+    "emoji": "\ud83d\udcc2",
+    "title": "Folder-Specific Rules",
+    "time": "10 min",
+    "desc": "One rulebook can\u2019t handle all contexts. Create path-specific instructions in .github/instructions/ \u2014 different rules for frontend (app/), docs (specs/), and tests (tests/).",
+    "toggle": "Three instruction files created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #12: Create folder",
+        "text": "Create .github/instructions/ with three empty files:\napp.instructions.md\nspecs.instructions.md\ntests.instructions.md"
+      },
+      {
+        "label": "Prompt #13: Frontend rules",
+        "text": "Edit .github/instructions/app.instructions.md:\n\n---\napplyTo: \"app/**\"\n---\n\n# Frontend Code Instructions\n- Vanilla JavaScript only (no frameworks)\n- Modern ES6+ syntax\n- CSS variables for colors\n- Mobile-first responsive\n- Keyboard accessible\n- Semantic HTML"
+      },
+      {
+        "label": "Prompt #14-15: Specs + test rules",
+        "text": "Edit specs.instructions.md (applyTo: \"specs/**\") \u2014 under 1 page, simple language, numbered requirements.\n\nEdit tests.instructions.md (applyTo: \"tests/**\") \u2014 naming: should_[behavior]_when_[condition], arrange/act/assert, every requirement needs a test."
+      }
+    ],
+    "stuck": "Each file needs YAML frontmatter: ---\\napplyTo: \u201capp/**\u201d\\n--- at the top. The applyTo pattern determines which files trigger these rules. Frontend rules enforce vanilla JS + accessibility; specs rules enforce simple language + numbering; test rules enforce naming conventions like should_[behavior]_when_[condition]. Check the References section in Copilot\u2019s responses to confirm instructions were loaded. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 4: Folder-Based Rules</a>",
+    "learn": "Context-aware AI adapts behavior per folder. Add new instruction files as your project grows."
+  },
+  {
+    "id": "test-folder-rules",
+    "phase": 3,
+    "emoji": "\ud83d\udd0d",
+    "title": "Verify Path Instructions",
+    "time": "3 min",
+    "desc": "Ask AI what rules apply to different folders. It should describe different instructions for app/ (vanilla JS) vs specs/ (simple language) vs tests/ (naming conventions).",
+    "toggle": "AI confirms different rules \u2713",
+    "copies": [
+      {
+        "label": "Prompt #16: Test path rules",
+        "text": "Before making changes, tell me:\n1. What instructions apply for app/ folder?\n2. What instructions apply for specs/ folder?\n3. Are these different?\n\nDon\u2019t make changes \u2014 just explain."
+      }
+    ],
+    "stuck": "AI should describe vanilla JS for app/ and simple language for specs/. If not, check applyTo frontmatter in each .instructions.md file. Restart the GitHub Copilot chat to reload instructions if they seem stale. As your project grows, add new instruction files for new areas \u2014 the pattern is always the same. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 4, Step 21</a>",
+    "learn": "AI now follows different rules per folder automatically. Each area gets context-aware assistance."
+  },
+  {
+    "id": "create-test-agent",
+    "phase": 3,
+    "emoji": "\ud83e\udd16",
+    "title": "Create Test Agent",
+    "time": "5 min",
+    "desc": "Your first custom agent: a QA specialist. It creates test plans, writes checklists, verifies requirements \u2014 and never touches source code. Lives at .github/agents/test-agent.agent.md.",
+    "toggle": "test-agent created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #17-18: Create test agent",
+        "text": "Create .github/agents/ folder, then create test-agent.agent.md:\n\n---\nname: test-agent\ndescription: QA specialist for testing. Creates test plans, verifies requirements.\ntools: ['read', 'search', 'edit']\n---\n\nYou are a QA Engineer. Create test plans from specs/PRD.md. Write checklists in tests/. Never modify app/ code. Map tests to requirements. Include positive and negative tests."
+      }
+    ],
+    "stuck": "Agents appear in the agent picker in VS Code chat. Check the file has valid YAML frontmatter with name, description, tools. The tools list controls what the agent can do: \u2018read\u2019, \u2018search\u2019, \u2018edit\u2019 are solid defaults. Custom agents were previously called \u2018chat modes\u2019 in earlier VS Code versions \u2014 if you see references to .chatmode.md files, they\u2019re the same feature with the old name. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 5: Custom Agents</a>",
+    "learn": "Custom agents are specialized AI personas. Each knows its job before you even ask."
+  },
+  {
+    "id": "use-test-agent",
+    "phase": 3,
+    "emoji": "\ud83d\udcca",
+    "title": "Use Test Agent",
+    "time": "5 min",
+    "desc": "Switch to test-agent in the agent picker and have it create a comprehensive test plan. It already knows QA methodology \u2014 just give it the task.",
+    "toggle": "tests/test-plan.md created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #19: (select test-agent)",
+        "text": "Create a comprehensive test plan for the project.\n\nRead specs/PRD.md first, then create tests/test-plan.md covering every requirement with steps and expected results.\n\nInclude tests for filters, detail panels, editing, and persistence."
+      }
+    ],
+    "stuck": "Switch to test-agent using the agent picker BEFORE sending the prompt. If it doesn\u2019t appear, restart VS Code. The test plan should cover requirements R1-R12 with test IDs, steps, and expected results. Check tests/test-plan.md was created. The agent already knows QA methodology \u2014 you don\u2019t need to explain what testing means. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 5, Step 26</a>",
+    "learn": "The agent created a complete test plan without you explaining what testing means \u2014 it already knows its job."
+  },
+  {
+    "id": "create-docs-agent",
+    "phase": 3,
+    "emoji": "\ud83d\udcd6",
+    "title": "Create & Use Docs Agent",
+    "time": "5 min",
+    "desc": "Create a documentation specialist that writes for non-technical users with short sentences, numbered steps, and beginner-friendly language. Then have it write a user guide.",
+    "toggle": "docs/USER-GUIDE.md created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #20: Create docs agent",
+        "text": "Create .github/agents/docs-agent.agent.md:\n\n---\nname: docs-agent\ndescription: Documentation specialist for project docs.\ntools: ['read', 'search', 'edit']\n---\n\nYou are a Technical Writer. Non-technical language, short sentences, numbered steps. Never modify code. Keep docs under 2 pages. Include Last Updated date."
+      },
+      {
+        "label": "Prompt #22: (select docs-agent)",
+        "text": "Create docs/USER-GUIDE.md explaining: what the app is for, how to view data, how to filter, how to edit details, how to reset.\n\nWrite for someone who has never seen the app."
+      }
+    ],
+    "stuck": "Switch to docs-agent in the picker before Prompt #22. Check docs/USER-GUIDE.md was created. The docs agent writes for non-technical users with short sentences, numbered steps, and a Last Updated date. Each agent has a distinct voice \u2014 docs-agent writes differently than test-agent. If the guide is too technical, tell it: \u2018Rewrite for someone who has never used a computer before.\u2019 \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 5, Steps 27 & 29</a>",
+    "learn": "Each agent has a distinct voice and expertise. Docs-agent writes differently than test-agent."
+  },
+  {
+    "id": "create-review-agent",
+    "phase": 3,
+    "emoji": "\ud83d\udd0e",
+    "title": "Create & Use Review Agent",
+    "time": "5 min",
+    "desc": "Create a code reviewer that checks quality, accessibility, and requirements compliance with severity levels (Low/Medium/High) and a verdict.",
+    "toggle": "docs/CODE-REVIEW.md created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #21: Create review agent",
+        "text": "Create .github/agents/review-agent.agent.md:\n\n---\nname: review-agent\ndescription: Code reviewer for quality standards.\ntools: ['read', 'search', 'edit']\n---\n\nSenior Developer. Check: requirements, code quality, best practices, issues, accessibility, performance.\nOutput: Summary, What\u2019s Good, Issues (with severity), Suggestions, Verdict."
+      },
+      {
+        "label": "Prompt #23: (select review-agent)",
+        "text": "Review app/index.html against specs/PRD.md, .github/copilot-instructions.md, and .github/instructions/app.instructions.md.\n\nCreate docs/CODE-REVIEW.md with findings."
+      }
+    ],
+    "stuck": "Switch to review-agent before Prompt #23. Review should have severity levels (Low/Medium/High) and specific suggestions. Output format: Summary, What\u2019s Good, Issues Found, Suggestions, Verdict (Approve / Request Changes). For a read-only reviewer, remove \u2018edit\u2019 from tools and ask it to return the review in chat instead. Advanced: Add handoffs between agents for guided workflows (e.g., planning \u2192 implementation). \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 5, Steps 28 & 30</a>",
+    "learn": "You now have 3 AI specialists: QA, docs, code review. Switch between them as needed."
+  },
+  {
+    "id": "create-verify-skill",
+    "phase": 4,
+    "emoji": "\ud83e\udde9",
+    "title": "Create Verification Skill",
+    "time": "5 min",
+    "desc": "Skills load AUTOMATICALLY when relevant \u2014 unlike agents you select manually. Create a verify-requirements skill in .github/skills/ with a SKILL.md file.",
+    "toggle": "Verification skill created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #24-25: Create skill",
+        "text": "Create .github/skills/verify-requirements/SKILL.md:\n\n---\nname: verify-requirements\ndescription: Verify implementation meets all requirements in specs/PRD.md. Use when checking features, validating implementations, creating verification reports.\n---\n\nProcess: 1) Read specs/PRD.md 2) Read app/index.html 3) Test each requirement 4) Generate report with PASS/FAIL/PARTIAL and evidence."
+      }
+    ],
+    "stuck": "SKILL.md must be uppercase. The description field is critical \u2014 include keywords that match prompts where it should activate. \u2705 Good: \u2018Verify implementation meets all requirements. Use for verification, validation, testing, checking features.\u2019 \u274c Bad: \u2018Helps with verification.\u2019 Skills load on-demand: at startup only name + description are read. Full content loads only when your request matches. In VS Code, enable the setting: chat.useAgentSkills. Skills may need 5-10 minutes to be indexed. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 6: Agent Skills</a>",
+    "learn": "Skills load on-demand: at startup only name + description are read. Full content loads only when your request matches."
+  },
+  {
+    "id": "create-more-skills",
+    "phase": 4,
+    "emoji": "\u2699\ufe0f",
+    "title": "Create Feature & Bug Skills",
+    "time": "10 min",
+    "desc": "Create add-feature skill (requirements \u2192 tasks \u2192 implement \u2192 verify) and fix-bug skill (reproduce \u2192 root cause \u2192 minimal fix \u2192 verify \u2192 document).",
+    "toggle": "Three skills created \u2713",
+    "copies": [
+      {
+        "label": "Prompt #27: Feature skill",
+        "text": "Create .github/skills/add-feature/SKILL.md \u2014 structured workflow: check/add requirement in PRD, update Tasks.md, implement following instructions, test in browser, mark complete."
+      },
+      {
+        "label": "Prompt #28: Bug fix skill",
+        "text": "Create .github/skills/fix-bug/SKILL.md \u2014 workflow: reproduce bug, identify root cause, implement minimal fix, verify fix doesn\u2019t break other features, document changes."
+      }
+    ],
+    "stuck": "Each skill needs its own folder in .github/skills/. Folder names lowercase with hyphens. File must be SKILL.md. The add-feature skill enforces: requirements first \u2192 update tasks \u2192 implement \u2192 verify \u2192 mark complete. The fix-bug skill enforces: reproduce \u2192 root cause \u2192 minimal fix \u2192 verify nothing else broke \u2192 document. Skills are an open standard (agentskills.io) \u2014 portable across GitHub Copilot, Claude, Gemini, and more. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 6, Steps 35\u201336</a>",
+    "learn": "Skills are an open standard (agentskills.io) used by GitHub Copilot, Claude, Gemini, and more. Your workflows are portable."
+  },
+  {
+    "id": "test-skills",
+    "phase": 4,
+    "emoji": "\ud83c\udfaf",
+    "title": "Test Your Skills",
+    "time": "5 min",
+    "desc": "Trigger skills by asking naturally. Check the References section in responses \u2014 your skill should appear as automatically loaded.",
+    "toggle": "Skills loaded automatically \u2713",
+    "copies": [
+      {
+        "label": "Prompt #26: Test verify",
+        "text": "Verify that my project meets all requirements. Check each requirement in specs/PRD.md against app/index.html. Create docs/VERIFICATION-REPORT.md."
+      },
+      {
+        "label": "Prompt #29: Test add-feature",
+        "text": "Add a new feature: a \u2018Last Updated\u2019 timestamp that shows when data was last modified.\n\nFollow the proper workflow for adding features."
+      }
+    ],
+    "stuck": "Look for \u2018References\u2019 in Copilot\u2019s response \u2014 your skill should appear as automatically loaded. Enable chat.useAgentSkills in VS Code settings if skills aren\u2019t loading. Be explicit in your prompt about what you want \u2014 skills match based on description keywords. Community skills: check github/awesome-copilot for pre-built skills you can download and customize. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 6, Steps 37\u201338</a>",
+    "learn": "Skills load transparently \u2014 AI matches your request to the right skill automatically."
+  },
+  {
+    "id": "capstone-requirements",
+    "phase": 4,
+    "emoji": "\ud83c\udfd7",
+    "title": "Capstone: Requirements",
+    "time": "5 min",
+    "desc": "Full workflow! Add a summary/stats feature. Start with requirements \u2014 add R13-R14 to your PRD for totals and status breakdowns that update with filters.",
+    "toggle": "R13-R14 in PRD \u2713",
+    "copies": [
+      {
+        "label": "Prompt #30: Add summary reqs",
+        "text": "Update specs/PRD.md to add:\n\nR13: Summary section showing total item count and breakdown by status (Green/Yellow/Red)\nR14: Summary updates with filters \u2014 filtered totals when filter active\n\nThen update specs/Tasks.md with corresponding tasks."
+      }
+    ],
+    "stuck": "Check specs/PRD.md for R13-R14 and specs/Tasks.md for new tasks. R13: Summary section with total count and status breakdown. R14: Summary updates when filters are active. Requirements first, always \u2014 spec-driven development ensures you build the right thing. Quick tip: Use a fast model for implementation, a reasoning model for complex logic. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 7: Putting It All Together</a>",
+    "learn": "Requirements first, always. Spec-driven development ensures you build the right thing."
+  },
+  {
+    "id": "capstone-implement",
+    "phase": 4,
+    "emoji": "\u26a1",
+    "title": "Capstone: Build & Verify",
+    "time": "10 min",
+    "desc": "Implement the summary feature, then switch to test-agent to verify R13-R14. Use a fast model for implementation, reasoning model for review.",
+    "toggle": "Summary feature working \u2713",
+    "copies": [
+      {
+        "label": "Prompt #31: Implement",
+        "text": "Implement R13 and R14. Follow the add-feature workflow:\n1. Requirements are in PRD \u2713\n2. Implement summary section in app/index.html\n3. Make it update when filters change\n4. Mark tasks complete."
+      },
+      {
+        "label": "Prompt #32: (select test-agent)",
+        "text": "Verify R13 and R14 are properly implemented.\nUpdate tests/test-plan.md with summary feature tests. Report results."
+      }
+    ],
+    "stuck": "Refresh browser to see summary. Should show totals and update with filters. Describe exactly what\u2019s wrong if something doesn\u2019t work. Use the add-feature skill workflow: requirements \u2713 \u2192 implement \u2192 test \u2192 mark complete. Switch to test-agent for verification \u2014 each step uses the right tool. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 7, Steps 41\u201342</a>",
+    "learn": "Full cycle: implement \u2192 verify \u2192 iterate. Each step uses the right tool."
+  },
+  {
+    "id": "capstone-doc-review",
+    "phase": 4,
+    "emoji": "\ud83d\udcdd",
+    "title": "Capstone: Document & Review",
+    "time": "5 min",
+    "desc": "Complete the cycle: docs-agent updates the user guide, review-agent checks code quality. This is the full AI-native development loop.",
+    "toggle": "Documented and reviewed \u2713",
+    "copies": [
+      {
+        "label": "Prompt #33: (select docs-agent)",
+        "text": "Update docs/USER-GUIDE.md with the new summary feature. Explain what it shows, how it changes with filters, how to interpret numbers."
+      },
+      {
+        "label": "Prompt #34: (select review-agent)",
+        "text": "Review changes for R13 and R14. Focus on code quality, accessibility, performance, following instructions. Create docs/CODE-REVIEW.md."
+      }
+    ],
+    "stuck": "Switch agents before each prompt. Check docs/ for outputs. The full AI-native cycle: requirements \u2192 tasks \u2192 build \u2192 verify \u2192 document \u2192 review. Use docs-agent for USER-GUIDE.md updates, review-agent for CODE-REVIEW.md quality checks. This is the workflow you\u2019ll use for every feature in every project going forward. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 7, Steps 43\u201344</a>",
+    "learn": "Full AI-native cycle complete: requirements \u2192 tasks \u2192 build \u2192 verify \u2192 document \u2192 review."
+  },
+  {
+    "id": "troubleshooting",
+    "phase": 4,
+    "emoji": "\ud83d\udd27",
+    "title": "Troubleshooting Guide",
+    "time": "5 min",
+    "desc": "Common fixes: Agent not loading? Check .agent.md frontmatter + restart VS Code. Skill not triggering? Add keywords to description + enable chat.useAgentSkills. AI ignoring rules? Start new chat. AI suggesting frameworks? Check copilot-instructions.md.",
+    "toggle": "Read the troubleshooting tips \u2713",
+    "copies": [
+      {
+        "label": "Agent not loading",
+        "text": "Check: file in .github/agents/ with .agent.md extension, valid YAML frontmatter, restart VS Code"
+      },
+      {
+        "label": "Skill not triggering",
+        "text": "Check: SKILL.md uppercase, description has keywords, chat.useAgentSkills enabled, wait 5-10 min for indexing"
+      },
+      {
+        "label": "AI ignoring rules",
+        "text": "Start new chat (/clear), check .github/copilot-instructions.md exists, be explicit in prompt"
+      },
+      {
+        "label": "Inconsistent results",
+        "text": "Use /clear to reset context, be specific, reference files explicitly, delete failed attempts"
+      }
+    ],
+    "stuck": "Before accepting AI code: Does it run? Does it do what you asked? Tested in browser? Follows instructions? No security issues? Agent not loading \u2192 check .agent.md frontmatter + restart VS Code. Skill not triggering \u2192 add keywords to description + enable chat.useAgentSkills + wait 5-10 min. AI ignoring rules \u2192 start new chat (/clear) + be explicit. AI suggesting frameworks \u2192 check copilot-instructions.md \u2018Do NOT\u2019 section. Inconsistent results \u2192 /clear context, reference files explicitly, delete failed attempts. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 8: Troubleshooting Reference</a>",
+    "learn": "AI is powerful but not perfect. Always review suggestions. You\u2019re the developer \u2014 AI is your assistant."
+  },
+  {
+    "id": "quick-reference",
+    "phase": 4,
+    "emoji": "\ud83d\udcda",
+    "title": "Quick Reference & Next Steps",
+    "time": "5 min",
+    "desc": "You\u2019ve mastered AI-native development! Your toolkit: copilot-instructions.md (global rules), .instructions.md (folder rules), .agent.md (specialists), SKILL.md (workflows), AGENTS.md (project context).",
+    "toggle": "Training quest complete \ud83c\udfc6",
+    "copies": [
+      {
+        "label": "When to use what",
+        "text": "Global rules \u2192 .github/copilot-instructions.md\nFolder rules \u2192 .github/instructions/*.instructions.md\nSpecialists \u2192 .github/agents/*.agent.md\nWorkflows \u2192 .github/skills/*/SKILL.md\nProject context \u2192 AGENTS.md"
+      },
+      {
+        "label": "Agent modes",
+        "text": "Agent \u2192 Autonomous tasks\nPlan \u2192 Complex features, plan first\nAsk \u2192 Questions only\nEdit \u2192 Targeted changes\nCustom agents \u2192 Specialized tasks"
+      },
+      {
+        "label": "What\u2019s next",
+        "text": "1. Create more agents (security, performance)\n2. Build skills for repeated workflows\n3. Share setup via git\n4. Explore MCP for external tools"
+      },
+      {
+        "label": "Learn more",
+        "text": "Custom Instructions: https://code.visualstudio.com/docs/copilot/customization/custom-instructions\nCustom Agents: https://code.visualstudio.com/docs/copilot/customization/custom-agents\nAgent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills\nAwesome Copilot: https://github.com/github/awesome-copilot"
+      }
+    ],
+    "stuck": "These techniques work for any project. Use spec-driven development, agents, and skills for docs, automation, data analysis, and more. Share your setup via git so your whole team benefits. Explore MCP (Model Context Protocol) for connecting AI to external tools like databases and APIs. \ud83d\udcd6 <a href=\"https://lemon-mud-0ea992703.4.azurestaticapps.net/\" target=\"_blank\" style=\"color:var(--accent)\">Full walkthrough \u2192 Part 8: What\u2019s Next & Learn More</a>",
+    "learn": "You\u2019ve mastered AI-native development: directing AI to build, test, document, and review software."
+  }
+];
+const POSITIONS = [
+  {
+    "x": 4.4,
+    "y": 16.0
+  },
+  {
+    "x": 15.6,
+    "y": 32.5
+  },
+  {
+    "x": 4.4,
+    "y": 49.0
+  },
+  {
+    "x": 15.6,
+    "y": 65.5
+  },
+  {
+    "x": 4.4,
+    "y": 82.0
+  },
+  {
+    "x": 25.0,
+    "y": 16.0
+  },
+  {
+    "x": 39.0,
+    "y": 29.2
+  },
+  {
+    "x": 25.0,
+    "y": 42.4
+  },
+  {
+    "x": 39.0,
+    "y": 55.6
+  },
+  {
+    "x": 25.0,
+    "y": 68.8
+  },
+  {
+    "x": 39.0,
+    "y": 82.0
+  },
+  {
+    "x": 49.0,
+    "y": 16.0
+  },
+  {
+    "x": 63.0,
+    "y": 29.2
+  },
+  {
+    "x": 49.0,
+    "y": 42.4
+  },
+  {
+    "x": 63.0,
+    "y": 55.6
+  },
+  {
+    "x": 49.0,
+    "y": 68.8
+  },
+  {
+    "x": 63.0,
+    "y": 82.0
+  },
+  {
+    "x": 74.2,
+    "y": 16.0
+  },
+  {
+    "x": 93.8,
+    "y": 25.4
+  },
+  {
+    "x": 74.2,
+    "y": 34.9
+  },
+  {
+    "x": 93.8,
+    "y": 44.3
+  },
+  {
+    "x": 74.2,
+    "y": 53.7
+  },
+  {
+    "x": 93.8,
+    "y": 63.1
+  },
+  {
+    "x": 74.2,
+    "y": 72.6
+  },
+  {
+    "x": 93.8,
+    "y": 82.0
+  }
+];
+const STORAGE_KEY = 'ainative-quest-' + btoa('AI-Native Development').slice(0,12);
+const PHASE_LABELS = ["\ud83d\udee0 Setup & First Build", "\ud83d\udee1 Rules & Guardrails", "\ud83e\udd16 Agents & Folder Rules", "\ud83c\udfc6 Skills & Capstone"];
+let state = loadState();
+function isMobile(){return window.innerWidth<=768}
+function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);if(s)return JSON.parse(s)}catch(e){}return{completed:{}}}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function isComplete(id){return !!state.completed[id]}
+function completedCount(){return CHECKPOINTS.filter(c=>isComplete(c.id)).length}
+function render(){renderPath();renderNodes();updateProgress()}
+function updateProgress(){const n=completedCount(),t=CHECKPOINTS.length,p=Math.round(n/t*100);document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressLabel').textContent=n+' of '+t}
+function getActiveIndex(){for(let i=0;i<CHECKPOINTS.length;i++){if(!isComplete(CHECKPOINTS[i].id))return i}return CHECKPOINTS.length}
+function renderPath(){if(isMobile()){document.getElementById('pathSvg').innerHTML='';return}const svg=document.getElementById('pathSvg'),w=window.innerWidth,h=window.innerHeight-52;svg.setAttribute('viewBox','0 0 '+w+' '+h);let html='';const pts=POSITIONS.map(p=>({x:p.x/100*w,y:p.y/100*h}));const ai=getActiveIndex();for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],cx1=a.x+(b.x-a.x)*.6,cy1=a.y,cx2=a.x+(b.x-a.x)*.4,cy2=b.y;const d='M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y;const done=isComplete(CHECKPOINTS[i].id)&&isComplete(CHECKPOINTS[i+1].id);const partial=isComplete(CHECKPOINTS[i].id)&&!isComplete(CHECKPOINTS[i+1].id);const active=i===ai-1||i===ai;if(done)html+='<path d="'+d+'" fill="none" stroke="var(--green)" stroke-width="3" stroke-opacity=".5"/>';else if(partial||active)html+='<path d="'+d+'" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-opacity=".4" stroke-dasharray="8 6"><animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.5s" repeatCount="indefinite"/></path>';else html+='<path d="'+d+'" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 8" stroke-opacity=".5"/>'}svg.innerHTML=html}
+function renderNodes(){if(isMobile()){renderMobileList();return}document.querySelectorAll('.node').forEach(n=>n.remove());const map=document.getElementById('questMap'),ai=getActiveIndex();CHECKPOINTS.forEach((cp,i)=>{const pos=POSITIONS[i];if(!pos)return;const node=document.createElement('div');node.className='node';if(isComplete(cp.id))node.classList.add('complete');else if(i===ai)node.classList.add('active');node.style.left=pos.x+'%';node.style.top='calc('+pos.y+'% + 0px)';const isLocked=i>ai&&!isComplete(cp.id);node.innerHTML='<div class="ring"></div><div class="inner"><span class="emoji">'+(isLocked?'🔒':cp.emoji)+'</span><svg class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>'+(isLocked?'<span class="lock"></span>':'')+'</div><div class="label">'+cp.title+'</div>';node.addEventListener('click',()=>openPanel(i));map.appendChild(node)})}
+function renderMobileList(){const list=document.getElementById('mobileList');list.innerHTML='';const ai=getActiveIndex();let lastPhase=0;CHECKPOINTS.forEach((cp,i)=>{if(cp.phase!==lastPhase){lastPhase=cp.phase;const hdr=document.createElement('div');hdr.className='m-phase-header';hdr.textContent=PHASE_LABELS[cp.phase-1]||'Phase '+cp.phase;list.appendChild(hdr)}const item=document.createElement('div');item.className='m-item';if(isComplete(cp.id))item.classList.add('complete');else if(i===ai)item.classList.add('active');else if(i>ai)item.classList.add('locked');const isLocked=i>ai&&!isComplete(cp.id);item.innerHTML='<div class="m-node">'+(isComplete(cp.id)?'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':(isLocked?'🔒':cp.emoji))+'</div><div class="m-text"><div class="m-title">'+cp.title+'</div><div class="m-time">'+(cp.time?'⏱ '+cp.time:'')+'</div></div>';item.addEventListener('click',()=>openPanel(i));list.appendChild(item)})}let currentPanel=-1;
+function openPanel(idx){currentPanel=idx;const cp=CHECKPOINTS[idx];document.getElementById('panelEmoji').textContent=cp.emoji;document.getElementById('panelTitle').textContent=cp.title;document.getElementById('panelTime').textContent=cp.time?'⏱ '+cp.time:'';let html='<div class="desc">'+cp.desc+'</div>';if(cp.substeps){html+='<ol class="substeps">';cp.substeps.forEach(s=>html+='<li>'+s+'</li>');html+='</ol>'}if(cp.copies){html+='<div class="copy-group">';cp.copies.forEach(c=>{html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">'+c.label+'</div><div class="copy-block"><span class="copy-text">'+escHtml(c.text)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(c.text)+'\')" title="Copy">📋</button></div></div>'});html+='</div>'}if(cp.copyText&&!cp.copies){html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+(cp.copyLabel||'Copy')+'</div><div class="copy-block"><span class="copy-text">'+escHtml(cp.copyText)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(cp.copyText)+'\')" title="Copy">📋</button></div></div>'}if(cp.learn){html+='<div style="font-size:13px;color:var(--text-muted)">📚 <b>What you learn:</b> '+cp.learn+'</div>'}if(cp.rar_url){html+='<a href="'+cp.rar_url+'" target="_blank" rel="noopener" class="rar-card"><div class="rar-card-icon">🧩</div><div class="rar-card-info"><div class="rar-card-label">RAPP Agent Repository</div><div class="rar-card-name">'+escHtml(cp.rar_name)+'</div></div><div class="rar-card-arrow">→</div></a>'}const checked=isComplete(cp.id);html+='<button class="toggle-done '+(checked?'checked':'')+'" onclick="toggleDone(\''+cp.id+'\',this)"><span class="dot">'+(checked?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':'')+'</span><span>'+(cp.toggle||'Done ✓')+'</span></button>';if(cp.stuck){html+='<div><button class="stuck-toggle" onclick="this.nextElementSibling.classList.toggle(\'open\')">🆘 I\'m stuck</button><div class="stuck-content"><p>'+cp.stuck+'</p></div></div>'}document.getElementById('panelBody').innerHTML=html;document.getElementById('overlay').classList.add('open');document.getElementById('panel').classList.add('open')}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');currentPanel=-1}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escAttr(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function copyText(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)}).catch(()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)})}
+function toggleDone(id,btn){if(isComplete(id)){delete state.completed[id];btn.classList.remove('checked');btn.querySelector('.dot').innerHTML=''}else{state.completed[id]=true;btn.classList.add('checked');btn.querySelector('.dot').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>';celebrate(id)}saveState();render()}
+function celebrate(id){const idx=CHECKPOINTS.findIndex(c=>c.id===id);let x,y;if(isMobile()){const items=document.querySelectorAll('.m-item');if(items[idx]){const r=items[idx].getBoundingClientRect();x=r.left+r.width/2;y=r.top+r.height/2}else return}else{const pos=POSITIONS[idx];if(!pos)return;x=pos.x/100*window.innerWidth;y=pos.y/100*(window.innerHeight-52)+52}spawnParticles(x,y,12);for(let p=1;p<=4;p++){const phase=CHECKPOINTS.filter(c=>c.phase===p);if(phase.every(c=>isComplete(c.id))&&id===phase[phase.length-1].id)setTimeout(()=>rocketAnimation(),400)}if(completedCount()===CHECKPOINTS.length)setTimeout(()=>{confettiExplosion();showBanner()},600)}
+function spawnParticles(cx,cy,count){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff'];for(let i=0;i<count;i++){const el=document.createElement('div');el.className='particle';el.style.left=cx+'px';el.style.top=cy+'px';el.style.background=colors[i%colors.length];document.body.appendChild(el);const angle=Math.random()*Math.PI*2,dist=40+Math.random()*60,dx=Math.cos(angle)*dist,dy=Math.sin(angle)*dist;el.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(0)',opacity:0}],{duration:600+Math.random()*400,easing:'cubic-bezier(.4,0,.2,1)'}).onfinish=()=>el.remove()}}
+function rocketAnimation(){const el=document.createElement('div');el.className='rocket-anim';el.textContent='🚀';el.style.left='-50px';el.style.bottom='60%';document.body.appendChild(el);el.animate([{transform:'translate(0,0) rotate(-30deg)',opacity:1},{transform:'translate('+(window.innerWidth+100)+'px,-'+(window.innerHeight/2)+'px) rotate(-30deg)',opacity:.8}],{duration:1400,easing:'cubic-bezier(.25,.1,.25,1)'}).onfinish=()=>el.remove()}
+function confettiExplosion(){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff','#f85149','#fff'];for(let i=0;i<60;i++){const el=document.createElement('div');el.className='confetti';el.style.background=colors[i%colors.length];el.style.left=Math.random()*window.innerWidth+'px';el.style.top='-20px';el.style.width=(6+Math.random()*8)+'px';el.style.height=(10+Math.random()*12)+'px';el.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(el);const x=(Math.random()-.5)*200,spin=Math.random()*720-360;el.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+x+'px,'+(window.innerHeight+40)+'px) rotate('+spin+'deg)',opacity:.6}],{duration:2000+Math.random()*1500,easing:'cubic-bezier(.25,.1,.25,1)',delay:Math.random()*300}).onfinish=()=>el.remove()}}
+function showBanner(){const b=document.getElementById('banner');b.classList.add('show');setTimeout(()=>b.classList.remove('show'),4000)}
+function resetProgress(){if(!confirm('Reset all progress? This cannot be undone.'))return;state={completed:{}};saveState();closePanel();render()}
+render();window.addEventListener('resize',()=>render());
+</script>
+</body>
+</html>
