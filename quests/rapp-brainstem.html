@@ -18,9 +18,9 @@
   .quest-map{position:fixed;top:var(--top-bar);left:0;right:0;bottom:0;overflow:hidden}
   .quest-map svg.path-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   .phase-label{position:absolute;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--text-muted);opacity:.55;pointer-events:none}
-  .phase-label.p1{top:82px;left:1%}.phase-label.p2{top:82px;left:34.3%}.phase-label.p3{top:82px;left:51%}.phase-label.p4{top:82px;left:67.7%}
+  .phase-label.p1{top:82px;left:1%}.phase-label.p2{top:82px;left:37%}.phase-label.p3{top:82px;left:51%}.phase-label.p4{top:82px;left:65%}
   .phase-divider{position:absolute;top:var(--top-bar);bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--border) 15%,var(--border) 85%,transparent);opacity:.6;pointer-events:none}
-  .phase-divider.d1{left:33.3%}.phase-divider.d2{left:50%}.phase-divider.d3{left:66.7%}
+  .phase-divider.d1{left:36%}.phase-divider.d2{left:50%}.phase-divider.d3{left:64%}
   .node{position:absolute;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:10;transform:translate(-50%,-50%)}
   .node .ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--border);transition:all .35s}
   .node .inner{width:100%;height:100%;border-radius:50%;background:#f0f1f3;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;z-index:1;transition:all .35s;border:2px solid var(--border)}
@@ -138,6 +138,27 @@
 <div class="credit">RAPP Brainstem — Training Quest · Generated 2026-04-08 12:47</div>
 <script>
 const CHECKPOINTS = [
+  {
+    "id": "install-brainstem",
+    "phase": 1,
+    "emoji": "\ud83d\udce5",
+    "title": "Install Brainstem",
+    "time": "3 min",
+    "desc": "First, you need to install RAPP Brainstem on your machine. Open PowerShell (press Win+X and select 'Terminal' or 'Windows PowerShell'), then paste the installer command below. It will download and set everything up automatically.",
+    "toggle": "Installer ran successfully \u2713",
+    "copies": [
+      {
+        "label": "Open PowerShell",
+        "text": "Win+X \u2192 Terminal (or search 'PowerShell' in Start Menu)"
+      },
+      {
+        "label": "Run the installer",
+        "text": "irm https://kody-w.github.io/rapp-installer/ | iex"
+      }
+    ],
+    "stuck": "Make sure you right-click PowerShell and 'Run as Administrator' if you get permission errors. You can also visit <a href='https://kody-w.github.io/rapp-installer/' target='_blank'>kody-w.github.io/rapp-installer</a> in your browser to see the installer page and copy the command from there.",
+    "learn": "The RAPP installer sets up Python, clones the brainstem repo, and configures your environment in one step."
+  },
   {
     "id": "auth-setup",
     "phase": 1,
@@ -407,21 +428,52 @@ const CHECKPOINTS = [
       }
     ],
     "stuck": "The agents panel (\ud83e\udd16 icon, top-right) has \u2193 export and \ud83d\uddd1\ufe0f delete buttons. Drag .py files onto the page to import. The RARRemoteAgent connects to the community RAPP Agent Registry."
+  },
+  {
+    "id": "restart-brainstem",
+    "phase": 4,
+    "emoji": "\ud83d\udd04",
+    "title": "I Closed It \u2014 Get It Back",
+    "time": "2 min",
+    "desc": "Closed your brainstem? No worries \u2014 it\u2019s still installed. Open a command prompt or PowerShell, navigate to the source folder, and start it back up. Then ask Copilot to reopen the web page.",
+    "toggle": "Brainstem is back up \ud83d\ude80",
+    "copies": [
+      {
+        "label": "1. Open PowerShell",
+        "text": "Win+X \u2192 Terminal (or search 'PowerShell' in Start Menu)"
+      },
+      {
+        "label": "2. Navigate to src folder",
+        "text": "cd ~/rapp_brainstem/src"
+      },
+      {
+        "label": "3. Start Copilot",
+        "text": "copilot"
+      },
+      {
+        "label": "4. Ask Copilot",
+        "text": "Please restart the brainstem web server and open it in my browser"
+      }
+    ],
+    "stuck": "If 'copilot' isn\u2019t recognized, try 'python brainstem.py' or '.\\start.ps1' from the rapp_brainstem folder instead. The web UI opens at http://localhost:7071 \u2014 you can also just paste that URL into your browser.",
+    "learn": "Your brainstem lives on your machine permanently. You just need to start the server process whenever you want to use it. It picks up right where you left off \u2014 your agents, soul, and memory are all still there."
   }
 ];
 const POSITIONS = [
-  {"x": 5, "y": 12},
-  {"x": 28.3, "y": 37.3},
-  {"x": 5, "y": 62.7},
-  {"x": 28.3, "y": 88},
-  {"x": 41.7, "y": 12},
-  {"x": 41.7, "y": 88},
-  {"x": 58.3, "y": 12},
-  {"x": 58.3, "y": 88},
-  {"x": 71.7, "y": 12},
-  {"x": 95, "y": 37.3},
-  {"x": 71.7, "y": 62.7},
-  {"x": 95, "y": 88}
+  {"x": 3, "y": 12},
+  {"x": 10, "y": 37},
+  {"x": 20, "y": 62},
+  {"x": 10, "y": 88},
+  {"x": 30, "y": 37},
+  {"x": 38, "y": 12},
+  {"x": 38, "y": 88},
+  {"x": 50, "y": 12},
+  {"x": 50, "y": 88},
+  {"x": 62, "y": 12},
+  {"x": 72, "y": 37},
+  {"x": 62, "y": 62},
+  {"x": 72, "y": 88},
+  {"x": 97, "y": 50}
 ];
 const STORAGE_KEY = 'brainstem-quest-' + btoa('RAPP Brainstem').slice(0,12);
 const PHASE_LABELS = ["\ud83e\udd5a Hatching", "\ud83e\udde0 Core Skills", "\u26a1 Your Agents", "\ud83e\uddec Mastery"];
