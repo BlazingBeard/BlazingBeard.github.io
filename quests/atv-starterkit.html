@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATV — All The Vibes 2.0 — Training Quest</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#eaecf0;--bg2:#f4f5f7;--blue:#0969da;--green:#1a7f37;--orange:#bf8700;--red:#cf222e;--text:#24292f;--text-muted:#57606a;--border:#c5ccd6;--panel-w:460px;--top-bar:52px}
+  html,body{height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#dfe2e6 0%,var(--bg) 100%);color:var(--text)}
+  .top-bar{position:fixed;top:0;left:0;right:0;height:var(--top-bar);background:rgba(234,236,240,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;z-index:100}
+  .top-bar .title{font-size:15px;font-weight:600;white-space:nowrap}.top-bar .title span{color:var(--blue)}
+  .progress-wrap{flex:1;max-width:420px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .progress-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .progress-label{font-size:13px;color:var(--text-muted);min-width:90px;text-align:right}
+  .btn-reset{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;transition:all .2s}.btn-reset:hover{border-color:var(--red);color:var(--red)}
+  .quest-map{position:fixed;top:var(--top-bar);left:0;right:0;bottom:0;overflow:hidden}
+  .quest-map svg.path-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .phase-label{position:absolute;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--text-muted);opacity:.55;pointer-events:none}
+  .phase-label.p1{top:82px;left:1%}.phase-label.p2{top:82px;left:22.7%}.phase-label.p3{top:82px;left:48.8%}.phase-label.p4{top:82px;left:74.9%}
+  .phase-divider{position:absolute;top:var(--top-bar);bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--border) 15%,var(--border) 85%,transparent);opacity:.6;pointer-events:none}
+  .phase-divider.d1{left:21.7%}.phase-divider.d2{left:47.8%}.phase-divider.d3{left:73.9%}
+  .node{position:absolute;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:10;transform:translate(-50%,-50%)}
+  .node .ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--border);transition:all .35s}
+  .node .inner{width:100%;height:100%;border-radius:50%;background:#f0f1f3;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;z-index:1;transition:all .35s;border:2px solid var(--border)}
+  .node.active .ring{border-color:var(--blue);box-shadow:0 0 20px rgba(88,166,255,.35);animation:pulse-ring 2s infinite}
+  .node.active .inner{border-color:var(--blue);background:rgba(88,166,255,.1);transform:scale(1.12)}.node.active .lock{display:none}
+  .node.complete .ring{border-color:var(--green);box-shadow:0 0 12px rgba(63,185,80,.25)}
+  .node.complete .inner{border-color:var(--green);background:rgba(63,185,80,.15)}.node.complete .lock{display:none}
+  .node:hover{transform:translate(-50%,-50%) scale(1.1)}
+  .node .label{position:absolute;top:calc(100% + 10px);white-space:nowrap;font-size:11px;font-weight:600;color:var(--text-muted);text-align:center;pointer-events:none;transition:color .3s}
+  .node.active .label{color:var(--blue)}.node.complete .label{color:var(--green)}
+  @keyframes pulse-ring{0%,100%{box-shadow:0 0 20px rgba(88,166,255,.25)}50%{box-shadow:0 0 32px rgba(88,166,255,.5)}}
+  .check-icon{display:none}.node.complete .check-icon{display:block}.node.complete .emoji{display:none}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}.overlay.open{opacity:1;pointer-events:auto}
+  .panel{position:fixed;top:0;right:0;bottom:0;width:var(--panel-w);max-width:92vw;background:#f0f1f3;border-left:1px solid var(--border);z-index:210;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.08)}.panel.open{transform:translateX(0)}
+  .panel-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+  .panel-header .emoji-big{font-size:32px;line-height:1}.panel-header .meta{flex:1}.panel-header .meta h2{font-size:18px;font-weight:700;margin-bottom:4px}.panel-header .meta .time{font-size:12px;color:var(--text-muted)}
+  .panel-close{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;padding:4px;line-height:1}.panel-close:hover{color:var(--text)}
+  .panel-body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:16px}.panel-body .desc{font-size:14px;line-height:1.55;color:var(--text)}
+  .copy-block{position:relative;background:#e4e6ea;border:1px solid var(--border);border-radius:8px;padding:12px 44px 12px 14px;font-family:'Cascadia Code','Fira Code',monospace;font-size:12.5px;line-height:1.5;color:var(--text);white-space:pre-wrap;word-break:break-word}
+  .copy-btn{position:absolute;top:8px;right:8px;background:#d5d8dd;border:none;color:var(--text-muted);width:30px;height:30px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}.copy-btn:hover{background:var(--blue);color:#fff}.copy-btn.copied{background:var(--green);color:#fff}
+  .toggle-done{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;border:2px solid var(--border);background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);transition:all .25s;width:100%}
+  .toggle-done .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
+  .toggle-done.checked{border-color:var(--green);background:rgba(63,185,80,.08)}.toggle-done.checked .dot{background:var(--green);border-color:var(--green)}
+  .substeps{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+  .substeps li{font-size:13px;color:var(--text-muted);padding-left:20px;position:relative;line-height:1.5}
+  .substeps li::before{content:'';position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%;border:2px solid var(--border)}
+  .stuck-toggle{background:none;border:none;color:var(--orange);font-size:13px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px}.stuck-toggle:hover{text-decoration:underline}
+  .stuck-content{max-height:0;overflow:hidden;transition:max-height .3s;font-size:13px;color:var(--text-muted);line-height:1.6}.stuck-content.open{max-height:500px}.stuck-content p{margin-top:8px}
+  .copy-group{display:flex;flex-direction:column;gap:8px}
+  .particle{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:999}
+  .confetti{position:fixed;width:10px;height:16px;pointer-events:none;z-index:999;border-radius:2px}
+  .rocket-anim{position:fixed;font-size:40px;z-index:999;pointer-events:none}
+  .banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(240,241,243,.97);border:2px solid var(--green);border-radius:16px;padding:32px 56px;text-align:center;z-index:999;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 12px 48px rgba(0,0,0,.15)}.banner.show{transform:translate(-50%,-50%) scale(1)}.banner h1{font-size:28px;margin-bottom:8px}.banner p{color:var(--text-muted);font-size:15px}
+  .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-track{background:transparent}.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .rar-card{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(59,130,246,.12));border:1px solid rgba(139,92,246,.3);text-decoration:none;transition:all .2s;cursor:pointer;margin-top:4px}
+  .rar-card:hover{border-color:rgba(139,92,246,.6);background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(59,130,246,.2));transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.15)}
+  .rar-card-icon{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .rar-card-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .rar-card-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+  .rar-card-name{font-size:14px;color:var(--text-bright);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rar-card-arrow{margin-left:auto;color:var(--text-muted);font-size:18px;flex-shrink:0}
+  .credit{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-muted);opacity:.6;pointer-events:none;letter-spacing:.3px;z-index:5}
+  /* ── Mobile ── */
+  @media(max-width:768px){
+    html,body{overflow:auto;height:auto}
+    .top-bar{padding:0 12px;height:48px}
+    .top-bar .title{font-size:13px}
+    .progress-wrap{max-width:none;gap:6px}
+    .progress-label{min-width:60px;font-size:12px}
+    .btn-reset{padding:4px 8px;font-size:11px}
+    :root{--top-bar:48px}
+    .quest-map,.phase-label,.phase-divider,.path-svg{display:none!important}
+    #mobileList{display:flex;flex-direction:column;padding:60px 16px 80px;gap:0}
+    .m-phase-header{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);padding:20px 0 10px;opacity:.7}
+    .m-phase-header:first-child{padding-top:0}
+    .m-item{display:flex;align-items:center;gap:14px;padding:14px 0;position:relative;cursor:pointer}
+    .m-item::before{content:'';position:absolute;left:24px;top:0;bottom:0;width:2px;background:var(--border);z-index:0}
+    .m-item:last-child::before{bottom:50%}
+    .m-phase-header+.m-item::before{top:50%}
+    .m-node{width:48px;height:48px;border-radius:50%;background:#f0f1f3;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;z-index:1;transition:all .3s}
+    .m-item.complete .m-node{border-color:var(--green);background:rgba(63,185,80,.15)}
+    .m-item.active .m-node{border-color:var(--blue);background:rgba(88,166,255,.1);box-shadow:0 0 12px rgba(88,166,255,.3)}
+    .m-item.locked .m-node{opacity:.5}
+    .m-text{flex:1;min-width:0}
+    .m-text .m-title{font-size:15px;font-weight:600;color:var(--text)}
+    .m-item.complete .m-title{color:var(--green)}
+    .m-item.active .m-title{color:var(--blue)}
+    .m-item.locked .m-title{color:var(--text-muted)}
+    .m-text .m-time{font-size:12px;color:var(--text-muted)}
+    .m-check{color:var(--green);font-size:18px;flex-shrink:0;opacity:0;transition:opacity .3s}
+    .m-item.complete .m-check{opacity:1}
+    .panel{width:100%;max-width:100%;border-left:none;border-radius:16px 16px 0 0;top:auto;bottom:0;max-height:85vh;transform:translateY(100%);box-shadow:0 -4px 24px rgba(0,0,0,.12)}.panel.open{transform:translateY(0)}
+    .panel-header{padding:16px}.panel-body{padding:16px;gap:12px}
+    .banner{padding:20px 24px}.banner h1{font-size:22px}.banner p{font-size:13px}
+    .badge-wrap canvas{max-width:280px}
+    .credit{position:relative;padding:20px 0;text-align:center;opacity:.6}
+  }
+  @media(min-width:769px){
+    #mobileList{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="title"><span>ATV — All The Vibes 2.0</span> — Training Quest</div>
+  <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div><div class="progress-label" id="progressLabel">0 of 23</div></div>
+  <button class="btn-reset" onclick="resetProgress()">Reset Progress</button>
+</div>
+<div class="phase-label p1">⚙️ Install & Explore</div>
+<div class="phase-label p2">🛠️ Compound Engineering</div>
+<div class="phase-label p3">⚡ Power Tools</div>
+<div class="phase-label p4">🧠 Memory & Mastery</div>
+<div class="phase-divider d1"></div><div class="phase-divider d2"></div><div class="phase-divider d3"></div>
+<div class="quest-map" id="questMap"><svg class="path-svg" id="pathSvg" preserveAspectRatio="none"></svg></div>
+<div id="mobileList"></div>
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel"><div class="panel-header"><div class="emoji-big" id="panelEmoji"></div><div class="meta"><h2 id="panelTitle"></h2><div class="time" id="panelTime"></div></div><button class="panel-close" onclick="closePanel()">✕</button></div><div class="panel-body" id="panelBody"></div></div>
+<div class="banner" id="banner"><h1>🏆 ATV Master!</h1><p>You’ve mastered All The Vibes 2.0.<br>Your repo now gets smarter every session.</p><div class="badge-wrap" id="badgeWrap" style="display:none"><canvas id="badgeCanvas" width="600" height="315"></canvas><div class="badge-actions"><button class="badge-btn" onclick="downloadBadge()">⬇ Download Badge</button><button class="badge-btn share" onclick="shareBadge()">📤 Share</button></div></div></div>
+<div class="credit">ATV — All The Vibes 2.0 — Training Quest · Generated 2026-04-09 17:34</div>
+<script>
+const CHECKPOINTS = [
+  {
+    "id": "atv-what-is",
+    "phase": 1,
+    "emoji": "\ud83c\udfce\ufe0f",
+    "title": "What is ATV?",
+    "time": "3 min",
+    "desc": "ATV (All The Vibes 2.0) is a one-command installer that scaffolds a complete agentic coding environment for GitHub Copilot. It wires together three open-source systems: <strong>Compound Engineering</strong> (knowledge pipeline), <strong>gstack</strong> (sprint engine by Garry Tan/YC), and <strong>agent-browser</strong> (browser automation by Vercel). Together: 45 skills, 29 agents, 7 layers of memory.",
+    "toggle": "Got it \u2014 ATV is a Copilot supercharger \u2713",
+    "copies": [
+      {
+        "label": "GitHub repo",
+        "text": "https://github.com/All-The-Vibes/ATV-StarterKit"
+      },
+      {
+        "label": "npm package",
+        "text": "https://www.npmjs.com/package/atv-starterkit"
+      }
+    ],
+    "stuck": "ATV stands for All The Vibes. It turns any repo into an agentic coding environment \u2014 GitHub Copilot gets 45+ slash commands, 29 specialized agents, and continuous learning that makes it smarter every session. Think of it as Copilot on steroids. \ud83d\udcd6 <a href=\"https://github.com/All-The-Vibes/ATV-StarterKit\" target=\"_blank\" style=\"color:var(--accent)\">ATV GitHub Repo</a>",
+    "learn": "ATV = Compound Engineering + gstack + agent-browser. One installer, full agentic coding lifecycle."
+  },
+  {
+    "id": "atv-prerequisites",
+    "phase": 1,
+    "emoji": "\ud83d\udccb",
+    "title": "Check Prerequisites",
+    "time": "3 min",
+    "desc": "Before installing, make sure you have: <strong>Git</strong> (version control), <strong>Node.js 16+</strong> (required), and optionally <strong>Bun</strong> (for browser skills), a <strong>GitHub PAT</strong> (for GitHub MCP), and <strong>Azure CLI</strong> (for Azure MCP). Without Bun, text-based skills still work.",
+    "toggle": "Prerequisites verified \u2713",
+    "copies": [
+      {
+        "label": "Check Git",
+        "text": "git --version"
+      },
+      {
+        "label": "Check Node",
+        "text": "node --version"
+      },
+      {
+        "label": "Check Bun (optional)",
+        "text": "bun --version"
+      }
+    ],
+    "stuck": "Git and Node.js 16+ are required. Bun is only needed for browser skills like /gstack-qa and /gstack-browse. If you don\u2019t have Bun, everything else works fine \u2014 gstack falls back to markdown-only mode. Install Node from nodejs.org, Git from git-scm.com.",
+    "learn": "Required: Git + Node 16+. Optional: Bun (browser), GitHub PAT (GitHub MCP), Azure CLI (Azure MCP)."
+  },
+  {
+    "id": "atv-install-auto",
+    "phase": 1,
+    "emoji": "\u26a1",
+    "title": "Install \u2014 Auto Mode",
+    "time": "5 min",
+    "desc": "The fastest path. Open a terminal in your project directory and run one command. ATV auto-detects your stack (TypeScript, Python, Rails, or General), installs the Starter preset (13 core skills), and scaffolds everything into <code>.github/</code>. No questions asked, done in seconds.",
+    "toggle": "Auto install complete \u2713",
+    "copies": [
+      {
+        "label": "Quick run (npx)",
+        "text": "npx atv-starterkit@latest init"
+      },
+      {
+        "label": "Global install first",
+        "text": "npm install -g atv-starterkit && atv-starterkit init"
+      }
+    ],
+    "stuck": "Run <code>npx atv-starterkit@latest init</code> in your project root. It auto-detects your stack from files like tsconfig.json (TypeScript), pyproject.toml (Python), or Gemfile + config/routes.rb (Rails). If none match, you get the General stack. Re-running is idempotent \u2014 existing files are skipped, JSON configs are merged.",
+    "learn": "Auto mode: one command, zero questions, instant scaffold. Detects stack from project files."
+  },
+  {
+    "id": "atv-install-guided",
+    "phase": 1,
+    "emoji": "\ud83e\uddd9",
+    "title": "Install \u2014 Guided Mode",
+    "time": "5 min",
+    "desc": "The interactive path. Add <code>--guided</code> to launch a rich TUI wizard with 4 screens: <strong>Stack Packs</strong> (multi-select your stacks), <strong>Preset</strong> (Starter/Pro/Full), <strong>Customize</strong> (drill into categories), and <strong>Install + Summary</strong> (real-time progress). Pro adds 30+ gstack skills. Full adds browser QA.",
+    "toggle": "Guided install explored \u2713",
+    "copies": [
+      {
+        "label": "Guided install",
+        "text": "npx atv-starterkit@latest init --guided"
+      }
+    ],
+    "stuck": "Guided mode lets you pick exactly what you want. <strong>Starter</strong> = 13 core CE skills, no network calls. <strong>Pro</strong> = adds 30+ gstack skills (requires git clone ~22MB). <strong>Full</strong> = adds agent-browser + Chrome for Testing (requires Bun). Use arrow keys to navigate, space to select, enter to confirm.",
+    "learn": "Three presets: Starter (13 skills), Pro (35+ skills), Full (45+ skills with browser)."
+  },
+  {
+    "id": "atv-whats-installed",
+    "phase": 1,
+    "emoji": "\ud83d\udcc2",
+    "title": "Explore What Got Installed",
+    "time": "5 min",
+    "desc": "After install, explore your project. ATV created: <code>.github/skills/</code> (45+ SKILL.md files), <code>.github/agents/</code> (29 agent definitions), <code>.github/copilot-instructions.md</code> (system prompt), <code>.github/copilot-mcp-config.json</code> (MCP servers), <code>docs/</code> (plans/brainstorms/solutions), and <code>.atv/</code> (manifest + learning data).",
+    "toggle": "Explored the scaffold \u2713",
+    "copies": [
+      {
+        "label": "List skills",
+        "text": "ls .github/skills/"
+      },
+      {
+        "label": "List agents",
+        "text": "ls .github/agents/"
+      },
+      {
+        "label": "View system prompt",
+        "text": "cat .github/copilot-instructions.md"
+      },
+      {
+        "label": "View install manifest",
+        "text": "cat .atv/install-manifest.json"
+      }
+    ],
+    "stuck": "Key directories: <code>.github/skills/*/SKILL.md</code> = slash commands Copilot auto-discovers. <code>.github/agents/*.agent.md</code> = specialized sub-agents. <code>.github/copilot-instructions.md</code> = system prompt loaded every chat. <code>.github/copilot-mcp-config.json</code> = MCP server connections (Context7, GitHub, Azure, Terraform). <code>.atv/install-manifest.json</code> = tracks what\u2019s installed.",
+    "learn": "ATV scaffolds into .github/ (Copilot hooks), docs/ (artifacts), .atv/ (learning data)."
+  },
+  {
+    "id": "atv-ce-brainstorm",
+    "phase": 2,
+    "emoji": "\ud83d\udcad",
+    "title": "Think: /ce-brainstorm",
+    "time": "8 min",
+    "desc": "Start every feature with brainstorming. Open Copilot Chat and type <code>/ce-brainstorm</code>. The AI leads an interactive dialogue to clarify requirements, explore approaches, and produce a design doc saved to <code>docs/brainstorms/</code>. This is the \u201cwhat should I build?\u201d step.",
+    "toggle": "First brainstorm done \u2713",
+    "copies": [
+      {
+        "label": "Start brainstorm",
+        "text": "/ce-brainstorm"
+      },
+      {
+        "label": "Office hours (YC-style)",
+        "text": "/gstack-office-hours"
+      }
+    ],
+    "stuck": "Open Copilot Chat (Ctrl+Shift+I or \u2303\u2318I) and type /ce-brainstorm. Describe your feature idea. Copilot will ask probing questions, explore edge cases, and save a structured brainstorm doc to docs/brainstorms/YYYY-MM-DD-name-brainstorm.md. Try /gstack-office-hours for YC-style forcing questions that challenge your framing.",
+    "learn": "/ce-brainstorm produces design docs. /gstack-office-hours adds YC-style challenge questions."
+  },
+  {
+    "id": "atv-ce-plan",
+    "phase": 2,
+    "emoji": "\ud83d\udccb",
+    "title": "Plan: /ce-plan",
+    "time": "8 min",
+    "desc": "Turn brainstorms into implementation plans. <code>/ce-plan</code> launches parallel research agents that scan your codebase + external docs, auto-discovers brainstorms, and outputs structured plans with acceptance criteria in <code>docs/plans/</code>. The <code>learnings-researcher</code> agent searches past solutions first.",
+    "toggle": "Plan generated \u2713",
+    "copies": [
+      {
+        "label": "Generate plan",
+        "text": "/ce-plan"
+      },
+      {
+        "label": "Deepen the plan",
+        "text": "/deepen-plan"
+      },
+      {
+        "label": "Full auto-review",
+        "text": "/gstack-autoplan"
+      }
+    ],
+    "stuck": "After brainstorming, run /ce-plan. It reads your brainstorm docs and generates a plan with checkboxes and acceptance criteria. Use /deepen-plan to enrich with best practices. /gstack-autoplan runs CEO \u2192 Design \u2192 Eng review in one command. /gstack-plan-eng-review forces hidden assumptions into the open.",
+    "learn": "/ce-plan auto-discovers brainstorms, uses research agents, outputs plans with acceptance criteria."
+  },
+  {
+    "id": "atv-ce-work",
+    "phase": 2,
+    "emoji": "\ud83d\udd28",
+    "title": "Build: /ce-work",
+    "time": "8 min",
+    "desc": "Execute against your plan. <code>/ce-work</code> implements features with incremental commits and system-wide sanity checks. It reads the plan, works through tasks, and commits as it goes. For the brave: <code>/lfg</code> runs the entire pipeline (plan \u2192 deepen \u2192 work \u2192 review \u2192 unslop \u2192 test \u2192 compound) in one shot.",
+    "toggle": "Built something with /ce-work \u2713",
+    "copies": [
+      {
+        "label": "Start working",
+        "text": "/ce-work"
+      },
+      {
+        "label": "Full pipeline",
+        "text": "/lfg"
+      },
+      {
+        "label": "Parallel swarm",
+        "text": "/slfg"
+      }
+    ],
+    "stuck": "/ce-work reads your plan file and implements it step by step with commits. /lfg is the \u201cfull send\u201d \u2014 it runs the entire pipeline sequentially. /slfg is the parallel variant where review + test + unslop run concurrently. Each step must produce output before the next starts \u2014 it retries on failure.",
+    "learn": "/ce-work = incremental build. /lfg = full sequential pipeline. /slfg = parallel swarm variant."
+  },
+  {
+    "id": "atv-ce-review",
+    "phase": 2,
+    "emoji": "\ud83d\udc40",
+    "title": "Review: /ce-review",
+    "time": "8 min",
+    "desc": "Multi-agent code review. <code>/ce-review</code> launches parallel review agents \u2014 security sentinel, performance oracle, architecture strategist, and language-specific reviewers (TypeScript, Python, Rails). Each agent examines your changes from a different angle. <code>/gstack-cso</code> adds OWASP Top 10 + STRIDE threat modeling.",
+    "toggle": "Code reviewed by agents \u2713",
+    "copies": [
+      {
+        "label": "Multi-agent review",
+        "text": "/ce-review"
+      },
+      {
+        "label": "Staff-level review",
+        "text": "/gstack-review"
+      },
+      {
+        "label": "Security audit",
+        "text": "/gstack-cso"
+      },
+      {
+        "label": "Cross-model review",
+        "text": "/gstack-codex"
+      }
+    ],
+    "stuck": "/ce-review runs 4+ specialized agents in parallel: security-sentinel (OWASP), performance-oracle (bottlenecks), architecture-strategist (design), and your stack\u2019s reviewer (kieran-typescript-reviewer, etc). /gstack-review acts as a staff engineer with auto-fix. /gstack-cso does a full security audit. /gstack-codex uses OpenAI Codex for cross-model review.",
+    "learn": "Review uses parallel agents: security, performance, architecture, language-specific. /gstack-cso = security audit."
+  },
+  {
+    "id": "atv-ce-compound",
+    "phase": 2,
+    "emoji": "\ud83e\uddec",
+    "title": "Reflect: /ce-compound",
+    "time": "5 min",
+    "desc": "Document what you learned. <code>/ce-compound</code> saves solved problems to <code>docs/solutions/</code>. Next time <code>/ce-plan</code> runs, the <code>learnings-researcher</code> agent searches those solutions first \u2014 your repo literally gets smarter with every PR. This is the knowledge compounding loop.",
+    "toggle": "Knowledge compounded \u2713",
+    "copies": [
+      {
+        "label": "Compound learnings",
+        "text": "/ce-compound"
+      }
+    ],
+    "stuck": "After finishing a feature, run /ce-compound. It documents what you learned and saves it to docs/solutions/YYYY-MM-DD-name.md. The learnings-researcher agent reads these files during future /ce-plan runs. Over time, your repo accumulates institutional knowledge that prevents repeated mistakes. This is the \u201cknowledge compounds\u201d philosophy.",
+    "learn": "/ce-compound saves solutions. learnings-researcher reads them in future /ce-plan runs. Knowledge compounds."
+  },
+  {
+    "id": "atv-full-pipeline",
+    "phase": 2,
+    "emoji": "\ud83d\ude80",
+    "title": "The Full CE Pipeline",
+    "time": "5 min",
+    "desc": "Now run the complete Compound Engineering loop end-to-end: <code>/ce-brainstorm</code> \u2192 <code>/ce-plan</code> \u2192 <code>/ce-work</code> \u2192 <code>/ce-review</code> \u2192 <code>/ce-compound</code>. Each step produces an artifact the next step consumes. Or just run <code>/lfg</code> for the whole thing in one shot.",
+    "toggle": "Full pipeline mastered \u2713",
+    "copies": [
+      {
+        "label": "Full pipeline",
+        "text": "/lfg"
+      },
+      {
+        "label": "Brainstorm \u2192 Plan \u2192 Work \u2192 Review \u2192 Compound",
+        "text": "/ce-brainstorm"
+      }
+    ],
+    "stuck": "The CE pipeline is gated \u2014 each step must produce output before the next starts. /lfg automates this: plan \u2192 deepen \u2192 work \u2192 review \u2192 unslop \u2192 resolve \u2192 test \u2192 video \u2192 compound. If a step fails, it retries. /slfg runs review + test + unslop in parallel for faster execution.",
+    "learn": "The CE loop: brainstorm \u2192 plan \u2192 work \u2192 review \u2192 compound. /lfg = one command for everything."
+  },
+  {
+    "id": "atv-gstack-skills",
+    "phase": 3,
+    "emoji": "\u2699\ufe0f",
+    "title": "gstack Sprint Skills",
+    "time": "8 min",
+    "desc": "gstack adds 30+ skills covering the full development lifecycle. It gives the AI a <em>role</em> \u2014 <code>/gstack-review</code> acts as a staff engineer, <code>/gstack-cso</code> acts as a chief security officer. Includes safety guardrails (<code>/gstack-careful</code>, <code>/gstack-freeze</code>, <code>/gstack-guard</code>) that prevent destructive commands.",
+    "toggle": "gstack skills explored \u2713",
+    "copies": [
+      {
+        "label": "Ship it",
+        "text": "/gstack-ship"
+      },
+      {
+        "label": "Deploy + verify",
+        "text": "/gstack-land-and-deploy"
+      },
+      {
+        "label": "Post-deploy canary",
+        "text": "/gstack-canary"
+      },
+      {
+        "label": "Weekly retro",
+        "text": "/gstack-retro"
+      }
+    ],
+    "stuck": "gstack skills are organized by lifecycle: Think (/office-hours), Plan (/autoplan), Build (/lfg), Review (/review, /cso), Test (/qa, /benchmark), Ship (/ship, /land-and-deploy, /canary), Reflect (/retro, /learn). Safety guardrails: /gstack-careful warns before destructive commands, /gstack-freeze restricts edits to one directory, /gstack-guard combines both.",
+    "learn": "gstack = 30+ opinionated engineering processes as slash commands. Includes safety guardrails."
+  },
+  {
+    "id": "atv-agent-browser",
+    "phase": 3,
+    "emoji": "\ud83c\udf10",
+    "title": "agent-browser: Eyes of the Agent",
+    "time": "8 min",
+    "desc": "agent-browser is a native Rust CLI (by Vercel) that controls Chrome via CDP with ~100ms latency. The workflow: <code>open \u2192 snapshot \u2192 interact \u2192 re-snapshot</code>. Uses snapshot refs (<code>@e1</code>, <code>@e2</code>) for deterministic element selection \u2014 no CSS selectors needed. Copilot can see and interact with your web app.",
+    "toggle": "Browser automation explored \u2713",
+    "copies": [
+      {
+        "label": "QA loop",
+        "text": "/gstack-qa"
+      },
+      {
+        "label": "QA report only",
+        "text": "/gstack-qa-only"
+      },
+      {
+        "label": "Benchmarks",
+        "text": "/gstack-benchmark"
+      },
+      {
+        "label": "Browse session",
+        "text": "/gstack-browse"
+      }
+    ],
+    "stuck": "agent-browser requires Bun and is installed with the Full preset. It downloads Chrome for Testing and provides a CLI that opens pages, takes snapshots (accessibility tree), and lets Copilot interact via @refs like @e1, @e2. /gstack-qa runs a full QA loop: find bugs in real browser, fix them, write regressions, re-verify. /gstack-benchmark measures Core Web Vitals.",
+    "learn": "agent-browser = Rust CLI controlling Chrome. Snapshot refs (@e1) for deterministic interaction. Requires Bun."
+  },
+  {
+    "id": "atv-29-agents",
+    "phase": 3,
+    "emoji": "\ud83e\udd16",
+    "title": "Meet the 29 Agents",
+    "time": "8 min",
+    "desc": "ATV installs 29 specialized agents in <code>.github/agents/</code>. Code review: kieran-\u2217-reviewer (per-language), dhh-rails-reviewer, code-simplicity-reviewer. Security: security-sentinel. Architecture: architecture-strategist. Performance: performance-oracle. Research: repo-research-analyst, learnings-researcher, framework-docs-researcher. Process: pr-comment-resolver, bug-reproduction-validator. Plus data, design, and learning agents.",
+    "toggle": "Agents reviewed \u2713",
+    "copies": [
+      {
+        "label": "List all agents",
+        "text": "ls .github/agents/"
+      },
+      {
+        "label": "View an agent",
+        "text": "cat .github/agents/security-sentinel.agent.md"
+      }
+    ],
+    "stuck": "Agents live in .github/agents/*.agent.md. They\u2019re invoked automatically by skills during review, planning, and learning. Key agents: security-sentinel (OWASP + STRIDE), architecture-strategist (design review), performance-oracle (bottleneck detection), learnings-researcher (searches past solutions), pattern-observer (captures coding patterns). You can read any agent\u2019s .agent.md to see its system prompt.",
+    "learn": "29 agents in .github/agents/. Auto-invoked by skills. Cover review, security, architecture, research, process."
+  },
+  {
+    "id": "atv-mcp-servers",
+    "phase": 3,
+    "emoji": "\ud83d\udd0c",
+    "title": "MCP Server Connections",
+    "time": "5 min",
+    "desc": "ATV configures 4 MCP (Model Context Protocol) servers in <code>.github/copilot-mcp-config.json</code>: <strong>Context7</strong> (ambient context), <strong>GitHub</strong> (repo access \u2014 needs PAT), <strong>Azure</strong> (Azure services \u2014 needs CLI), and <strong>Terraform</strong> (infra planning). MCP gives Copilot access to external tools and data sources.",
+    "toggle": "MCP servers understood \u2713",
+    "copies": [
+      {
+        "label": "View MCP config",
+        "text": "cat .github/copilot-mcp-config.json"
+      }
+    ],
+    "stuck": "MCP servers extend Copilot\u2019s reach beyond your codebase. Context7 gathers ambient context (no auth needed). GitHub MCP reads issues, PRs, and discussions (set GITHUB_PERSONAL_ACCESS_TOKEN). Azure MCP integrates with Azure services (need az login). Terraform MCP analyzes .tf files for infrastructure planning. Config lives in .github/copilot-mcp-config.json.",
+    "learn": "4 MCP servers: Context7 (free), GitHub (PAT), Azure (CLI), Terraform (local). Extend Copilot\u2019s reach."
+  },
+  {
+    "id": "atv-unslop",
+    "phase": 3,
+    "emoji": "\ud83e\uddf9",
+    "title": "De-Slop: /unslop",
+    "time": "5 min",
+    "desc": "AI code has a tell: over-abstraction, <code>// This function handles...</code> comments, purple-to-blue gradients. <code>/unslop</code> runs three parallel analysis passes: <strong>Code Slop</strong> (YAGNI violations, dead weight), <strong>Comment Rot</strong> (obvious restatements, AI filler), and <strong>Design Slop</strong> (generic gradients, template layouts). Use <code>/unslop fix</code> to auto-apply safe fixes.",
+    "toggle": "De-slop understood \u2713",
+    "copies": [
+      {
+        "label": "Report slop",
+        "text": "/unslop"
+      },
+      {
+        "label": "Scope to directory",
+        "text": "/unslop src/components/"
+      },
+      {
+        "label": "Auto-fix slop",
+        "text": "/unslop fix"
+      }
+    ],
+    "stuck": "/unslop detects AI-generated patterns that look \u201cunhuman.\u201d Code Slop: interfaces used once \u2192 inline it. Comment Rot: \u201c// This function handles auth\u201d \u2192 delete it. Design Slop: generic purple-to-blue gradient \u2192 use brand palette. /unslop is wired into /lfg (runs after review) and /slfg (runs in parallel). /ce-review asks \u201cis this correct?\u201d \u2014 /unslop asks \u201cdoes this look human-written?\u201d",
+    "learn": "/unslop = three passes: code slop, comment rot, design slop. /unslop fix auto-applies. Built into /lfg and /slfg."
+  },
+  {
+    "id": "atv-safety",
+    "phase": 3,
+    "emoji": "\ud83d\udee1\ufe0f",
+    "title": "Safety Guardrails",
+    "time": "5 min",
+    "desc": "ATV includes safety skills that prevent AI from doing dangerous things: <code>/gstack-careful</code> warns before <code>rm -rf</code>, <code>DROP TABLE</code>, or force-push. <code>/gstack-freeze</code> restricts edits to one directory while debugging. <code>/gstack-guard</code> combines both. <code>/gstack-investigate</code> enforces systematic investigation before any fixes.",
+    "toggle": "Safety guardrails learned \u2713",
+    "copies": [
+      {
+        "label": "Enable careful mode",
+        "text": "/gstack-careful"
+      },
+      {
+        "label": "Freeze to directory",
+        "text": "/gstack-freeze"
+      },
+      {
+        "label": "Full guard mode",
+        "text": "/gstack-guard"
+      },
+      {
+        "label": "Investigate first",
+        "text": "/gstack-investigate"
+      }
+    ],
+    "stuck": "Safety guardrails are critical when giving AI tools access. /gstack-careful intercepts destructive commands and asks for confirmation. /gstack-freeze restricts all edits to a single directory \u2014 useful when debugging to prevent the AI from touching unrelated code. /gstack-guard = careful + freeze combined. /gstack-investigate forces investigation before any fix attempt.",
+    "learn": "/careful = warn on danger. /freeze = restrict to one dir. /guard = both. /investigate = debug-first."
+  },
+  {
+    "id": "atv-learning-loop",
+    "phase": 4,
+    "emoji": "\ud83e\udde0",
+    "title": "The Learning Pipeline",
+    "time": "8 min",
+    "desc": "ATV remembers how you code. Observer hooks silently capture every tool use to <code>.atv/observations.jsonl</code>. Run <code>/learn</code> to analyze observations + git history into <strong>instincts</strong> with confidence scores. When an instinct reaches >0.8, <code>/evolve</code> promotes it into a permanent SKILL.md. Your AI assistant now <em>permanently knows</em> your conventions.",
+    "toggle": "Learning pipeline mastered \u2713",
+    "copies": [
+      {
+        "label": "Extract patterns",
+        "text": "/learn"
+      },
+      {
+        "label": "View instincts dashboard",
+        "text": "/instincts"
+      },
+      {
+        "label": "Promote to permanent skills",
+        "text": "/evolve"
+      },
+      {
+        "label": "Observe specific domain",
+        "text": "/observe testing"
+      }
+    ],
+    "stuck": "The learning loop: code normally \u2192 hooks capture tool use \u2192 /learn extracts instincts \u2192 confidence grows \u2192 /evolve promotes to .github/skills/learned-*/SKILL.md. Instincts live in .atv/instincts/project.yaml (committed to git = whole team benefits). Observations are gitignored (ephemeral). /instincts shows a dashboard with confidence scores grouped by domain. \u2605 = ready to evolve (>0.8).",
+    "learn": "Learning loop: observe \u2192 /learn \u2192 instincts \u2192 /evolve \u2192 permanent skills. Team benefits via git."
+  },
+  {
+    "id": "atv-memory-layers",
+    "phase": 4,
+    "emoji": "\ud83d\udcda",
+    "title": "7 Layers of Memory",
+    "time": "5 min",
+    "desc": "ATV builds 7 layers of memory: <strong>Observations</strong> (.atv/observations.jsonl \u2014 per-session), <strong>Instincts</strong> (.atv/instincts/project.yaml \u2014 grows), <strong>Evolved skills</strong> (.github/skills/learned-*/), <strong>Solutions</strong> (docs/solutions/), <strong>Brainstorms</strong> (docs/brainstorms/), <strong>Plans</strong> (docs/plans/), <strong>Install manifest</strong> (.atv/install-manifest.json). Three reinforcing cycles make every session smarter.",
+    "toggle": "Memory architecture understood \u2713",
+    "copies": [
+      {
+        "label": "View instincts",
+        "text": "cat .atv/instincts/project.yaml"
+      },
+      {
+        "label": "View solutions",
+        "text": "ls docs/solutions/"
+      },
+      {
+        "label": "View observations",
+        "text": "cat .atv/observations.jsonl"
+      }
+    ],
+    "stuck": "Three reinforcing cycles: (1) Knowledge compounding (per-PR): /ce-compound saves solutions \u2192 future /ce-plan finds them. (2) Pattern learning (per-session): hooks \u2192 /learn \u2192 instincts \u2192 /evolve \u2192 permanent skills. (3) Team propagation (per-commit): instincts committed to git \u2192 whole team inherits. Over weeks, your repo develops a memory that makes every Copilot session more effective.",
+    "learn": "7 memory layers across 3 cycles: knowledge compounding, pattern learning, team propagation."
+  },
+  {
+    "id": "atv-copilot-hooks",
+    "phase": 4,
+    "emoji": "\ud83e\ude9d",
+    "title": "Copilot Lifecycle Hooks",
+    "time": "5 min",
+    "desc": "ATV scaffolds all 6 Copilot integration points: <strong>System Instructions</strong> (.github/copilot-instructions.md), <strong>Setup Steps</strong> (.github/copilot-setup-steps.yml), <strong>MCP Config</strong> (.github/copilot-mcp-config.json), <strong>Skills</strong> (.github/skills/*/SKILL.md), <strong>Agents</strong> (.github/agents/*.agent.md), <strong>File Instructions</strong> (.github/*.instructions.md). Plus observer hooks for continuous learning.",
+    "toggle": "Hooks understood \u2713",
+    "copies": [
+      {
+        "label": "System instructions",
+        "text": "cat .github/copilot-instructions.md"
+      },
+      {
+        "label": "Hook config",
+        "text": "cat .github/hooks/copilot-hooks.json"
+      },
+      {
+        "label": "Setup steps",
+        "text": "cat .github/copilot-setup-steps.yml"
+      }
+    ],
+    "stuck": "Copilot auto-discovers these files: copilot-instructions.md = system prompt every chat. Skills = SKILL.md files matched by description. Agents = .agent.md files for sub-agent orchestration. File instructions = scoped to specific file patterns via applyTo globs. Setup steps = initialization for Copilot Coding Agent. Observer hooks capture sessionStart, sessionEnd, preToolUse, postToolUse, userPromptSubmitted, errorOccurred.",
+    "learn": "6 Copilot hooks: instructions, setup steps, MCP, skills, agents, file instructions. Plus observer hooks."
+  },
+  {
+    "id": "atv-stack-customization",
+    "phase": 4,
+    "emoji": "\ud83c\udfaf",
+    "title": "Stack-Specific Customization",
+    "time": "5 min",
+    "desc": "ATV detects your stack and adds specific components. <strong>TypeScript:</strong> kieran-typescript-reviewer + TS file instructions. <strong>Python:</strong> kieran-python-reviewer + Python file instructions. <strong>Rails:</strong> 8 Rails-specific agents (including dhh-rails-reviewer) + Ruby file instructions. Multi-stack projects get all applicable components.",
+    "toggle": "Stack customization explored \u2713",
+    "copies": [
+      {
+        "label": "View file instructions",
+        "text": "ls .github/*.instructions.md"
+      },
+      {
+        "label": "View stack agents",
+        "text": "ls .github/agents/kieran-*"
+      }
+    ],
+    "stuck": "Stack detection checks: tsconfig.json \u2192 TypeScript, pyproject.toml/requirements.txt \u2192 Python, Gemfile + config/routes.rb \u2192 Rails. Multi-stack is supported \u2014 guided mode lets you select multiple. Each stack adds language-specific reviewers, file-scoped instructions (apply rules only to matching files), and relevant agents. File instructions use applyTo globs like \u201c**/*.ts\u201d.",
+    "learn": "Auto-detected stacks: TS, Python, Rails, General. Each adds language-specific agents + file instructions."
+  },
+  {
+    "id": "atv-ship-deploy",
+    "phase": 4,
+    "emoji": "\ud83d\udea2",
+    "title": "Ship & Deploy Skills",
+    "time": "5 min",
+    "desc": "When it\u2019s time to ship: <code>/gstack-ship</code> syncs main, runs tests, audits coverage, pushes, and opens a PR. <code>/gstack-land-and-deploy</code> merges \u2192 waits for CI \u2192 deploys \u2192 verifies production. <code>/gstack-canary</code> monitors for post-deploy errors. <code>/gstack-document-release</code> auto-updates docs to match what shipped.",
+    "toggle": "Ship & deploy mastered \u2713",
+    "copies": [
+      {
+        "label": "Ship (PR flow)",
+        "text": "/gstack-ship"
+      },
+      {
+        "label": "Deploy to production",
+        "text": "/gstack-land-and-deploy"
+      },
+      {
+        "label": "Post-deploy monitor",
+        "text": "/gstack-canary"
+      },
+      {
+        "label": "Update release docs",
+        "text": "/gstack-document-release"
+      }
+    ],
+    "stuck": "/gstack-ship is the \u201cready to merge\u201d flow: sync main, run full test suite, check coverage, push branch, create PR. /gstack-land-and-deploy does the merge + deploy + verification. /gstack-canary watches production for errors and regressions after deploy. /gstack-document-release automatically updates CHANGELOG and project docs. These skills give Copilot a complete shipping workflow.",
+    "learn": "/ship = PR flow. /land-and-deploy = merge + CI + deploy. /canary = post-deploy monitoring."
+  },
+  {
+    "id": "atv-graduation",
+    "phase": 4,
+    "emoji": "\ud83c\udfc6",
+    "title": "ATV Mastery \u2014 Full Lifecycle",
+    "time": "5 min",
+    "desc": "You\u2019ve mastered ATV! Run the complete lifecycle on a real feature: Think (/ce-brainstorm) \u2192 Plan (/ce-plan) \u2192 Build (/ce-work) \u2192 Review (/ce-review + /unslop) \u2192 Test (/gstack-qa) \u2192 Ship (/gstack-ship) \u2192 Deploy (/gstack-land-and-deploy) \u2192 Reflect (/ce-compound + /learn). Your repo now gets smarter with every session.",
+    "toggle": "ATV quest complete \ud83c\udfc6",
+    "copies": [
+      {
+        "label": "One-command everything",
+        "text": "/lfg"
+      },
+      {
+        "label": "Parallel swarm",
+        "text": "/slfg"
+      },
+      {
+        "label": "Extract & evolve patterns",
+        "text": "/learn"
+      }
+    ],
+    "stuck": "The full ATV lifecycle: Think \u2192 Plan \u2192 Build \u2192 Review \u2192 Test \u2192 Ship \u2192 Deploy \u2192 Reflect. /lfg runs the core pipeline in one shot. /slfg parallelizes review + test + unslop. After shipping, /ce-compound saves institutional knowledge and /learn extracts coding patterns. Over time, /evolve promotes proven patterns into permanent Copilot skills. Your repo develops a memory.",
+    "learn": "Full lifecycle mastered. Knowledge compounds, patterns evolve, your AI assistant gets permanently smarter."
+  }
+];
+const POSITIONS = [
+  {
+    "x": 4.7,
+    "y": 16.0
+  },
+  {
+    "x": 17.1,
+    "y": 32.5
+  },
+  {
+    "x": 4.7,
+    "y": 49.0
+  },
+  {
+    "x": 17.1,
+    "y": 65.5
+  },
+  {
+    "x": 4.7,
+    "y": 82.0
+  },
+  {
+    "x": 27.1,
+    "y": 16.0
+  },
+  {
+    "x": 42.5,
+    "y": 29.2
+  },
+  {
+    "x": 27.1,
+    "y": 42.4
+  },
+  {
+    "x": 42.5,
+    "y": 55.6
+  },
+  {
+    "x": 27.1,
+    "y": 68.8
+  },
+  {
+    "x": 42.5,
+    "y": 82.0
+  },
+  {
+    "x": 53.1,
+    "y": 16.0
+  },
+  {
+    "x": 68.6,
+    "y": 29.2
+  },
+  {
+    "x": 53.1,
+    "y": 42.4
+  },
+  {
+    "x": 68.6,
+    "y": 55.6
+  },
+  {
+    "x": 53.1,
+    "y": 68.8
+  },
+  {
+    "x": 68.6,
+    "y": 82.0
+  },
+  {
+    "x": 79.2,
+    "y": 16.0
+  },
+  {
+    "x": 94.7,
+    "y": 29.2
+  },
+  {
+    "x": 79.2,
+    "y": 42.4
+  },
+  {
+    "x": 94.7,
+    "y": 55.6
+  },
+  {
+    "x": 79.2,
+    "y": 68.8
+  },
+  {
+    "x": 94.7,
+    "y": 82.0
+  }
+];
+const STORAGE_KEY = 'atv-quest-' + btoa(unescape(encodeURIComponent('ATV — All The Vibes 2.0'))).slice(0,12);
+const PHASE_LABELS = ["\u2699\ufe0f Install & Explore", "\ud83d\udee0\ufe0f Compound Engineering", "\u26a1 Power Tools", "\ud83e\udde0 Memory & Mastery"];
+let state = loadState();
+function isMobile(){return window.innerWidth<=768}
+function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);if(s)return JSON.parse(s)}catch(e){}return{completed:{}}}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function isComplete(id){return !!state.completed[id]}
+function completedCount(){return CHECKPOINTS.filter(c=>isComplete(c.id)).length}
+function render(){renderPath();renderNodes();updateProgress()}
+function updateProgress(){const n=completedCount(),t=CHECKPOINTS.length,p=Math.round(n/t*100);document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressLabel').textContent=n+' of '+t}
+function getActiveIndex(){for(let i=0;i<CHECKPOINTS.length;i++){if(!isComplete(CHECKPOINTS[i].id))return i}return CHECKPOINTS.length}
+function renderPath(){if(isMobile()){document.getElementById('pathSvg').innerHTML='';return}const svg=document.getElementById('pathSvg'),w=window.innerWidth,h=window.innerHeight-52;svg.setAttribute('viewBox','0 0 '+w+' '+h);let html='';const pts=POSITIONS.map(p=>({x:p.x/100*w,y:p.y/100*h}));const ai=getActiveIndex();for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],cx1=a.x+(b.x-a.x)*.6,cy1=a.y,cx2=a.x+(b.x-a.x)*.4,cy2=b.y;const d='M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y;const done=isComplete(CHECKPOINTS[i].id)&&isComplete(CHECKPOINTS[i+1].id);const partial=isComplete(CHECKPOINTS[i].id)&&!isComplete(CHECKPOINTS[i+1].id);const active=i===ai-1||i===ai;if(done)html+='<path d="'+d+'" fill="none" stroke="var(--green)" stroke-width="3" stroke-opacity=".5"/>';else if(partial||active)html+='<path d="'+d+'" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-opacity=".4" stroke-dasharray="8 6"><animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.5s" repeatCount="indefinite"/></path>';else html+='<path d="'+d+'" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 8" stroke-opacity=".5"/>'}svg.innerHTML=html}
+function renderNodes(){if(isMobile()){renderMobileList();return}document.querySelectorAll('.node').forEach(n=>n.remove());const map=document.getElementById('questMap'),ai=getActiveIndex();CHECKPOINTS.forEach((cp,i)=>{const pos=POSITIONS[i];if(!pos)return;const node=document.createElement('div');node.className='node';if(isComplete(cp.id))node.classList.add('complete');else if(i===ai)node.classList.add('active');node.style.left=pos.x+'%';node.style.top='calc('+pos.y+'% + 0px)';const isLocked=i>ai&&!isComplete(cp.id);node.innerHTML='<div class="ring"></div><div class="inner"><span class="emoji">'+(isLocked?'🔒':cp.emoji)+'</span><svg class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>'+(isLocked?'<span class="lock"></span>':'')+'</div><div class="label">'+cp.title+'</div>';node.addEventListener('click',()=>openPanel(i));map.appendChild(node)})}
+function renderMobileList(){const list=document.getElementById('mobileList');list.innerHTML='';const ai=getActiveIndex();let lastPhase=0;CHECKPOINTS.forEach((cp,i)=>{if(cp.phase!==lastPhase){lastPhase=cp.phase;const hdr=document.createElement('div');hdr.className='m-phase-header';hdr.textContent=PHASE_LABELS[cp.phase-1]||'Phase '+cp.phase;list.appendChild(hdr)}const item=document.createElement('div');item.className='m-item';if(isComplete(cp.id))item.classList.add('complete');else if(i===ai)item.classList.add('active');else if(i>ai)item.classList.add('locked');const isLocked=i>ai&&!isComplete(cp.id);item.innerHTML='<div class="m-node">'+(isComplete(cp.id)?'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':(isLocked?'🔒':cp.emoji))+'</div><div class="m-text"><div class="m-title">'+cp.title+'</div><div class="m-time">'+(cp.time?'⏱ '+cp.time:'')+'</div></div>';item.addEventListener('click',()=>openPanel(i));list.appendChild(item)})}let currentPanel=-1;
+function openPanel(idx){currentPanel=idx;const cp=CHECKPOINTS[idx];document.getElementById('panelEmoji').textContent=cp.emoji;document.getElementById('panelTitle').textContent=cp.title;document.getElementById('panelTime').textContent=cp.time?'⏱ '+cp.time:'';let html='<div class="desc">'+cp.desc+'</div>';if(cp.substeps){html+='<ol class="substeps">';cp.substeps.forEach(s=>html+='<li>'+s+'</li>');html+='</ol>'}if(cp.copies){html+='<div class="copy-group">';cp.copies.forEach(c=>{html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">'+c.label+'</div><div class="copy-block"><span class="copy-text">'+escHtml(c.text)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(c.text)+'\')" title="Copy">📋</button></div></div>'});html+='</div>'}if(cp.copyText&&!cp.copies){html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+(cp.copyLabel||'Copy')+'</div><div class="copy-block"><span class="copy-text">'+escHtml(cp.copyText)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(cp.copyText)+'\')" title="Copy">📋</button></div></div>'}if(cp.learn){html+='<div style="font-size:13px;color:var(--text-muted)">📚 <b>What you learn:</b> '+cp.learn+'</div>'}if(cp.rar_url){html+='<a href="'+cp.rar_url+'" target="_blank" rel="noopener" class="rar-card"><div class="rar-card-icon">🧩</div><div class="rar-card-info"><div class="rar-card-label">RAPP Agent Repository</div><div class="rar-card-name">'+escHtml(cp.rar_name)+'</div></div><div class="rar-card-arrow">→</div></a>'}const checked=isComplete(cp.id);html+='<button class="toggle-done '+(checked?'checked':'')+'" onclick="toggleDone(\''+cp.id+'\',this)"><span class="dot">'+(checked?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':'')+'</span><span>'+(cp.toggle||'Done ✓')+'</span></button>';if(cp.stuck){html+='<div><button class="stuck-toggle" onclick="this.nextElementSibling.classList.toggle(\'open\')">🆘 I\'m stuck</button><div class="stuck-content"><p>'+cp.stuck+'</p></div></div>'}document.getElementById('panelBody').innerHTML=html;document.getElementById('overlay').classList.add('open');document.getElementById('panel').classList.add('open')}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');currentPanel=-1}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escAttr(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function copyText(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)}).catch(()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)})}
+function toggleDone(id,btn){if(isComplete(id)){delete state.completed[id];btn.classList.remove('checked');btn.querySelector('.dot').innerHTML=''}else{state.completed[id]=true;btn.classList.add('checked');btn.querySelector('.dot').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>';celebrate(id)}saveState();render()}
+function celebrate(id){const idx=CHECKPOINTS.findIndex(c=>c.id===id);let x,y;if(isMobile()){const items=document.querySelectorAll('.m-item');if(items[idx]){const r=items[idx].getBoundingClientRect();x=r.left+r.width/2;y=r.top+r.height/2}else return}else{const pos=POSITIONS[idx];if(!pos)return;x=pos.x/100*window.innerWidth;y=pos.y/100*(window.innerHeight-52)+52}spawnParticles(x,y,12);for(let p=1;p<=4;p++){const phase=CHECKPOINTS.filter(c=>c.phase===p);if(phase.every(c=>isComplete(c.id))&&id===phase[phase.length-1].id)setTimeout(()=>rocketAnimation(),400)}if(completedCount()===CHECKPOINTS.length)setTimeout(()=>{confettiExplosion();showBanner()},600)}
+function spawnParticles(cx,cy,count){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff'];for(let i=0;i<count;i++){const el=document.createElement('div');el.className='particle';el.style.left=cx+'px';el.style.top=cy+'px';el.style.background=colors[i%colors.length];document.body.appendChild(el);const angle=Math.random()*Math.PI*2,dist=40+Math.random()*60,dx=Math.cos(angle)*dist,dy=Math.sin(angle)*dist;el.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(0)',opacity:0}],{duration:600+Math.random()*400,easing:'cubic-bezier(.4,0,.2,1)'}).onfinish=()=>el.remove()}}
+function rocketAnimation(){const el=document.createElement('div');el.className='rocket-anim';el.textContent='🚀';el.style.left='-50px';el.style.bottom='60%';document.body.appendChild(el);el.animate([{transform:'translate(0,0) rotate(-30deg)',opacity:1},{transform:'translate('+(window.innerWidth+100)+'px,-'+(window.innerHeight/2)+'px) rotate(-30deg)',opacity:.8}],{duration:1400,easing:'cubic-bezier(.25,.1,.25,1)'}).onfinish=()=>el.remove()}
+function confettiExplosion(){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff','#f85149','#fff'];for(let i=0;i<60;i++){const el=document.createElement('div');el.className='confetti';el.style.background=colors[i%colors.length];el.style.left=Math.random()*window.innerWidth+'px';el.style.top='-20px';el.style.width=(6+Math.random()*8)+'px';el.style.height=(10+Math.random()*12)+'px';el.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(el);const x=(Math.random()-.5)*200,spin=Math.random()*720-360;el.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+x+'px,'+(window.innerHeight+40)+'px) rotate('+spin+'deg)',opacity:.6}],{duration:2000+Math.random()*1500,easing:'cubic-bezier(.25,.1,.25,1)',delay:Math.random()*300}).onfinish=()=>el.remove()}}
+function showBanner(){const b=document.getElementById('banner');b.classList.add('show');renderBadge();document.getElementById('badgeWrap').style.display='flex'}
+function renderBadge(){const c=document.getElementById('badgeCanvas'),ctx=c.getContext('2d');const w=600,h=315;const bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#0d1117');bg.addColorStop(0.5,'#161b22');bg.addColorStop(1,'#0d1117');ctx.fillStyle=bg;ctx.beginPath();ctx.roundRect(0,0,w,h,16);ctx.fill();ctx.strokeStyle='#1a7f37';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(1,1,w-2,h-2,16);ctx.stroke();ctx.strokeStyle='rgba(88,166,255,0.04)';ctx.lineWidth=1;for(let x=0;x<w;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=0;y<h;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}const bar=ctx.createLinearGradient(0,0,w,0);bar.addColorStop(0,'#0969da');bar.addColorStop(0.5,'#1a7f37');bar.addColorStop(1,'#d29922');ctx.fillStyle=bar;ctx.fillRect(0,0,w,3);ctx.font='64px serif';ctx.textAlign='center';ctx.fillText('🏎️',300,80);ctx.font='bold 28px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#e6edf3';ctx.fillText('ATV — All The Vibes 2.0',300,125);ctx.font='18px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#3fb950';ctx.fillText('\u2705 Training Quest Complete',300,158);ctx.font='14px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#8b949e';ctx.fillText(CHECKPOINTS.length+' Checkpoints \xb7 '+PHASE_LABELS.length+' Phases',300,188);const d=new Date();ctx.fillText('Completed '+d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),300,215);const dv=ctx.createLinearGradient(100,0,500,0);dv.addColorStop(0,'transparent');dv.addColorStop(0.5,'#30363d');dv.addColorStop(1,'transparent');ctx.strokeStyle=dv;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,235);ctx.lineTo(500,235);ctx.stroke();ctx.font='bold 13px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#58a6ff';ctx.fillText('blazingbeard.github.io',300,262);ctx.font='12px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#6e7681';ctx.fillText('Interactive Training Quest \xb7 Built with \ud83d\udd25 by BlazingBeard',300,285)}
+function downloadBadge(){const c=document.getElementById('badgeCanvas'),a=document.createElement('a');a.download='atv-quest-complete.png';a.href=c.toDataURL('image/png');a.click()}
+function shareBadge(){const c=document.getElementById('badgeCanvas');c.toBlob(function(blob){if(navigator.share&&navigator.canShare){const file=new File([blob],'atv-quest-complete.png',{type:'image/png'});if(navigator.canShare({files:[file]})){navigator.share({title:'ATV — All The Vibes 2.0 Training Quest Complete!',text:'I just completed the ATV — All The Vibes 2.0 Training Quest — '+CHECKPOINTS.length+' checkpoints, '+PHASE_LABELS.length+' phases! \ud83d\udd25\n\nTry it: https://blazingbeard.github.io',files:[file]}).catch(()=>{});return}}navigator.clipboard.writeText('I just completed the ATV — All The Vibes 2.0 Training Quest — '+CHECKPOINTS.length+' checkpoints, '+PHASE_LABELS.length+' phases! \ud83d\udd25\n\nTry it: https://blazingbeard.github.io').then(()=>{const btn=document.querySelector('.badge-btn.share');const orig=btn.innerHTML;btn.innerHTML='\u2713 Copied to clipboard!';setTimeout(()=>btn.innerHTML=orig,2000)})},'image/png')}
+function resetProgress(){if(!confirm('Reset all progress? This cannot be undone.'))return;state={completed:{}};saveState();closePanel();render()}
+render();window.addEventListener('resize',()=>render());if(completedCount()===CHECKPOINTS.length)setTimeout(()=>{confettiExplosion();showBanner()},800);
+</script>
+</body>
+</html>
