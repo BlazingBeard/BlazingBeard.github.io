@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Pucman Arena — Instagram Story</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1920px; overflow: hidden;
+    background: linear-gradient(180deg, #1a0533 0%, #0d0015 40%, #000000 100%);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #FFFFFF;
+  }
+  .ig-story {
+    width: 1080px; height: 1920px;
+    position: relative;
+    display: flex; flex-direction: column;
+  }
+  /* Progress bars */
+  .ig-progress {
+    display: flex; gap: 6px;
+    padding: 16px 16px 0;
+  }
+  .ig-progress-bar {
+    flex: 1; height: 3px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+  }
+  .ig-progress-bar.active {
+    background: #FFFFFF;
+  }
+  /* Top bar */
+  .ig-top {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 20px;
+  }
+  .ig-story-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #833AB4, #FD1D1D, #F77737);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    border: 2px solid rgba(255,255,255,0.3);
+  }
+  .ig-story-user {
+    font-size: 18px; font-weight: 600;
+    color: #FFFFFF;
+  }
+  .ig-story-time {
+    font-size: 16px; color: rgba(255,255,255,0.6);
+  }
+  .ig-story-menu {
+    margin-left: auto;
+    font-size: 24px; color: #FFFFFF;
+    cursor: pointer;
+    letter-spacing: 2px;
+  }
+  /* Center content */
+  .ig-center {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 40px;
+  }
+  .ig-round-label {
+    font-size: 22px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 20px;
+  }
+  .ig-headline {
+    font-size: 42px; font-weight: 900;
+    text-align: center;
+    line-height: 1.2;
+    text-shadow: 0 0 40px rgba(131,58,180,0.6);
+    margin-bottom: 48px;
+    max-width: 900px;
+  }
+  .ig-winner-badge {
+    display: flex; align-items: center; gap: 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 60px;
+    padding: 14px 40px;
+    margin-bottom: 48px;
+  }
+  .ig-winner-emoji {
+    font-size: 48px;
+  }
+  .ig-winner-text {
+    font-size: 28px; font-weight: 800;
+    color: #FFFFFF;
+    text-shadow: 0 0 20px #FFFFFF66;
+  }
+  .ig-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 700px;
+  }
+  .ig-stat {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 28px;
+    text-align: center;
+  }
+  .ig-stat-value {
+    font-size: 52px; font-weight: 900;
+    color: #FFFFFF;
+    text-shadow: 0 0 20px rgba(0,255,255,0.3);
+  }
+  .ig-stat-label {
+    font-size: 16px; font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 6px;
+  }
+  .ig-mvp {
+    margin-top: 40px;
+    font-size: 24px; font-weight: 700;
+    color: #FFE000;
+    text-shadow: 0 0 20px rgba(255,224,0,0.3);
+  }
+  /* Bottom bar */
+  .ig-bottom {
+    padding: 20px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .ig-message-input {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 24px;
+    padding: 14px 22px;
+    font-size: 18px;
+    color: rgba(255,255,255,0.5);
+  }
+  .ig-bottom-icon {
+    font-size: 28px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="ig-story">
+  <div class="ig-progress">
+    <div class="ig-progress-bar active"></div>
+    <div class="ig-progress-bar"></div>
+    <div class="ig-progress-bar"></div>
+  </div>
+
+  <div class="ig-top">
+    <div class="ig-story-avatar">🟡</div>
+    <span class="ig-story-user">pucman_arena</span>
+    <span class="ig-story-time">2h</span>
+    <span class="ig-story-menu">···</span>
+  </div>
+
+  <div class="ig-center">
+    <div class="ig-round-label">Round 2</div>
+    <div class="ig-headline">2. ROUND HEADLINE — The Punchy Sentence  
+&quot;BLINKY LEADS THE PACK TO VICTORY: ROUND 2 ENDS WITH GHOST SUPERIORITY IN JUST 72 TICKS!&quot;
+
+---
+
+###</div>
+
+    <div class="ig-winner-badge">
+      <span class="ig-winner-emoji">🏆</span>
+      <span class="ig-winner-text">GHOSTS WINS</span>
+    </div>
+
+    <div class="ig-stats-grid">
+      <div class="ig-stat">
+        <div class="ig-stat-value">50</div>
+        <div class="ig-stat-label">Score</div>
+      </div>
+      <div class="ig-stat">
+        <div class="ig-stat-value">5/244</div>
+        <div class="ig-stat-label">Dots</div>
+      </div>
+      <div class="ig-stat">
+        <div class="ig-stat-value">72</div>
+        <div class="ig-stat-label">Ticks</div>
+      </div>
+      <div class="ig-stat">
+        <div class="ig-stat-value">0</div>
+        <div class="ig-stat-label">Ghosts Eaten</div>
+      </div>
+    </div>
+
+    <div class="ig-mvp">🏆 MVP: INKY — 54 moves</div>
+  </div>
+
+  <div class="ig-bottom">
+    <div class="ig-message-input">Send message</div>
+    <span class="ig-bottom-icon">❤️</span>
+    <span class="ig-bottom-icon">✈️</span>
+  </div>
+</div>
+</body>
+</html>

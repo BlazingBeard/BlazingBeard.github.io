@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pucman Arena — BlazingBeard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --border: #30363d;
+            --blue: #58a6ff;
+            --green: #3fb950;
+            --purple: #bc8cff;
+            --pucman-yellow: #FFE000;
+            --ghost-red: #FF0000;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Subtle grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(88, 166, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(88, 166, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Animated pac-dots floating in background */
+        .bg-dots {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .pac-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--pucman-yellow);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatDot linear infinite;
+        }
+
+        .pac-dot:nth-child(1)  { left: 5%;  animation-duration: 18s; animation-delay: 0s; }
+        .pac-dot:nth-child(2)  { left: 15%; animation-duration: 22s; animation-delay: 3s; }
+        .pac-dot:nth-child(3)  { left: 25%; animation-duration: 16s; animation-delay: 6s; }
+        .pac-dot:nth-child(4)  { left: 35%; animation-duration: 20s; animation-delay: 1s; }
+        .pac-dot:nth-child(5)  { left: 45%; animation-duration: 24s; animation-delay: 4s; }
+        .pac-dot:nth-child(6)  { left: 55%; animation-duration: 19s; animation-delay: 7s; }
+        .pac-dot:nth-child(7)  { left: 65%; animation-duration: 21s; animation-delay: 2s; }
+        .pac-dot:nth-child(8)  { left: 75%; animation-duration: 17s; animation-delay: 5s; }
+        .pac-dot:nth-child(9)  { left: 85%; animation-duration: 23s; animation-delay: 8s; }
+        .pac-dot:nth-child(10) { left: 95%; animation-duration: 15s; animation-delay: 0.5s; }
+
+        @keyframes floatDot {
+            0%   { transform: translateY(110vh) scale(1); opacity: 0; }
+            5%   { opacity: 0.3; }
+            50%  { opacity: 0.15; }
+            95%  { opacity: 0.3; }
+            100% { transform: translateY(-10vh) scale(0.5); opacity: 0; }
+        }
+
+        /* Ghost eyes floating */
+        .ghost-eyes {
+            position: absolute;
+            width: 30px;
+            height: 16px;
+            opacity: 0;
+            animation: floatGhostEyes linear infinite;
+        }
+
+        .ghost-eyes::before,
+        .ghost-eyes::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+        }
+
+        .ghost-eyes::before { left: 2px; }
+        .ghost-eyes::after  { right: 2px; }
+
+        .ghost-eyes .pupil-l,
+        .ghost-eyes .pupil-r {
+            position: absolute;
+            width: 5px;
+            height: 6px;
+            background: #2233bb;
+            border-radius: 50%;
+            top: 5px;
+        }
+
+        .ghost-eyes .pupil-l { left: 5px; }
+        .ghost-eyes .pupil-r { right: 5px; }
+
+        .ghost-eyes:nth-of-type(1) { left: 10%; animation-duration: 30s; animation-delay: 5s; }
+        .ghost-eyes:nth-of-type(2) { left: 50%; animation-duration: 35s; animation-delay: 12s; }
+        .ghost-eyes:nth-of-type(3) { left: 80%; animation-duration: 28s; animation-delay: 20s; }
+
+        @keyframes floatGhostEyes {
+            0%   { transform: translateY(110vh); opacity: 0; }
+            5%   { opacity: 0.12; }
+            50%  { opacity: 0.08; }
+            95%  { opacity: 0.12; }
+            100% { transform: translateY(-10vh); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ---- HEADER ---- */
+        header {
+            text-align: center;
+            padding: 80px 0 40px;
+        }
+
+        .logo-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--pucman-yellow), #ffaa00, var(--pucman-yellow));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s ease-in-out infinite;
+            text-shadow: none;
+            filter: drop-shadow(0 0 30px rgba(255, 224, 0, 0.35))
+                    drop-shadow(0 0 60px rgba(255, 224, 0, 0.15));
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
+        }
+
+        .pucman-icon {
+            display: inline-block;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-right: 8px;
+            animation: chomp 0.6s steps(2) infinite;
+        }
+
+        @keyframes chomp {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        .tagline {
+            margin-top: 16px;
+            font-size: clamp(1rem, 2.2vw, 1.35rem);
+            font-weight: 600;
+            color: var(--purple);
+            letter-spacing: 0.5px;
+        }
+
+        .description {
+            margin-top: 12px;
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        /* Divider dots */
+        .dot-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 40px 0;
+        }
+
+        .dot-divider span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--pucman-yellow);
+            opacity: 0.5;
+        }
+
+        .dot-divider span:nth-child(2) { opacity: 0.35; width: 6px; height: 6px; }
+        .dot-divider span:nth-child(4) { opacity: 0.35; width: 6px; height: 6px; }
+        .dot-divider span:nth-child(1),
+        .dot-divider span:nth-child(5) { opacity: 0.2; width: 5px; height: 5px; }
+
+        /* ---- SECTION TITLES ---- */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .accent-bar {
+            width: 4px;
+            height: 24px;
+            border-radius: 2px;
+            background: var(--blue);
+        }
+
+        /* ---- CARDS GRID ---- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 48px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--blue), var(--purple));
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--blue);
+            box-shadow: 0 8px 30px rgba(88, 166, 255, 0.08),
+                        0 0 1px rgba(88, 166, 255, 0.3);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 1.6rem;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .tag {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(88, 166, 255, 0.1);
+            color: var(--blue);
+            border: 1px solid rgba(88, 166, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag.green {
+            background: rgba(63, 185, 80, 0.1);
+            color: var(--green);
+            border-color: rgba(63, 185, 80, 0.2);
+        }
+
+        .tag.purple {
+            background: rgba(188, 140, 255, 0.1);
+            color: var(--purple);
+            border-color: rgba(188, 140, 255, 0.2);
+        }
+
+        .tag.yellow {
+            background: rgba(255, 224, 0, 0.1);
+            color: var(--pucman-yellow);
+            border-color: rgba(255, 224, 0, 0.2);
+        }
+
+        .tag.red {
+            background: rgba(255, 0, 0, 0.08);
+            color: #ff6b6b;
+            border-color: rgba(255, 0, 0, 0.15);
+        }
+
+        /* Arena cards get special glow */
+        .card.arena-card:hover {
+            box-shadow: 0 8px 30px rgba(255, 224, 0, 0.06),
+                        0 0 1px rgba(255, 224, 0, 0.25);
+            border-color: rgba(255, 224, 0, 0.4);
+        }
+
+        .card.arena-card::before {
+            background: linear-gradient(90deg, var(--pucman-yellow), var(--ghost-red));
+        }
+
+        /* ---- VIDEO SECTION ---- */
+        .videos-section {
+            margin-bottom: 48px;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+            gap: 24px;
+        }
+
+        @media (max-width: 540px) {
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .video-card:hover {
+            border-color: var(--purple);
+            box-shadow: 0 4px 20px rgba(188, 140, 255, 0.08);
+        }
+
+        .video-card video {
+            width: 100%;
+            display: block;
+            background: #000;
+        }
+
+        .video-card .video-info {
+            padding: 16px 20px;
+        }
+
+        .video-card .video-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .video-card .video-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ---- FOOTER ---- */
+        footer {
+            text-align: center;
+            padding: 48px 0 60px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-back {
+            display: inline-block;
+            color: var(--blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-back:hover {
+            color: var(--purple);
+        }
+
+        .footer-credit {
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .footer-credit a {
+            color: var(--green);
+            text-decoration: none;
+        }
+
+        .footer-credit a:hover {
+            text-decoration: underline;
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 700px) {
+            header { padding: 48px 0 24px; }
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background personality: floating pac-dots and ghost eyes -->
+    <div class="bg-dots">
+        <div class="pac-dot"></div>
+        <div class="pac-dot"></div>
+        <div class="pac-dot"></div>
+        <div class="pac-dot"></div>
+        <div class="pac-dot"></div>
+        <div class="pac-dot"></div>
+        <div class="pac-dot"></div>
+        <div class="pac-dot"></div>
+        <div class="pac-dot"></div>
+        <div class="pac-dot"></div>
+
+        <div class="ghost-eyes">
+            <span class="pupil-l"></span>
+            <span class="pupil-r"></span>
+        </div>
+        <div class="ghost-eyes">
+            <span class="pupil-l"></span>
+            <span class="pupil-r"></span>
+        </div>
+        <div class="ghost-eyes">
+            <span class="pupil-l"></span>
+            <span class="pupil-r"></span>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header>
+            <div class="logo-title">
+                <span class="pucman-icon">ᗧ</span> Pucman Arena
+            </div>
+            <p class="tagline">5 AI agents. 1 maze. No scripts. Pure instinct.</p>
+            <p class="description">
+                AI-powered Pac-Man where every character is an independent AI agent
+                making real-time decisions. No scripted paths, no state machines —
+                just agents reading the maze and reacting.
+            </p>
+        </header>
+
+        <div class="dot-divider">
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+        <!-- ===== ARENAS ===== -->
+        <section>
+            <div class="section-title">
+                <span class="accent-bar"></span> Arenas
+            </div>
+            <div class="cards-grid">
+
+                <a href="arena.html" class="card arena-card">
+                    <div class="card-icon">🏟️</div>
+                    <div class="card-title">Round 1 Arena</div>
+                    <div class="card-desc">Pucman's debut. 48 ticks of pure chaos.</div>
+                    <div class="card-tags">
+                        <span class="tag yellow">Round 1</span>
+                        <span class="tag green">Pucman Won</span>
+                    </div>
+                </a>
+
+                <a href="arena_round2.html" class="card arena-card">
+                    <div class="card-icon">🏟️</div>
+                    <div class="card-title">Round 2 Arena</div>
+                    <div class="card-desc">Ghosts strike back. 72 ticks of calculated dominance.</div>
+                    <div class="card-tags">
+                        <span class="tag yellow">Round 2</span>
+                        <span class="tag red">Ghosts Won</span>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- ===== TOOLS & ANALYTICS ===== -->
+        <section>
+            <div class="section-title">
+                <span class="accent-bar" style="background: var(--purple);"></span> Tools &amp; Analytics
+            </div>
+            <div class="cards-grid">
+
+                <a href="dashboard.html" class="card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">War Room Dashboard</div>
+                    <div class="card-desc">Season stats, leaderboards, and performance analytics.</div>
+                    <div class="card-tags">
+                        <span class="tag purple">Stats</span>
+                        <span class="tag purple">Analytics</span>
+                    </div>
+                </a>
+
+                <a href="arcade/index.html" class="card">
+                    <div class="card-icon">🎮</div>
+                    <div class="card-title">Play Arcade</div>
+                    <div class="card-desc">Play the classic yourself — same maze, your moves.</div>
+                    <div class="card-tags">
+                        <span class="tag green">Playable</span>
+                        <span class="tag green">Browser Game</span>
+                    </div>
+                </a>
+
+                <a href="replay_viewer.html" class="card">
+                    <div class="card-icon">🎬</div>
+                    <div class="card-title">Game Replays</div>
+                    <div class="card-desc">Watch every tick, every decision, every close call.</div>
+                    <div class="card-tags">
+                        <span class="tag">Replay</span>
+                        <span class="tag">Tick-by-tick</span>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- ===== RECAPS ===== -->
+        <section>
+            <div class="section-title">
+                <span class="accent-bar" style="background: var(--green);"></span> Match Recaps
+            </div>
+            <div class="cards-grid">
+
+                <a href="game_data/round_1_recap.html" class="card">
+                    <div class="card-icon">📰</div>
+                    <div class="card-title">Round 1 Recap</div>
+                    <div class="card-desc">Full broadcast breakdown of the debut match.</div>
+                    <div class="card-tags">
+                        <span class="tag yellow">Round 1</span>
+                    </div>
+                </a>
+
+                <a href="game_data/round_2_recap.html" class="card">
+                    <div class="card-icon">📰</div>
+                    <div class="card-title">Round 2 Recap</div>
+                    <div class="card-desc">Announcer's play-by-play of the ghost takeover.</div>
+                    <div class="card-tags">
+                        <span class="tag yellow">Round 2</span>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <div class="dot-divider">
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+        <!-- ===== FEATURED VIDEOS ===== -->
+        <section class="videos-section">
+            <div class="section-title">
+                <span class="accent-bar" style="background: var(--pucman-yellow);"></span> Featured Videos
+            </div>
+            <div class="videos-grid">
+
+                <div class="video-card">
+                    <video controls preload="metadata" poster="">
+                        <source src="game_data/round_2_videos/highlights.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-info">
+                        <div class="video-title">Round 2 Highlights</div>
+                        <div class="video-desc">Best moments from the ghost takeover — key ambushes, close escapes, and the final capture.</div>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <video controls preload="metadata" poster="">
+                        <source src="game_data/round_1_videos/full_presentation.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-info">
+                        <div class="video-title">Round 1 Full Presentation</div>
+                        <div class="video-desc">The complete debut match — every tick from first move to Pucman's victory lap.</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===== FOOTER ===== -->
+        <footer>
+            <a href="../index.html" class="footer-back">← Back to BlazingBeard Quests</a>
+            <p class="footer-credit">
+                Built with <a href="https://github.com/kody-w/rapp-installer" target="_blank" rel="noopener">RAPP Brainstem</a> — local-first AI agent platform
+            </p>
+        </footer>
+
+    </div>
+
+</body>
+</html>

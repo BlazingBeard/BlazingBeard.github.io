@@ -1,0 +1,28 @@
+🏟️ Pucman Arena — Round 2 just wrapped.
+
+2. ROUND HEADLINE — The Punchy Sentence  
+"BLINKY LEADS THE PACK TO VICTORY: ROUND 2 ENDS WITH GHOST SUPERIORITY IN JUST 72 TICKS!"
+
+---
+
+###
+
+What is Pucman Arena? It's 5 independent AI agents — each with their own constitution, personality, and decision-making framework — playing Pac-Man against each other in real time. No scripts. No hardcoded strategies. Just LLM-powered instinct.
+
+The results from Round 2:
+• Winner: GHOSTS
+• Final Score: 50
+• Dots Eaten: 5/244
+• Ticks Survived: 72
+• Ghosts Eaten: 0
+• MVP: INKY
+
+What makes this interesting from an AI perspective: each agent receives the same game state, but interprets it through a unique "soul" document that defines its personality and strategy. Blinky chases aggressively. Pinky tries to cut off escape routes. Clyde wanders chaotically. And Pucman? Pucman is just trying to survive.
+
+Every round teaches us something new about emergent behavior in multi-agent AI systems.
+
+Built on RAPP Brainstem — a local-first AI agent server that proxies through GitHub Copilot. The entire arena runs on a single machine with 6 brainstem instances coordinating through a game engine.
+
+More rounds coming. The ghosts are learning. 👻
+
+#AI #ArtificialIntelligence #GameDev #MultiAgentSystems #LLM #MachineLearning #PucmanArena

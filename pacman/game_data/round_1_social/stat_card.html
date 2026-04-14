@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200">
+<title>Pucman Arena — Round 1 Stat Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 675px; overflow: hidden;
+    background: #0a0a1a;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    color: #e0e0e0;
+  }
+  .card {
+    width: 1200px; height: 675px;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
+    display: flex; flex-direction: column;
+    padding: 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #ff0040, #ff00ff, #00ffff, #00ff40);
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .brand {
+    font-size: 14px; text-transform: uppercase; letter-spacing: 4px;
+    color: #ff00ff; opacity: 0.8;
+  }
+  .round-badge {
+    background: rgba(255, 0, 255, 0.15);
+    border: 1px solid rgba(255, 0, 255, 0.4);
+    border-radius: 8px; padding: 6px 16px;
+    font-size: 16px; font-weight: 700; color: #ff00ff;
+  }
+  .headline {
+    font-size: 28px; font-weight: 800; line-height: 1.2;
+    color: #ffffff; margin-bottom: 24px;
+    text-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+    max-height: 70px; overflow: hidden;
+  }
+  .winner-row {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 20px;
+  }
+  .winner-label {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 2px;
+    color: #888;
+  }
+  .winner-name {
+    font-size: 36px; font-weight: 900;
+    color: #FFFFFF;
+    text-shadow: 0 0 30px #FFFFFF66;
+  }
+  .stats-grid {
+    display: flex; gap: 24px; margin-bottom: 24px;
+  }
+  .stat-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px; padding: 12px 20px;
+    flex: 1; text-align: center;
+  }
+  .stat-value {
+    font-size: 28px; font-weight: 800; color: #00ffff;
+  }
+  .stat-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: #888; margin-top: 2px;
+  }
+  .entities {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    gap: 6px;
+  }
+  .entity-row {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 14px;
+  }
+  .entity-name {
+    width: 140px; font-weight: 700;
+  }
+  .entity-stat {
+    color: #aaa; font-size: 13px;
+  }
+  .footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .mvp {
+    font-size: 14px; color: #FFE000;
+  }
+  .hashtag {
+    font-size: 12px; color: #666;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="brand">Pucman Arena</div>
+    <div class="round-badge">ROUND 1</div>
+  </div>
+
+  <div class="headline">One Punchy Sentence**
+
+&quot;BLINKY CLOSES THE GAP — ROUND ONE ENDS IN A 48-TICK GHOST MASTERCLASS!&quot;
+
+---
+
+**</div>
+
+  <div class="winner-row">
+    <span class="winner-label">Winner</span>
+    <span class="winner-name">🏆 GHOSTS</span>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-value">80</div>
+      <div class="stat-label">Final Score</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">8/244</div>
+      <div class="stat-label">Dots Eaten</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">48</div>
+      <div class="stat-label">Ticks Survived</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Ghosts Eaten</div>
+    </div>
+  </div>
+
+  <div class="entities">
+            <div class="entity-row">
+                <span class="entity-name" style="color:#FFE000">🟡 PUCMAN</span>
+                <span class="entity-stat">34 moves</span>
+                <span class="entity-stat">4.69s avg</span>
+            </div>
+            <div class="entity-row">
+                <span class="entity-name" style="color:#FF0000">👹 BLINKY</span>
+                <span class="entity-stat">36 moves</span>
+                <span class="entity-stat">4.63s avg</span>
+            </div>
+            <div class="entity-row">
+                <span class="entity-name" style="color:#FFB8FF">👻 PINKY</span>
+                <span class="entity-stat">27 moves</span>
+                <span class="entity-stat">3.57s avg</span>
+            </div>
+            <div class="entity-row">
+                <span class="entity-name" style="color:#00FFFF">👾 INKY</span>
+                <span class="entity-stat">32 moves</span>
+                <span class="entity-stat">2.22s avg</span>
+            </div>
+            <div class="entity-row">
+                <span class="entity-name" style="color:#FFB852">🎃 CLYDE</span>
+                <span class="entity-stat">15 moves</span>
+                <span class="entity-stat">1.73s avg</span>
+            </div>
+  </div>
+
+  <div class="footer">
+    <div class="mvp">🏆 MVP: BLINKY — 36 moves</div>
+    <div class="hashtag">#PucmanArena #AIGaming #RunningMan</div>
+  </div>
+</div>
+</body>
+</html>

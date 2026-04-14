@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PUCMAN ARENA — COMMAND CENTER</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: 'Courier New', 'Consolas', monospace;
+  background: #0a0a0f;
+  color: #c0c0c0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0d0d14; }
+::-webkit-scrollbar-thumb { background: #1a1a3e; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #00aaff44; }
+a { color: #00aaff; text-decoration: none; }
+a:hover { text-shadow: 0 0 8px #00aaff88; }
+
+/* ═══════════════════════════════════════════════════════════════
+   LOADING SCREEN
+   ═══════════════════════════════════════════════════════════════ */
+#load-screen {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: #0a0a0f;
+  transition: opacity 0.5s ease;
+}
+#load-screen.hidden { opacity: 0; pointer-events: none; }
+#load-screen h1 {
+  font-size: 2.4rem; letter-spacing: 0.25em;
+  color: #FFD700;
+  text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD70088, 0 0 80px #FFD70044;
+  margin-bottom: 0.3rem;
+}
+#load-screen .subtitle {
+  font-size: 0.85rem; color: #00aaff; letter-spacing: 0.15em;
+  text-shadow: 0 0 10px #00aaff88;
+  margin-bottom: 2rem;
+}
+.load-box {
+  border: 2px dashed #00aaff44; border-radius: 12px;
+  padding: 2rem 3rem; text-align: center;
+  transition: all 0.3s ease; max-width: 520px;
+}
+.load-box:hover { border-color: #00aaff; background: #00aaff08; box-shadow: 0 0 30px #00aaff15; }
+.load-box .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.load-box .label { color: #666; font-size: 0.82rem; line-height: 1.6; }
+.load-box .label span { color: #00aaff; cursor: pointer; text-decoration: underline; }
+.load-btn {
+  display: inline-block; margin: 0.6rem 0.4rem; padding: 0.55rem 1.4rem;
+  background: #00aaff18; border: 1px solid #00aaff55; border-radius: 6px;
+  color: #00aaff; font-family: inherit; font-size: 0.82rem; cursor: pointer;
+  transition: all 0.2s;
+}
+.load-btn:hover { background: #00aaff30; border-color: #00aaff; box-shadow: 0 0 12px #00aaff33; }
+.load-status { margin-top: 1rem; font-size: 0.75rem; color: #00ff8866; min-height: 1.2em; }
+input[type="file"] { display: none; }
+.loading-ghosts { display: flex; gap: 16px; margin-top: 1.5rem; opacity: 0.5; }
+.loading-ghost {
+  width: 20px; height: 20px; border-radius: 50% 50% 4px 4px;
+  animation: ghostFloat 2s ease-in-out infinite;
+}
+.loading-ghost:nth-child(1) { background: #FF0000; animation-delay: 0s; }
+.loading-ghost:nth-child(2) { background: #FFB8FF; animation-delay: 0.25s; }
+.loading-ghost:nth-child(3) { background: #00FFFF; animation-delay: 0.5s; }
+.loading-ghost:nth-child(4) { background: #FFB852; animation-delay: 0.75s; }
+@keyframes ghostFloat { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-8px); } }
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN DASHBOARD
+   ═══════════════════════════════════════════════════════════════ */
+#dashboard { display: none; }
+#dashboard.active { display: block; }
+
+/* Header */
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: linear-gradient(180deg, #0e0e18 0%, #0a0a0f 100%);
+  border-bottom: 1px solid #00aaff22;
+  padding: 0.9rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 4px 30px #00000088;
+}
+.header h1 {
+  font-size: 1.3rem; letter-spacing: 0.2em;
+  color: #00aaff;
+  text-shadow: 0 0 15px #00aaff88, 0 0 30px #00aaff44;
+}
+.header-stats {
+  display: flex; gap: 1.5rem; font-size: 0.78rem;
+}
+.header-stat { display: flex; flex-direction: column; align-items: center; }
+.header-stat .val { color: #00ff88; font-size: 1.1rem; font-weight: bold; text-shadow: 0 0 8px #00ff8866; }
+.header-stat .lbl { color: #666; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.header-actions { display: flex; gap: 0.5rem; }
+
+.content { padding: 1rem 1.5rem 3rem; max-width: 1440px; margin: 0 auto; }
+.section-title {
+  font-size: 0.75rem; letter-spacing: 0.2em; color: #00aaff88;
+  text-transform: uppercase; margin: 1.6rem 0 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #00aaff15;
+}
+.section-title::before { content: '▸ '; color: #00aaff44; }
+
+/* ═══════════════════════════════════════════════════════════════
+   FIGHTER CARDS
+   ═══════════════════════════════════════════════════════════════ */
+.fighters { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.8rem; }
+.fighter-card {
+  background: #111827;
+  border: 1px solid var(--entity-color, #333);
+  border-radius: 10px;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 15px color-mix(in srgb, var(--entity-color, #333) 25%, transparent),
+              inset 0 0 30px #00000066;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.fighter-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px color-mix(in srgb, var(--entity-color, #333) 40%, transparent),
+              inset 0 0 30px #00000044;
+}
+.fighter-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--entity-color, #333);
+  box-shadow: 0 0 10px var(--entity-color, #333);
+}
+.fighter-name {
+  font-size: 1rem; font-weight: bold;
+  color: var(--entity-color, #ccc);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--entity-color, #333) 50%, transparent);
+}
+.fighter-title {
+  font-size: 0.6rem; letter-spacing: 0.12em; color: #888;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin-bottom: 0.8rem;
+}
+.fighter-record {
+  display: flex; gap: 0.8rem; margin-bottom: 0.6rem; font-size: 0.82rem;
+}
+.fighter-record .w { color: #00ff88; }
+.fighter-record .l { color: #ff4466; }
+.fighter-stat {
+  font-size: 0.72rem; color: #999; margin-bottom: 0.3rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+.fighter-stat b {
+  color: #ddd; font-family: 'Courier New', monospace;
+}
+.fighter-avatar {
+  position: absolute; top: 0.8rem; right: 0.8rem;
+  width: 28px; height: 28px; border-radius: 50% 50% 4px 4px;
+  background: var(--entity-color, #666);
+  opacity: 0.3;
+}
+.fighter-card[data-entity="pucman"] .fighter-avatar {
+  border-radius: 50%;
+  background: radial-gradient(circle at 65% 35%, #0a0a0f 18%, var(--entity-color) 20%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LEADERBOARD
+   ═══════════════════════════════════════════════════════════════ */
+.leaderboard-wrap { overflow-x: auto; }
+.leaderboard {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.leaderboard th {
+  background: #111827; color: #00aaff; font-size: 0.7rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.6rem 1rem; text-align: left;
+  border-bottom: 1px solid #00aaff22;
+  cursor: pointer; user-select: none;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.leaderboard th:hover { color: #00ff88; }
+.leaderboard th.sorted { color: #00ff88; }
+.leaderboard th.sorted::after { content: ' ▼'; font-size: 0.6rem; }
+.leaderboard th.sorted.asc::after { content: ' ▲'; }
+.leaderboard td {
+  padding: 0.55rem 1rem;
+  border-bottom: 1px solid #ffffff08;
+}
+.leaderboard tr:hover td { background: #00aaff08; }
+.leaderboard tr.leader td {
+  background: #FFD70008;
+  border-bottom-color: #FFD70022;
+}
+.leaderboard .rank { color: #666; font-size: 0.75rem; }
+.leaderboard .rank-1 { color: #FFD700; font-weight: bold; }
+.leaderboard .entity-name {
+  font-weight: bold; display: flex; align-items: center; gap: 0.5rem;
+}
+.entity-dot {
+  width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0;
+}
+.leaderboard .win-pct { color: #00ff88; }
+
+/* ═══════════════════════════════════════════════════════════════
+   CHARTS
+   ═══════════════════════════════════════════════════════════════ */
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.chart-card {
+  background: #111827; border: 1px solid #1e293b; border-radius: 10px;
+  padding: 1rem;
+}
+.chart-card h3 {
+  font-size: 0.72rem; letter-spacing: 0.1em; color: #888;
+  text-transform: uppercase; margin-bottom: 0.8rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+.chart-wrap { position: relative; height: 220px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ROUND HISTORY
+   ═══════════════════════════════════════════════════════════════ */
+.round-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 500px; overflow-y: auto; padding-right: 0.5rem; }
+.round-card {
+  background: #111827; border: 1px solid #1e293b; border-radius: 8px;
+  padding: 0.7rem 1rem; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.round-card:hover { border-color: #00aaff44; background: #131b2e; }
+.round-card.expanded { border-color: #00aaff33; }
+.round-header {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.82rem;
+}
+.round-num { color: #00aaff; font-weight: bold; }
+.round-winner { font-size: 0.75rem; padding: 0.15rem 0.6rem; border-radius: 4px; font-weight: bold; }
+.round-winner.pucman { background: #FFD70018; color: #FFD700; }
+.round-winner.ghosts { background: #ff446618; color: #ff4466; }
+.round-meta { display: flex; gap: 1.2rem; font-size: 0.72rem; color: #666; }
+.round-expand-icon { color: #444; font-size: 0.7rem; transition: transform 0.2s; }
+.round-card.expanded .round-expand-icon { transform: rotate(90deg); }
+.round-detail {
+  display: none; margin-top: 0.8rem; padding-top: 0.8rem;
+  border-top: 1px solid #ffffff08;
+  font-size: 0.78rem; line-height: 1.6;
+}
+.round-card.expanded .round-detail { display: block; }
+.detail-row { margin-bottom: 0.4rem; }
+.detail-label {
+  color: #00aaff88; font-size: 0.68rem; text-transform: uppercase;
+  letter-spacing: 0.08em; font-family: 'Segoe UI', Arial, sans-serif;
+}
+.detail-value { color: #ccc; }
+.replay-link {
+  display: inline-block; margin-top: 0.5rem; padding: 0.3rem 0.8rem;
+  background: #00aaff15; border: 1px solid #00aaff33; border-radius: 4px;
+  font-size: 0.72rem;
+}
+.replay-link:hover { background: #00aaff25; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TRAINING LOG
+   ═══════════════════════════════════════════════════════════════ */
+.training-section { margin-bottom: 2rem; }
+.training-toggle {
+  width: 100%; text-align: left; background: #111827;
+  border: 1px solid #1e293b; border-radius: 8px;
+  padding: 0.7rem 1rem; color: #ccc; font-family: inherit;
+  font-size: 0.82rem; cursor: pointer; transition: all 0.2s;
+}
+.training-toggle:hover { border-color: #00aaff44; }
+.training-toggle::before { content: '▸ '; color: #00aaff66; }
+.training-toggle.open::before { content: '▾ '; }
+.training-body {
+  display: none; padding: 0.8rem 1rem; background: #0d1117;
+  border: 1px solid #1e293b; border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+.training-toggle.open + .training-body { display: block; }
+.training-prompt {
+  margin-bottom: 0.8rem; padding: 0.6rem; background: #111827;
+  border-radius: 6px; border-left: 3px solid #00aaff44;
+}
+.training-prompt .q { color: #00aaff; font-size: 0.78rem; margin-bottom: 0.3rem; }
+.training-prompt .responses { font-size: 0.72rem; color: #999; }
+.training-prompt .resp-entity { color: #bbb; font-weight: bold; margin-right: 0.3rem; }
+.coach-notes {
+  margin-top: 0.6rem; padding: 0.6rem; background: #0f1a12;
+  border: 1px solid #00ff8822; border-radius: 6px;
+  font-size: 0.75rem; color: #00ff88aa; font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════════════════════ */
+.empty-state {
+  text-align: center; padding: 2rem; color: #444;
+  font-size: 0.82rem; font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .fighters { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .fighters { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+  .header { flex-direction: column; gap: 0.5rem; text-align: center; }
+  .header h1 { font-size: 1rem; }
+}
+@media (max-width: 500px) {
+  .fighters { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes pulse { 0%,100%{ opacity: 1; } 50%{ opacity: 0.7; } }
+.pulse { animation: pulse 3s ease-in-out infinite; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.slide-in { animation: slideIn 0.4s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LOADING / DATA INPUT SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="load-screen">
+  <h1>PUCMAN ARENA</h1>
+  <div class="subtitle">C O M M A N D &nbsp; C E N T E R</div>
+  <div class="load-box">
+    <div class="icon">📡</div>
+    <div class="label">Load game data to initialize the command center</div>
+    <div style="margin-top:1rem;">
+      <button class="load-btn" onclick="loadFromServer()">⚡ Auto-Load from Server</button>
+    </div>
+    <div style="margin-top:0.3rem;">
+      <button class="load-btn" onclick="document.getElementById('dir-input').click()">📁 Load Folder</button>
+      <button class="load-btn" onclick="document.getElementById('file-input').click()">📄 Load Files</button>
+    </div>
+    <input type="file" id="dir-input" webkitdirectory multiple onchange="handleDirectoryInput(this.files)">
+    <input type="file" id="file-input" multiple accept=".json" onchange="handleFileInput(this.files)">
+    <div class="load-status" id="load-status"></div>
+  </div>
+  <div class="loading-ghosts">
+    <div class="loading-ghost"></div>
+    <div class="loading-ghost"></div>
+    <div class="loading-ghost"></div>
+    <div class="loading-ghost"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN DASHBOARD
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="dashboard">
+  <!-- Header -->
+  <div class="header">
+    <h1 class="pulse">PUCMAN ARENA — COMMAND CENTER</h1>
+    <div class="header-stats">
+      <div class="header-stat">
+        <span class="val" id="h-rounds">0</span>
+        <span class="lbl">Rounds</span>
+      </div>
+      <div class="header-stat">
+        <span class="val" id="h-puc-wins">0</span>
+        <span class="lbl">Pucman Wins</span>
+      </div>
+      <div class="header-stat">
+        <span class="val" id="h-ghost-wins">0</span>
+        <span class="lbl">Ghost Wins</span>
+      </div>
+      <div class="header-stat">
+        <span class="val" id="h-total-score">0</span>
+        <span class="lbl">Total Score</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="load-btn" onclick="refreshData()" title="Refresh data">🔄 Refresh</button>
+      <button class="load-btn" onclick="document.getElementById('file-input2').click()" title="Add more files">+ Add Files</button>
+      <input type="file" id="file-input2" multiple accept=".json" onchange="handleFileInput(this.files)" style="display:none">
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Fighter Cards -->
+    <div class="section-title">Fighter Profiles</div>
+    <div class="fighters" id="fighters"></div>
+
+    <!-- Leaderboard -->
+    <div class="section-title">Season Leaderboard</div>
+    <div class="leaderboard-wrap">
+      <table class="leaderboard" id="leaderboard">
+        <thead><tr>
+          <th data-col="rank" style="width:50px">Rank</th>
+          <th data-col="entity">Entity</th>
+          <th data-col="wins">Wins</th>
+          <th data-col="losses">Losses</th>
+          <th data-col="winpct">Win %</th>
+          <th data-col="metric">Key Metric</th>
+        </tr></thead>
+        <tbody id="lb-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Charts -->
+    <div class="section-title">Analytics</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Win Rate Over Time</h3>
+        <div class="chart-wrap"><canvas id="chart-winrate"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Score Progression</h3>
+        <div class="chart-wrap"><canvas id="chart-scores"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Response Time by Entity</h3>
+        <div class="chart-wrap"><canvas id="chart-response"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Dots Eaten per Round</h3>
+        <div class="chart-wrap"><canvas id="chart-dots"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Round History -->
+    <div class="section-title">Round History</div>
+    <div class="round-list" id="round-list"></div>
+
+    <!-- Training Log -->
+    <div class="section-title">Training Log</div>
+    <div class="training-section" id="training-log"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CONSTANTS & STATE
+   ═══════════════════════════════════════════════════════════════ */
+const ENTITIES = {
+  pucman: { name: 'PUCMAN', title: 'THE UNSTOPPABLE', color: '#FFD700' },
+  blinky: { name: 'BLINKY', title: 'THE SHADOW',       color: '#FF0000' },
+  pinky:  { name: 'PINKY',  title: 'THE AMBUSHER',     color: '#FFB8FF' },
+  inky:   { name: 'INKY',   title: 'THE UNPREDICTABLE', color: '#00FFFF' },
+  clyde:  { name: 'CLYDE',  title: 'THE WILD CARD',    color: '#FFB852' },
+};
+const ENTITY_ORDER = ['pucman', 'blinky', 'pinky', 'inky', 'clyde'];
+
+const state = {
+  rounds: {},      // roundNum -> round JSON
+  content: {},     // roundNum -> content JSON
+  training: {},    // roundNum -> training JSON
+  loadMode: 'none',
+  pollTimer: null,
+  maxRound: 0,
+  sort: { col: 'winpct', asc: false },
+};
+
+// Chart instances
+let chartWinRate, chartScores, chartResponse, chartDots;
+
+/* ═══════════════════════════════════════════════════════════════
+   DATA LOADING
+   ═══════════════════════════════════════════════════════════════ */
+function setStatus(msg) {
+  const el = document.getElementById('load-status');
+  if (el) el.textContent = msg;
+}
+
+async function loadFromServer() {
+  setStatus('Scanning server for round data…');
+  state.loadMode = 'server';
+  let found = 0;
+  for (let n = 1; n <= 999; n++) {
+    try {
+      const res = await fetch(`game_data/round_${n}.json`);
+      if (!res.ok) break;
+      state.rounds[n] = await res.json();
+      state.maxRound = Math.max(state.maxRound, n);
+      found++;
+      setStatus(`Loaded round ${n}…`);
+    } catch { break; }
+    // Also try content + training
+    try {
+      const rc = await fetch(`game_data/round_${n}_content.json`);
+      if (rc.ok) state.content[n] = await rc.json();
+    } catch {}
+    try {
+      const rt = await fetch(`game_data/training_round_${n}.json`);
+      if (rt.ok) state.training[n] = await rt.json();
+    } catch {}
+  }
+  if (found === 0) {
+    setStatus('No round data found on server. Try loading files manually.');
+    return;
+  }
+  setStatus(`Loaded ${found} round(s). Initializing…`);
+  showDashboard();
+  startPolling();
+}
+
+async function pollForNew() {
+  const next = state.maxRound + 1;
+  try {
+    const res = await fetch(`game_data/round_${next}.json`);
+    if (!res.ok) return;
+    state.rounds[next] = await res.json();
+    state.maxRound = next;
+    try {
+      const rc = await fetch(`game_data/round_${next}_content.json`);
+      if (rc.ok) state.content[next] = await rc.json();
+    } catch {}
+    try {
+      const rt = await fetch(`game_data/training_round_${next}.json`);
+      if (rt.ok) state.training[next] = await rt.json();
+    } catch {}
+    renderAll();
+  } catch {}
+}
+
+function startPolling() {
+  if (state.pollTimer) clearInterval(state.pollTimer);
+  if (state.loadMode === 'server') {
+    state.pollTimer = setInterval(pollForNew, 10000);
+  }
+}
+
+function refreshData() {
+  if (state.loadMode === 'server') {
+    pollForNew();
+  } else {
+    document.getElementById('file-input2').click();
+  }
+}
+
+function handleDirectoryInput(files) { processFiles(files); }
+function handleFileInput(files) { processFiles(files); }
+
+async function processFiles(fileList) {
+  setStatus('Reading files…');
+  let count = 0;
+  for (const f of fileList) {
+    const name = f.name || f.webkitRelativePath?.split('/').pop() || '';
+    if (!name.endsWith('.json')) continue;
+    try {
+      const text = await f.text();
+      const data = JSON.parse(text);
+      const roundMatch = name.match(/^round_(\d+)\.json$/);
+      const contentMatch = name.match(/^round_(\d+)_content\.json$/);
+      const trainingMatch = name.match(/^training_round_(\d+)\.json$/);
+      if (roundMatch) {
+        const n = parseInt(roundMatch[1]);
+        state.rounds[n] = data;
+        state.maxRound = Math.max(state.maxRound, n);
+        count++;
+      } else if (contentMatch) {
+        state.content[parseInt(contentMatch[1])] = data;
+        count++;
+      } else if (trainingMatch) {
+        state.training[parseInt(trainingMatch[1])] = data;
+        count++;
+      }
+    } catch (e) {
+      console.warn(`Failed to parse ${name}:`, e);
+    }
+  }
+  if (count === 0) {
+    setStatus('No valid round files found. Expected round_N.json files.');
+    return;
+  }
+  state.loadMode = 'file';
+  setStatus(`Loaded ${count} file(s). Initializing…`);
+  showDashboard();
+}
+
+function showDashboard() {
+  document.getElementById('load-screen').classList.add('hidden');
+  document.getElementById('dashboard').classList.add('active');
+  setTimeout(() => { document.getElementById('load-screen').style.display = 'none'; }, 500);
+  renderAll();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DATA PROCESSING
+   ═══════════════════════════════════════════════════════════════ */
+function computeStats() {
+  const stats = {};
+  for (const key of ENTITY_ORDER) {
+    stats[key] = {
+      wins: 0, losses: 0,
+      totalDotsEaten: 0,
+      totalGhostsEaten: 0,
+      timesEaten: 0,        // ghost: times eaten by pucman
+      teamKills: 0,         // ghost: times team caught pucman
+      responseTimes: [],    // per-round avg
+      moveCounts: {},
+      roundResponseTimes: {},
+    };
+  }
+
+  const sortedRounds = Object.keys(state.rounds).map(Number).sort((a, b) => a - b);
+
+  for (const rNum of sortedRounds) {
+    const rd = state.rounds[rNum];
+    if (!rd || !rd.summary) continue;
+    const s = rd.summary;
+    const winner = s.winner;
+
+    // Win/loss
+    if (winner === 'pucman') {
+      stats.pucman.wins++;
+      for (const g of ['blinky', 'pinky', 'inky', 'clyde']) stats[g].losses++;
+    } else if (winner === 'ghosts') {
+      stats.pucman.losses++;
+      for (const g of ['blinky', 'pinky', 'inky', 'clyde']) stats[g].wins++;
+    }
+
+    stats.pucman.totalDotsEaten += s.dots_eaten || 0;
+    stats.pucman.totalGhostsEaten += s.ghosts_eaten || 0;
+
+    // Entity stats from summary
+    if (s.entity_stats) {
+      for (const [ent, es] of Object.entries(s.entity_stats)) {
+        if (!stats[ent]) continue;
+        stats[ent].responseTimes.push(es.avg_response_time || 0);
+        stats[ent].roundResponseTimes[rNum] = es.avg_response_time || 0;
+      }
+    }
+
+    // Tick-level analysis
+    if (rd.ticks) {
+      for (const tick of rd.ticks) {
+        // Move counts from decisions
+        if (tick.decisions) {
+          for (const [ent, dec] of Object.entries(tick.decisions)) {
+            if (!stats[ent]) continue;
+            const mv = dec.move || 'stay';
+            stats[ent].moveCounts[mv] = (stats[ent].moveCounts[mv] || 0) + 1;
+          }
+        }
+        // Events
+        if (tick.events) {
+          for (const evt of tick.events) {
+            if (evt.startsWith('ghost_eaten:')) {
+              const ghost = evt.split(':')[1];
+              if (stats[ghost]) stats[ghost].timesEaten++;
+            }
+            if (evt === 'pucman_caught') {
+              for (const g of ['blinky', 'pinky', 'inky', 'clyde']) stats[g].teamKills++;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return stats;
+}
+
+function getSignatureMove(moveCounts) {
+  let best = 'N/A', bestN = 0;
+  for (const [mv, n] of Object.entries(moveCounts)) {
+    if (n > bestN) { best = mv; bestN = n; }
+  }
+  return best;
+}
+
+function avgOf(arr) {
+  if (!arr.length) return 0;
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDERING
+   ═══════════════════════════════════════════════════════════════ */
+function renderAll() {
+  const stats = computeStats();
+  renderHeader(stats);
+  renderFighters(stats);
+  renderLeaderboard(stats);
+  renderCharts(stats);
+  renderRoundHistory();
+  renderTrainingLog();
+}
+
+function renderHeader(stats) {
+  const sortedRounds = Object.keys(state.rounds).map(Number).sort((a, b) => a - b);
+  let totalScore = 0;
+  for (const n of sortedRounds) {
+    totalScore += (state.rounds[n]?.summary?.final_score || 0);
+  }
+  document.getElementById('h-rounds').textContent = sortedRounds.length;
+  document.getElementById('h-puc-wins').textContent = stats.pucman.wins;
+  document.getElementById('h-ghost-wins').textContent = stats.blinky.wins;
+  document.getElementById('h-total-score').textContent = totalScore.toLocaleString();
+}
+
+function renderFighters(stats) {
+  const el = document.getElementById('fighters');
+  el.innerHTML = '';
+  for (const key of ENTITY_ORDER) {
+    const e = ENTITIES[key];
+    const s = stats[key];
+    const isPuc = key === 'pucman';
+    const keyStat = isPuc
+      ? `Dots Eaten: <b>${s.totalDotsEaten.toLocaleString()}</b>`
+      : `Times Eaten: <b>${s.timesEaten}</b>`;
+    const keyStat2 = isPuc
+      ? `Ghosts Eaten: <b>${s.totalGhostsEaten}</b>`
+      : `Team Kills: <b>${s.teamKills}</b>`;
+    const avgRT = s.responseTimes.length ? avgOf(s.responseTimes).toFixed(2) + 's' : '—';
+    const sig = getSignatureMove(s.moveCounts);
+
+    const card = document.createElement('div');
+    card.className = 'fighter-card slide-in';
+    card.dataset.entity = key;
+    card.style.setProperty('--entity-color', e.color);
+    card.style.animationDelay = (ENTITY_ORDER.indexOf(key) * 0.08) + 's';
+    card.innerHTML = `
+      <div class="fighter-avatar"></div>
+      <div class="fighter-name">${e.name}</div>
+      <div class="fighter-title">${e.title}</div>
+      <div class="fighter-record">
+        <span class="w">W ${s.wins}</span>
+        <span class="l">L ${s.losses}</span>
+      </div>
+      <div class="fighter-stat">${keyStat}</div>
+      <div class="fighter-stat">${keyStat2}</div>
+      <div class="fighter-stat">Avg Response: <b>${avgRT}</b></div>
+      <div class="fighter-stat">Signature Move: <b>${sig.toUpperCase()}</b></div>
+    `;
+    el.appendChild(card);
+  }
+}
+
+function renderLeaderboard(stats) {
+  const rows = ENTITY_ORDER.map(key => {
+    const s = stats[key];
+    const total = s.wins + s.losses;
+    const winPct = total > 0 ? (s.wins / total * 100) : 0;
+    const isPuc = key === 'pucman';
+    const metric = isPuc ? `${s.totalDotsEaten} dots` : `${s.timesEaten} eaten / ${s.teamKills} kills`;
+    return { key, wins: s.wins, losses: s.losses, winPct, metric, metricVal: isPuc ? s.totalDotsEaten : s.teamKills };
+  });
+
+  // Sort
+  const col = state.sort.col;
+  rows.sort((a, b) => {
+    let va, vb;
+    if (col === 'wins') { va = a.wins; vb = b.wins; }
+    else if (col === 'losses') { va = a.losses; vb = b.losses; }
+    else if (col === 'winpct') { va = a.winPct; vb = b.winPct; }
+    else if (col === 'metric') { va = a.metricVal; vb = b.metricVal; }
+    else if (col === 'entity') { va = a.key; vb = b.key; return state.sort.asc ? va.localeCompare(vb) : vb.localeCompare(va); }
+    else { va = a.winPct; vb = b.winPct; }
+    return state.sort.asc ? va - vb : vb - va;
+  });
+
+  const leader = rows[0]?.key;
+  const tbody = document.getElementById('lb-body');
+  tbody.innerHTML = rows.map((r, i) => {
+    const e = ENTITIES[r.key];
+    const isLeader = r.key === leader;
+    return `<tr class="${isLeader ? 'leader' : ''}">
+      <td class="rank ${i === 0 ? 'rank-1' : ''}">#${i + 1}</td>
+      <td class="entity-name"><span class="entity-dot" style="background:${e.color}"></span>${e.name}</td>
+      <td>${r.wins}</td>
+      <td>${r.losses}</td>
+      <td class="win-pct">${r.winPct.toFixed(1)}%</td>
+      <td>${r.metric}</td>
+    </tr>`;
+  }).join('');
+
+  // Column sort headers
+  document.querySelectorAll('.leaderboard th').forEach(th => {
+    th.classList.remove('sorted', 'asc');
+    if (th.dataset.col === state.sort.col) {
+      th.classList.add('sorted');
+      if (state.sort.asc) th.classList.add('asc');
+    }
+    th.onclick = () => {
+      if (state.sort.col === th.dataset.col) {
+        state.sort.asc = !state.sort.asc;
+      } else {
+        state.sort.col = th.dataset.col;
+        state.sort.asc = false;
+      }
+      renderLeaderboard(computeStats());
+    };
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHARTS
+   ═══════════════════════════════════════════════════════════════ */
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { labels: { color: '#888', font: { family: "'Segoe UI', sans-serif", size: 11 }, boxWidth: 12, padding: 12 } },
+  },
+  scales: {
+    x: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: '#ffffff08' } },
+    y: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: '#ffffff08' } },
+  },
+};
+
+function renderCharts(stats) {
+  const sortedRounds = Object.keys(state.rounds).map(Number).sort((a, b) => a - b);
+  const labels = sortedRounds.map(n => `R${n}`);
+
+  renderWinRateChart(sortedRounds, labels);
+  renderScoreChart(sortedRounds, labels);
+  renderResponseChart(sortedRounds, labels, stats);
+  renderDotsChart(sortedRounds, labels);
+}
+
+function renderWinRateChart(rounds, labels) {
+  let cumWins = 0;
+  const data = rounds.map((n, i) => {
+    const w = state.rounds[n]?.summary?.winner;
+    if (w === 'pucman') cumWins++;
+    return (i + 1) > 0 ? (cumWins / (i + 1) * 100) : 0;
+  });
+
+  const cfg = {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Pucman Win %',
+        data,
+        borderColor: '#00aaff',
+        backgroundColor: '#00aaff18',
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: '#00aaff',
+        pointRadius: 3,
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      ...chartDefaults,
+      scales: {
+        ...chartDefaults.scales,
+        y: { ...chartDefaults.scales.y, min: 0, max: 100, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v + '%' } },
+      },
+    },
+  };
+
+  if (chartWinRate) { chartWinRate.data = cfg.data; chartWinRate.update(); }
+  else { chartWinRate = new Chart(document.getElementById('chart-winrate'), cfg); }
+}
+
+function renderScoreChart(rounds, labels) {
+  const data = rounds.map(n => state.rounds[n]?.summary?.final_score || 0);
+
+  const cfg = {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Final Score',
+        data,
+        backgroundColor: rounds.map(n =>
+          state.rounds[n]?.summary?.winner === 'pucman' ? '#00ff8844' : '#ff446644'
+        ),
+        borderColor: rounds.map(n =>
+          state.rounds[n]?.summary?.winner === 'pucman' ? '#00ff88' : '#ff4466'
+        ),
+        borderWidth: 1,
+        borderRadius: 3,
+      }],
+    },
+    options: {
+      ...chartDefaults,
+      scales: {
+        ...chartDefaults.scales,
+        y: { ...chartDefaults.scales.y, beginAtZero: true },
+      },
+    },
+  };
+
+  if (chartScores) { chartScores.data = cfg.data; chartScores.update(); }
+  else { chartScores = new Chart(document.getElementById('chart-scores'), cfg); }
+}
+
+function renderResponseChart(rounds, labels, stats) {
+  const datasets = ENTITY_ORDER.map(key => ({
+    label: ENTITIES[key].name,
+    data: rounds.map(n => stats[key].roundResponseTimes[n] ?? null),
+    borderColor: ENTITIES[key].color,
+    backgroundColor: ENTITIES[key].color + '18',
+    tension: 0.3,
+    pointRadius: 2,
+    borderWidth: 1.5,
+    spanGaps: true,
+  }));
+
+  const cfg = {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      ...chartDefaults,
+      scales: {
+        ...chartDefaults.scales,
+        y: { ...chartDefaults.scales.y, beginAtZero: true, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v.toFixed(1) + 's' } },
+      },
+    },
+  };
+
+  if (chartResponse) { chartResponse.data = cfg.data; chartResponse.update(); }
+  else { chartResponse = new Chart(document.getElementById('chart-response'), cfg); }
+}
+
+function renderDotsChart(rounds, labels) {
+  const data = rounds.map(n => state.rounds[n]?.summary?.dots_eaten || 0);
+
+  const cfg = {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Dots Eaten',
+        data,
+        borderColor: '#FFD700',
+        backgroundColor: '#FFD70020',
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: '#FFD700',
+        pointRadius: 3,
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      ...chartDefaults,
+      scales: {
+        ...chartDefaults.scales,
+        y: { ...chartDefaults.scales.y, beginAtZero: true },
+      },
+    },
+  };
+
+  if (chartDots) { chartDots.data = cfg.data; chartDots.update(); }
+  else { chartDots = new Chart(document.getElementById('chart-dots'), cfg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ROUND HISTORY
+   ═══════════════════════════════════════════════════════════════ */
+function renderRoundHistory() {
+  const el = document.getElementById('round-list');
+  const sortedRounds = Object.keys(state.rounds).map(Number).sort((a, b) => b - a);
+
+  if (sortedRounds.length === 0) {
+    el.innerHTML = '<div class="empty-state">No round data loaded</div>';
+    return;
+  }
+
+  el.innerHTML = sortedRounds.map(n => {
+    const rd = state.rounds[n];
+    const s = rd?.summary || {};
+    const ct = state.content[n];
+    const winner = s.winner || 'unknown';
+    const winnerLabel = winner === 'pucman' ? 'PUCMAN' : winner === 'ghosts' ? 'GHOSTS' : 'DRAW';
+    const headline = ct?.announcer_recap?.headline || '';
+    const mvp = ct?.announcer_recap?.mvp || '';
+    const controversy = ct?.announcer_recap?.controversy || '';
+
+    return `<div class="round-card" onclick="this.classList.toggle('expanded')">
+      <div class="round-header">
+        <div style="display:flex;align-items:center;gap:0.8rem;">
+          <span class="round-num">ROUND ${n}</span>
+          <span class="round-winner ${winner}">${winnerLabel}</span>
+        </div>
+        <div class="round-meta">
+          <span>Score: ${(s.final_score || 0).toLocaleString()}</span>
+          <span>Ticks: ${s.total_ticks || 0}</span>
+          <span>Dots: ${s.dots_eaten || 0}/${s.dots_total || 0}</span>
+        </div>
+        <span class="round-expand-icon">▸</span>
+      </div>
+      <div class="round-detail">
+        ${headline ? `<div class="detail-row"><div class="detail-label">Headline</div><div class="detail-value">${escHtml(headline)}</div></div>` : ''}
+        ${mvp ? `<div class="detail-row"><div class="detail-label">MVP</div><div class="detail-value">${escHtml(mvp)}</div></div>` : ''}
+        ${controversy ? `<div class="detail-row"><div class="detail-label">Controversy</div><div class="detail-value">${escHtml(controversy)}</div></div>` : ''}
+        ${!headline && !mvp ? '<div class="detail-row" style="color:#555;font-style:italic;">No announcer content loaded for this round.</div>' : ''}
+        <a class="replay-link" href="replay_viewer.html" target="_blank">▶ Open Replay Viewer (load round_${n}.json)</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TRAINING LOG
+   ═══════════════════════════════════════════════════════════════ */
+function renderTrainingLog() {
+  const el = document.getElementById('training-log');
+  const sortedRounds = Object.keys(state.training).map(Number).sort((a, b) => a - b);
+
+  if (sortedRounds.length === 0) {
+    el.innerHTML = '<div class="empty-state">No training data loaded</div>';
+    return;
+  }
+
+  el.innerHTML = sortedRounds.map(n => {
+    const t = state.training[n];
+    const prompts = t.user_prompts || [];
+    const responses = t.prompt_responses || {};
+    const reactions = t.brainstem_reactions || {};
+
+    let promptsHtml = '';
+    prompts.forEach((p, i) => {
+      if (!p) return;
+      const rKey = `prompt_${i + 1}`;
+      const resp = responses[rKey] || {};
+      const respHtml = Object.entries(resp).map(([ent, txt]) => {
+        const color = ENTITIES[ent]?.color || '#888';
+        return `<div style="margin:0.2rem 0;"><span class="resp-entity" style="color:${color}">${(ENTITIES[ent]?.name || ent)}:</span> ${escHtml(String(txt).substring(0, 200))}${String(txt).length > 200 ? '…' : ''}</div>`;
+      }).join('');
+
+      promptsHtml += `<div class="training-prompt">
+        <div class="q">📝 Prompt ${i + 1}: "${escHtml(p)}"</div>
+        <div class="responses">${respHtml || '<em style="color:#555">No responses recorded</em>'}</div>
+      </div>`;
+    });
+
+    const coachHtml = Object.keys(reactions).length > 0
+      ? `<div class="coach-notes"><strong>Coach's Notes:</strong><br>${Object.entries(reactions).map(([ent, note]) =>
+          `<span style="color:${ENTITIES[ent]?.color || '#888'}">${ENTITIES[ent]?.name || ent}:</span> ${escHtml(String(note).substring(0, 150))}${String(note).length > 150 ? '…' : ''}`
+        ).join('<br>')}</div>`
+      : '';
+
+    return `<button class="training-toggle" onclick="this.classList.toggle('open')">Round ${n} Training — ${t.timestamp ? new Date(t.timestamp).toLocaleDateString() : 'Unknown date'}</button>
+      <div class="training-body">
+        ${t.summary ? `<div style="margin-bottom:0.8rem;font-size:0.75rem;color:#888;white-space:pre-wrap;max-height:120px;overflow-y:auto;">${escHtml(String(t.summary).substring(0, 600))}</div>` : ''}
+        ${promptsHtml || '<div class="empty-state">No prompts in this session</div>'}
+        ${coachHtml}
+      </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>

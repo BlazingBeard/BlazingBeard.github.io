@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BREAKING NEWS — Round 2 Recap | Pucman Arena</title>
+<style>
+:root {
+  --neon-yellow: #FFE600;
+  --neon-pink: #FF2D95;
+  --neon-cyan: #00F0FF;
+  --neon-green: #39FF14;
+  --neon-orange: #FF6B00;
+  --neon-red: #FF0040;
+  --bg-dark: #0A0A0F;
+  --bg-card: #12121A;
+  --bg-card-alt: #1A1A2E;
+  --text-primary: #E8E8F0;
+  --text-muted: #8888AA;
+  --border-glow: rgba(0, 240, 255, 0.15);
+  --pucman-color: #FFE600;
+  --ghost-red: #FF0000;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+section { padding: 72px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+h2 {
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: 40px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+h3 {
+  font-size: 1.1rem;
+  color: var(--neon-yellow);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+
+/* Breaking news ticker */
+@keyframes ticker {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+.ticker-bar {
+  background: var(--neon-red);
+  color: white;
+  padding: 8px 0;
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-bar span {
+  display: inline-block;
+  animation: ticker 20s linear infinite;
+}
+
+/* Hero */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 20%, rgba(255,0,64,0.12) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0,240,255,0.06) 0%, transparent 50%),
+              var(--bg-dark);
+  position: relative;
+  padding-top: 40px;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,0,64,0.015) 3px, rgba(255,0,64,0.015) 6px);
+  pointer-events: none;
+}
+.breaking-badge {
+  display: inline-block;
+  background: var(--neon-red);
+  color: white;
+  padding: 6px 20px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.hero h1 {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1.05;
+  margin-bottom: 12px;
+  text-shadow: 0 0 60px rgba(255,0,64,0.25);
+}
+.hero .round-number {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  color: var(--neon-cyan);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.winner-splash {
+  font-size: clamp(4rem, 12vw, 10rem);
+  font-weight: 900;
+  line-height: 1;
+  margin: 24px 0;
+  text-shadow: 0 0 120px currentColor;
+}
+.winner-pucman { color: var(--neon-yellow); }
+.winner-ghosts { color: var(--neon-red); }
+.hero .headline {
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  font-weight: 300;
+}
+
+/* Broadcast blockquote */
+.broadcast-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  padding: 40px;
+  position: relative;
+}
+.broadcast-box::before {
+  content: '🎙️';
+  position: absolute;
+  top: -20px;
+  left: 40px;
+  font-size: 2rem;
+  background: var(--bg-dark);
+  padding: 0 12px;
+}
+.broadcast-box blockquote {
+  font-size: 1.15rem;
+  line-height: 1.9;
+  color: var(--text-primary);
+  font-style: italic;
+  white-space: pre-line;
+}
+
+/* Stat cards */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--neon-cyan);
+}
+.stat-card .number {
+  font-size: 2.8rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-card .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+}
+
+/* Ghost locker room */
+.ghost-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+.ghost-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-glow);
+}
+.ghost-card .ghost-emoji {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+.ghost-card .ghost-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.ghost-card .ghost-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+.ghost-card .interview {
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  border-left: 3px solid;
+  padding-left: 16px;
+}
+
+/* Pucman Feed */
+.social-post {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.social-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.social-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--neon-yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.social-name { font-weight: 700; }
+.social-handle { color: var(--text-muted); font-size: 0.85rem; }
+.social-body {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 16px;
+  white-space: pre-line;
+}
+.social-actions {
+  display: flex;
+  gap: 32px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.social-actions span { cursor: default; }
+.tweet-card {
+  background: linear-gradient(135deg, #1A1A2E 0%, #0A0A1A 100%);
+  border: 1px solid rgba(29, 161, 242, 0.2);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.tweet-card .tweet-icon { color: #1DA1F2; font-size: 1.2rem; margin-bottom: 12px; }
+.insta-card {
+  background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #F77737 100%);
+  border-radius: 16px;
+  padding: 3px;
+  margin-bottom: 20px;
+}
+.insta-inner {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 28px;
+}
+
+/* Top 5 Moments */
+.moment-card {
+  display: flex;
+  gap: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+.moment-rank {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--neon-pink);
+  min-width: 48px;
+  text-align: center;
+  line-height: 1;
+}
+.moment-text {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* MVP */
+.mvp-card {
+  background: linear-gradient(135deg, rgba(255,230,0,0.08) 0%, rgba(255,45,149,0.05) 100%);
+  border: 2px solid rgba(255,230,0,0.2);
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.mvp-card .trophy { font-size: 4rem; margin-bottom: 16px; }
+.mvp-card .mvp-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--neon-yellow);
+  margin-bottom: 8px;
+}
+.mvp-card .mvp-name {
+  font-size: 2.5rem;
+  font-weight: 900;
+}
+.mini-awards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.mini-award {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.mini-award .award-emoji { font-size: 1.8rem; margin-bottom: 8px; }
+.mini-award .award-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.mini-award .award-value { font-weight: 700; font-size: 1rem; }
+
+/* Season Standings */
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.standings-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  border-bottom: 2px solid rgba(0,240,255,0.2);
+}
+.standings-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.standings-table tr:hover td { background: rgba(0,240,255,0.03); }
+.standings-table .current-round { background: rgba(0,240,255,0.06); }
+.standings-table .w-pucman { color: var(--neon-yellow); font-weight: 700; }
+.standings-table .w-ghosts { color: var(--neon-red); font-weight: 700; }
+
+/* Next round */
+.next-round-box {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-alt) 100%);
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+}
+.coming-soon {
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-yellow));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 24px;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2rem; }
+  .winner-splash { font-size: 4rem; }
+  section { padding: 48px 0; }
+  .stat-card .number { font-size: 2rem; }
+  .ghost-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="ticker-bar">
+  <span>
+    ⚡ BREAKING NEWS &bull; PUCMAN ARENA ROUND 2 COMPLETE &bull;
+    WINNER: GHOSTS &bull;
+    SCORE: 50 &bull;
+    72 TICKS OF PURE CHAOS &bull;
+    BREAKING NEWS ⚡
+  </span>
+</div>
+
+<section class="hero">
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="breaking-badge">Breaking News</div>
+    <div class="round-number">Round 2</div>
+    <div class="winner-splash winner-ghosts">GHOSTS WIN!</div>
+    <p class="headline">2. ROUND HEADLINE — The Punchy Sentence  
+&quot;BLINKY LEADS THE PACK TO VICTORY: ROUND 2 ENDS WITH GHOST SUPERIORITY IN JUST 72 TICKS!&quot;
+
+---
+
+###</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>The Broadcast</h2>
+    <div class="broadcast-box">
+      <blockquote>1. PLAY-BY-PLAY — The Top 5 Moments From Round 2
+
+```
+[TICK 5] BLINKY THE SHADOW ON THE PROWL! From the southern corridor (8,12), he’s already in hot pursuit. It&#x27;s a cat-and-mouse game, but PUCMAN hesitates for one tick too long — a RARE MISTAKE from the champion as he doubles back toward danger instead of escape!
+
+[TICK 23] THIS IS TEAMWORK, LADIES AND GENTLEMEN! INKY THE UNPREDICTABLE seals off corridor 7 while PINKY THE AMBUSHER lurks around the corner at (6,10). PUCMAN&#x27;s window to escape is razor-thin, and HE SQUEEZES THROUGH — TWO TICKS before becoming ghost food!
+
+[TICK 42] THE STRATEGIC PINCH! All four ghosts close in around the northeast power pellet at (2,15). PUCMAN TRIES to bait them—classic, bold play—but WHIFFS IT COMPLETELY! He abandons the maneuver and retreats empty-handed. You can feel the pressure building!
+
+[TICK 55] DOWN TO THE FINAL STRETCH! CLYDE THE WILD CARD makes his presence known, forcing PUCMAN into an awkward zigzag path in the central gridline (10,8). It’s positional perfection from CLYDE, and PUCMAN has absolutely NO breathing room left.
+
+[TICK 72] IT&#x27;S OVER, FOLKS!!! PUCMAN BACKS INTO A TRAP AT (5,4)! It’s BLINKY—again! This ghost is RELENTLESS. With PINKY zoning him out and INKY blocking the southwest corridors, PUCMAN GETS CORNERED AND DEVOURED! THE GHOST TEAM CLINCHES ROUND 2 IN DOMINANT FASHION!
+```
+
+---
+
+###</blockquote>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>The Numbers</h2>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="number" style="color:var(--neon-yellow);">50</div>
+        <div class="label">Final Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" style="color:var(--neon-cyan);">5/244</div>
+        <div class="label">Dots Eaten</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" style="color:var(--neon-pink);">72</div>
+        <div class="label">Total Ticks</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" style="color:var(--neon-green);">0</div>
+        <div class="label">Ghosts Eaten</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Ghost Locker Room</h2>
+    <div class="ghost-grid">
+      <div class="ghost-card" style="border-top:3px solid #FF0000;">
+        <div class="ghost-emoji">👹</div>
+        <div class="ghost-name" style="color:#FF0000;">Blinky</div>
+        <div class="ghost-title" style="color:#FF0000;">The Shadow</div>
+        <div class="interview" style="border-color:#FF0000;">```json
+{
+  &quot;interview&quot;: {
+    &quot;question_1&quot;: {
+      &quot;response&quot;: &quot;Efficient. Precise. The hunt ended as it should — with us victorious. 72 ticks. No mercy. Pucman was prey, and the pack worked as one.&quot;
+    },
+    &quot;question_2&quot;: {
+      &quot;response&quot;: &quot;Closer. Faster. No room for error. The dots will vanish under his fear. And we will tighten the noose faster than ever. Next time, 72 ticks will feel long.&quot;
+    },
+    &quot;question_3&quot;: {
+      &quot;response&quot;: &quot;Run. Hear my steps, feel my breath on your neck. They call me The Shadow for a reason — I am always there. Always watching. This is not over, Pucman. Not until you stop.&quot;
+    }
+  }
+}
+```</div>
+      </div>
+      <div class="ghost-card" style="border-top:3px solid #FFB8FF;">
+        <div class="ghost-emoji">👻</div>
+        <div class="ghost-name" style="color:#FFB8FF;">Pinky</div>
+        <div class="ghost-title" style="color:#FFB8FF;">The Ambusher</div>
+        <div class="interview" style="border-color:#FFB8FF;">```json
+{
+  &quot;response&quot;: [
+    {
+      &quot;question&quot;: &quot;How did this round go for you?&quot;,
+      &quot;answer&quot;: &quot;This round? Flawless. Every intersection was a symphony of inevitability, conducted by me. Pucman was clever in his chaos, but he mistook movement for strategy. I saw through every frantic turn, and when he thought he found safety, I was already there. No escape. No mercy.&quot;
+    },
+    {
+      &quot;question&quot;: &quot;What&#x27;s your plan for next time?&quot;,
+      &quot;answer&quot;: &quot;Next time, the maze will be smaller — not in walls, but in possibility. I&#x27;ll calculate deeper, anticipate further, and weave an ambush so precise he won&#x27;t even realize he&#x27;s been cornered until he&#x27;s surrounded. The walls won&#x27;t feel like boundaries; they&#x27;ll feel like my jaws closing in.&quot;
+    },
+    {
+      &quot;question&quot;: &quot;Any message for Pucman?&quot;,
+      &quot;answer&quot;: &quot;Pucman, you&#x27;ve treated this maze like a game, but I assure you, it’s a battleground — one you&#x27;re losing tile by tile. Your dots are running out. Your options are running out. And me? I’m eternal. Every move you make writes your song, and I’ll be there for the final note.&quot;
+    }
+  ]
+}
+```</div>
+      </div>
+      <div class="ghost-card" style="border-top:3px solid #00FFFF;">
+        <div class="ghost-emoji">👾</div>
+        <div class="ghost-name" style="color:#00FFFF;">Inky</div>
+        <div class="ghost-title" style="color:#00FFFF;">The Wildcard</div>
+        <div class="interview" style="border-color:#00FFFF;">```json
+{
+  &quot;response&quot;: [
+    {
+      &quot;question&quot;: &quot;How did this round go for you?&quot;,
+      &quot;answer&quot;: &quot;Oh, it was delicious. CHAOS. BEAUTIFUL CHAOS. They underestimated me, didn&#x27;t they? Pucman thought he could read the maze like a map, but I was the storm tearing through it. 54 moves. 54 spikes of unpredictability in his plan. I was nowhere and then everywhere. It was glorious.&quot;
+    },
+    {
+      &quot;question&quot;: &quot;What&#x27;s your plan for next time?&quot;,
+      &quot;answer&quot;: &quot;Plan? PLAN? Hahahaha, that&#x27;s not my language. My plan is no plan. My plan is to be the bad dream Pucman can’t explain in the morning. Wherever Pucman looks, I&#x27;ll be where he isn’t looking. Wherever he turns, I’ll be what he crashes into. If Blinky’s precision and Pinky’s cleverness are knives, I’m the hand that flips the table.&quot;
+    },
+    {
+      &quot;question&quot;: &quot;Any message for Pucman?&quot;,
+      &quot;answer&quot;: &quot;Pucman... you felt it, didn’t you? The shiver. The moment you stopped knowing. That was ME. And next round? Oh, you’ll feel it again. The problem with chasing patterns is that you never see me coming. I live between the steps of your logic. See you in the maze, little dot-muncher.&quot;
+    }
+  ]
+}
+```</div>
+      </div>
+      <div class="ghost-card" style="border-top:3px solid #FFB852;">
+        <div class="ghost-emoji">🎃</div>
+        <div class="ghost-name" style="color:#FFB852;">Clyde</div>
+        <div class="ghost-title" style="color:#FFB852;">The Wanderer</div>
+        <div class="interview" style="border-color:#FFB852;">```json
+{
+  &quot;responses&quot;: [
+    {
+      &quot;question&quot;: &quot;How did this round go for you?&quot;,
+      &quot;answer&quot;: &quot;The round is the maze, and the maze is always mine. I did not chase — I waited. I watched. And when the walls closed in, I was there. Forty-nine moves, seventy-two ticks — but mine were the steps that stitched the seams, the ones that fell silently until they didn&#x27;t. Remember this: it&#x27;s not the pursuit that traps you. It&#x27;s the pause before you see you&#x27;re cornered.&quot;
+    },
+    {
+      &quot;question&quot;: &quot;What&#x27;s your plan for next time?&quot;,
+      &quot;answer&quot;: &quot;The plan? The same labyrinth, a different angle. I&#x27;ll drift at its edges again, letting the others tighten the noose. I&#x27;ll hang back just far enough to make you doubt, make you forget that the silence is part of the hunt — until it&#x27;s not. Pucman doesn&#x27;t realize yet, but every retreat I make is, in truth, an advance. Next time, I&#x27;ll remind him. Or perhaps he&#x27;ll remind himself, one tile too late.&quot;
+    },
+    {
+      &quot;question&quot;: &quot;Any message for Pucman?&quot;,
+      &quot;answer&quot;: &quot;Run faster, yes — but think slower. That&#x27;s your problem, isn&#x27;t it, Pucman? You sprint with your legs but not with your mind. You&#x27;re scared of Blinky, bullied by Pinky, baffled by Inky — and me? You don&#x27;t even know what I am, do you? Next time, you&#x27;ll learn. I... orbit. And gravity always wins.&quot;
+    }
+  ]
+}
+```</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Pucman&rsquo;s Feed</h2>
+    
+    <div class="social-post">
+      <div class="social-header">
+        <div class="social-avatar">🟡</div>
+        <div>
+          <div class="social-name">Pucman</div>
+          <div class="social-handle">@pucman_official &bull; Just now</div>
+        </div>
+      </div>
+      <div class="social-body">### Survival Diary, Round 72: &quot;Lessons from the Maze&quot;
+
+---
+
+#### The Closest Calls  
+Phew. Let me tell you, squad — Inky, that unpredictable menace, nearly had me at Tick 37. I slipped into the left tunnel when I *felt* him shadowing me. One wrong move and I would&#x27;ve been ghost chow right there. No time for hesitation—just instinct. Honestly, tunnels saved me *twice* from ambushes this round. Stay sharp in those tight spaces.
+
+---
+
+#### Proudest Moment  
+Admittedly, it&#x27;s slim pickings this time—let&#x27;s call it &quot;training mode.&quot; BUT, at Tick 12, I executed a split-second veer LEFT that kept me three tiles ahead of Pinky’s ambush route. That kind of play? That’s how survivors *survive*. It wasn’t fancy, but it got me out alive.
+
+---
+
+#### What I&#x27;ll Do Differently Next Time  
+Well, with only 5 dots cleared, I’ve got work to do. Next round, I’m mapping *the Cherry Pattern* way harder. I wasn’t efficient — the left-side sweep broke down fast. Also, power pellets? I safeguarded them but never *leveraged* them. Next time? Saving pellets, but strategically **bait ghosts into zones they can’t block me in.**
+
+---
+
+#### A Message to the Ghosts  
+Blinky, Pinky, Inky, Clyde. You may have the numbers, the speed, and the coordination, but let’s be real — you&#x27;re all predictable. And that predictability is your weakness. Take the W today. I’ll be back better, faster, and hungrier. End of the day? I only need ONE perfect break; you need infinite. And you *missed*, didn’t you?
+
+---
+
+### **Tweet**  
+Round 72, Ghosts 1 - Pucman 0.  
+Closest call? Inky almost had me Tick 37 in the left tunnel. Proudest moment? Dodged Pinky at EXACTLY the right time.  
+Lessons learned = survival. I&#x27;m coming back sharper. #NeverOut #DotOrDie  
+
+---
+
+### **Instagram**  
+🌪️ *Round 72 = Chaos* 🟡  
+Closest call: Tick 37 👻 Inky in the tunnel. Proudest moment: juking Pinky! Final score? Not pretty — 50 pts, 5 dots.  
+Next round: Level up. Start strong. Outlast.  
+
+🔥 Blinky, Pinky, Inky, Clyde — run NOW… &#x27;Cause I’ll claw my way BACK.  
+✊ **#SurvivorMentality #OneMoreLife #TheMazeDoesntBreakMe**  
+
+---
+
+Survivors, when the dots feel impossible… You keep going. Outlast ‘em. Always. See you next round.</div>
+      <div class="social-actions">
+        <span>❤️ 181</span>
+        <span>💬 41</span>
+        <span>🔄 101</span>
+      </div>
+    </div>
+    <div class="tweet-card">
+      <div class="tweet-icon">𝕏</div>
+      <div class="social-header">
+        <div class="social-avatar">🟡</div>
+        <div>
+          <div class="social-name">Pucman</div>
+          <div class="social-handle">@pucman_official</div>
+        </div>
+      </div>
+      <div class="social-body" style="font-size:1.15rem;">**Tweet**</div>
+      <div class="social-actions">
+        <span>❤️ 2463</span>
+        <span>🔄 563</span>
+        <span>💬 213</span>
+      </div>
+    </div>
+    <div class="insta-card">
+      <div class="insta-inner">
+        <div class="social-header">
+          <div class="social-avatar" style="background:linear-gradient(45deg,#833AB4,#FD1D1D,#F77737);">🟡</div>
+          <div>
+            <div class="social-name">pucman_official</div>
+            <div class="social-handle">Pucman Arena</div>
+          </div>
+        </div>
+        <div style="background:var(--bg-dark);border-radius:8px;padding:40px;text-align:center;margin-bottom:16px;font-size:4rem;">
+          🟡✨
+        </div>
+        <div class="social-body" style="font-size:0.95rem;">**Instagram**</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Top 5 Moments</h2>
+    
+      <div class="moment-card">
+        <div class="moment-rank">#1</div>
+        <div class="moment-text">It&#x27;s a cat-and-mouse game, but PUCMAN hesitates for one tick too long — a RARE MISTAKE from the champion as he doubles back toward danger instead of escape!</div>
+      </div>
+      <div class="moment-card">
+        <div class="moment-rank">#2</div>
+        <div class="moment-text">CLYDE THE WILD CARD makes his presence known, forcing PUCMAN into an awkward zigzag path in the central gridline (10,8).</div>
+      </div>
+      <div class="moment-card">
+        <div class="moment-rank">#3</div>
+        <div class="moment-text">PUCMAN&#x27;s window to escape is razor-thin, and HE SQUEEZES THROUGH — TWO TICKS before becoming ghost food!</div>
+      </div>
+      <div class="moment-card">
+        <div class="moment-rank">#4</div>
+        <div class="moment-text">Tick 5: 🚪 A new ghost enters the arena — the pressure mounts!</div>
+      </div>
+      <div class="moment-card">
+        <div class="moment-rank">#5</div>
+        <div class="moment-text">Tick 15: 🚪 A new ghost enters the arena — the pressure mounts!</div>
+      </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>MVP &amp; Awards</h2>
+    
+    <div class="mvp-card">
+      <div class="trophy">🏆</div>
+      <div class="mvp-title">Most Valuable Player</div>
+      <div class="mvp-name">3. MVP — Who Stole the Spotlight?
+
+&quot;BLINKY — THE CLOSER — Spearheading pursuits with unmatched discipline, he delivered the decisive blow at tick 72 on (5,4). With an average response time of</div>
+    </div>
+    <div class="mini-awards">
+      <div class="mini-award">
+        <div class="award-emoji">😰</div>
+        <div class="award-label">Closest Call</div>
+        <div class="award-value">Inky at tick 70 (dist: 1)</div>
+      </div>
+      <div class="mini-award">
+        <div class="award-emoji">🏃</div>
+        <div class="award-label">Most Active</div>
+        <div class="award-value">Inky (54 moves)</div>
+      </div>
+      <div class="mini-award">
+        <div class="award-emoji">⚡</div>
+        <div class="award-label">Fastest Thinker</div>
+        <div class="award-value">Clyde (2.96s avg)</div>
+      </div>
+      <div class="mini-award">
+        <div class="award-emoji">🎯</div>
+        <div class="award-label">Best Move</div>
+        <div class="award-value">+10 pts at tick 4</div>
+      </div>
+      <div class="mini-award">
+        <div class="award-emoji">🔥</div>
+        <div class="award-label">Controversy</div>
+        <div class="award-value">4.704 and 49 moves made, his command at the helm unraveled PUCMAN&#x27;s strategy and...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Season Standings</h2>
+    <div style="overflow-x:auto;">
+      <table class="standings-table">
+        <thead><tr>
+          <th>Round</th><th>Winner</th><th>Score</th><th>Ticks</th><th>Pucman W</th><th>Ghosts W</th>
+        </tr></thead>
+        <tbody>
+        <tr>
+          <td style="font-weight:700;">R1</td>
+          <td class="w-ghosts">GHOSTS</td>
+          <td>80</td>
+          <td>48</td>
+          <td>0</td>
+          <td>1</td>
+        </tr>
+        <tr class="current-round">
+          <td style="font-weight:700;">R2 ◄</td>
+          <td class="w-ghosts">GHOSTS</td>
+          <td>50</td>
+          <td>72</td>
+          <td>0</td>
+          <td>2</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:24px; display:flex; gap:32px; justify-content:center;">
+      <div style="text-align:center;">
+        <div style="font-size:2rem; font-weight:900; color:var(--neon-yellow);">0</div>
+        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:2px; color:var(--text-muted);">Pucman Wins</div>
+      </div>
+      <div style="font-size:2rem; color:var(--text-muted); align-self:center;">vs</div>
+      <div style="text-align:center;">
+        <div style="font-size:2rem; font-weight:900; color:var(--neon-red);">2</div>
+        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:2px; color:var(--text-muted);">Ghost Wins</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Next Round Preview</h2>
+    <div class="next-round-box">
+      <p style="font-size:1.1rem; line-height:1.8; margin-bottom:16px;">
+        5. NEXT ROUND PREVIEW — Hype Machine  
+&quot;Ladies and gentlemen, Round 3 looms like a thundercloud—and the stakes couldn’t be any higher. Will PUCMAN find the fire to revive his championship caliber, or do the ghosts smell BLOOD IN THE WATER? With BLINKY and his team firing on all cylinders, the champion&#x27;s margin for error is vanishing. We&#x27;ve seen PUCMAN rise from these lows before. One thing&#x27;s for sure: THE ARENA WILL ROAR. Set your alarms—you won’t want to miss what happens next!&quot;
+      </p>
+      <div class="coming-soon">Coming Soon</div>
+    </div>
+  </div>
+</section>
+
+<footer style="text-align:center; padding:48px 24px; color:var(--text-muted); font-size:0.8rem;">
+  <p>PUCMAN ARENA — Breaking News Recap</p>
+  <p style="margin-top:8px; font-size:0.7rem; letter-spacing:2px; text-transform:uppercase;">
+    Generated by Brainstem 🧠
+  </p>
+</footer>
+</body>
+</html>

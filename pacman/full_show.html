@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PUCMAN ARENA — Round 1 Full Presentation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; color: #fff; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; height: 100vh; }
+
+  #player-wrap {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+  }
+
+  video {
+    max-width: 100vw;
+    max-height: 100vh;
+    background: #000;
+    display: none;
+  }
+  video.active { display: block; }
+
+  /* Transition overlay */
+  #transition {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #transition.show { opacity: 1; pointer-events: auto; }
+  #transition .title {
+    font-size: 3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  #transition .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.6;
+    margin-top: 0.5rem;
+  }
+
+  /* Progress bar */
+  #progress-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #FFE000, #FF0000, #00FFFF);
+    z-index: 200;
+    transition: width 0.3s;
+  }
+
+  /* Segment label */
+  #segment-label {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+    z-index: 50;
+  }
+
+  /* Controls overlay */
+  #controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 200;
+    display: flex;
+    gap: 8px;
+  }
+  #controls button {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  #controls button:hover { background: rgba(255,255,255,0.2); }
+</style>
+</head>
+<body>
+
+<div id="player-wrap">
+  <video id="v-intro" preload="auto"><source src="game_data/round_1_videos/01_intro.mp4" type="video/mp4"></video>
+  <video id="v-gameplay" preload="auto"><source src="game_data/round_1_videos/arcade_gameplay.webm" type="video/webm"></video>
+  <video id="v-interviews" preload="auto"><source src="game_data/round_1_videos/03_ghost_interviews.mp4" type="video/mp4"></video>
+  <video id="v-vlog" preload="auto"><source src="game_data/round_1_videos/04_pucman_vlog.mp4" type="video/mp4"></video>
+  <video id="v-recap" preload="auto"><source src="game_data/round_1_videos/06_round_recap.mp4" type="video/mp4"></video>
+</div>
+
+<div id="transition">
+  <div class="title" id="trans-title"></div>
+  <div class="subtitle" id="trans-sub"></div>
+</div>
+
+<div id="progress-bar" style="width: 0%"></div>
+<div id="segment-label"></div>
+
+<div id="controls">
+  <button onclick="skipSegment()">SKIP ⏭</button>
+  <button onclick="togglePause()">PAUSE ⏸</button>
+</div>
+
+<script>
+const SEGMENTS = [
+  { id: 'v-intro',      label: 'INTRO',            transTitle: 'PUCMAN ARENA',          transSub: 'ROUND 1 — THE HUNT BEGINS', color: '#00aaff' },
+  { id: 'v-gameplay',   label: 'GAME REPLAY',      transTitle: 'THE GAME',              transSub: '48 TICKS OF PURE AI COMBAT', color: '#FFE000' },
+  { id: 'v-interviews', label: 'GHOST LOCKER ROOM', transTitle: 'GHOST LOCKER ROOM',    transSub: 'THE HUNTERS SPEAK',          color: '#FF0000' },
+  { id: 'v-vlog',       label: "PUCMAN'S STORY",   transTitle: "PUCMAN'S DIARY",        transSub: 'THE SURVIVOR SPEAKS',        color: '#FFE000' },
+  { id: 'v-recap',      label: 'ROUND RECAP',      transTitle: 'THE VERDICT',           transSub: 'STATS • MVP • CONTROVERSY',  color: '#00ff88' },
+];
+
+let currentIdx = -1;
+let paused = false;
+const trans = document.getElementById('transition');
+const transTitle = document.getElementById('trans-title');
+const transSub = document.getElementById('trans-sub');
+const progressBar = document.getElementById('progress-bar');
+const segLabel = document.getElementById('segment-label');
+
+// Calculate total duration for progress bar
+let totalDuration = 0;
+const durations = [];
+
+function getTotalDuration() {
+  totalDuration = 0;
+  durations.length = 0;
+  SEGMENTS.forEach(s => {
+    const v = document.getElementById(s.id);
+    const d = v.duration || 0;
+    durations.push(d);
+    totalDuration += d;
+  });
+}
+
+function updateProgress() {
+  if (totalDuration === 0) return;
+  let elapsed = 0;
+  for (let i = 0; i < currentIdx; i++) elapsed += durations[i] || 0;
+  const current = document.getElementById(SEGMENTS[currentIdx]?.id);
+  if (current) elapsed += current.currentTime || 0;
+  progressBar.style.width = ((elapsed / totalDuration) * 100) + '%';
+  requestAnimationFrame(updateProgress);
+}
+
+function showTransition(seg, callback) {
+  transTitle.textContent = seg.transTitle;
+  transTitle.style.color = seg.color;
+  transTitle.style.textShadow = `0 0 40px ${seg.color}, 0 0 80px ${seg.color}40`;
+  transSub.textContent = seg.transSub;
+  trans.classList.add('show');
+
+  setTimeout(() => {
+    trans.classList.remove('show');
+    setTimeout(callback, 500);
+  }, 2000);
+}
+
+function playSegment(idx) {
+  if (idx >= SEGMENTS.length) {
+    // Show final card
+    transTitle.textContent = 'END OF BROADCAST';
+    transTitle.style.color = '#FFD700';
+    transTitle.style.textShadow = '0 0 40px #FFD700';
+    transSub.textContent = 'ROUND 2 COMING SOON';
+    trans.classList.add('show');
+    return;
+  }
+
+  currentIdx = idx;
+  const seg = SEGMENTS[idx];
+  segLabel.textContent = seg.label;
+  segLabel.style.color = seg.color;
+
+  // Hide all videos
+  document.querySelectorAll('video').forEach(v => {
+    v.classList.remove('active');
+    v.pause();
+  });
+
+  showTransition(seg, () => {
+    const video = document.getElementById(seg.id);
+    video.classList.add('active');
+    video.currentTime = 0;
+    video.play();
+
+    video.onended = () => {
+      video.classList.remove('active');
+      playSegment(idx + 1);
+    };
+  });
+}
+
+function skipSegment() {
+  const current = document.getElementById(SEGMENTS[currentIdx]?.id);
+  if (current) {
+    current.pause();
+    current.classList.remove('active');
+  }
+  trans.classList.remove('show');
+  playSegment(currentIdx + 1);
+}
+
+function togglePause() {
+  const current = document.getElementById(SEGMENTS[currentIdx]?.id);
+  if (!current) return;
+  if (current.paused) {
+    current.play();
+    paused = false;
+  } else {
+    current.pause();
+    paused = true;
+  }
+}
+
+// Wait for all videos to load metadata, then start
+let loaded = 0;
+document.querySelectorAll('video').forEach(v => {
+  v.addEventListener('loadedmetadata', () => {
+    loaded++;
+    if (loaded === SEGMENTS.length) {
+      getTotalDuration();
+      requestAnimationFrame(updateProgress);
+      playSegment(0);
+    }
+  });
+  // Force load
+  v.load();
+});
+
+// Keyboard controls
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'k') togglePause();
+  if (e.key === 'n' || e.key === 'ArrowRight') skipSegment();
+});
+</script>
+</body>
+</html>
