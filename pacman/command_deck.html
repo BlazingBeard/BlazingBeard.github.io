@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PUCMAN ARENA — Command Deck</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0f;
+  --bg-panel: #0d0d14;
+  --bg-panel-alt: #10101a;
+  --border: #1a1a2e;
+  --text: #c0c0d0;
+  --text-dim: #555570;
+  --text-bright: #e0e0f0;
+  --green: #00ff88;
+  --green-dim: #00aa55;
+  --yellow: #FFE000;
+  --red: #FF0000;
+  --cyan: #00FFFF;
+  --pink: #FFB8FF;
+  --orange: #FFB852;
+  --blue-wall: #1a1aff;
+  --blue-wall-dark: #0a0a66;
+  --neon-glow: 0 0 6px;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Fira Code', 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── LAYOUT ── */
+#app {
+  display: grid;
+  grid-template-rows: auto 1fr auto auto auto;
+  grid-template-columns: 1fr 320px;
+  grid-template-areas:
+    "stats stats"
+    "maze decisions"
+    "timeline decisions"
+    "season season"
+    "status status";
+  height: 100vh;
+  gap: 1px;
+  background: var(--border);
+}
+
+.panel {
+  background: var(--bg-panel);
+  padding: 8px 10px;
+  position: relative;
+  overflow: hidden;
+}
+.panel-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.panel-label .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  display: inline-block;
+}
+
+/* ── STATS BAR ── */
+#stats-bar {
+  grid-area: stats;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  flex-wrap: wrap;
+}
+.stat-block {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-right: 1px solid var(--border);
+}
+.stat-block:last-child { border-right: none; }
+.stat-label { color: var(--text-dim); font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
+.stat-value { color: var(--text-bright); font-size: 14px; font-weight: 600; }
+.stat-value.yellow { color: var(--yellow); }
+.stat-value.green { color: var(--green); }
+.stat-value.red { color: var(--red); }
+.stat-value.cyan { color: var(--cyan); }
+
+#round-selector {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#round-selector select {
+  background: var(--bg);
+  color: var(--text-bright);
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  font-family: inherit;
+  font-size: 11px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+#round-selector select:focus { border-color: var(--green); outline: none; }
+
+#live-toggle {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+#live-toggle.active {
+  border-color: var(--green);
+  color: var(--green);
+  box-shadow: var(--neon-glow) var(--green-dim);
+}
+
+/* ── MAZE ── */
+#maze-panel {
+  grid-area: maze;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  position: relative;
+}
+#maze-container {
+  position: relative;
+  line-height: 0;
+}
+#maze-canvas {
+  image-rendering: pixelated;
+}
+/* scanline overlay */
+#maze-container::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+}
+
+/* ── DECISIONS ── */
+#decisions-panel {
+  grid-area: decisions;
+  overflow-y: auto;
+  min-width: 0;
+}
+.decision-card {
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+}
+.decision-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+.decision-entity {
+  font-weight: 600;
+  font-size: 11px;
+}
+.decision-move {
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.decision-move.stay { color: var(--red); font-weight: 700; }
+.decision-reasoning {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.4;
+  max-height: 60px;
+  overflow-y: auto;
+  margin-top: 2px;
+}
+.decision-time {
+  font-size: 9px;
+  margin-top: 3px;
+  text-align: right;
+}
+.time-green { color: var(--green); }
+.time-yellow { color: var(--yellow); }
+.time-red { color: var(--red); }
+
+/* ── TIMELINE ── */
+#timeline-panel {
+  grid-area: timeline;
+  padding: 8px 12px;
+}
+#timeline-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+#play-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--green);
+  font-family: inherit;
+  font-size: 14px;
+  width: 28px; height: 24px;
+  cursor: pointer;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#play-btn:hover { border-color: var(--green); }
+#speed-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  color: var(--text-dim);
+}
+#speed-control input {
+  width: 60px;
+  accent-color: var(--green);
+}
+#tick-display {
+  font-size: 11px;
+  color: var(--text-bright);
+  margin-left: auto;
+}
+#timeline-bar {
+  position: relative;
+  height: 24px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  overflow: hidden;
+}
+#timeline-markers {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+}
+.tick-marker {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  opacity: 0.7;
+}
+.tick-marker.dot-eaten { background: var(--green); }
+.tick-marker.pucman-caught { background: var(--red); }
+.tick-marker.ghost-released { background: var(--cyan); }
+.tick-marker.power-pellet { background: var(--yellow); }
+#timeline-cursor {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--text-bright);
+  box-shadow: 0 0 4px rgba(255,255,255,0.5);
+  pointer-events: none;
+  transition: left 0.05s linear;
+}
+#timeline-hover {
+  position: absolute;
+  top: -18px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  font-size: 9px;
+  color: var(--text-bright);
+  pointer-events: none;
+  display: none;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+/* ── SEASON CHART ── */
+#season-panel {
+  grid-area: season;
+  overflow: hidden;
+  transition: max-height 0.3s;
+}
+#season-panel.collapsed { max-height: 26px; }
+#season-panel.expanded { max-height: 260px; }
+#season-toggle {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#season-toggle .arrow { transition: transform 0.2s; font-size: 8px; }
+#season-panel.collapsed #season-toggle .arrow { transform: rotate(-90deg); }
+#season-charts {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.chart-container {
+  flex: 1;
+  min-width: 180px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 6px;
+}
+.chart-title {
+  font-size: 9px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.chart-container svg { width: 100%; }
+
+/* ── STATUS BAR ── */
+#status-bar {
+  grid-area: status;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 12px;
+  font-size: 9px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  background: var(--bg-panel-alt);
+}
+#live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+#live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #333;
+}
+#live-dot.live {
+  background: var(--green);
+  animation: pulse 1.5s infinite;
+}
+#live-dot.stale {
+  background: var(--yellow);
+}
+#live-dot.offline {
+  background: var(--red);
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--green); }
+  50% { opacity: 0.4; box-shadow: none; }
+}
+@keyframes pellet-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+#shortcuts-hint {
+  margin-left: auto;
+  letter-spacing: 0.5px;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- STATS BAR -->
+  <div id="stats-bar" class="panel">
+    <div class="stat-block">
+      <span class="stat-label">Round</span>
+      <span id="s-round" class="stat-value cyan">—</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-label">Tick</span>
+      <span id="s-tick" class="stat-value">—</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-label">Score</span>
+      <span id="s-score" class="stat-value yellow">0</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-label">Dots</span>
+      <span id="s-dots" class="stat-value green">—</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-label">Winner</span>
+      <span id="s-winner" class="stat-value">—</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-label">Moves/Stays</span>
+      <span id="s-ratio" class="stat-value">—</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-label">Avg RT</span>
+      <span id="s-avgrt" class="stat-value">—</span>
+    </div>
+    <div id="round-selector">
+      <select id="round-select"></select>
+      <button id="live-toggle" title="Toggle Live Mode (L)">REPLAY</button>
+    </div>
+  </div>
+
+  <!-- MAZE -->
+  <div id="maze-panel" class="panel">
+    <div id="maze-container">
+      <canvas id="maze-canvas"></canvas>
+    </div>
+  </div>
+
+  <!-- DECISIONS -->
+  <div id="decisions-panel" class="panel">
+    <div class="panel-label"><span class="dot"></span>DECISIONS</div>
+    <div id="decisions-list"></div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div id="timeline-panel" class="panel">
+    <div id="timeline-controls">
+      <button id="play-btn" title="Play/Pause (Space)">▶</button>
+      <div id="speed-control">
+        <span>SPD</span>
+        <input type="range" id="speed-slider" min="1" max="20" value="5">
+        <span id="speed-label">5</span>
+      </div>
+      <span id="tick-display">0 / 0</span>
+    </div>
+    <div id="timeline-bar">
+      <div id="timeline-markers"></div>
+      <div id="timeline-cursor"></div>
+      <div id="timeline-hover"></div>
+    </div>
+  </div>
+
+  <!-- SEASON CHART -->
+  <div id="season-panel" class="panel expanded">
+    <div id="season-toggle" class="panel-label">
+      <span class="arrow">▼</span><span class="dot"></span>SEASON OVERVIEW
+    </div>
+    <div id="season-charts"></div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <div id="live-indicator">
+      <span id="live-dot"></span>
+      <span id="live-status">OFFLINE</span>
+    </div>
+    <span id="data-info">Loading…</span>
+    <span id="shortcuts-hint">← → tick · Space play · L live</span>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// PUCMAN ARENA COMMAND DECK
+// ════════════════════════════════════════════════════════════════
+
+const CELL = 16;
+const MAX_ROUNDS = 20;
+const LIVE_POLL_MS = 2000;
+const ENTITY_COLORS = {
+  pucman: '#FFE000',
+  blinky: '#FF0000',
+  pinky:  '#FFB8FF',
+  inky:   '#00FFFF',
+  clyde:  '#FFB852'
+};
+const CHAR_COLORS = {
+  'C': '#FFE000', 'B': '#FF0000', 'P': '#FFB8FF',
+  'I': '#00FFFF', 'K': '#FFB852'
+};
+const ARROW = { up: '↑', down: '↓', left: '←', right: '→', stay: '■' };
+
+// ── State ──
+let rounds = {};
+let roundList = [];
+let currentRound = null;
+let currentTick = 0;
+let playing = false;
+let playTimer = null;
+let liveMode = false;
+let liveTimer = null;
+let liveLastTimestamp = null;
+let speed = 5;
+
+// ── DOM refs ──
+const $ = id => document.getElementById(id);
+const mazeCanvas = $('maze-canvas');
+const ctx = mazeCanvas.getContext('2d');
+
+// ════════════════════════════════════════════════════════════════
+// DATA LOADING
+// ════════════════════════════════════════════════════════════════
+
+async function discoverRounds() {
+  const found = [];
+  const fetches = [];
+  for (let i = 1; i <= MAX_ROUNDS; i++) {
+    fetches.push(
+      fetch(`game_data/round_${i}.json`)
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d) found.push({ n: i, data: d }); })
+        .catch(() => {})
+    );
+  }
+  await Promise.all(fetches);
+  found.sort((a, b) => a.n - b.n);
+  for (const f of found) {
+    rounds[f.n] = f.data;
+    roundList.push(f.n);
+  }
+}
+
+async function fetchLiveState() {
+  try {
+    const r = await fetch('game_data/live_state.json?_=' + Date.now());
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
+}
+
+// ════════════════════════════════════════════════════════════════
+// ROUND SELECTOR
+// ════════════════════════════════════════════════════════════════
+
+function populateRoundSelector() {
+  const sel = $('round-select');
+  sel.innerHTML = '';
+  for (const n of roundList) {
+    const s = rounds[n].summary;
+    const opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = `R${n} — ${s.winner} — ${s.final_score}pts`;
+    sel.appendChild(opt);
+  }
+  sel.addEventListener('change', () => {
+    loadRound(parseInt(sel.value));
+  });
+}
+
+function loadRound(n) {
+  if (!rounds[n]) return;
+  currentRound = n;
+  currentTick = 0;
+  $('round-select').value = n;
+  stopPlaying();
+  buildTimeline();
+  renderTick();
+  updateSeasonCharts();
+  pushHash();
+}
+
+// ════════════════════════════════════════════════════════════════
+// MAZE RENDERING
+// ════════════════════════════════════════════════════════════════
+
+function renderMaze(ascii) {
+  if (!ascii) return;
+  const rows = ascii.split('\n');
+  const h = rows.length;
+  const w = Math.max(...rows.map(r => r.length));
+  mazeCanvas.width = w * CELL;
+  mazeCanvas.height = h * CELL;
+  ctx.clearRect(0, 0, mazeCanvas.width, mazeCanvas.height);
+
+  const now = Date.now();
+
+  for (let r = 0; r < h; r++) {
+    const row = rows[r] || '';
+    for (let c = 0; c < w; c++) {
+      const ch = c < row.length ? row[c] : ' ';
+      const x = c * CELL;
+      const y = r * CELL;
+      drawCell(ch, x, y, now);
+    }
+  }
+}
+
+function drawCell(ch, x, y, now) {
+  switch (ch) {
+    case '#':
+      ctx.fillStyle = '#0808aa';
+      ctx.fillRect(x, y, CELL, CELL);
+      // inner highlight
+      ctx.fillStyle = '#1a1aff';
+      ctx.fillRect(x + 1, y + 1, CELL - 2, CELL - 2);
+      // dark inner
+      ctx.fillStyle = '#0a0a66';
+      ctx.fillRect(x + 3, y + 3, CELL - 6, CELL - 6);
+      break;
+    case '.':
+      ctx.fillStyle = '#000';
+      ctx.fillRect(x, y, CELL, CELL);
+      ctx.fillStyle = '#FFE000';
+      ctx.beginPath();
+      ctx.arc(x + CELL/2, y + CELL/2, 2, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    case 'O':
+      ctx.fillStyle = '#000';
+      ctx.fillRect(x, y, CELL, CELL);
+      const flash = Math.sin(now / 200) > 0;
+      ctx.fillStyle = flash ? '#FFE000' : '#AA9900';
+      ctx.beginPath();
+      ctx.arc(x + CELL/2, y + CELL/2, 5, 0, Math.PI * 2);
+      ctx.fill();
+      if (flash) {
+        ctx.fillStyle = 'rgba(255,224,0,0.3)';
+        ctx.beginPath();
+        ctx.arc(x + CELL/2, y + CELL/2, 7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      break;
+    case 'C':
+      ctx.fillStyle = '#000';
+      ctx.fillRect(x, y, CELL, CELL);
+      drawPucman(x, y, now);
+      break;
+    case 'B': drawGhost(x, y, '#FF0000', '#000'); break;
+    case 'P': drawGhost(x, y, '#FFB8FF', '#000'); break;
+    case 'I': drawGhost(x, y, '#00FFFF', '#000'); break;
+    case 'K': drawGhost(x, y, '#FFB852', '#000'); break;
+    case 'G':
+      ctx.fillStyle = '#080818';
+      ctx.fillRect(x, y, CELL, CELL);
+      break;
+    case '-':
+      ctx.fillStyle = '#000';
+      ctx.fillRect(x, y, CELL, CELL);
+      ctx.strokeStyle = '#FFB8FF';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(x, y + CELL/2);
+      ctx.lineTo(x + CELL, y + CELL/2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      break;
+    case ' ':
+      ctx.fillStyle = '#000';
+      ctx.fillRect(x, y, CELL, CELL);
+      break;
+    default:
+      ctx.fillStyle = '#000';
+      ctx.fillRect(x, y, CELL, CELL);
+  }
+}
+
+function drawPucman(x, y, now) {
+  const mouth = Math.abs(Math.sin(now / 150)) * 0.8;
+  const cx = x + CELL / 2, cy = y + CELL / 2, r = CELL / 2 - 1;
+  // Get direction for mouth orientation
+  const tick = getCurrentTickData();
+  let angle = 0; // right
+  if (tick) {
+    const dir = tick.state_before?.pucman?.direction || 'left';
+    if (dir === 'left') angle = Math.PI;
+    else if (dir === 'up') angle = -Math.PI / 2;
+    else if (dir === 'down') angle = Math.PI / 2;
+  }
+  ctx.fillStyle = '#FFE000';
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.arc(cx, cy, r, angle + mouth, angle + Math.PI * 2 - mouth);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawGhost(x, y, color, bg) {
+  ctx.fillStyle = '#000';
+  ctx.fillRect(x, y, CELL, CELL);
+  const cx = x + CELL / 2, top = y + 2, r = CELL / 2 - 1;
+  // Body
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(cx, top + r, r, Math.PI, 0);
+  ctx.lineTo(cx + r, y + CELL - 1);
+  // Wavy bottom
+  const w = r * 2;
+  const segments = 3;
+  const sw = w / segments;
+  for (let i = 0; i < segments; i++) {
+    const sx = cx - r + i * sw;
+    ctx.quadraticCurveTo(sx + sw / 2, y + CELL + 2, sx + sw, y + CELL - 1);
+  }
+  ctx.lineTo(cx - r, top + r);
+  ctx.fill();
+  // Eyes
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(cx - 3, top + r - 1, 2.5, 0, Math.PI * 2);
+  ctx.arc(cx + 3, top + r - 1, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#00f';
+  ctx.beginPath();
+  ctx.arc(cx - 3, top + r, 1.2, 0, Math.PI * 2);
+  ctx.arc(cx + 3, top + r, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// ════════════════════════════════════════════════════════════════
+// TICK NAVIGATION
+// ════════════════════════════════════════════════════════════════
+
+function getCurrentRoundData() {
+  return currentRound ? rounds[currentRound] : null;
+}
+
+function getCurrentTickData() {
+  const rd = getCurrentRoundData();
+  if (!rd || !rd.ticks) return null;
+  return rd.ticks[currentTick] || null;
+}
+
+function renderTick() {
+  const rd = getCurrentRoundData();
+  if (!rd) return;
+  const tick = rd.ticks[currentTick];
+  if (!tick) return;
+  const sb = tick.state_before;
+
+  // Maze
+  renderMaze(sb.maze_ascii);
+
+  // Stats
+  $('s-round').textContent = currentRound;
+  $('s-tick').textContent = `${currentTick} / ${rd.ticks.length - 1}`;
+  $('s-score').textContent = sb.score;
+  $('s-dots').textContent = `${sb.dots_total - sb.dots_remaining} / ${sb.dots_total}`;
+  $('s-winner').textContent = rd.summary.winner || '—';
+  $('s-winner').className = 'stat-value ' + (rd.summary.winner === 'pucman' ? 'yellow' : 'red');
+
+  // Moves/Stays ratio up to current tick
+  let moves = 0, stays = 0;
+  for (let i = 0; i <= currentTick; i++) {
+    const d = rd.ticks[i]?.decisions?.pucman;
+    if (d) { d.move === 'stay' ? stays++ : moves++; }
+  }
+  $('s-ratio').textContent = `${moves}/${stays}`;
+  $('s-ratio').className = 'stat-value ' + (stays > moves ? 'red' : 'green');
+
+  // Avg response times
+  const rts = {};
+  for (const [ent, d] of Object.entries(tick.decisions || {})) {
+    rts[ent] = d.response_time;
+  }
+  const vals = Object.values(rts).filter(v => v > 0);
+  const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '—';
+  $('s-avgrt').textContent = avg + 's';
+  $('s-avgrt').className = 'stat-value ' + (avg < 3 ? 'green' : avg < 5 ? 'yellow' : 'red');
+
+  // Tick display
+  $('tick-display').textContent = `${currentTick} / ${rd.ticks.length - 1}`;
+
+  // Timeline cursor
+  const pct = rd.ticks.length > 1 ? (currentTick / (rd.ticks.length - 1)) * 100 : 0;
+  $('timeline-cursor').style.left = pct + '%';
+
+  // Decisions
+  renderDecisions(tick.decisions);
+
+  pushHash();
+}
+
+function renderDecisions(decisions) {
+  const list = $('decisions-list');
+  list.innerHTML = '';
+  if (!decisions) return;
+
+  const order = ['pucman', 'blinky', 'pinky', 'inky', 'clyde'];
+  for (const ent of order) {
+    const d = decisions[ent];
+    if (!d) continue;
+
+    const card = document.createElement('div');
+    card.className = 'decision-card';
+
+    const isStay = d.move === 'stay';
+    const rt = d.response_time || 0;
+    const rtClass = rt < 3 ? 'time-green' : rt < 5 ? 'time-yellow' : 'time-red';
+    const arrow = ARROW[d.move] || d.move;
+
+    card.innerHTML = `
+      <div class="decision-header">
+        <span class="decision-entity" style="color:${ENTITY_COLORS[ent]}">${ent.toUpperCase()}</span>
+        <span class="decision-move ${isStay ? 'stay' : ''}">${arrow} ${d.move}</span>
+      </div>
+      <div class="decision-reasoning">${escHtml(d.reasoning || '—')}</div>
+      <div class="decision-time ${rtClass}">${rt.toFixed(2)}s</div>
+    `;
+    list.appendChild(card);
+  }
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ════════════════════════════════════════════════════════════════
+// TIMELINE
+// ════════════════════════════════════════════════════════════════
+
+function buildTimeline() {
+  const rd = getCurrentRoundData();
+  const markers = $('timeline-markers');
+  markers.innerHTML = '';
+  if (!rd || !rd.ticks) return;
+
+  const total = rd.ticks.length;
+  for (let i = 0; i < total; i++) {
+    const events = rd.ticks[i].events || [];
+    for (const ev of events) {
+      const m = document.createElement('div');
+      m.className = 'tick-marker';
+      if (ev.includes('dot_eaten')) m.className += ' dot-eaten';
+      else if (ev.includes('pucman_caught')) m.className += ' pucman-caught';
+      else if (ev.includes('ghost_released')) m.className += ' ghost-released';
+      else if (ev.includes('power_pellet')) m.className += ' power-pellet';
+      else continue;
+      m.style.left = ((i / (total - 1)) * 100) + '%';
+      markers.appendChild(m);
+    }
+  }
+}
+
+$('timeline-bar').addEventListener('click', e => {
+  const rd = getCurrentRoundData();
+  if (!rd) return;
+  const rect = $('timeline-bar').getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  currentTick = Math.round(pct * (rd.ticks.length - 1));
+  renderTick();
+});
+
+$('timeline-bar').addEventListener('mousemove', e => {
+  const rd = getCurrentRoundData();
+  if (!rd) return;
+  const rect = $('timeline-bar').getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  const t = Math.round(pct * (rd.ticks.length - 1));
+  const hover = $('timeline-hover');
+  hover.style.display = 'block';
+  hover.style.left = (pct * 100) + '%';
+  hover.textContent = `Tick ${t}`;
+});
+
+$('timeline-bar').addEventListener('mouseleave', () => {
+  $('timeline-hover').style.display = 'none';
+});
+
+// ════════════════════════════════════════════════════════════════
+// PLAYBACK
+// ════════════════════════════════════════════════════════════════
+
+function togglePlay() {
+  playing ? stopPlaying() : startPlaying();
+}
+
+function startPlaying() {
+  playing = true;
+  $('play-btn').textContent = '⏸';
+  stepPlay();
+}
+
+function stopPlaying() {
+  playing = false;
+  $('play-btn').textContent = '▶';
+  if (playTimer) { clearTimeout(playTimer); playTimer = null; }
+}
+
+function stepPlay() {
+  if (!playing) return;
+  const rd = getCurrentRoundData();
+  if (!rd) return;
+  if (currentTick < rd.ticks.length - 1) {
+    currentTick++;
+    renderTick();
+    playTimer = setTimeout(stepPlay, 1000 / speed);
+  } else {
+    stopPlaying();
+  }
+}
+
+$('play-btn').addEventListener('click', togglePlay);
+
+$('speed-slider').addEventListener('input', e => {
+  speed = parseInt(e.target.value);
+  $('speed-label').textContent = speed;
+});
+
+// ════════════════════════════════════════════════════════════════
+// SEASON CHARTS (SVG, no libs)
+// ════════════════════════════════════════════════════════════════
+
+function updateSeasonCharts() {
+  const container = $('season-charts');
+  container.innerHTML = '';
+  if (roundList.length === 0) return;
+
+  const summaries = roundList.map(n => ({ n, ...rounds[n].summary }));
+
+  // Compute stay counts per round from tick data
+  const staysPerRound = roundList.map(n => {
+    const ticks = rounds[n].ticks || [];
+    let stays = 0;
+    ticks.forEach(t => { if (t.decisions?.pucman?.move === 'stay') stays++; });
+    return stays;
+  });
+
+  makeBarChart(container, 'SCORE', summaries.map(s => s.final_score), '#FFE000');
+  makeBarChart(container, 'DOTS EATEN', summaries.map(s => s.dots_eaten), '#00ff88');
+  makeBarChart(container, 'SURVIVAL TICKS', summaries.map(s => s.total_ticks), '#00FFFF');
+  makeBarChart(container, 'PUCMAN STAYS', staysPerRound, '#FF0000');
+}
+
+function makeBarChart(container, title, values, color) {
+  const div = document.createElement('div');
+  div.className = 'chart-container';
+
+  const max = Math.max(...values, 1);
+  const barW = Math.max(8, Math.min(30, 160 / values.length));
+  const svgW = values.length * (barW + 4) + 20;
+  const svgH = 100;
+  const chartH = 70;
+
+  let bars = '';
+  values.forEach((v, i) => {
+    const h = (v / max) * chartH;
+    const x = 10 + i * (barW + 4);
+    const y = svgH - 16 - h;
+    const isActive = roundList[i] === currentRound;
+    const opacity = isActive ? 1 : 0.6;
+    const stroke = isActive ? '#fff' : 'none';
+    bars += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${color}" opacity="${opacity}" stroke="${stroke}" stroke-width="1" rx="1"/>`;
+    bars += `<text x="${x + barW/2}" y="${svgH - 4}" text-anchor="middle" fill="#555570" font-size="8" font-family="monospace">R${roundList[i]}</text>`;
+    bars += `<text x="${x + barW/2}" y="${y - 2}" text-anchor="middle" fill="${color}" font-size="7" font-family="monospace" opacity="0.8">${v}</text>`;
+  });
+
+  div.innerHTML = `
+    <div class="chart-title">${title}</div>
+    <svg viewBox="0 0 ${svgW} ${svgH}" height="${svgH}">${bars}</svg>
+  `;
+  container.appendChild(div);
+}
+
+$('season-toggle').addEventListener('click', () => {
+  const panel = $('season-panel');
+  panel.classList.toggle('collapsed');
+  panel.classList.toggle('expanded');
+});
+
+// ════════════════════════════════════════════════════════════════
+// LIVE MODE
+// ════════════════════════════════════════════════════════════════
+
+function toggleLive() {
+  liveMode = !liveMode;
+  const btn = $('live-toggle');
+  if (liveMode) {
+    btn.textContent = 'LIVE';
+    btn.classList.add('active');
+    stopPlaying();
+    pollLive();
+    liveTimer = setInterval(pollLive, LIVE_POLL_MS);
+  } else {
+    btn.textContent = 'REPLAY';
+    btn.classList.remove('active');
+    if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+    updateLiveIndicator(null);
+  }
+}
+
+async function pollLive() {
+  const data = await fetchLiveState();
+  if (!data) {
+    updateLiveIndicator(null);
+    return;
+  }
+
+  liveLastTimestamp = data.timestamp ? new Date(data.timestamp).getTime() : Date.now();
+  updateLiveIndicator(liveLastTimestamp);
+
+  // Build a synthetic tick view from live_state
+  renderLiveState(data);
+
+  if (data.game_over) {
+    // Switch to replay mode
+    liveMode = false;
+    $('live-toggle').textContent = 'REPLAY';
+    $('live-toggle').classList.remove('active');
+    if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+  }
+}
+
+function renderLiveState(data) {
+  // Render maze
+  if (data.maze_ascii) renderMaze(data.maze_ascii);
+
+  // Stats
+  $('s-round').textContent = data.round || '?';
+  $('s-tick').textContent = `${data.tick || 0} (LIVE)`;
+  $('s-score').textContent = data.score || 0;
+  const dotsEaten = (data.dots_total || 0) - (data.dots_remaining || 0);
+  $('s-dots').textContent = `${dotsEaten} / ${data.dots_total || 0}`;
+  $('s-winner').textContent = data.game_over ? (data.winner || '—') : 'IN PROGRESS';
+  $('s-winner').className = 'stat-value green';
+
+  // Decisions
+  if (data.decisions) renderDecisions(data.decisions);
+}
+
+function updateLiveIndicator(timestamp) {
+  const dot = $('live-dot');
+  const status = $('live-status');
+
+  if (!liveMode || !timestamp) {
+    dot.className = '';
+    status.textContent = 'OFFLINE';
+    return;
+  }
+
+  const age = Date.now() - timestamp;
+  if (age < 10000) {
+    dot.className = 'live';
+    status.textContent = `LIVE (${(age / 1000).toFixed(0)}s ago)`;
+  } else if (age < 30000) {
+    dot.className = 'stale';
+    status.textContent = `STALE (${(age / 1000).toFixed(0)}s ago)`;
+  } else {
+    dot.className = 'offline';
+    status.textContent = 'OFFLINE';
+  }
+}
+
+$('live-toggle').addEventListener('click', toggleLive);
+
+// ════════════════════════════════════════════════════════════════
+// URL HASH STATE
+// ════════════════════════════════════════════════════════════════
+
+function pushHash() {
+  if (currentRound !== null) {
+    const hash = `#round=${currentRound}&tick=${currentTick}`;
+    if (location.hash !== hash) history.replaceState(null, '', hash);
+  }
+}
+
+function readHash() {
+  const h = location.hash.slice(1);
+  const params = new URLSearchParams(h);
+  const r = parseInt(params.get('round'));
+  const t = parseInt(params.get('tick'));
+  return { round: isNaN(r) ? null : r, tick: isNaN(t) ? 0 : t };
+}
+
+// ════════════════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ════════════════════════════════════════════════════════════════
+
+document.addEventListener('keydown', e => {
+  // Don't capture if user is in an input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+  const rd = getCurrentRoundData();
+
+  switch (e.key) {
+    case 'ArrowLeft':
+      e.preventDefault();
+      if (rd && currentTick > 0 && !liveMode) {
+        currentTick--;
+        renderTick();
+      }
+      break;
+    case 'ArrowRight':
+      e.preventDefault();
+      if (rd && currentTick < rd.ticks.length - 1 && !liveMode) {
+        currentTick++;
+        renderTick();
+      }
+      break;
+    case ' ':
+      e.preventDefault();
+      if (!liveMode) togglePlay();
+      break;
+    case 'l':
+    case 'L':
+      toggleLive();
+      break;
+  }
+});
+
+// ════════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════════
+
+async function init() {
+  $('data-info').textContent = 'Discovering rounds…';
+  await discoverRounds();
+
+  if (roundList.length === 0) {
+    $('data-info').textContent = 'No round data found in game_data/';
+    return;
+  }
+
+  $('data-info').textContent = `${roundList.length} rounds loaded`;
+  populateRoundSelector();
+
+  // Check URL hash
+  const hash = readHash();
+  const startRound = hash.round && rounds[hash.round] ? hash.round : roundList[roundList.length - 1];
+  currentTick = hash.tick || 0;
+
+  loadRound(startRound);
+
+  // Clamp tick
+  const rd = getCurrentRoundData();
+  if (rd && currentTick >= rd.ticks.length) currentTick = rd.ticks.length - 1;
+  renderTick();
+
+  // Periodic live indicator update
+  setInterval(() => {
+    if (liveMode && liveLastTimestamp) updateLiveIndicator(liveLastTimestamp);
+  }, 1000);
+}
+
+init();
+</script>
+</body>
+</html>
