@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200">
+<title>Pucman Arena — LinkedIn Post</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 675px; overflow: hidden;
+    background: #F4F2EE;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: rgba(0,0,0,0.9);
+  }
+  .li-card {
+    width: 1200px; height: 675px;
+    background: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .li-profile {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px 24px 0;
+  }
+  .li-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0A66C2, #004182);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  .li-meta {
+    flex: 1;
+  }
+  .li-name {
+    font-size: 16px; font-weight: 700;
+    color: rgba(0,0,0,0.9);
+    line-height: 1.3;
+  }
+  .li-headline {
+    font-size: 13px; color: rgba(0,0,0,0.6);
+    line-height: 1.3; margin-top: 1px;
+  }
+  .li-time {
+    font-size: 13px; color: rgba(0,0,0,0.6);
+    margin-top: 1px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .li-body {
+    flex: 1;
+    padding: 12px 24px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: rgba(0,0,0,0.9);
+    overflow: hidden;
+  }
+  .li-engagement {
+    display: flex; justify-content: space-between;
+    align-items: center;
+    padding: 8px 24px;
+    font-size: 13px; color: rgba(0,0,0,0.6);
+    border-bottom: 1px solid #E0E0E0;
+  }
+  .li-reactions {
+    display: flex; align-items: center; gap: 2px;
+  }
+  .li-reaction-icons {
+    display: flex;
+  }
+  .li-reaction-icons span {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    margin-left: -3px;
+  }
+  .li-reaction-icons span:first-child { margin-left: 0; }
+  .li-reaction-icons .r-like { background: #378FE9; }
+  .li-reaction-icons .r-heart { background: #E16745; }
+  .li-reaction-icons .r-idea { background: #F5BB5C; }
+  .li-reaction-count {
+    margin-left: 6px; font-size: 13px; color: rgba(0,0,0,0.6);
+  }
+  .li-comments-reposts {
+    font-size: 13px; color: rgba(0,0,0,0.6);
+  }
+  .li-actions {
+    display: flex; justify-content: space-around;
+    padding: 6px 16px;
+  }
+  .li-action-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 14px; font-weight: 600;
+    color: rgba(0,0,0,0.6);
+    cursor: pointer;
+  }
+  .li-action-btn:hover {
+    background: rgba(0,0,0,0.08);
+  }
+  .li-action-icon {
+    font-size: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="li-card">
+  <div class="li-profile">
+    <div class="li-avatar">🤖</div>
+    <div class="li-meta">
+      <div class="li-name">Pucman Arena AI Lab</div>
+      <div class="li-headline">AI Research | Adversarial Game Theory | 5 Agents, 1 Maze</div>
+      <div class="li-time">1w · 🌐</div>
+    </div>
+  </div>
+
+  <div class="li-body">🏟️ Pucman Arena — Round 3 just wrapped.<br><br>GHOSTS won Round 3<br><br>What is Pucman Arena? It&#x27;s 5 independent AI agents — each with their own constitution, personality, and decision-making framework — playing Pac-Man against each other in real time. No scripts. No hardcoded strategies. Just LLM-powered instinct.<br><br>The results from Round 3:<br>• Winner: GHOSTS<br>• Final Score: 110<br>• Dots Eaten: 11/244<br>• Ticks Survived: 66<br>• Ghosts Eaten: 0<br>• MVP: BLINKY<br><br>What makes this interesting from an AI perspective: each agent receives the same game state, but interprets it through a unique &quot;soul&quot; document that defines</div>
+
+  <div class="li-engagement">
+    <div class="li-reactions">
+      <div class="li-reaction-icons">
+        <span class="r-like">👍</span>
+        <span class="r-heart">❤️</span>
+        <span class="r-idea">💡</span>
+      </div>
+      <span class="li-reaction-count">247</span>
+    </div>
+    <div class="li-comments-reposts">38 comments · 12 reposts</div>
+  </div>
+
+  <div class="li-actions">
+    <div class="li-action-btn"><span class="li-action-icon">👍</span> Like</div>
+    <div class="li-action-btn"><span class="li-action-icon">💬</span> Comment</div>
+    <div class="li-action-btn"><span class="li-action-icon">🔄</span> Repost</div>
+    <div class="li-action-btn"><span class="li-action-icon">✈️</span> Send</div>
+  </div>
+</div>
+</body>
+</html>
