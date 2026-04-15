@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PUCMAN ARENA — INTERMISSION</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   PUCMAN ARENA — INTERMISSION: THE RUNNING MAN'S STORY
+   Between Round 4 and Round 5 — The episode that changes everything
+   ═══════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --card: #111827;
+  --card-border: #1e293b;
+  --neon-blue: #00aaff;
+  --neon-gold: #FFD700;
+  --neon-green: #00ff88;
+  --ghost-red: #FF0000;
+  --ghost-pink: #FFB8FF;
+  --ghost-cyan: #00FFFF;
+  --ghost-orange: #FFB852;
+  --pucman-yellow: #FFE000;
+  --ms-pac-pink: #FF2020;
+  --text: #e2e8f0;
+  --text-dim: #94a3b8;
+  --danger: #ef4444;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a, button, .link-btn, .social-btn {
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+}
+
+*::before, *::after {
+  pointer-events: none !important;
+}
+
+/* ── Animations ── */
+@keyframes glowPulse {
+  0%, 100% { filter: drop-shadow(0 0 8px var(--glow-color)); opacity: 1; }
+  50% { filter: drop-shadow(0 0 20px var(--glow-color)); opacity: 0.92; }
+}
+
+@keyframes textShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes neonFlicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.6; }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(var(--border-rgb), 0.4); box-shadow: 0 0 15px rgba(var(--border-rgb), 0.1); }
+  50% { border-color: rgba(var(--border-rgb), 0.8); box-shadow: 0 0 30px rgba(var(--border-rgb), 0.25); }
+}
+
+@keyframes scanlines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 4px; }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.15); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.08); }
+  56% { transform: scale(1); }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes pulseBorder {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 184, 255, 0.2), inset 0 0 20px rgba(255, 184, 255, 0.05); }
+  50% { box-shadow: 0 0 40px rgba(255, 184, 255, 0.4), inset 0 0 40px rgba(255, 184, 255, 0.1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.fade-in { animation: fadeInUp 0.6s ease-out both; }
+.fade-in-d1 { animation: fadeInUp 0.6s ease-out 0.1s both; }
+.fade-in-d2 { animation: fadeInUp 0.6s ease-out 0.2s both; }
+.fade-in-d3 { animation: fadeInUp 0.6s ease-out 0.3s both; }
+.fade-in-d4 { animation: fadeInUp 0.6s ease-out 0.4s both; }
+
+/* ── Layout ── */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+section { padding: 60px 0; }
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--card-border), transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STICKY NAV
+   ═══════════════════════════════════════════════════════════════ */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  background: rgba(10, 10, 15, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #1e293b;
+  padding: 10px 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.nav-link {
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COLD OPEN — TITLE CARD
+   ═══════════════════════════════════════════════════════════════ */
+.cold-open {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  padding: 60px 24px;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 224, 0, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(255, 184, 255, 0.04) 0%, transparent 50%),
+    var(--bg);
+}
+
+/* Scanline overlay */
+.cold-open::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+  animation: scanlines 0.3s linear infinite;
+  z-index: 1;
+}
+
+/* Grid overlay */
+.cold-open::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 49.5%, rgba(255, 224, 0, 0.02) 49.5%, rgba(255, 224, 0, 0.02) 50.5%, transparent 50.5%),
+    linear-gradient(0deg, transparent 49.5%, rgba(255, 224, 0, 0.02) 49.5%, rgba(255, 224, 0, 0.02) 50.5%, transparent 50.5%);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black, transparent);
+}
+
+.cold-open-content {
+  position: relative;
+  z-index: 2;
+}
+
+.intermission-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--pucman-yellow);
+  border: 1px solid rgba(255, 224, 0, 0.3);
+  padding: 6px 20px;
+  border-radius: 100px;
+  margin-bottom: 32px;
+  display: inline-block;
+  animation: neonFlicker 3s infinite;
+}
+
+.intermission-title {
+  font-size: clamp(3.5rem, 12vw, 9rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--pucman-yellow) 0%, #fff 30%, var(--pucman-yellow) 60%, var(--neon-gold) 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 6s linear infinite;
+  margin-bottom: 24px;
+  text-shadow: none;
+}
+
+.intermission-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+.intermission-tagline {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ms-pac-pink);
+  opacity: 0.8;
+}
+
+.divider-line {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--pucman-yellow), transparent);
+  margin: 32px auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   THE BACKSTORY — "How I Got Here"
+   ═══════════════════════════════════════════════════════════════ */
+.backstory {
+  background: linear-gradient(180deg, var(--bg) 0%, #0d0d14 100%);
+  position: relative;
+}
+
+.monologue-block {
+  background: var(--card);
+  border-left: 3px solid var(--pucman-yellow);
+  border-radius: 0 12px 12px 0;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.monologue-block:hover {
+  transform: translateX(4px);
+  box-shadow: -4px 0 20px rgba(255, 224, 0, 0.1);
+}
+
+.monologue-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--pucman-yellow);
+  background: rgba(255, 224, 0, 0.1);
+  border: 1px solid rgba(255, 224, 0, 0.2);
+  padding: 2px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.monologue-text {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.monologue-quote {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--pucman-yellow);
+  line-height: 1.7;
+  padding: 20px 0;
+  text-shadow: 0 0 20px rgba(255, 224, 0, 0.15);
+}
+
+.monologue-quote::before {
+  content: '\201C';
+  font-size: 3rem;
+  color: var(--pucman-yellow);
+  opacity: 0.3;
+  display: block;
+  line-height: 0.5;
+  margin-bottom: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MS. PAC-MAN — "The One Who Waited"
+   ═══════════════════════════════════════════════════════════════ */
+.ms-pacman-section {
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 30%, rgba(255, 184, 255, 0.06) 0%, transparent 60%),
+    linear-gradient(180deg, #0d0d14 0%, var(--bg) 100%);
+  position: relative;
+}
+
+.love-story-block {
+  background: var(--card);
+  border-left: 3px solid var(--ms-pac-pink);
+  border-radius: 0 12px 12px 0;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.love-story-block:hover {
+  transform: translateX(4px);
+  box-shadow: -4px 0 20px rgba(255, 184, 255, 0.1);
+}
+
+.love-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ms-pac-pink);
+  background: rgba(255, 184, 255, 0.1);
+  border: 1px solid rgba(255, 184, 255, 0.2);
+  padding: 2px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.love-text {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.love-quote {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--ms-pac-pink);
+  line-height: 1.7;
+  padding: 16px 0;
+  text-shadow: 0 0 20px rgba(255, 184, 255, 0.15);
+}
+
+/* Ms. Pac-Man visual */
+.ms-pacman-visual {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.ms-pacman-icon {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle at 40% 40%, #FFE000, #ccb200);
+  border-radius: 50%;
+  position: relative;
+  animation: float 4s ease-in-out infinite;
+  box-shadow: 0 0 40px rgba(255, 224, 0, 0.4), 0 0 80px rgba(255, 224, 0, 0.15);
+}
+
+/* Bow */
+.ms-pacman-icon::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-bottom: 20px solid #FF2020;
+  filter: drop-shadow(0 0 8px rgba(255, 32, 32, 0.6));
+}
+
+/* Mouth */
+.ms-pacman-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -2px;
+  width: 0;
+  height: 0;
+  border-top: 22px solid var(--bg);
+  border-bottom: 22px solid var(--bg);
+  border-left: 28px solid transparent;
+  transform: translateY(-50%);
+}
+
+/* Love letter card */
+.love-letter {
+  background: linear-gradient(135deg, rgba(255, 32, 32, 0.08), rgba(255, 224, 0, 0.04), var(--card));
+  border: 2px solid rgba(255, 32, 32, 0.35);
+  border-radius: 20px;
+  padding: 40px;
+  margin: 48px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: pulseBorder 4s ease-in-out infinite;
+}
+
+.love-letter::before {
+  content: '\2764';
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  font-size: 6rem;
+  opacity: 0.04;
+  color: var(--ms-pac-pink);
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.love-letter-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ms-pac-pink);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.love-letter-label::before,
+.love-letter-label::after {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ms-pac-pink));
+}
+
+.love-letter-label::after {
+  background: linear-gradient(90deg, var(--ms-pac-pink), transparent);
+}
+
+.love-letter-text {
+  font-size: 1.15rem;
+  line-height: 2;
+  color: var(--text);
+  font-style: italic;
+  max-width: 680px;
+  margin: 0 auto 20px;
+}
+
+.love-letter-sig {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--ms-pac-pink);
+  text-shadow: 0 0 15px rgba(255, 184, 255, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GHOST REACTIONS
+   ═══════════════════════════════════════════════════════════════ */
+.ghost-reactions {
+  background: var(--bg);
+}
+
+.ghost-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.ghost-card {
+  --border-rgb: 255, 0, 0;
+  background: var(--card);
+  border: 1px solid rgba(var(--border-rgb), 0.3);
+  border-radius: 16px;
+  padding: 28px;
+  animation: borderGlow 4s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+.ghost-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(var(--border-rgb), 0.6), transparent);
+}
+.ghost-card.blinky { --border-rgb: 255, 0, 0; }
+.ghost-card.pinky { --border-rgb: 255, 184, 255; }
+.ghost-card.inky { --border-rgb: 0, 255, 255; }
+.ghost-card.clyde { --border-rgb: 255, 184, 82; }
+
+.ghost-name {
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+.ghost-card.blinky .ghost-name { color: var(--ghost-red); }
+.ghost-card.pinky .ghost-name { color: var(--ghost-pink); }
+.ghost-card.inky .ghost-name { color: var(--ghost-cyan); }
+.ghost-card.clyde .ghost-name { color: var(--ghost-orange); }
+
+.ghost-role {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+
+.ghost-quote {
+  font-size: 0.95rem;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEASON STATS
+   ═══════════════════════════════════════════════════════════════ */
+.season-stats {
+  background: linear-gradient(180deg, var(--bg) 0%, #0d0d14 100%);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.round-stat-card {
+  --glow-color: var(--neon-blue);
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+.round-stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.round-stat-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(0, 170, 255, 0.1), transparent 60%);
+  z-index: -1;
+}
+
+.round-stat-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--neon-blue);
+  margin-bottom: 16px;
+}
+
+.round-stat-value {
+  font-family: 'Courier New', monospace;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--neon-gold);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.round-stat-detail {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.trend-arrow {
+  display: inline-block;
+  color: var(--neon-green);
+  font-weight: 900;
+  margin-left: 6px;
+  font-size: 0.9em;
+}
+
+.growth-banner {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.08), var(--card));
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  border-radius: 16px;
+  padding: 32px;
+  margin-top: 32px;
+}
+
+.growth-text {
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  font-weight: 900;
+  color: var(--neon-green);
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SOCIAL / ENGAGEMENT
+   ═══════════════════════════════════════════════════════════════ */
+.social-section {
+  background: linear-gradient(180deg, #0d0d14 0%, var(--bg) 100%);
+}
+
+.allegiance-callout {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255, 224, 0, 0.06), rgba(255, 0, 0, 0.04), var(--card));
+  border: 2px solid rgba(255, 224, 0, 0.2);
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 48px;
+}
+
+.allegiance-title {
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-weight: 900;
+  color: var(--pucman-yellow);
+  text-shadow: 0 0 20px rgba(255, 224, 0, 0.3);
+  margin-bottom: 12px;
+}
+
+.allegiance-subtitle {
+  font-size: 1rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.social-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.social-mockup {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.social-mockup-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-platform-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+.social-platform-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+.social-mockup-body {
+  padding: 20px;
+}
+
+.social-mockup-text {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.social-hashtags {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--neon-blue);
+  font-weight: 600;
+}
+
+.social-mockup-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  gap: 20px;
+}
+
+.social-action {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* CTA Buttons */
+.cta-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 40px 0;
+}
+
+.social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 2px solid;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.btn-subscribe {
+  background: var(--ghost-red);
+  border-color: var(--ghost-red);
+  color: #fff;
+}
+.btn-subscribe:hover {
+  background: transparent;
+  color: var(--ghost-red);
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+}
+
+.btn-like {
+  background: transparent;
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
+}
+.btn-like:hover {
+  background: var(--neon-blue);
+  color: #000;
+  box-shadow: 0 0 30px rgba(0, 170, 255, 0.3);
+}
+
+.btn-share {
+  background: transparent;
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
+.btn-share:hover {
+  background: var(--neon-green);
+  color: #000;
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+}
+
+.qr-placeholder {
+  text-align: center;
+  margin: 32px auto;
+  max-width: 200px;
+}
+
+.qr-box {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 12px;
+  border: 2px dashed var(--card-border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  opacity: 0.3;
+}
+
+.qr-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NEXT ROUND TEASER
+   ═══════════════════════════════════════════════════════════════ */
+.next-round {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 50%, rgba(0, 255, 136, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 80%, rgba(255, 224, 0, 0.04) 0%, transparent 50%),
+    var(--bg);
+  position: relative;
+}
+
+.next-round::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 136, 0.01) 2px,
+    rgba(0, 255, 136, 0.01) 4px
+  );
+}
+
+.next-round-content {
+  position: relative;
+  z-index: 2;
+}
+
+.next-round-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--neon-green);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  padding: 6px 20px;
+  border-radius: 100px;
+  margin-bottom: 32px;
+  display: inline-block;
+}
+
+.next-round-title {
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--neon-green) 0%, #fff 40%, var(--pucman-yellow) 70%, var(--neon-green) 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 5s linear infinite;
+  margin-bottom: 32px;
+}
+
+.next-round-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 700px;
+  margin: 0 auto 48px;
+}
+
+.next-round-line {
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: var(--text);
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.next-round-line em {
+  color: var(--neon-gold);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.next-round-dramatic {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  font-weight: 800;
+  color: var(--neon-green);
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  animation: neonFlicker 3s infinite;
+}
+
+.cta-btn {
+  display: inline-block;
+  margin-top: 40px;
+  padding: 16px 48px;
+  background: linear-gradient(135deg, var(--neon-green), #00cc6a);
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: all 0.3s;
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+}
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px rgba(0, 255, 136, 0.5);
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 40px 24px;
+  border-top: 1px solid var(--card-border);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+.footer a { color: var(--neon-blue); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  section { padding: 40px 0; }
+  .ghost-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .social-cards { grid-template-columns: 1fr; }
+  .love-letter { padding: 28px 20px; }
+  .monologue-block, .love-story-block { padding: 20px; }
+  .cta-row { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ STICKY NAV BAR ═══ -->
+<nav class="sticky-nav">
+  <a href="arena_round4.html" class="nav-link" style="color:var(--ghost-red);border:1px solid var(--ghost-red);" onmouseover="this.style.background='var(--ghost-red)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='var(--ghost-red)'">&larr; Round 4</a>
+  <a href="dashboard.html" class="nav-link" style="color:#7c3aed;border:1px solid #7c3aed;" onmouseover="this.style.background='#7c3aed';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#7c3aed'">&#128200; Dashboard</a>
+  <a href="arcade/index.html" class="nav-link" style="color:var(--pucman-yellow);border:2px solid var(--pucman-yellow);background:rgba(255,224,0,0.08);" onmouseover="this.style.background='var(--pucman-yellow)';this.style.color='#000'" onmouseout="this.style.background='rgba(255,224,0,0.08)';this.style.color='var(--pucman-yellow)'">&#127918; Arcade</a>
+  <a href="index.html" class="nav-link" style="color:var(--neon-blue);border:1px solid var(--neon-blue);" onmouseover="this.style.background='var(--neon-blue)';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='var(--neon-blue)'">&#127968; Hub</a>
+  <a href="#backstory" class="nav-link" style="color:var(--text);opacity:0.6;font-weight:600;">&darr; Story</a>
+  <a href="#ms-pacman" class="nav-link" style="color:var(--ms-pac-pink);opacity:0.8;font-weight:600;">&hearts; Ms. Pac-Man</a>
+  <a href="#ghosts" class="nav-link" style="color:var(--text);opacity:0.6;font-weight:600;">&darr; Ghosts</a>
+  <a href="#stats" class="nav-link" style="color:var(--text);opacity:0.6;font-weight:600;">&darr; Stats</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 1: COLD OPEN — TITLE CARD
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="cold-open">
+  <div class="cold-open-content">
+    <div class="intermission-badge">&#9611;&#9611; BROADCAST PAUSED</div>
+
+    <h1 class="intermission-title">INTER&shy;MISSION</h1>
+
+    <div class="divider-line"></div>
+
+    <p class="intermission-subtitle">Before Round 5&hellip; the story you haven&rsquo;t heard.</p>
+
+    <p class="intermission-tagline">The Running Man&rsquo;s Story</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 2: THE BACKSTORY — "How I Got Here"
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="backstory" id="backstory">
+  <div class="container">
+    <div class="section-title" style="color: var(--pucman-yellow);">&#128302; How I Got Here</div>
+
+    <div class="monologue-block fade-in">
+      <div class="monologue-tag">Pucman &mdash; Origin</div>
+      <p class="monologue-text">
+        I was nobody. A dot collector in the food industry &mdash; deliveries, logistics, the grind.
+        Wake up, run the route, eat what they give you, go home. Nothing glamorous. Nothing that
+        would put you on a screen. I moved product through corridors most people didn&rsquo;t even know existed.
+        Fourteen-hour shifts. No overtime. Just dots. Millions of dots.
+      </p>
+    </div>
+
+    <div class="monologue-block fade-in-d1">
+      <div class="monologue-tag">Pucman &mdash; The Setup</div>
+      <p class="monologue-text">
+        Then they came for me. Said I&rsquo;d been skimming from the supply chain. Said the numbers didn&rsquo;t
+        add up. I told them I was just a driver &mdash; I don&rsquo;t count the dots, I just move them. Didn&rsquo;t
+        matter. The system needed a new contestant. Someone expendable. Someone the audience wouldn&rsquo;t
+        miss. I fit the profile.
+      </p>
+      <p class="monologue-text" style="margin-top: 12px;">
+        They gave me a choice: the maze or prison. I chose the maze. Because at least in the maze,
+        you have a chance. In prison, you&rsquo;re just a dot that stopped moving.
+      </p>
+    </div>
+
+    <div class="monologue-block fade-in-d2" style="border-left-color: var(--neon-gold);">
+      <div class="monologue-quote">
+        They put me in yellow. Said it made for good TV. I said it makes me a target. They laughed.
+      </div>
+    </div>
+
+    <div class="monologue-block fade-in-d3">
+      <div class="monologue-tag">Pucman &mdash; Round 1</div>
+      <p class="monologue-text">
+        My first round was a bloodbath. No training. No strategy. No briefing on what those things
+        were &mdash; the ghosts. Just a buzzer, a maze, and four colored nightmares closing in from every
+        direction. I survived 48 ticks on pure adrenaline. Forty-eight. That&rsquo;s not even a minute
+        in the real world. But in the maze, every tick feels like a year.
+      </p>
+    </div>
+
+    <div class="monologue-block fade-in-d4">
+      <div class="monologue-tag">Pucman &mdash; Evolution</div>
+      <p class="monologue-text">
+        Each round I learned. Studied the ghosts. Memorized the corridors. Found the Cherry Pattern
+        &mdash; don&rsquo;t ask me how, I just felt it. Started understanding their logic: Blinky charges,
+        Pinky flanks, Inky does whatever chaos tells him to, and Clyde&hellip; Clyde just exists.
+        I started fighting back. Not winning &mdash; surviving longer. Eating more. Moving smarter.
+      </p>
+    </div>
+
+    <div class="monologue-block fade-in" style="border-left-color: var(--neon-gold);">
+      <div class="monologue-quote">
+        Four rounds. Four losses. But every round I get stronger. Every round they get more nervous.
+        I can see it in the way Blinky hesitates now. He never used to hesitate. That&rsquo;s how I know
+        I&rsquo;m getting close.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 3: MS. PAC-MAN — "The One Who Waited"
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="ms-pacman-section" id="ms-pacman">
+  <div class="container">
+    <div class="section-title" style="color: var(--ms-pac-pink);">&hearts; The One Who Waited</div>
+
+    <div class="ms-pacman-visual fade-in">
+      <div class="ms-pacman-icon"></div>
+      <div style="margin-top: 20px; font-size: 1.4rem; font-weight: 900; color: var(--ms-pac-pink); text-shadow: 0 0 20px rgba(255,184,255,0.4);">MS. PAC-MAN</div>
+      <div style="font-size: 0.8rem; color: var(--text-dim); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 4px;">Navigator &middot; Partner &middot; Reason</div>
+    </div>
+
+    <div class="love-story-block fade-in">
+      <div class="love-tag">Before the Maze</div>
+      <p class="love-text">
+        We met on the routes. She was working the same corridors &mdash; a navigator, like me. Fastest
+        in the district. Could clear a tunnel in half the time it took anyone else. She had a red
+        bow and a smile that made the corridors feel less dark. I was running east, she was running
+        west, and for one second we were in the same corridor at the same time. That second changed
+        everything.
+      </p>
+    </div>
+
+    <div class="love-story-block fade-in-d1">
+      <div class="love-tag">The Arrest</div>
+      <p class="love-text">
+        When they came for me, she was the only one who showed up. Everyone else &mdash; the crew, the
+        supervisors, the guys I&rsquo;d been running dots with for years &mdash; gone. Like I was already
+        dead. Not her. She showed up every day. Brought me dots through the glass. Told me to keep
+        eating, keep moving, keep surviving. She never asked if I did it. She already knew.
+      </p>
+    </div>
+
+    <div class="love-story-block fade-in-d2" style="border-left-color: var(--neon-gold);">
+      <div class="love-quote">
+        She said: &ldquo;You come back to me. You eat every dot and you come back.&rdquo;
+        I told her I would. I haven&rsquo;t broken that promise yet.
+      </div>
+    </div>
+
+    <div class="love-story-block fade-in-d3">
+      <div class="love-tag">In the Stands</div>
+      <p class="love-text">
+        She watches every round from the stands. Same seat. Front row. The camera finds her sometimes
+        &mdash; red bow, yellow glow, eyes that never look away. Not even when Blinky closes in. Not even
+        when it looks like the end. She watches everything. She remembers everything. And when I come
+        out of that maze &mdash; battered, depleted, but still alive &mdash; she&rsquo;s the first face I see.
+      </p>
+    </div>
+
+    <div class="love-story-block fade-in-d4" style="border-left-color: var(--neon-gold);">
+      <div class="love-quote">
+        I don&rsquo;t fight for the audience. I don&rsquo;t fight for the score. I fight because she&rsquo;s
+        watching. And I promised.
+      </div>
+    </div>
+
+    <!-- THE LOVE LETTER -->
+    <div class="love-letter fade-in">
+      <div class="love-letter-label">&hearts; A Letter From Ms. Pac-Man &hearts;</div>
+      <p class="love-letter-text">
+        They think they know you. The audience sees a yellow circle eating dots.
+        I see the man who walked into the maze knowing he might never walk out &mdash;
+        and did it anyway. You are not their entertainment. You are my everything.
+        Come home.
+      </p>
+      <div class="love-letter-sig">&mdash; Ms. P</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 4: GHOST REACTIONS
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="ghost-reactions" id="ghosts">
+  <div class="container">
+    <div class="section-title" style="color: var(--ghost-red);">&#128123; The Ghosts React</div>
+
+    <div class="ghost-grid">
+
+      <div class="ghost-card blinky fade-in">
+        <div class="ghost-name">Blinky</div>
+        <div class="ghost-role">The Shadow &middot; Pack Leader</div>
+        <p class="ghost-quote">&ldquo;He has something to fight for now. That makes him dangerous.&rdquo;</p>
+      </div>
+
+      <div class="ghost-card pinky fade-in-d1">
+        <div class="ghost-name">Pinky</div>
+        <div class="ghost-role">The Ambusher &middot; Strategist</div>
+        <p class="ghost-quote">&ldquo;I&rsquo;ve seen love stories in this maze before. They all end the same way.&rdquo;</p>
+      </div>
+
+      <div class="ghost-card inky fade-in-d2">
+        <div class="ghost-name">Inky</div>
+        <div class="ghost-role">The Wildcard &middot; Chaos Engine</div>
+        <p class="ghost-quote">&ldquo;Ms. Pac-Man? INTERESTING. More variables. More chaos. I LOVE it.&rdquo;</p>
+      </div>
+
+      <div class="ghost-card clyde fade-in-d3">
+        <div class="ghost-name">Clyde</div>
+        <div class="ghost-role">The Wanderer &middot; Reluctant Hunter</div>
+        <p class="ghost-quote">&ldquo;&hellip;I hope he makes it. Don&rsquo;t tell the others I said that.&rdquo;</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 5: SEASON STATS
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="season-stats" id="stats">
+  <div class="container">
+    <div class="section-title" style="color: var(--neon-gold);">&#128200; The Journey So Far</div>
+
+    <div class="stats-grid">
+
+      <!-- Round 2 -->
+      <div class="round-stat-card fade-in">
+        <div class="round-stat-label">Round 2</div>
+        <div class="round-stat-value">50</div>
+        <div class="round-stat-detail">Points</div>
+        <div style="margin-top: 16px; border-top: 1px solid var(--card-border); padding-top: 16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span class="round-stat-detail">Dots</span>
+            <span style="font-family:'Courier New',monospace;font-weight:800;color:var(--text);">5</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span class="round-stat-detail">Moves</span>
+            <span style="font-family:'Courier New',monospace;font-weight:800;color:var(--text);">10</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span class="round-stat-detail">Survival</span>
+            <span style="font-family:'Courier New',monospace;font-weight:800;color:var(--text);">72 ticks</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Round 3 -->
+      <div class="round-stat-card fade-in-d1">
+        <div class="round-stat-label">Round 3</div>
+        <div class="round-stat-value">110<span class="trend-arrow">&uarr;</span></div>
+        <div class="round-stat-detail">Points &middot; +120%</div>
+        <div style="margin-top: 16px; border-top: 1px solid var(--card-border); padding-top: 16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span class="round-stat-detail">Dots</span>
+            <span style="font-family:'Courier New',monospace;font-weight:800;color:var(--text);">11 <span class="trend-arrow">&uarr;</span></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span class="round-stat-detail">Moves</span>
+            <span style="font-family:'Courier New',monospace;font-weight:800;color:var(--text);">19 <span class="trend-arrow">&uarr;</span></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span class="round-stat-detail">Survival</span>
+            <span style="font-family:'Courier New',monospace;font-weight:800;color:var(--text);">66 ticks</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Round 4 -->
+      <div class="round-stat-card fade-in-d2" style="border:1px solid rgba(0,255,136,0.3);">
+        <div class="round-stat-label" style="color:var(--neon-green);">Round 4 &mdash; Latest</div>
+        <div class="round-stat-value" style="color:var(--neon-green);">150<span class="trend-arrow">&uarr;</span></div>
+        <div class="round-stat-detail" style="color:var(--neon-green);">Points &middot; +200% from R2</div>
+        <div style="margin-top: 16px; border-top: 1px solid rgba(0,255,136,0.2); padding-top: 16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span class="round-stat-detail">Dots</span>
+            <span style="font-family:'Courier New',monospace;font-weight:800;color:var(--neon-green);">15 <span class="trend-arrow">&uarr;</span></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span class="round-stat-detail">Moves</span>
+            <span style="font-family:'Courier New',monospace;font-weight:800;color:var(--neon-green);">25 <span class="trend-arrow">&uarr;</span></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span class="round-stat-detail">Survival</span>
+            <span style="font-family:'Courier New',monospace;font-weight:800;color:var(--neon-green);">96 ticks <span class="trend-arrow">&uarr;</span></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="growth-banner fade-in">
+      <div class="growth-text">
+        He&rsquo;s tripled his score. He&rsquo;s tripled his dots. And he&rsquo;s not done.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 6: SOCIAL / ENGAGEMENT
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="social-section" id="social">
+  <div class="container">
+    <div class="section-title" style="color: var(--neon-blue);">&#128225; Join the Movement</div>
+
+    <!-- Allegiance callout -->
+    <div class="allegiance-callout fade-in">
+      <div class="allegiance-title">#TeamPucman</div>
+      <p class="allegiance-subtitle">Are you Team Pucman or Team Ghosts? The arena demands your allegiance.</p>
+    </div>
+
+    <!-- Social mockup cards -->
+    <div class="social-cards">
+
+      <!-- Twitter/X -->
+      <div class="social-mockup fade-in">
+        <div class="social-mockup-header">
+          <div class="social-platform-icon" style="background:#000;border:1px solid #333;">&#120143;</div>
+          <div>
+            <div class="social-platform-name">X / Twitter</div>
+          </div>
+        </div>
+        <div class="social-mockup-body">
+          <p class="social-mockup-text">
+            4 rounds. 4 losses. 0 quits.<br><br>
+            Pucman is the underdog the internet needs. He walked into a maze knowing four AI ghosts
+            were hunting him. He lost every time. He came back every time.<br><br>
+            Round 5 is coming. And this time, he has something to fight for.
+          </p>
+          <div class="social-hashtags">#PucmanArena #NeverStop #RunningMan #TeamPucman</div>
+        </div>
+        <div class="social-mockup-footer">
+          <span class="social-action">&#128172; 2.4K</span>
+          <span class="social-action">&#128257; 8.1K</span>
+          <span class="social-action">&hearts; 24K</span>
+          <span class="social-action">&#128202; 1.2M</span>
+        </div>
+      </div>
+
+      <!-- Instagram -->
+      <div class="social-mockup fade-in-d1">
+        <div class="social-mockup-header">
+          <div class="social-platform-icon" style="background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);">&#128247;</div>
+          <div>
+            <div class="social-platform-name">Instagram Story</div>
+          </div>
+        </div>
+        <div class="social-mockup-body" style="background:linear-gradient(135deg,#0a0a1a,#1a0a2a);border-radius:12px;padding:24px;text-align:center;">
+          <div style="font-size:0.65rem;letter-spacing:0.3em;color:var(--text-dim);text-transform:uppercase;margin-bottom:16px;">Pucman Arena &middot; Season 1</div>
+          <div style="font-size:3rem;margin-bottom:8px;">&#127918;</div>
+          <div style="font-size:2rem;font-weight:900;color:var(--pucman-yellow);margin-bottom:4px;">150 PTS</div>
+          <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:20px;">Round 4 &middot; Personal Best</div>
+          <div style="display:flex;justify-content:center;gap:24px;margin-bottom:20px;">
+            <div style="text-align:center;">
+              <div style="font-size:1.4rem;font-weight:900;color:var(--neon-green);">15</div>
+              <div style="font-size:0.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;">Dots</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:1.4rem;font-weight:900;color:var(--neon-blue);">96</div>
+              <div style="font-size:0.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;">Ticks</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:1.4rem;font-weight:900;color:var(--ms-pac-pink);">&hearts;</div>
+              <div style="font-size:0.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;">Ms. P</div>
+            </div>
+          </div>
+          <div style="width:60px;height:60px;margin:0 auto;border-radius:50%;background:radial-gradient(circle,#FFE000,#ccb200);opacity:0.6;box-shadow:0 0 30px rgba(255,224,0,0.3);"></div>
+          <div style="font-size:0.7rem;color:var(--ms-pac-pink);margin-top:8px;font-weight:600;">She&rsquo;s watching.</div>
+        </div>
+        <div class="social-mockup-footer">
+          <span class="social-action">&hearts; 47K</span>
+          <span class="social-action">&#128172; 3.2K</span>
+          <span class="social-action">&#9993; Share</span>
+        </div>
+      </div>
+
+      <!-- LinkedIn -->
+      <div class="social-mockup fade-in-d2">
+        <div class="social-mockup-header">
+          <div class="social-platform-icon" style="background:#0A66C2;font-size:0.75rem;font-weight:900;">in</div>
+          <div>
+            <div class="social-platform-name">LinkedIn</div>
+          </div>
+        </div>
+        <div class="social-mockup-body">
+          <p class="social-mockup-text" style="font-size:0.88rem;">
+            <strong>What Pucman Arena taught me about AI agent architecture, perseverance, and why your side project might change everything.</strong>
+          </p>
+          <p class="social-mockup-text" style="margin-top:12px;font-size:0.85rem;color:var(--text-dim);">
+            I built a game where 5 AI agents play Pac-Man against each other. One Pucman vs four Ghost
+            agents. Each has its own LLM-powered brain, personality, and strategy.<br><br>
+            Pucman lost 4 times. But his scores tripled. His survival time doubled. He found patterns
+            the ghosts didn&rsquo;t expect.<br><br>
+            The lesson? Iteration beats perfection. Every time.
+          </p>
+          <div class="social-hashtags" style="color:#0A66C2;">#AI #AgentArchitecture #GameDev #SideProject #BuildInPublic</div>
+        </div>
+        <div class="social-mockup-footer">
+          <span class="social-action">&#128077; 1.2K</span>
+          <span class="social-action">&#128172; 89</span>
+          <span class="social-action">&#128257; 340</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CTA Buttons -->
+    <div class="cta-row fade-in">
+      <a href="#" class="social-btn btn-subscribe">&#128308; Subscribe</a>
+      <a href="#" class="social-btn btn-like">&#128077; Like</a>
+      <a href="#" class="social-btn btn-share">&#128279; Share</a>
+    </div>
+
+    <!-- QR Code placeholder -->
+    <div class="qr-placeholder fade-in">
+      <div class="qr-box">&#9635;</div>
+      <div class="qr-label">Scan to follow the arena</div>
+    </div>
+
+    <!-- Coming Soon teaser -->
+    <div style="text-align:center;margin-top:24px;padding:16px;border:1px dashed var(--neon-green);border-radius:12px;opacity:0.7;" class="fade-in">
+      <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.2em;color:var(--neon-green);text-transform:uppercase;">Next Round</div>
+      <div style="font-size:1.2rem;font-weight:900;color:var(--text);margin-top:4px;">Coming Soon</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 7: NEXT ROUND TEASER
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="next-round">
+  <div class="next-round-content">
+    <div class="next-round-badge">&#9889; Up Next</div>
+
+    <h2 class="next-round-title">ROUND 5<br>THE COMEBACK</h2>
+
+    <div class="next-round-lines">
+      <p class="next-round-line">He&rsquo;s <em>faster</em>. He&rsquo;s <em>smarter</em>. And now he has <em>something to fight for</em>.</p>
+      <p class="next-round-line">The ghosts have never faced a Pucman with nothing left to lose.</p>
+    </div>
+
+    <div class="next-round-dramatic">The cage is cracking.</div>
+
+    <a href="#" class="cta-btn">&#9889; START ROUND 5</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+  <p>PUCMAN ARENA &middot; Intermission &middot; Between Round 4 &amp; Round 5</p>
+  <p style="margin-top:6px;">Built with <a href="../index.html">RAPP Brainstem</a> &middot; 5 AI agents, 1 maze, zero mercy.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+// Intersection Observer for fade-in animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.animationPlayState = 'running';
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in, .fade-in-d1, .fade-in-d2, .fade-in-d3, .fade-in-d4').forEach(el => {
+  el.style.animationPlayState = 'paused';
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>
