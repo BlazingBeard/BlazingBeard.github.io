@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BREAKING NEWS — Round 4 Recap | Pucman Arena</title>
+<style>
+:root {
+  --neon-yellow: #FFE600;
+  --neon-pink: #FF2D95;
+  --neon-cyan: #00F0FF;
+  --neon-green: #39FF14;
+  --neon-orange: #FF6B00;
+  --neon-red: #FF0040;
+  --bg-dark: #0A0A0F;
+  --bg-card: #12121A;
+  --bg-card-alt: #1A1A2E;
+  --text-primary: #E8E8F0;
+  --text-muted: #8888AA;
+  --border-glow: rgba(0, 240, 255, 0.15);
+  --pucman-color: #FFE600;
+  --ghost-red: #FF0000;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+section { padding: 72px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+h2 {
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: 40px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+h3 {
+  font-size: 1.1rem;
+  color: var(--neon-yellow);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+
+/* Breaking news ticker */
+@keyframes ticker {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+.ticker-bar {
+  background: var(--neon-red);
+  color: white;
+  padding: 8px 0;
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-bar span {
+  display: inline-block;
+  animation: ticker 20s linear infinite;
+}
+
+/* Hero */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 20%, rgba(255,0,64,0.12) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0,240,255,0.06) 0%, transparent 50%),
+              var(--bg-dark);
+  position: relative;
+  padding-top: 40px;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,0,64,0.015) 3px, rgba(255,0,64,0.015) 6px);
+  pointer-events: none;
+}
+.breaking-badge {
+  display: inline-block;
+  background: var(--neon-red);
+  color: white;
+  padding: 6px 20px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.hero h1 {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1.05;
+  margin-bottom: 12px;
+  text-shadow: 0 0 60px rgba(255,0,64,0.25);
+}
+.hero .round-number {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  color: var(--neon-cyan);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.winner-splash {
+  font-size: clamp(4rem, 12vw, 10rem);
+  font-weight: 900;
+  line-height: 1;
+  margin: 24px 0;
+  text-shadow: 0 0 120px currentColor;
+}
+.winner-pucman { color: var(--neon-yellow); }
+.winner-ghosts { color: var(--neon-red); }
+.hero .headline {
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  font-weight: 300;
+}
+
+/* Broadcast blockquote */
+.broadcast-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  padding: 40px;
+  position: relative;
+}
+.broadcast-box::before {
+  content: '🎙️';
+  position: absolute;
+  top: -20px;
+  left: 40px;
+  font-size: 2rem;
+  background: var(--bg-dark);
+  padding: 0 12px;
+}
+.broadcast-box blockquote {
+  font-size: 1.15rem;
+  line-height: 1.9;
+  color: var(--text-primary);
+  font-style: italic;
+  white-space: pre-line;
+}
+
+/* Stat cards */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--neon-cyan);
+}
+.stat-card .number {
+  font-size: 2.8rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-card .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+}
+
+/* Ghost locker room */
+.ghost-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+.ghost-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-glow);
+}
+.ghost-card .ghost-emoji {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+.ghost-card .ghost-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.ghost-card .ghost-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+.ghost-card .interview {
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  border-left: 3px solid;
+  padding-left: 16px;
+}
+
+/* Pucman Feed */
+.social-post {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.social-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.social-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--neon-yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.social-name { font-weight: 700; }
+.social-handle { color: var(--text-muted); font-size: 0.85rem; }
+.social-body {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 16px;
+  white-space: pre-line;
+}
+.social-actions {
+  display: flex;
+  gap: 32px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.social-actions span { cursor: default; }
+.tweet-card {
+  background: linear-gradient(135deg, #1A1A2E 0%, #0A0A1A 100%);
+  border: 1px solid rgba(29, 161, 242, 0.2);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.tweet-card .tweet-icon { color: #1DA1F2; font-size: 1.2rem; margin-bottom: 12px; }
+.insta-card {
+  background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #F77737 100%);
+  border-radius: 16px;
+  padding: 3px;
+  margin-bottom: 20px;
+}
+.insta-inner {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 28px;
+}
+
+/* Top 5 Moments */
+.moment-card {
+  display: flex;
+  gap: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+.moment-rank {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--neon-pink);
+  min-width: 48px;
+  text-align: center;
+  line-height: 1;
+}
+.moment-text {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* MVP */
+.mvp-card {
+  background: linear-gradient(135deg, rgba(255,230,0,0.08) 0%, rgba(255,45,149,0.05) 100%);
+  border: 2px solid rgba(255,230,0,0.2);
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.mvp-card .trophy { font-size: 4rem; margin-bottom: 16px; }
+.mvp-card .mvp-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--neon-yellow);
+  margin-bottom: 8px;
+}
+.mvp-card .mvp-name {
+  font-size: 2.5rem;
+  font-weight: 900;
+}
+.mini-awards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.mini-award {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.mini-award .award-emoji { font-size: 1.8rem; margin-bottom: 8px; }
+.mini-award .award-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.mini-award .award-value { font-weight: 700; font-size: 1rem; }
+
+/* Season Standings */
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.standings-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  border-bottom: 2px solid rgba(0,240,255,0.2);
+}
+.standings-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.standings-table tr:hover td { background: rgba(0,240,255,0.03); }
+.standings-table .current-round { background: rgba(0,240,255,0.06); }
+.standings-table .w-pucman { color: var(--neon-yellow); font-weight: 700; }
+.standings-table .w-ghosts { color: var(--neon-red); font-weight: 700; }
+
+/* Next round */
+.next-round-box {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-alt) 100%);
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+}
+.coming-soon {
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-yellow));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 24px;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2rem; }
+  .winner-splash { font-size: 4rem; }
+  section { padding: 48px 0; }
+  .stat-card .number { font-size: 2rem; }
+  .ghost-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="ticker-bar">
+  <span>
+    ⚡ BREAKING NEWS &bull; PUCMAN ARENA ROUND 4 COMPLETE &bull;
+    WINNER: GHOSTS &bull;
+    SCORE: 150 &bull;
+    96 TICKS OF PURE CHAOS &bull;
+    BREAKING NEWS ⚡
+  </span>
+</div>
+
+<section class="hero">
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="breaking-badge">Breaking News</div>
+    <div class="round-number">Round 4</div>
+    <div class="winner-splash winner-ghosts">GHOSTS WIN!</div>
+    <p class="headline">Round 4 is in the books.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>The Broadcast</h2>
+    <div class="broadcast-box">
+      <blockquote>[announcer] ERROR: Cannot connect to host localhost:7077 ssl:default [The remote computer refused the network connection]</blockquote>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>The Numbers</h2>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="number" style="color:var(--neon-yellow);">150</div>
+        <div class="label">Final Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" style="color:var(--neon-cyan);">15/244</div>
+        <div class="label">Dots Eaten</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" style="color:var(--neon-pink);">96</div>
+        <div class="label">Total Ticks</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" style="color:var(--neon-green);">0</div>
+        <div class="label">Ghosts Eaten</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Ghost Locker Room</h2>
+    <div class="ghost-grid">
+      <div class="ghost-card" style="border-top:3px solid #FF0000;">
+        <div class="ghost-emoji">👹</div>
+        <div class="ghost-name" style="color:#FF0000;">Blinky</div>
+        <div class="ghost-title" style="color:#FF0000;">The Shadow</div>
+        <div class="interview" style="border-color:#FF0000;">[blinky] ERROR: Cannot connect to host localhost:7073 ssl:default [The remote computer refused the network connection]</div>
+      </div>
+      <div class="ghost-card" style="border-top:3px solid #FFB8FF;">
+        <div class="ghost-emoji">👻</div>
+        <div class="ghost-name" style="color:#FFB8FF;">Pinky</div>
+        <div class="ghost-title" style="color:#FFB8FF;">The Ambusher</div>
+        <div class="interview" style="border-color:#FFB8FF;">[pinky] ERROR: Cannot connect to host localhost:7074 ssl:default [The remote computer refused the network connection]</div>
+      </div>
+      <div class="ghost-card" style="border-top:3px solid #00FFFF;">
+        <div class="ghost-emoji">👾</div>
+        <div class="ghost-name" style="color:#00FFFF;">Inky</div>
+        <div class="ghost-title" style="color:#00FFFF;">The Wildcard</div>
+        <div class="interview" style="border-color:#00FFFF;">[inky] ERROR: Cannot connect to host localhost:7075 ssl:default [The remote computer refused the network connection]</div>
+      </div>
+      <div class="ghost-card" style="border-top:3px solid #FFB852;">
+        <div class="ghost-emoji">🎃</div>
+        <div class="ghost-name" style="color:#FFB852;">Clyde</div>
+        <div class="ghost-title" style="color:#FFB852;">The Wanderer</div>
+        <div class="interview" style="border-color:#FFB852;">[clyde] ERROR: Cannot connect to host localhost:7076 ssl:default [The remote computer refused the network connection]</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Pucman&rsquo;s Feed</h2>
+    
+    <div class="social-post">
+      <div class="social-header">
+        <div class="social-avatar">🟡</div>
+        <div>
+          <div class="social-name">Pucman</div>
+          <div class="social-handle">@pucman_official &bull; Just now</div>
+        </div>
+      </div>
+      <div class="social-body">[pucman] ERROR: Cannot connect to host localhost:7072 ssl:default [The remote computer refused the network connection]</div>
+      <div class="social-actions">
+        <span>❤️ 193</span>
+        <span>💬 53</span>
+        <span>🔄 113</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Top 5 Moments</h2>
+    
+      <div class="moment-card">
+        <div class="moment-rank">#1</div>
+        <div class="moment-text">[announcer] ERROR: Cannot connect to host localhost:7077 ssl:default [The remote computer refused the network connection]</div>
+      </div>
+      <div class="moment-card">
+        <div class="moment-rank">#2</div>
+        <div class="moment-text">Tick 5: 🚪 A new ghost enters the arena — the pressure mounts!</div>
+      </div>
+      <div class="moment-card">
+        <div class="moment-rank">#3</div>
+        <div class="moment-text">Tick 15: 🚪 A new ghost enters the arena — the pressure mounts!</div>
+      </div>
+      <div class="moment-card">
+        <div class="moment-rank">#4</div>
+        <div class="moment-text">Tick 25: 🚪 A new ghost enters the arena — the pressure mounts!</div>
+      </div>
+      <div class="moment-card">
+        <div class="moment-rank">#5</div>
+        <div class="moment-text">Tick 95: 💥 CAUGHT! The ghosts close the trap!</div>
+      </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>MVP &amp; Awards</h2>
+    
+    <div class="mvp-card">
+      <div class="trophy">🏆</div>
+      <div class="mvp-title">Most Valuable Player</div>
+      <div class="mvp-name">Ghosts</div>
+    </div>
+    <div class="mini-awards">
+      <div class="mini-award">
+        <div class="award-emoji">😰</div>
+        <div class="award-label">Closest Call</div>
+        <div class="award-value">Inky at tick 94 (dist: 1)</div>
+      </div>
+      <div class="mini-award">
+        <div class="award-emoji">🏃</div>
+        <div class="award-label">Most Active</div>
+        <div class="award-value">Inky (75 moves)</div>
+      </div>
+      <div class="mini-award">
+        <div class="award-emoji">⚡</div>
+        <div class="award-label">Fastest Thinker</div>
+        <div class="award-value">Clyde (2.73s avg)</div>
+      </div>
+      <div class="mini-award">
+        <div class="award-emoji">🎯</div>
+        <div class="award-label">Best Move</div>
+        <div class="award-value">+10 pts at tick 2</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Season Standings</h2>
+    <div style="overflow-x:auto;">
+      <table class="standings-table">
+        <thead><tr>
+          <th>Round</th><th>Winner</th><th>Score</th><th>Ticks</th><th>Pucman W</th><th>Ghosts W</th>
+        </tr></thead>
+        <tbody>
+        <tr>
+          <td style="font-weight:700;">R1</td>
+          <td class="w-ghosts">GHOSTS</td>
+          <td>80</td>
+          <td>48</td>
+          <td>0</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700;">R2</td>
+          <td class="w-ghosts">GHOSTS</td>
+          <td>50</td>
+          <td>72</td>
+          <td>0</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700;">R3</td>
+          <td class="w-ghosts">GHOSTS</td>
+          <td>110</td>
+          <td>66</td>
+          <td>0</td>
+          <td>3</td>
+        </tr>
+        <tr class="current-round">
+          <td style="font-weight:700;">R4 ◄</td>
+          <td class="w-ghosts">GHOSTS</td>
+          <td>150</td>
+          <td>96</td>
+          <td>0</td>
+          <td>4</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:24px; display:flex; gap:32px; justify-content:center;">
+      <div style="text-align:center;">
+        <div style="font-size:2rem; font-weight:900; color:var(--neon-yellow);">0</div>
+        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:2px; color:var(--text-muted);">Pucman Wins</div>
+      </div>
+      <div style="font-size:2rem; color:var(--text-muted); align-self:center;">vs</div>
+      <div style="text-align:center;">
+        <div style="font-size:2rem; font-weight:900; color:var(--neon-red);">4</div>
+        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:2px; color:var(--text-muted);">Ghost Wins</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Next Round Preview</h2>
+    <div class="next-round-box">
+      <p style="font-size:1.1rem; line-height:1.8; margin-bottom:16px;">
+        The arena resets. The dots respawn. The ghosts are hungry for revenge.
+      </p>
+      <div class="coming-soon">Coming Soon</div>
+    </div>
+  </div>
+</section>
+
+<footer style="text-align:center; padding:48px 24px; color:var(--text-muted); font-size:0.8rem;">
+  <p>PUCMAN ARENA — Breaking News Recap</p>
+  <p style="margin-top:8px; font-size:0.7rem; letter-spacing:2px; text-transform:uppercase;">
+    Generated by Brainstem 🧠
+  </p>
+</footer>
+</body>
+</html>

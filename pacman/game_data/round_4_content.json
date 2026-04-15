@@ -1,0 +1,22 @@
+{
+  "round_number": 4,
+  "timestamp": "2026-04-15T04:32:02.117287Z",
+  "ghost_interviews": {
+    "blinky": "[blinky] ERROR: Cannot connect to host localhost:7073 ssl:default [The remote computer refused the network connection]",
+    "pinky": "[pinky] ERROR: Cannot connect to host localhost:7074 ssl:default [The remote computer refused the network connection]",
+    "inky": "[inky] ERROR: Cannot connect to host localhost:7075 ssl:default [The remote computer refused the network connection]",
+    "clyde": "[clyde] ERROR: Cannot connect to host localhost:7076 ssl:default [The remote computer refused the network connection]"
+  },
+  "pucman_vlog": {
+    "diary": "[pucman] ERROR: Cannot connect to host localhost:7072 ssl:default [The remote computer refused the network connection]",
+    "tweet": "",
+    "instagram": ""
+  },
+  "announcer_recap": {
+    "play_by_play": "[announcer] ERROR: Cannot connect to host localhost:7077 ssl:default [The remote computer refused the network connection]",
+    "headline": "",
+    "mvp": "",
+    "controversy": "",
+    "next_round_preview": ""
+  }
+}
