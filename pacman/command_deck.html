@@ -199,6 +199,29 @@ html, body {
   gap: 4px;
 }
 .decision-move.stay { color: var(--red); font-weight: 700; }
+.decision-move.timeout { color: #ff8800; font-weight: 700; }
+.timeout-badge {
+  display: inline-block;
+  padding: 1px 5px;
+  margin-left: 4px;
+  font-size: 8px;
+  background: #ff8800;
+  color: #000;
+  border-radius: 2px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.invalid-badge {
+  display: inline-block;
+  padding: 1px 5px;
+  margin-left: 4px;
+  font-size: 8px;
+  background: #ff0066;
+  color: #fff;
+  border-radius: 2px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
 .decision-reasoning {
   font-size: 10px;
   color: var(--text-dim);
@@ -806,17 +829,24 @@ function renderDecisions(decisions) {
     card.className = 'decision-card';
 
     const isStay = d.move === 'stay';
+    const isTimeout = d.timed_out === true;
+    const isInvalid = d.invalid_move !== undefined && d.invalid_move !== null;
     const rt = d.response_time || 0;
-    const rtClass = rt < 3 ? 'time-green' : rt < 5 ? 'time-yellow' : 'time-red';
+    const rtClass = isTimeout ? 'time-red' : (rt < 3 ? 'time-green' : rt < 5 ? 'time-yellow' : 'time-red');
     const arrow = ARROW[d.move] || d.move;
+    const moveClass = isTimeout ? 'timeout' : (isStay ? 'stay' : '');
+    const badges = [
+      isTimeout ? '<span class="timeout-badge">TIMEOUT</span>' : '',
+      isInvalid ? `<span class="invalid-badge">INVALID→${escHtml(String(d.invalid_move))}</span>` : '',
+    ].join('');
 
     card.innerHTML = `
       <div class="decision-header">
         <span class="decision-entity" style="color:${ENTITY_COLORS[ent]}">${ent.toUpperCase()}</span>
-        <span class="decision-move ${isStay ? 'stay' : ''}">${arrow} ${d.move}</span>
+        <span class="decision-move ${moveClass}">${arrow} ${d.move}${badges}</span>
       </div>
       <div class="decision-reasoning">${escHtml(d.reasoning || '—')}</div>
-      <div class="decision-time ${rtClass}">${rt.toFixed(2)}s</div>
+      <div class="decision-time ${rtClass}">${rt.toFixed(2)}s${isTimeout ? ' (timed out)' : ''}</div>
     `;
     list.appendChild(card);
   }
@@ -937,10 +967,25 @@ function updateSeasonCharts() {
     return stays;
   });
 
+  // Timeout rate per round (Pucman-only, as % of ticks)
+  const timeoutPctPerRound = roundList.map(n => {
+    const ticks = rounds[n].ticks || [];
+    if (ticks.length === 0) return 0;
+    let timeouts = 0;
+    ticks.forEach(t => {
+      const d = t.decisions?.pucman;
+      // Fallback heuristic for pre-R5 data: reasoning starts with "timeout"
+      if (d?.timed_out === true) timeouts++;
+      else if (!('timed_out' in (d || {})) && typeof d?.reasoning === 'string' && d.reasoning.startsWith('timeout')) timeouts++;
+    });
+    return Math.round((timeouts / ticks.length) * 100);
+  });
+
   makeBarChart(container, 'SCORE', summaries.map(s => s.final_score), '#FFE000');
   makeBarChart(container, 'DOTS EATEN', summaries.map(s => s.dots_eaten), '#00ff88');
   makeBarChart(container, 'SURVIVAL TICKS', summaries.map(s => s.total_ticks), '#00FFFF');
   makeBarChart(container, 'PUCMAN STAYS', staysPerRound, '#FF0000');
+  makeBarChart(container, 'PUCMAN TIMEOUT %', timeoutPctPerRound, '#ff8800');
 }
 
 function makeBarChart(container, title, values, color) {

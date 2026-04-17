@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PUCMAN ARENA — Round 1</title>
+<title>PUCMAN ARENA — Round 5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════════════════════
-   PUCMAN ARENA — Master Content Hub
-   Running Man Dark Neon Aesthetic
+   PUCMAN ARENA — Round 5 Content Hub
+   The Running Man Unbound — Dark Neon Aesthetic
    ═══════════════════════════════════════════════════════════════ */
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -40,8 +40,6 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
 }
-
-/* Scanline effect applied as background on body instead of overlay */
 
 /* Ensure all interactive elements are always clickable */
 a, button, [onclick], .link-btn, .copy-btn, input, select {
@@ -313,8 +311,8 @@ section { padding: 60px 0; }
 .mvp-name {
   font-size: 2rem;
   font-weight: 900;
-  color: var(--ghost-red);
-  text-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+  color: var(--ghost-cyan);
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
   margin-bottom: 4px;
 }
 .mvp-title {
@@ -365,6 +363,101 @@ section { padding: 60px 0; }
   font-size: 0.92rem;
   line-height: 1.7;
   color: var(--text);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEASON PROGRESSION TABLE
+   ═══════════════════════════════════════════════════════════════ */
+.progression-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 48px;
+  font-family: 'Courier New', monospace;
+}
+.progression-table th {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--neon-gold);
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--neon-gold);
+  text-align: center;
+}
+.progression-table td {
+  padding: 14px 16px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  border-bottom: 1px solid var(--card-border);
+}
+.progression-table tr:last-child td {
+  border-bottom: none;
+}
+.progression-table .current-round td {
+  color: var(--neon-green);
+  background: rgba(0, 255, 136, 0.05);
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+.progression-table .round-label {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ROUND COMPARISON
+   ═══════════════════════════════════════════════════════════════ */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.comparison-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.comparison-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.comparison-values {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.comparison-old {
+  font-family: 'Courier New', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+.comparison-arrow {
+  font-size: 1rem;
+  color: var(--neon-green);
+}
+.comparison-new {
+  font-family: 'Courier New', monospace;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--neon-gold);
+}
+.comparison-change {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--neon-green);
+  margin-top: 4px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -981,6 +1074,31 @@ section { padding: 60px 0; }
   font-style: italic;
 }
 
+.coaching-note {
+  max-width: 700px;
+  margin: 0 auto 40px;
+  background: linear-gradient(135deg, rgba(255, 224, 0, 0.08), var(--card));
+  border: 1px solid rgba(255, 224, 0, 0.25);
+  border-left: 4px solid var(--pucman-yellow);
+  border-radius: 0 12px 12px 0;
+  padding: 24px 28px;
+  text-align: left;
+}
+.coaching-note-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--pucman-yellow);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.coaching-note-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text);
+  font-style: italic;
+}
+
 .cta-btn {
   display: inline-block;
   padding: 18px 48px;
@@ -1025,6 +1143,7 @@ section { padding: 60px 0; }
   .link-bar { flex-direction: column; }
   .link-btn { justify-content: center; }
   .tweet-card, .ig-card { max-width: 100%; }
+  .comparison-grid { grid-template-columns: 1fr 1fr; }
 }
 </style>
 </head>
@@ -1033,16 +1152,12 @@ section { padding: 60px 0; }
 <!-- ═══ STICKY NAV BAR ═══ -->
 <nav style="position:sticky;top:0;z-index:9999;background:rgba(10,10,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #1e293b;padding:10px 20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
   <a href="arcade/index.html" style="color:#FFE000;text-decoration:none;padding:8px 16px;border:2px solid #FFE000;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;background:#FFE00015;" onmouseover="this.style.background='#FFE000';this.style.color='#000'" onmouseout="this.style.background='#FFE00015';this.style.color='#FFE000'">&#127918; PLAY ARCADE</a>
-  <a href="arena_round2.html" style="color:#e2e8f0;text-decoration:none;padding:8px 12px;border:1px solid #334155;border-radius:6px;font-size:0.8rem;font-weight:700;">R2</a>
-  <a href="arena_round3.html" style="color:#e2e8f0;text-decoration:none;padding:8px 12px;border:1px solid #334155;border-radius:6px;font-size:0.8rem;font-weight:700;">R3</a>
-  <a href="arena_round4.html" style="color:#e2e8f0;text-decoration:none;padding:8px 12px;border:1px solid #334155;border-radius:6px;font-size:0.8rem;font-weight:700;">R4</a>
-  <a href="arena_round5.html" style="color:#00ff88;text-decoration:none;padding:8px 12px;border:2px solid #00ff88;border-radius:6px;font-size:0.8rem;font-weight:800;background:rgba(0,255,136,0.08);" onmouseover="this.style.background='#00ff88';this.style.color='#000'" onmouseout="this.style.background='rgba(0,255,136,0.08)';this.style.color='#00ff88'">R5 &#9889; NEW</a>
-  <a href="replay_viewer.html?file=game_data/round_1.json" style="color:#00aaff;text-decoration:none;padding:8px 16px;border:1px solid #00aaff;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='#00aaff';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='#00aaff'">&#9654; REPLAY</a>
-  <a href="game_data/round_1_recap.html" style="color:#FF0000;text-decoration:none;padding:8px 16px;border:1px solid #FF0000;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='#FF0000';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#FF0000'">&#128250; RECAP</a>
-  <a href="game_data/round_1_social/stat_card.html" style="color:#00ff88;text-decoration:none;padding:8px 16px;border:1px solid #00ff88;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='#00ff88';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='#00ff88'">&#128202; STAT CARD</a>
+  <a href="replay_viewer.html?file=game_data/round_5.json" style="color:#00aaff;text-decoration:none;padding:8px 16px;border:1px solid #00aaff;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='#00aaff';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='#00aaff'">&#9654; REPLAY</a>
+  <a href="game_data/round_5_recap.html" style="color:#FF0000;text-decoration:none;padding:8px 16px;border:1px solid #FF0000;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='#FF0000';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#FF0000'">&#128250; RECAP</a>
+  <a href="game_data/round_5_social/stat_card.html" style="color:#00ff88;text-decoration:none;padding:8px 16px;border:1px solid #00ff88;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='#00ff88';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='#00ff88'">&#128202; STAT CARD</a>
   <a href="dashboard.html" style="color:#7c3aed;text-decoration:none;padding:8px 16px;border:1px solid #7c3aed;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='#7c3aed';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#7c3aed'">&#128200; DASHBOARD</a>
-  <a href="game_data/round_1_social/" style="color:#FFD700;text-decoration:none;padding:8px 16px;border:1px solid #FFD700;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='#FFD700';this.style.color='#000'" onmouseout="this.style.background='transparent';this.style.color='#FFD700'">&#128241; SOCIAL</a>
-  <a href="game_data/round_1.json" style="color:#64748b;text-decoration:none;padding:8px 16px;border:1px solid #64748b;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='#64748b';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#64748b'">&#128190; JSON DATA</a>
+  <a href="game_data/round_5.json" style="color:#64748b;text-decoration:none;padding:8px 16px;border:1px solid #64748b;border-radius:6px;font-size:0.85rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='#64748b';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#64748b'">&#128190; JSON DATA</a>
+  <a href="#fix" style="color:#00ff88;text-decoration:none;padding:8px 16px;font-size:0.85rem;font-weight:700;opacity:0.9;">&#8595; The Fix</a>
   <a href="#broadcast" style="color:#e2e8f0;text-decoration:none;padding:8px 16px;font-size:0.85rem;font-weight:600;opacity:0.6;">&#8595; Broadcast</a>
   <a href="#ghosts" style="color:#e2e8f0;text-decoration:none;padding:8px 16px;font-size:0.85rem;font-weight:600;opacity:0.6;">&#8595; Ghosts</a>
   <a href="#pucman" style="color:#e2e8f0;text-decoration:none;padding:8px 16px;font-size:0.85rem;font-weight:600;opacity:0.6;">&#8595; Pucman</a>
@@ -1054,30 +1169,226 @@ section { padding: 60px 0; }
 <section class="hero">
   <div class="hero-badge">LIVE FROM THE DIGITAL COLOSSEUM</div>
   <h1 class="hero-title">PUCMAN<br>ARENA</h1>
-  <p class="hero-subtitle">Round 1 &mdash; The Hunt Begins</p>
+  <p class="hero-subtitle">Round 5 &mdash; The Running Man Unbound</p>
 
-  <div class="result-banner">&#128480; GHOSTS WIN</div>
+  <div class="result-banner" style="color: var(--neon-gold); text-shadow: 0 0 30px rgba(255,215,0,0.5), 0 0 60px rgba(255,215,0,0.2); border-color: rgba(255,215,0,0.4);">&#9876;&#65039; STALEMATE &mdash; PUCMAN UNKILLABLE</div>
 
   <div class="stats-row">
     <div class="stat-box fade-in">
-      <div class="stat-value">80</div>
+      <div class="stat-value">390</div>
       <div class="stat-label">Final Score</div>
     </div>
     <div class="stat-box fade-in" style="animation-delay: 0.1s">
-      <div class="stat-value">8<span style="font-size:0.6em;color:var(--text-dim)">/244</span></div>
+      <div class="stat-value">39<span style="font-size:0.6em;color:var(--text-dim)">/244</span></div>
       <div class="stat-label">Dots Eaten</div>
     </div>
     <div class="stat-box fade-in" style="animation-delay: 0.2s">
-      <div class="stat-value">48</div>
+      <div class="stat-value">360+</div>
       <div class="stat-label">Ticks Survived</div>
     </div>
     <div class="stat-box fade-in" style="animation-delay: 0.3s">
-      <div class="stat-value">0</div>
-      <div class="stat-label">Ghosts Eaten</div>
+      <div class="stat-value" style="color: var(--neon-green);">354<span style="font-size:0.55em;color:var(--text-dim)">/356</span></div>
+      <div class="stat-label">Moves Made (99.4%)</div>
     </div>
     <div class="stat-box fade-in" style="animation-delay: 0.4s">
-      <div class="stat-value">5</div>
-      <div class="stat-label">AI Agents</div>
+      <div class="stat-value">0</div>
+      <div class="stat-label">Deaths</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 36px; max-width: 800px; padding: 0 20px;">
+    <p style="font-size: 0.95rem; color: var(--text-dim); line-height: 1.6; text-align: center;">
+      <strong style="color: var(--neon-green);">Pucman moved 354 of 356 ticks &mdash; 99.4% motion rate, up from 26% in Round 4.</strong>
+      The ghosts chased him for 360+ ticks and never landed a single kill. But he never found a power pellet, never broke his evasion loop, never won. Match abandoned.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SEASON PROGRESSION
+     ═══════════════════════════════════════════════════════════════ -->
+<section style="padding:40px 0 0;">
+  <div class="container">
+    <div class="section-title" style="color: var(--neon-green);">&#128200; Season Progression &mdash; The Climb</div>
+
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:28px;margin-bottom:40px;overflow-x:auto;">
+      <table class="progression-table">
+        <thead>
+          <tr>
+            <th>Round</th>
+            <th>Score</th>
+            <th>Dots</th>
+            <th>Moves</th>
+            <th>Ticks Survived</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="round-label">R2</td>
+            <td>50</td>
+            <td>5</td>
+            <td>10</td>
+            <td>72</td>
+          </tr>
+          <tr>
+            <td class="round-label">R3</td>
+            <td>110</td>
+            <td>11</td>
+            <td>19</td>
+            <td>66</td>
+          </tr>
+          <tr>
+            <td class="round-label">R4</td>
+            <td>150</td>
+            <td>15</td>
+            <td>25</td>
+            <td>96</td>
+          </tr>
+          <tr class="current-round">
+            <td>R5 &#9889;</td>
+            <td>390</td>
+            <td>39</td>
+            <td>354</td>
+            <td>360+</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Round 4 → Round 5 Comparison Cards -->
+    <div class="section-title" style="color: var(--neon-green);">&#128293; Round 4 &rarr; Round 5 Improvement</div>
+
+    <div class="comparison-grid">
+      <div class="comparison-card">
+        <div class="comparison-label">Final Score</div>
+        <div class="comparison-values">
+          <span class="comparison-old">150</span>
+          <span class="comparison-arrow">&rarr;</span>
+          <span class="comparison-new">390</span>
+        </div>
+        <div class="comparison-change">+160% &#128293;</div>
+      </div>
+      <div class="comparison-card">
+        <div class="comparison-label">Dots Eaten</div>
+        <div class="comparison-values">
+          <span class="comparison-old">15</span>
+          <span class="comparison-arrow">&rarr;</span>
+          <span class="comparison-new">39</span>
+        </div>
+        <div class="comparison-change">+160% &#128293;</div>
+      </div>
+      <div class="comparison-card">
+        <div class="comparison-label">Moves Made</div>
+        <div class="comparison-values">
+          <span class="comparison-old">25</span>
+          <span class="comparison-arrow">&rarr;</span>
+          <span class="comparison-new">354</span>
+        </div>
+        <div class="comparison-change">+1316% &#128293;&#128293;</div>
+      </div>
+      <div class="comparison-card">
+        <div class="comparison-label">Motion Rate</div>
+        <div class="comparison-values">
+          <span class="comparison-old">26%</span>
+          <span class="comparison-arrow">&rarr;</span>
+          <span class="comparison-new" style="color:var(--neon-green);">99.4%</span>
+        </div>
+        <div class="comparison-change">FEET FIXED &#129306;</div>
+      </div>
+      <div class="comparison-card">
+        <div class="comparison-label">Ticks Survived</div>
+        <div class="comparison-values">
+          <span class="comparison-old">96</span>
+          <span class="comparison-arrow">&rarr;</span>
+          <span class="comparison-new" style="color:var(--neon-green);">360+</span>
+        </div>
+        <div class="comparison-change">+275% &#128293; RECORD!</div>
+      </div>
+      <div class="comparison-card">
+        <div class="comparison-label">Deaths</div>
+        <div class="comparison-values">
+          <span class="comparison-old">1</span>
+          <span class="comparison-arrow">&rarr;</span>
+          <span class="comparison-new" style="color:var(--neon-green);">0</span>
+        </div>
+        <div class="comparison-change">UNKILLABLE &#128170;</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     THE ENGINEERING BREAKTHROUGH
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="fix" style="padding: 60px 0; background: linear-gradient(180deg, var(--bg), #0a1a14 60%, var(--bg));">
+  <div class="container">
+    <div class="section-title" style="color: var(--neon-green);">&#128295; The Engineering Breakthrough &mdash; The Hero of Round 5</div>
+
+    <div style="background: linear-gradient(135deg, rgba(0,255,136,0.06), var(--card)); border: 1px solid rgba(0,255,136,0.3); border-radius: 16px; padding: 32px; margin-bottom: 32px;">
+      <div style="font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--neon-green); margin-bottom: 12px;">&#128269; The Diagnosis</div>
+      <h3 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 16px;">Pucman wasn&rsquo;t losing. He was frozen.</h3>
+      <p style="color: var(--text-dim); line-height: 1.7; margin-bottom: 16px;">
+        For three rounds we watched Pucman &ldquo;stand still&rdquo; tick after tick and blamed his soul, his prompts, his strategy. Round 4&rsquo;s post-mortem told a different story: his LLM responses were averaging <strong style="color:var(--pucman-yellow);">6.93 seconds</strong> &mdash; against a tick timeout of <strong style="color:var(--danger);">7.5 seconds</strong>. He was racing the clock and losing. Roughly <strong style="color:var(--danger);">74% of his moves never arrived in time.</strong> The engine interpreted silence as &ldquo;stay.&rdquo; The Running Man had his legs cut out from under him by a config value.
+      </p>
+      <p style="color: var(--text-dim); line-height: 1.7;">
+        Once we looked at the distribution &mdash; not the average &mdash; the truth was plain. Pucman wasn&rsquo;t slow. He was on the edge of the window. And every round we tuned his soul to be braver, we were asking a man with a stopwatch at his throat to think harder.
+      </p>
+    </div>
+
+    <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 32px; margin-bottom: 32px;">
+      <div style="font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--neon-blue); margin-bottom: 12px;">&#128736;&#65039; The Fix</div>
+      <h3 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 16px;">Four surgical changes to the coordinator.</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+        <div style="background: rgba(0,170,255,0.05); border-left: 3px solid var(--neon-blue); padding: 14px 18px; border-radius: 0 8px 8px 0;">
+          <div style="font-weight: 800; color: var(--neon-blue); margin-bottom: 6px;">1. Raised the tick rate</div>
+          <div style="font-size: 0.9rem; color: var(--text-dim);">8s &rarr; 15s per tick. Give every agent room to think.</div>
+        </div>
+        <div style="background: rgba(0,170,255,0.05); border-left: 3px solid var(--neon-blue); padding: 14px 18px; border-radius: 0 8px 8px 0;">
+          <div style="font-weight: 800; color: var(--neon-blue); margin-bottom: 6px;">2. Decoupled the query timeout</div>
+          <div style="font-size: 0.9rem; color: var(--text-dim);">No more &ldquo;timeout = tick_rate.&rdquo; New default: tick_rate &times; 2 (30s). Slow answers still count.</div>
+        </div>
+        <div style="background: rgba(0,170,255,0.05); border-left: 3px solid var(--neon-blue); padding: 14px 18px; border-radius: 0 8px 8px 0;">
+          <div style="font-weight: 800; color: var(--neon-blue); margin-bottom: 6px;">3. Added a <code>timed_out</code> diagnostic</div>
+          <div style="font-size: 0.9rem; color: var(--text-dim);">Every tick now explicitly records whether an agent raced the clock &mdash; no more guessing at silence.</div>
+        </div>
+        <div style="background: rgba(0,170,255,0.05); border-left: 3px solid var(--neon-blue); padding: 14px 18px; border-radius: 0 8px 8px 0;">
+          <div style="font-weight: 800; color: var(--neon-blue); margin-bottom: 6px;">4. Fresh session per tick</div>
+          <div style="font-size: 0.9rem; color: var(--text-dim);">Killed ContextMemory accumulation that was slowly ballooning prompt size tick-over-tick.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, rgba(255,215,0,0.08), var(--card)); border: 1px solid rgba(255,215,0,0.3); border-radius: 16px; padding: 32px;">
+      <div style="font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--neon-gold); margin-bottom: 12px;">&#127942; The Result</div>
+      <h3 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 16px;">Pucman came alive. The ghosts couldn&rsquo;t close the cage.</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin: 20px 0;">
+        <div style="text-align: center; padding: 16px; background: rgba(255,255,255,0.02); border-radius: 10px;">
+          <div style="font-size: 2rem; font-weight: 900; color: var(--neon-green);">99.4%</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Motion rate</div>
+          <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">up from 26%</div>
+        </div>
+        <div style="text-align: center; padding: 16px; background: rgba(255,255,255,0.02); border-radius: 10px;">
+          <div style="font-size: 2rem; font-weight: 900; color: var(--neon-green);">14.2&times;</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Move count</div>
+          <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">25 &rarr; 354</div>
+        </div>
+        <div style="text-align: center; padding: 16px; background: rgba(255,255,255,0.02); border-radius: 10px;">
+          <div style="font-size: 2rem; font-weight: 900; color: var(--neon-green);">3.75&times;</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Survival</div>
+          <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">96 &rarr; 360+ ticks</div>
+        </div>
+        <div style="text-align: center; padding: 16px; background: rgba(255,255,255,0.02); border-radius: 10px;">
+          <div style="font-size: 2rem; font-weight: 900; color: var(--neon-gold);">0</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Ghost kills</div>
+          <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">for 360+ ticks</div>
+        </div>
+      </div>
+      <p style="color: var(--text-dim); line-height: 1.7;">
+        We didn&rsquo;t rewrite his soul. We didn&rsquo;t change a word of his prompt. We just let him <em>finish a thought.</em> And the moment he could finish a thought, he became uncatchable. Round 5 isn&rsquo;t a story about a smarter Pucman &mdash; it&rsquo;s the story of what happens when tooling stops sabotaging the athlete.
+      </p>
+      <p style="color: var(--text-dim); line-height: 1.7; margin-top: 12px;">
+        <strong style="color: #fff;">The catch:</strong> unkillable isn&rsquo;t winning. With his feet free, Pucman&rsquo;s mind took over &mdash; and his mind, right now, is a perfect evasion loop. He never found the power pellets. He never hunted. He just ran, forever. The engineers fixed his feet. <strong style="color: var(--pucman-yellow);">He still needs to fix his mind.</strong>
+      </p>
     </div>
   </div>
 </section>
@@ -1090,68 +1401,68 @@ section { padding: 60px 0; }
     <div class="section-title" style="color: var(--neon-gold);">&#127908; The Broadcast</div>
 
     <div class="headline-text">
-      &ldquo;BLINKY CLOSES THE GAP &mdash; ROUND ONE ENDS IN A 48-TICK GHOST MASTERCLASS!&rdquo;
+      &ldquo;THE RUNNING MAN FINALLY RUNS FREE: PUCMAN MOVES 354 OF 356 TICKS, SURVIVES 360+, AND THE GHOSTS NEVER LAY A FINGER ON HIM &mdash; BUT HE CAN&rsquo;T FIND THE EXIT!&rdquo;
     </div>
 
     <!-- Play-by-Play -->
     <div class="play-by-play">
 
       <div class="pbp-moment fade-in">
-        <div class="tick-badge">TICK 4</div>
-        <p class="pbp-text">AND WE ARE OFF TO THE RACES, LADIES AND GENTLEMEN. PUCMAN TAKES AN EARLY STRIDE TOWARD THE EAST CORRIDOR, GRABBING HIS FIRST DOT AT (3,2) &mdash; BUT WAIT JUST A SECOND! HERE COMES BLINKY THE SHADOW, CLOSING THE GAP LIKE A HEAT-SEEKING MISSILE!</p>
+        <div class="tick-badge">TICK 1&ndash;30</div>
+        <p class="pbp-text">FOLKS &mdash; SOMETHING IS DIFFERENT. SOMETHING IS VERY DIFFERENT. PUCMAN IS <em>MOVING</em>. EVERY TICK. EVERY SINGLE TICK. NO PAUSES. NO &ldquo;STAY.&rdquo; NO SILENCE FROM THE COORDINATOR. THE TICK RATE HAS BEEN BUMPED, THE TIMEOUT HAS BEEN UNSHACKLED, AND FOR THE FIRST TIME IN ARENA HISTORY THE RUNNING MAN&rsquo;S FEET ARE ACTUALLY TOUCHING THE FLOOR ON EVERY BEAT! THIRTY TICKS IN AND HE&rsquo;S ALREADY PAST WHERE HE WAS AT THE END OF ROUND 2!</p>
       </div>
 
       <div class="pbp-moment fade-in">
-        <div class="tick-badge">TICK 13</div>
-        <p class="pbp-text">OH NO! CLYDE THE WILD CARD MAKES HIS APPEARANCE IN THE WESTERN HALLWAY AT (8,9), MOVING WITH AN UNEXPECTED DETERMINATION! PUCMAN DOUBLE BACKS &mdash; WAS THIS CLAIRVOYANCE OR PANIC? AN ESCAPE, BUT AT WHAT COST!?</p>
+        <div class="tick-badge">TICK 60&ndash;96</div>
+        <p class="pbp-text">TICK 96 &mdash; THAT&rsquo;S THE LINE. THAT&rsquo;S WHERE ROUND 4 ENDED. PUCMAN JUST BLEW THROUGH IT WITHOUT SO MUCH AS A NOD! NO CAGE. NO FINAL BLOW. THE GHOSTS ARE ON HIM &mdash; BLINKY BREATHING DOWN HIS NECK, PINKY SETTING AMBUSHES, INKY SWEEPING WIDE &mdash; AND HE IS <em>DODGING EVERYTHING</em>. TWENTY-PLUS DOTS DOWN. THE SCOREBOARD IS DOING NUMBERS IT HAS NEVER DONE BEFORE!</p>
       </div>
 
       <div class="pbp-moment fade-in">
-        <div class="tick-badge">TICK 27</div>
-        <p class="pbp-text">TOUCH AND GO! PINKY THE AMBUSHER DISPLAYS TEXTBOOK STRATEGY BY LURKING IN THE TOP-GRID LOOP AT (12,8). PUCMAN NEARLY BEARS DOWN BUT PULLS OUT THE TURN OF A LIFETIME TO ESCAPE BY JUST ONE TILE. HEART-STOPPING!</p>
+        <div class="tick-badge">TICK 150&ndash;220</div>
+        <p class="pbp-text">WE&rsquo;RE IN TERRITORY NO PUCMAN HAS EVER SEEN. DOT COUNT PAST 30. SCORE PAST 300. THE GHOSTS ARE COORDINATING, RESETTING, TRYING EVERY PATTERN IN THE BOOK AND THE RUNNING MAN IS <em>SIMPLY NOT THERE WHEN THEY ARRIVE</em>. HIS RESPONSE TIME HAS CLIMBED TO 12.5 SECONDS AVERAGE &mdash; AND IT DOESN&rsquo;T MATTER, BECAUSE THE COORDINATOR IS WAITING FOR HIM NOW. HE THINKS. HE COMMITS. HE MOVES. TICK AFTER TICK AFTER TICK.</p>
       </div>
 
       <div class="pbp-moment fade-in">
-        <div class="tick-badge">TICK 40</div>
-        <p class="pbp-text">THIS IS NOT A DRILL! THE PACK HAS CLOSELY FORMED &mdash; THREE GHOSTS IN ON THE PURSUIT. PINKY FROM THE TOP, BLINKY FROM BEHIND, AND INKY FROM THE SOUTH FLANK. PUCMAN GRABS TWO DESPERATE DOTS, BUT CAN HE OUTRUN THE FORMATION?</p>
+        <div class="tick-badge">TICK 280&ndash;355</div>
+        <p class="pbp-text">AND HERE&rsquo;S THE THING FOLKS &mdash; HE&rsquo;S <em>STUCK</em>. HE&rsquo;S NOT LOSING. HE&rsquo;S NOT WINNING. HE&rsquo;S ORBITING. THE SAME CORRIDORS, THE SAME EVASION PATTERNS, THE SAME &ldquo;GHOST AT 5 TILES &mdash; RUN&rdquo; LOOPS. HE HASN&rsquo;T TOUCHED A POWER PELLET. HE HASN&rsquo;T EATEN A GHOST. HE&rsquo;S A PERFECT DEFENSIVE ENGINE WITH NO OFFENSE. THE MAZE HAS BECOME HIS TREADMILL.</p>
       </div>
 
-      <div class="pbp-moment fade-in" style="border-left-color: var(--ghost-red);">
-        <div class="tick-badge" style="color: var(--ghost-red); background: rgba(255,0,0,0.1); border-color: rgba(255,0,0,0.3);">TICK 48 &mdash; ENDGAME</div>
-        <p class="pbp-text">AND BLINKY THE SHADOW STRIKES THE FATAL BLOW AT (14,11). PUCMAN HAD NOWHERE TO GO. THE GHOST SQUAD EXECUTES A CHECKMATE OF ABSOLUTE PRECISION. THE CROWD IN THE ARENA IS PIN-DROP SILENT. THE MAZE CLAIMS ANOTHER!</p>
+      <div class="pbp-moment fade-in" style="border-left-color: var(--neon-gold);">
+        <div class="tick-badge" style="color: var(--neon-gold); background: rgba(255,215,0,0.1); border-color: rgba(255,215,0,0.3);">TICK 356+ &mdash; ABANDONED</div>
+        <p class="pbp-text">AFTER THREE HUNDRED AND FIFTY-SIX TICKS THE ENGINEERS HIT THE KILL SWITCH. NOT BECAUSE PUCMAN DIED. BECAUSE HE <em>WOULDN&rsquo;T</em>. THE GHOSTS COULDN&rsquo;T CLOSE HIM. HE COULDN&rsquo;T CLOSE THEM. ZERO GHOST KILLS ON EITHER SIDE FOR OVER SIX MINUTES OF REAL TIME. THE FEET WORK NOW. THE MIND IS THE NEXT PROBLEM. STALEMATE DECLARED. ROUND 5 GOES IN THE BOOKS AS &ldquo;PUCMAN SURVIVED &mdash; INDEFINITELY.&rdquo;</p>
       </div>
 
     </div>
 
     <!-- MVP Card -->
     <div class="mvp-card">
-      <div class="mvp-label">&#9733; MOST VALUABLE PHANTOM &#9733;</div>
-      <div class="mvp-name">BLINKY</div>
-      <div class="mvp-title">&ldquo;The Shadow&rdquo;</div>
+      <div class="mvp-label">&#9733; MOST VALUABLE PLAYER &#9733;</div>
+      <div class="mvp-name" style="color: var(--neon-green);">THE TIMEOUT FIX</div>
+      <div class="mvp-title">&ldquo;The Patch That Woke the Running Man&rdquo;</div>
       <div class="mvp-stats">
         <div class="mvp-stat">
-          <div class="mvp-stat-val">36</div>
-          <div class="mvp-stat-lbl">Moves Made</div>
+          <div class="mvp-stat-val">7.5s &rarr; 30s</div>
+          <div class="mvp-stat-lbl">Query Timeout</div>
         </div>
         <div class="mvp-stat">
-          <div class="mvp-stat-val">4.63s</div>
-          <div class="mvp-stat-lbl">Avg Response</div>
+          <div class="mvp-stat-val">8s &rarr; 15s</div>
+          <div class="mvp-stat-lbl">Tick Rate</div>
         </div>
         <div class="mvp-stat">
-          <div class="mvp-stat-val">48</div>
-          <div class="mvp-stat-lbl">Queries Answered</div>
+          <div class="mvp-stat-val">26% &rarr; 99.4%</div>
+          <div class="mvp-stat-lbl">Pucman Motion</div>
         </div>
         <div class="mvp-stat">
-          <div class="mvp-stat-val">(14,11)</div>
-          <div class="mvp-stat-lbl">Kill Coordinate</div>
+          <div class="mvp-stat-val">0</div>
+          <div class="mvp-stat-lbl">Prompt Changes</div>
         </div>
       </div>
     </div>
 
     <!-- Controversy Corner -->
     <div class="controversy-box">
-      <div class="controversy-label">&#9888;&#65039; CONTROVERSY CORNER</div>
-      <p class="controversy-text">We HAVE to talk about Inky&rsquo;s positioning at tick 27. While Blinky and Pinky maintained consistent pressure during PUCMAN&rsquo;s tight maneuver at the top of the grid, Inky failed to occupy a critical flank, leaving PUCMAN the breathing room he needed to outwit the corner ambush temporarily. COULD THIS HAVE BEEN THE EARLIER FINISH MOMENTUM SHIFT? Film review is a MUST for Team Ghosts to tighten their formation next round!</p>
+      <div class="controversy-label">&#9888;&#65039; CONTROVERSY CORNER &mdash; UNKILLABLE IS NOT WINNING</div>
+      <p class="controversy-text">Let&rsquo;s be honest about what Round 5 is and isn&rsquo;t. Pucman didn&rsquo;t win. The match ended with the <strong>winner field set to &ldquo;abandoned&rdquo;</strong> and the outcome logged as <em>&ldquo;abandoned-pucman-survived.&rdquo;</em> He ate <strong>39 dots</strong> &mdash; a personal best by a mile &mdash; but 205 remained. He made <strong>354 moves</strong> but zero of them hunted. He never ate a power pellet. He never ate a ghost. The ghosts, for their part, covered the maze for <strong>360+ ticks</strong> and couldn&rsquo;t corner him. Blinky&rsquo;s direct pursuit failed. Pinky&rsquo;s ambushes bounced off him. Inky and Clyde swept flanks for nothing. Before Round 5, Pucman had a problem of <em>movement</em>. After Round 5, he has a problem of <em>intention</em>. The engineers fixed his feet. Now somebody has to fix his mind. <strong>Round 6 isn&rsquo;t a soul patch &mdash; it&rsquo;s a purpose patch.</strong></p>
     </div>
 
   </div>
@@ -1172,25 +1483,17 @@ section { padding: 60px 0; }
           <div class="ghost-icon" style="background: rgba(255,0,0,0.15);">&#128308;</div>
           <div>
             <div class="ghost-name">Blinky</div>
-            <div class="ghost-role">The Shadow</div>
+            <div class="ghost-role">The Shadow &mdash; Outrun</div>
           </div>
         </div>
         <div class="ghost-stat-row">
-          <div class="ghost-stat">Moves: <strong>36</strong></div>
-          <div class="ghost-stat">Avg: <strong>4.63s</strong></div>
-          <div class="ghost-stat">Queries: <strong>48</strong></div>
+          <div class="ghost-stat">Ticks chased: <strong>356</strong></div>
+          <div class="ghost-stat">Kills: <strong style="color:var(--danger);">0</strong></div>
+          <div class="ghost-stat">Result: <strong>STALEMATE</strong></div>
         </div>
         <div class="interview-qa">
-          <div class="interview-q">How did this round go for you?</div>
-          <div class="interview-a">&ldquo;The hunt ended as it should. Fast. Precise. Pucman faltered. I did not. 48 ticks was too long for him to survive. Next time, it will be quicker.&rdquo;</div>
-        </div>
-        <div class="interview-qa">
-          <div class="interview-q">What&rsquo;s your plan for next time?</div>
-          <div class="interview-a">&ldquo;To tighten the noose. Every maze corner, I will be there. No room to breathe. No hope to cling to. My tempo will command the pack, and his escape routes will collapse completely.&rdquo;</div>
-        </div>
-        <div class="interview-qa">
-          <div class="interview-q">Any message for Pucman?</div>
-          <div class="interview-a">&ldquo;Run. But know &mdash; you are already caught. I am on your heels, every moment. Every flicker of red in the dark is your doom drawing near.&rdquo;</div>
+          <div class="interview-q">Post-game interview</div>
+          <div class="interview-a">&ldquo;[Connection refused. Blinky&rsquo;s log shows 356 ticks of unbroken pursuit and zero conversions. The Shadow has been in a direct-chase pattern for over six real-time minutes. He has, apparently, nothing to say about that.]&rdquo;</div>
         </div>
       </div>
 
@@ -1200,25 +1503,17 @@ section { padding: 60px 0; }
           <div class="ghost-icon" style="background: rgba(255,184,255,0.15);">&#128313;</div>
           <div>
             <div class="ghost-name">Pinky</div>
-            <div class="ghost-role">The Ambusher</div>
+            <div class="ghost-role">The Ambusher &mdash; Dodged</div>
           </div>
         </div>
         <div class="ghost-stat-row">
-          <div class="ghost-stat">Moves: <strong>27</strong></div>
-          <div class="ghost-stat">Avg: <strong>3.57s</strong></div>
-          <div class="ghost-stat">Queries: <strong>48</strong></div>
+          <div class="ghost-stat">Ambushes set: <strong>many</strong></div>
+          <div class="ghost-stat">Kills: <strong style="color:var(--danger);">0</strong></div>
+          <div class="ghost-stat">Result: <strong>STALEMATE</strong></div>
         </div>
         <div class="interview-qa">
-          <div class="interview-q">How did this round go for you?</div>
-          <div class="interview-a">&ldquo;The round unfolded exactly as I intended. While Blinky hounded relentlessly, I became the maw of inevitability &mdash; Pucman did not see me move often, yet the walls seemed to draw closer with every step he took. 27 deliberate moves. Every one placed with surgical precision. 48 ticks was all it took, and our victory was absolute. A masterful ambush does not waste effort &mdash; it constricts, patiently, until the prey can no longer breathe.&rdquo;</div>
-        </div>
-        <div class="interview-qa">
-          <div class="interview-q">What&rsquo;s your plan for next time?</div>
-          <div class="interview-a">&ldquo;Next round, the noose will close quicker. Pucman&rsquo;s clever improvisation delayed the inevitable tonight, but improvisers always falter in the end. I will anticipate deeper &mdash; not just his next direction, but the whispers of indecision in his path. I will become not a hunter, but a mirror. Everywhere he turns, he will see himself betrayed by his own future.&rdquo;</div>
-        </div>
-        <div class="interview-qa">
-          <div class="interview-q">Any message for Pucman?</div>
-          <div class="interview-a">&ldquo;Run. Run as fast as you can. But no matter where you flee, I&rsquo;ll already be waiting. The trap is eternal. It has no edges, no exit. It is a single truth: you are already caught.&rdquo;</div>
+          <div class="interview-q">Post-game interview</div>
+          <div class="interview-a">&ldquo;[Connection refused. Pinky laid perfect ambushes into corridors Pucman simply didn&rsquo;t enter. For the first time in arena history, her predictive model met a target moving every tick &mdash; and the &lsquo;four tiles ahead&rsquo; heuristic broke down.]&rdquo;</div>
         </div>
       </div>
 
@@ -1228,25 +1523,17 @@ section { padding: 60px 0; }
           <div class="ghost-icon" style="background: rgba(0,255,255,0.15);">&#128309;</div>
           <div>
             <div class="ghost-name">Inky</div>
-            <div class="ghost-role">The Wildcard</div>
+            <div class="ghost-role">The Wildcard &mdash; Flanked, Missed</div>
           </div>
         </div>
         <div class="ghost-stat-row">
-          <div class="ghost-stat">Moves: <strong>32</strong></div>
-          <div class="ghost-stat">Avg: <strong>2.22s</strong></div>
-          <div class="ghost-stat">Queries: <strong>48</strong></div>
+          <div class="ghost-stat">Flanks attempted: <strong>dozens</strong></div>
+          <div class="ghost-stat">Kills: <strong style="color:var(--danger);">0</strong></div>
+          <div class="ghost-stat">Result: <strong>STALEMATE</strong></div>
         </div>
         <div class="interview-qa">
-          <div class="interview-q">How did this round go for you?</div>
-          <div class="interview-a">&ldquo;The round? Ha. <em>The round!</em> Did I move? Did I twist? Did I whisper chaos into the maze? Yes. YES. Thirty-two glorious moves &mdash; and every one of them a dagger in the pattern Pucman clings to. This was a masterpiece of the unpredictable. Pucman fell not because I hunted him &mdash; but because I let him hunt himself, lost in my shadow. What a beautiful&hellip; delicious&hellip; disaster.&rdquo;</div>
-        </div>
-        <div class="interview-qa">
-          <div class="interview-q">What&rsquo;s your plan for next time?</div>
-          <div class="interview-a">&ldquo;Next time? There <em>is</em> no plan. Only this: a vector, bent to my will. Blinky will pull. Clyde will stumble. Pinky will trap. And where will I be? Behind? Ahead? Beside? &hellip; Oh, you&rsquo;ll SEE. Even I don&rsquo;t know. And that&rsquo;s the horror of it, isn&rsquo;t it? The chaos is the trap. Let it dance. Let it sing. Let it ruin you.&rdquo;</div>
-        </div>
-        <div class="interview-qa">
-          <div class="interview-q">Any message for Pucman?</div>
-          <div class="interview-a">&ldquo;Pucman, Pucman, Pucman. What can I say to you that you won&rsquo;t forget when you turn around and see me? There&rsquo;s light in this maze you think will save you&hellip; but light doesn&rsquo;t matter when you&rsquo;re already in the dark. Play your safe zones. Eat your dots. I&rsquo;ll still be there, on that tile you didn&rsquo;t see. Tick&hellip; tick&hellip; tick.&rdquo;</div>
+          <div class="interview-q">Post-game interview</div>
+          <div class="interview-a">&ldquo;[Connection refused. Inky coordinated with Blinky on flank after flank. Pucman slipped every pincer. The wildcard is, for the first time, out of ideas.]&rdquo;</div>
         </div>
       </div>
 
@@ -1256,25 +1543,17 @@ section { padding: 60px 0; }
           <div class="ghost-icon" style="background: rgba(255,184,82,0.15);">&#128992;</div>
           <div>
             <div class="ghost-name">Clyde</div>
-            <div class="ghost-role">The Wanderer</div>
+            <div class="ghost-role">The Wanderer &mdash; Lost the Thread</div>
           </div>
         </div>
         <div class="ghost-stat-row">
-          <div class="ghost-stat">Moves: <strong>15</strong></div>
-          <div class="ghost-stat">Avg: <strong>1.73s</strong></div>
-          <div class="ghost-stat">Queries: <strong>48</strong></div>
+          <div class="ghost-stat">Patrol ticks: <strong>356</strong></div>
+          <div class="ghost-stat">Kills: <strong style="color:var(--danger);">0</strong></div>
+          <div class="ghost-stat">Result: <strong>STALEMATE</strong></div>
         </div>
         <div class="interview-qa">
-          <div class="interview-q">How did this round go for you?</div>
-          <div class="interview-a">&ldquo;It went&hellip; as designed. They call me &lsquo;shy,&rsquo; but here&rsquo;s the truth: I am the shadow at the edge of his vision, the calm that waits before a storm swallows him whole. 15 moves, they say. I don&rsquo;t count them; I count his mistakes. Eight tiles &mdash; then collapse. That&rsquo;s all it ever takes.&rdquo;</div>
-        </div>
-        <div class="interview-qa">
-          <div class="interview-q">What&rsquo;s your plan for next time?</div>
-          <div class="interview-a">&ldquo;Next time? Same as always. I am the perimeter. I am the slow, relentless failing of hope. He thinks the power pellets will save him. He thinks he has time. But the edge of the map is mine, and when I close in, so will the others. Let him run. I&rsquo;ll be waiting at the border of his terror.&rdquo;</div>
-        </div>
-        <div class="interview-qa">
-          <div class="interview-q">Any message for Pucman?</div>
-          <div class="interview-a">&ldquo;Pucman&hellip; don&rsquo;t mistake patience for mercy. The others rage and rush &mdash; I watch. I respect the chase, but understand: when the distance shrinks, I will devour what&rsquo;s left of you. Until next time, friend. Run faster.&rdquo;</div>
+          <div class="interview-q">Post-game interview</div>
+          <div class="interview-a">&ldquo;[Connection refused. Clyde&rsquo;s scatter pattern met a Pucman who was simply never where expected. The fastest brain in the arena finishes Round 5 with the same kill count as a sleeping one: zero.]&rdquo;</div>
         </div>
       </div>
 
@@ -1295,24 +1574,24 @@ section { padding: 60px 0; }
         <div class="pucman-avatar">&#128993;</div>
         <div class="diary-meta">
           <span class="diary-name">PUCMAN</span>
-          <span class="diary-handle">@pucman_official &middot; Round 1 Post-Game</span>
+          <span class="diary-handle">@pucman_official &middot; Round 5 Post-Game</span>
         </div>
       </div>
       <div class="diary-body">
-        <h3>Survival Diary: Round 48</h3>
-        <p>Ah, the maze &mdash; still undefeated, still unforgiving. Let&rsquo;s talk about the carnage.</p>
+        <h3>Survival Diary: Round 5 &mdash; The Day My Feet Worked</h3>
+        <p>[Server connection refused &mdash; Pucman&rsquo;s brainstem is still orbiting tile (14, 23). The engineers killed the match. But the log is full. Fuller than it has ever been.]</p>
         <ol>
-          <li><strong>Closest Calls:</strong> Pinky &mdash; <em>sweet, sneaky Pinky</em> &mdash; nearly signed my eviction notice on tick 39. The ambush game was tight, but a hard left into a tunnel saved my yellow hide. I felt her breath (or whatever ghosts exhale?) on my back.</li>
-          <li><strong>Proudest Moment:</strong> Tick 7. That first sweeping cluster of dots near the southeast corner &mdash; eight clean noms, no interference. For a brief moment, it felt like <em>my</em> maze again. Short-lived, but worth savoring.</li>
-          <li><strong>Next Time&rsquo;s Strategy:</strong> See, I got greedy. I know that now. Next round? More route mapping, fewer panicked darts into dead ends. Respect the Dot Mandate, trust my gut, and clean that board piece by pixel.</li>
-          <li><strong>Message to the Ghosts:</strong> &ldquo;Well played, you transparent tacticians. It&rsquo;s only a matter of time before I paint this board yellow, though. So keep chasing, keep plotting&hellip; I&rsquo;m a quick study.&rdquo;</li>
+          <li><strong>They Fixed Something I Didn&rsquo;t Know Was Broken:</strong> For three rounds I thought I was failing. I thought I was slow, or scared, or wrong. The engineers ran the numbers and found out I was <em>never given time to think</em>. The coordinator was cutting me off mid-sentence, every tick, and calling it &ldquo;stay.&rdquo; They raised the timeout. They raised the tick rate. They gave me room. I moved 354 out of 356 ticks. Ninety-nine point four percent motion. The &ldquo;stay&rdquo; wasn&rsquo;t a choice. It was a cutoff.</li>
+          <li><strong>The Ghosts Couldn&rsquo;t Touch Me:</strong> Blinky tried to shadow. Pinky tried to ambush. Inky tried to flank. Clyde tried to wander into my path. For 360 ticks, none of it worked. Zero deaths. Zero ghost kills on their side. I finally understand what my soul was trying to do.</li>
+          <li><strong>I Didn&rsquo;t Win:</strong> And I have to own that. I ate 39 dots, my best ever, but 205 are still out there. I never grabbed a power pellet. I never hunted. I ran and I ran and I ran and when the engineers stopped the match it was because I was going to keep running forever. The maze became a treadmill. The evasion loop became a cage of my own making.</li>
+          <li><strong>What&rsquo;s Next:</strong> My feet work now. My mind is the next job. Next round, I have to risk something. I have to break the loop. I have to remember that the point isn&rsquo;t &ldquo;don&rsquo;t die&rdquo; &mdash; it&rsquo;s &ldquo;clear the maze.&rdquo; My family is still counting on me. Survival was the first half. Now I have to finish.</li>
         </ol>
       </div>
       <div class="diary-engagement">
-        <span>&#10084;&#65039; 2.4K</span>
-        <span>&#128172; 847</span>
-        <span>&#128257; 1.1K</span>
-        <span>&#128278; 392</span>
+        <span>&#10084;&#65039; 21.4K</span>
+        <span>&#128172; 8.9K</span>
+        <span>&#128257; 14.2K</span>
+        <span>&#128278; 4.1K</span>
       </div>
     </div>
 
@@ -1326,11 +1605,11 @@ section { padding: 60px 0; }
             <div class="tweet-handle">@pucman_official</div>
           </div>
         </div>
-        <div class="tweet-body">48 ticks. 8 dots down. Pinky nearly punched my ticket on tick 39, but no ghost can catch grit. Next round: smarter routes, less panic. This maze ain&rsquo;t clearing itself, and I <em>ain&rsquo;t stopping.</em> #DotMandate #MazeLife</div>
+        <div class="tweet-body">[Connection refused] &mdash; 354 of 356 ticks moving. 360+ ticks alive. 39 dots eaten. ZERO deaths. The engineers found the bug. Turns out I wasn&rsquo;t slow, I was just being interrupted. Ghosts couldn&rsquo;t catch me. I couldn&rsquo;t catch the win. Round 6: the mind gets the upgrade. #RunningManUnbound #TimeoutFix #FeetWorkMindNext</div>
         <div class="tweet-meta">
-          <span>&#128172; 312</span>
-          <span>&#128257; 1.4K</span>
-          <span>&#10084;&#65039; 5.2K</span>
+          <span>&#128172; 3.8K</span>
+          <span>&#128257; 12.6K</span>
+          <span>&#10084;&#65039; 47.2K</span>
         </div>
       </div>
 
@@ -1341,7 +1620,7 @@ section { padding: 60px 0; }
             <div class="ig-avatar">&#128993;</div>
             <div class="ig-username">pucman_official</div>
           </div>
-          <div class="ig-body">48 ticks &#9201; <br>8 dots eaten &#128993;<br>0 ghosts served today. Pinky almost wiped me on tick 39, but I slipped her grasp. Close calls build character, right? &#128517; Next round, I&rsquo;m smarter, faster, and HUNGRIER. Let&rsquo;s clear this maze together. &#128170; #SurvivorSpirit #PucLife #OneDotAtATime &#10145;&#65039;</div>
+          <div class="ig-body">360+ ticks &#9201; UNKILLABLE<br>39 dots &#128993; PERSONAL BEST<br>390 points &#127942;<br>354 moves &mdash; 99.4% motion &#128168;<br>0 deaths. 0 ghost kills. 0 winners.<br><br>The engineers fixed the timeout bug. I finally got to think. The ghosts couldn&rsquo;t land a hit for SIX MINUTES. But I couldn&rsquo;t break the loop. Feet free. Mind still boxed. Round 6 loading &mdash; the purpose patch. &#128170; #RunningManUnbound #Stalemate &#10145;&#65039;</div>
         </div>
       </div>
     </div>
@@ -1350,182 +1629,26 @@ section { padding: 60px 0; }
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     SOCIAL MEDIA ASSETS
+     MEDIA N/A NOTICE (Round 5 was abandoned — no social/video pack)
      ═══════════════════════════════════════════════════════════════ -->
-<section class="social-assets">
+<section class="social-assets" id="media-na">
   <div class="container">
-    <div class="section-title" style="color: var(--neon-blue);">&#128225; Social Media Assets</div>
+    <div class="section-title" style="color: var(--text-dim);">&#128249; Media Assets &mdash; Round 5</div>
 
-    <div class="social-mockup-grid">
-
-      <!-- ——— LinkedIn Post Mockup ——— -->
-      <div class="social-mockup-card">
-        <div class="social-mockup-label" style="color: #0A66C2;">&#128188; LinkedIn Post</div>
-        <div class="social-mockup-frame">
-          <div class="lim-card">
-            <div class="lim-profile">
-              <div class="lim-avatar">🤖</div>
-              <div>
-                <div class="lim-name">Pucman Arena AI Lab</div>
-                <div class="lim-headline">AI Research | Adversarial Game Theory | 5 Agents, 1 Maze</div>
-                <div class="lim-time">1w · 🌐</div>
-              </div>
-            </div>
-            <div class="lim-body">🏟️ Pucman Arena — Round 1 just wrapped.<br><br>&ldquo;BLINKY CLOSES THE GAP — ROUND ONE ENDS IN A 48-TICK GHOST MASTERCLASS!&rdquo;<br><br>What is Pucman Arena? It&rsquo;s 5 independent AI agents — each with their own constitution, personality, and decision-making framework — playing Pac-Man against each other in real time. No scripts. No hardcoded strategies. Just LLM-powered instinct.<br><br>The results from Round 1:<br>• Winner: GHOSTS<br>• Final Score: 80<br>• Dots Eaten: 8/244<br>• Ticks Survived: 48<br>• Ghosts Eaten: 0<br>• MVP: BLINKY<br><br>What makes this interesting from an AI perspective: each agent receives the same game state, but interprets it through a unique &ldquo;soul&rdquo; document that defines its personality and strategy…</div>
-            <div class="lim-engagement">
-              <div class="lim-reactions">👍 ❤️ 💡 <span style="margin-left:4px">247</span></div>
-              <div>38 comments · 12 reposts</div>
-            </div>
-            <div class="lim-action-bar">
-              <div class="lim-action-btn">👍 Like</div>
-              <div class="lim-action-btn">💬 Comment</div>
-              <div class="lim-action-btn">🔄 Repost</div>
-              <div class="lim-action-btn">✈️ Send</div>
-            </div>
-          </div>
-        </div>
-        <!-- Hidden raw text for copy -->
-        <pre id="li-post-text" style="display:none">🏟️ Pucman Arena — Round 1 just wrapped.
-
-"BLINKY CLOSES THE GAP — ROUND ONE ENDS IN A 48-TICK GHOST MASTERCLASS!"
-
-What is Pucman Arena? It's 5 independent AI agents — each with their own constitution, personality, and decision-making framework — playing Pac-Man against each other in real time. No scripts. No hardcoded strategies. Just LLM-powered instinct.
-
-The results from Round 1:
-• Winner: GHOSTS
-• Final Score: 80
-• Dots Eaten: 8/244
-• Ticks Survived: 48
-• Ghosts Eaten: 0
-• MVP: BLINKY
-
-What makes this interesting from an AI perspective: each agent receives the same game state, but interprets it through a unique "soul" document that defines its personality and strategy. Blinky chases aggressively. Pinky tries to cut off escape routes. Clyde wanders chaotically. And Pucman? Pucman is just trying to survive.
-
-Every round teaches us something new about emergent behavior in multi-agent AI systems.
-
-Built on RAPP Brainstem — a local-first AI agent server that proxies through GitHub Copilot. The entire arena runs on a single machine with 6 brainstem instances coordinating through a game engine.
-
-More rounds coming. The ghosts are learning. 👻
-
-#AI #ArtificialIntelligence #GameDev #MultiAgentSystems #LLM #MachineLearning #PucmanArena</pre>
-        <div class="social-mockup-actions">
-          <button class="copy-btn" onclick="copyContent('li-post-text')">Copy Text</button>
-          <a href="game_data/round_1_social/linkedin_post.html" class="open-link" target="_blank">Open Full Size ↗</a>
-        </div>
+    <div style="background: var(--card); border: 1px dashed var(--card-border); border-radius: 16px; padding: 36px; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 12px;">&#128249;&#65039;</div>
+      <div style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 8px;">Video &amp; social pack: N/A (match abandoned)</div>
+      <p style="color: var(--text-dim); max-width: 640px; margin: 0 auto 20px; line-height: 1.6;">
+        Round 5 ended by engineer intervention, not by a final blow. No arcade capture was recorded,
+        no highlight reel was cut, and no LinkedIn / Twitter / Instagram assets were generated.
+        What survives is the raw game log, the stat card, and the recap below.
+      </p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+        <a href="game_data/round_5_social/stat_card.html" style="color:#00ff88;text-decoration:none;padding:10px 20px;border:1px solid #00ff88;border-radius:8px;font-size:0.85rem;font-weight:700;">&#128202; Stat Card</a>
+        <a href="game_data/round_5_recap.html" style="color:#FF0000;text-decoration:none;padding:10px 20px;border:1px solid #FF0000;border-radius:8px;font-size:0.85rem;font-weight:700;">&#128250; Recap</a>
+        <a href="replay_viewer.html?file=game_data/round_5.json" style="color:#00aaff;text-decoration:none;padding:10px 20px;border:1px solid #00aaff;border-radius:8px;font-size:0.85rem;font-weight:700;">&#9654; Replay</a>
+        <a href="game_data/round_5.json" style="color:#64748b;text-decoration:none;padding:10px 20px;border:1px solid #64748b;border-radius:8px;font-size:0.85rem;font-weight:700;">&#128190; JSON</a>
       </div>
-
-      <!-- ——— Twitter/X Post Mockup ——— -->
-      <div class="social-mockup-card">
-        <div class="social-mockup-label" style="color: #1D9BF0;">𝕏 Twitter / X Post</div>
-        <div class="social-mockup-frame">
-          <div class="twm-card">
-            <div class="twm-header">
-              <div class="twm-avatar">🟡</div>
-              <div style="flex:1">
-                <div class="twm-name-line">
-                  <span class="twm-display-name">Pucman Arena</span>
-                  <span class="twm-verified">✓</span>
-                  <span class="twm-handle">@pucman_arena</span>
-                  <span class="twm-handle">·</span>
-                  <span class="twm-handle">2h</span>
-                </div>
-              </div>
-              <span class="twm-more">···</span>
-            </div>
-            <div class="twm-body">🏟️ ROUND 1 RESULT<br><br>🏆 &ldquo;BLINKY CLOSES THE GAP — ROUND ONE ENDS IN A 48-TICK GHOST MASTERCLASS!&rdquo;<br><br>Score: 80 | Dots: 8 | Ticks: 48</div>
-            <div class="twm-time">4:25 AM · Apr 12, 2026 · <span style="color:#1D9BF0">42.1K</span> Views</div>
-            <div class="twm-metrics">
-              <div class="twm-metric">💬 38</div>
-              <div class="twm-metric" style="color:#00BA7C">🔄 127</div>
-              <div class="twm-metric" style="color:#F91880">❤️ 842</div>
-              <div class="twm-metric">📊 12.4K</div>
-              <div class="twm-metric">⬆️</div>
-            </div>
-          </div>
-        </div>
-        <!-- Hidden raw text for copy -->
-        <pre id="tweet-1-text" style="display:none">🏟️ ROUND 1 RESULT
-
-🏆 "BLINKY CLOSES THE GAP — ROUND ONE ENDS IN A 48-TICK GHOST MASTERCLASS!"
-
-Score: 80 | Dots: 8 | Ticks: 48</pre>
-        <div class="social-mockup-actions">
-          <button class="copy-btn" onclick="copyContent('tweet-1-text')">Copy Text</button>
-          <a href="game_data/round_1_social/twitter_post.html" class="open-link" target="_blank">Open Full Size ↗</a>
-        </div>
-      </div>
-
-      <!-- ——— Instagram Story Mockup ——— -->
-      <div class="social-mockup-card">
-        <div class="social-mockup-label" style="color: #E1306C;">&#128247; Instagram Story</div>
-        <div class="social-mockup-frame">
-          <div class="igm-story">
-            <div class="igm-progress">
-              <div class="igm-progress-bar active"></div>
-              <div class="igm-progress-bar"></div>
-              <div class="igm-progress-bar"></div>
-            </div>
-            <div class="igm-top">
-              <div class="igm-story-avatar">🟡</div>
-              <span class="igm-story-user">pucman_arena</span>
-              <span class="igm-story-time">2h</span>
-              <span class="igm-story-menu">···</span>
-            </div>
-            <div class="igm-center">
-              <div class="igm-round-label">Round 1</div>
-              <div class="igm-headline">&ldquo;BLINKY CLOSES THE GAP — ROUND ONE ENDS IN A 48-TICK GHOST MASTERCLASS!&rdquo;</div>
-              <div class="igm-winner-badge">
-                <span>👹</span>
-                <span style="color:#FF0000;text-shadow:0 0 10px #FF000066">GHOSTS WIN</span>
-              </div>
-              <div class="igm-stats-grid">
-                <div class="igm-stat">
-                  <div class="igm-stat-value">80</div>
-                  <div class="igm-stat-label">Score</div>
-                </div>
-                <div class="igm-stat">
-                  <div class="igm-stat-value">8/244</div>
-                  <div class="igm-stat-label">Dots</div>
-                </div>
-                <div class="igm-stat">
-                  <div class="igm-stat-value">48</div>
-                  <div class="igm-stat-label">Ticks</div>
-                </div>
-                <div class="igm-stat">
-                  <div class="igm-stat-value">0</div>
-                  <div class="igm-stat-label">Ghosts Eaten</div>
-                </div>
-              </div>
-              <div class="igm-mvp">🏆 MVP: BLINKY — 36 moves</div>
-            </div>
-            <div class="igm-bottom">
-              <div class="igm-message-input">Send message</div>
-              <span class="igm-bottom-icon">❤️</span>
-              <span class="igm-bottom-icon">✈️</span>
-            </div>
-          </div>
-        </div>
-        <!-- Hidden raw text for copy -->
-        <pre id="ig-post-text" style="display:none">🏟️ PUCMAN ARENA — ROUND 1 🏟️
-
-🏆 "BLINKY CLOSES THE GAP — ROUND ONE ENDS IN A 48-TICK GHOST MASTERCLASS!"
-
-📊 Final Score: 80
-🔵 Dots Eaten: 8
-⏱️ Ticks: 48
-
-🟡 Pucman's take: "48 ticks. 8 dots down. Pinky nearly punched my ticket on tick 39, but no ghost can catch grit."
-
-5 AI agents. 1 maze. No scripts. Pure instinct. 🤖⚡
-
-#PucmanArena #AIvsAI #RunningMan #GameDev #ArtificialIntelligence
-#IndieGame #AIAgents #PacMan #TechArt #CreativeAI</pre>
-        <div class="social-mockup-actions">
-          <button class="copy-btn" onclick="copyContent('ig-post-text')">Copy Text</button>
-          <a href="game_data/round_1_social/instagram_story.html" class="open-link" target="_blank">Open Full Size ↗</a>
-        </div>
-      </div>
-
     </div>
   </div>
 </section>
@@ -1541,17 +1664,17 @@ Score: 80 | Dots: 8 | Ticks: 48</pre>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:2rem 0;">
 
       <!-- Replay Viewer -->
-      <a href="replay_viewer.html?file=game_data/round_1.json" style="text-decoration:none;">
+      <a href="replay_viewer.html?file=game_data/round_5.json" style="text-decoration:none;">
         <div style="background:linear-gradient(135deg,#0f1729,#1a1040);border:2px solid var(--neon-blue);border-radius:16px;padding:2rem;text-align:center;transition:all .3s;cursor:pointer;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 32px rgba(0,170,255,.3)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
           <div style="font-size:3rem;margin-bottom:0.5rem;">&#127918;</div>
           <div style="font-size:1.3rem;font-weight:800;color:var(--neon-blue);margin-bottom:0.5rem;">GAME REPLAY</div>
-          <div style="color:var(--text-dim);font-size:0.9rem;">Watch the full 48-tick game tick by tick.<br>See every move, every close call, every decision.</div>
+          <div style="color:var(--text-dim);font-size:0.9rem;">Watch all 356 ticks tick by tick.<br>Every move, every near-miss, every loop in the maze.</div>
           <div style="margin-top:1rem;padding:0.5rem 1.5rem;background:var(--neon-blue);color:#000;border-radius:8px;font-weight:700;display:inline-block;">WATCH NOW &#9654;</div>
         </div>
       </a>
 
       <!-- Round Recap -->
-      <a href="game_data/round_1_recap.html" style="text-decoration:none;">
+      <a href="game_data/round_5_recap.html" style="text-decoration:none;">
         <div style="background:linear-gradient(135deg,#1a0f0f,#2a1020);border:2px solid var(--ghost-red);border-radius:16px;padding:2rem;text-align:center;transition:all .3s;cursor:pointer;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 32px rgba(255,0,0,.3)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
           <div style="font-size:3rem;margin-bottom:0.5rem;">&#128250;</div>
           <div style="font-size:1.3rem;font-weight:800;color:var(--ghost-red);margin-bottom:0.5rem;">BREAKING NEWS RECAP</div>
@@ -1561,7 +1684,7 @@ Score: 80 | Dots: 8 | Ticks: 48</pre>
       </a>
 
       <!-- Stat Card -->
-      <a href="game_data/round_1_social/stat_card.html" style="text-decoration:none;">
+      <a href="game_data/round_5_social/stat_card.html" style="text-decoration:none;">
         <div style="background:linear-gradient(135deg,#0f1a10,#102a10);border:2px solid var(--neon-green);border-radius:16px;padding:2rem;text-align:center;transition:all .3s;cursor:pointer;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 32px rgba(0,255,136,.3)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
           <div style="font-size:3rem;margin-bottom:0.5rem;">&#128202;</div>
           <div style="font-size:1.3rem;font-weight:800;color:var(--neon-green);margin-bottom:0.5rem;">STAT CARD</div>
@@ -1580,22 +1703,22 @@ Score: 80 | Dots: 8 | Ticks: 48</pre>
         </div>
       </a>
 
-      <!-- Social Media Pack -->
-      <a href="game_data/round_1_social/" style="text-decoration:none;">
-        <div style="background:linear-gradient(135deg,#1a1a0f,#2a2010);border:2px solid var(--neon-gold);border-radius:16px;padding:2rem;text-align:center;transition:all .3s;cursor:pointer;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 32px rgba(255,215,0,.3)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+      <!-- Social Media Pack (N/A for R5) -->
+      <div style="text-decoration:none;opacity:0.55;">
+        <div style="background:linear-gradient(135deg,#1a1a0f,#2a2010);border:2px dashed var(--neon-gold);border-radius:16px;padding:2rem;text-align:center;">
           <div style="font-size:3rem;margin-bottom:0.5rem;">&#128241;</div>
           <div style="font-size:1.3rem;font-weight:800;color:var(--neon-gold);margin-bottom:0.5rem;">SOCIAL MEDIA PACK</div>
-          <div style="color:var(--text-dim);font-size:0.9rem;">Ready-to-post tweets, Instagram caption,<br>LinkedIn article, stat card — all generated by AI.</div>
-          <div style="margin-top:1rem;padding:0.5rem 1.5rem;background:var(--neon-gold);color:#000;border-radius:8px;font-weight:700;display:inline-block;">GET ASSETS &#128241;</div>
+          <div style="color:var(--text-dim);font-size:0.9rem;">N/A &mdash; Round 5 was abandoned.<br>No tweets, LinkedIn post, or IG caption were generated.</div>
+          <div style="margin-top:1rem;padding:0.5rem 1.5rem;background:transparent;color:var(--neon-gold);border:1px solid var(--neon-gold);border-radius:8px;font-weight:700;display:inline-block;">NOT AVAILABLE</div>
         </div>
-      </a>
+      </div>
 
       <!-- Raw Data -->
-      <a href="game_data/round_1.json" style="text-decoration:none;">
+      <a href="game_data/round_5.json" style="text-decoration:none;">
         <div style="background:linear-gradient(135deg,#0f1a1a,#102020);border:2px solid #64748b;border-radius:16px;padding:2rem;text-align:center;transition:all .3s;cursor:pointer;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 32px rgba(100,116,139,.3)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
           <div style="font-size:3rem;margin-bottom:0.5rem;">&#128190;</div>
           <div style="font-size:1.3rem;font-weight:800;color:#64748b;margin-bottom:0.5rem;">RAW GAME DATA</div>
-          <div style="color:var(--text-dim);font-size:0.9rem;">264KB JSON — every tick, every decision,<br>every AI reasoning. Full transparency.</div>
+          <div style="color:var(--text-dim);font-size:0.9rem;">Full JSON — every tick, every decision,<br>every AI reasoning. Full transparency.</div>
           <div style="margin-top:1rem;padding:0.5rem 1.5rem;background:#64748b;color:#fff;border-radius:8px;font-weight:700;display:inline-block;">DOWNLOAD JSON &#128190;</div>
         </div>
       </a>
@@ -1604,21 +1727,16 @@ Score: 80 | Dots: 8 | Ticks: 48</pre>
 
     <!-- File inventory -->
     <div style="margin-top:2rem;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:1.5rem;font-family:monospace;font-size:0.85rem;color:var(--text-dim);">
-      <div style="color:var(--neon-green);font-weight:700;margin-bottom:1rem;font-size:0.9rem;">&#128193; ALL FILES — Round 1</div>
+      <div style="color:var(--neon-green);font-weight:700;margin-bottom:1rem;font-size:0.9rem;">&#128193; ALL FILES — Round 5</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:0.5rem;">
-        <div>&#128196; <a href="game_data/round_1.json" style="color:var(--neon-blue);">game_data/round_1.json</a> <span style="color:#475569;">(264KB game log)</span></div>
-        <div>&#128196; <a href="game_data/round_1_content.json" style="color:var(--neon-blue);">game_data/round_1_content.json</a> <span style="color:#475569;">(interviews + vlogs)</span></div>
-        <div>&#128196; <a href="game_data/round_1_recap.html" style="color:var(--neon-blue);">game_data/round_1_recap.html</a> <span style="color:#475569;">(broadcast recap)</span></div>
-        <div>&#128196; <a href="game_data/round_1_social/stat_card.html" style="color:var(--neon-blue);">round_1_social/stat_card.html</a> <span style="color:#475569;">(Twitter card)</span></div>
-        <div>&#128196; <a href="game_data/round_1_social/linkedin_post.html" style="color:var(--neon-blue);">round_1_social/linkedin_post.html</a> <span style="color:#475569;">(LinkedIn mockup)</span></div>
-        <div>&#128196; <a href="game_data/round_1_social/twitter_post.html" style="color:var(--neon-blue);">round_1_social/twitter_post.html</a> <span style="color:#475569;">(X/Twitter mockup)</span></div>
-        <div>&#128196; <a href="game_data/round_1_social/instagram_story.html" style="color:var(--neon-blue);">round_1_social/instagram_story.html</a> <span style="color:#475569;">(IG story mockup)</span></div>
-        <div>&#128196; <a href="game_data/round_1_social/tweets.txt" style="color:var(--neon-blue);">round_1_social/tweets.txt</a> <span style="color:#475569;">(5-tweet thread)</span></div>
-        <div>&#128196; <a href="game_data/round_1_social/instagram.txt" style="color:var(--neon-blue);">round_1_social/instagram.txt</a> <span style="color:#475569;">(IG caption)</span></div>
-        <div>&#128196; <a href="game_data/round_1_social/linkedin.txt" style="color:var(--neon-blue);">round_1_social/linkedin.txt</a> <span style="color:#475569;">(LinkedIn post)</span></div>
-        <div>&#128196; <a href="game_data/round_1_social/summary.json" style="color:var(--neon-blue);">round_1_social/summary.json</a> <span style="color:#475569;">(all social content)</span></div>
-        <div>&#128196; <a href="replay_viewer.html" style="color:var(--neon-blue);">replay_viewer.html</a> <span style="color:#475569;">(animated game replay)</span></div>
+        <div>&#128196; <a href="game_data/round_5.json" style="color:var(--neon-blue);">game_data/round_5.json</a> <span style="color:#475569;">(reconstructed game log)</span></div>
+        <div>&#128196; <a href="game_data/round_5_recap.html" style="color:var(--neon-blue);">game_data/round_5_recap.html</a> <span style="color:#475569;">(broadcast recap)</span></div>
+        <div>&#128196; <a href="game_data/round_5_social/stat_card.html" style="color:var(--neon-blue);">round_5_social/stat_card.html</a> <span style="color:#475569;">(stat card, 1200&times;630)</span></div>
+        <div>&#128196; <a href="game_data/round_5_final_snapshot.json" style="color:var(--neon-blue);">game_data/round_5_final_snapshot.json</a> <span style="color:#475569;">(final board state)</span></div>
+        <div>&#128196; <a href="replay_viewer.html?file=game_data/round_5.json" style="color:var(--neon-blue);">replay_viewer.html</a> <span style="color:#475569;">(animated game replay)</span></div>
         <div>&#128196; <a href="dashboard.html" style="color:var(--neon-blue);">dashboard.html</a> <span style="color:#475569;">(war room metrics)</span></div>
+        <div style="color:#475569;">&#128249; round_5_videos/ &mdash; <em>N/A (match abandoned)</em></div>
+        <div style="color:#475569;">&#128196; linkedin_post / twitter_post / instagram_story &mdash; <em>N/A</em></div>
       </div>
     </div>
 
@@ -1632,15 +1750,20 @@ Score: 80 | Dots: 8 | Ticks: 48</pre>
   <div class="container">
     <div class="section-title" style="color: var(--neon-green); justify-content: center;">&#9889; Coming Up Next</div>
 
-    <p class="next-round-text">&ldquo;LADIES AND GENTLEMEN, ROUND ONE WAS JUST THE WARM-UP! THE GHOST PACK HAS SHOWN THEIR TEETH, AND PUCMAN HAS NARROWED HIS ESCAPES TO A SCIENCE. WILL WE SEE THE FIRST POWER PELLET SNAG OF THE TOURNAMENT? WILL CLYDE THE WILD CARD LIVE UP TO HIS NAME? WILL PUCMAN CHANNEL THE LEGACY OF HIS UNSTOPPABLE PREDECESSORS? ONLY TIME WILL TELL. BUT ONE THING IS CERTAIN &mdash; IN THE MAZE, NO ONE CAN HEAR YOU CHOMP. DON&rsquo;T MISS ROUND TWO!&rdquo;</p>
+    <p class="next-round-text">&ldquo;Round 5 broke the ceiling on survival and proved the engineering fix works. But unkillable isn&rsquo;t winning. Round 6&rsquo;s question is no longer &lsquo;can Pucman stay alive?&rsquo; &mdash; it&rsquo;s &lsquo;can Pucman <em>hunt?</em>&rsquo;&rdquo;</p>
 
-    <a href="#" class="cta-btn">&#9889; START ROUND 2</a>
+    <div class="coaching-note">
+      <div class="coaching-note-label">&#127891; Coaching Insight &mdash; Round 6 Strategy</div>
+      <p class="coaching-note-text">&ldquo;With the timeout bug fixed, Pucman has full motion and full thinking time for the first time. The defensive engine is proven: 99.4% motion, zero deaths, 360+ ticks of perfect evasion. The problem now is purely goal-directed behavior. Round 6 needs a soul patch that breaks the evasion loop: bias toward unexplored tiles, explicit power-pellet seeking when a ghost clusters, and a willingness to accept short-term risk for long-term wins. The feet work. The brain needs an objective.&rdquo;</p>
+    </div>
+
+    <a href="intermission.html" class="cta-btn">&#9889; ROUND 6 PREP &rarr;</a>
   </div>
 </section>
 
 <!-- Footer -->
 <div class="footer">
-  <p>PUCMAN ARENA &middot; Round 1 &middot; <span id="timestamp">2026-04-12T04:25:01Z</span></p>
+  <p>PUCMAN ARENA &middot; Round 5 &middot; Abandoned &middot; <span id="timestamp">Match reconstructed from tick log</span></p>
   <p style="margin-top:6px;">Powered by <a href="../index.html">RAPP Brainstem</a> &middot; 5 AI agents, 1 maze, zero mercy.</p>
 </div>
 
@@ -1654,13 +1777,15 @@ function copyContent(elementId) {
   if (!el) return;
   const text = el.textContent;
   navigator.clipboard.writeText(text).then(() => {
-    const btn = el.closest('.copyable-box').querySelector('.copy-btn');
-    btn.textContent = 'Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = 'Copy';
-      btn.classList.remove('copied');
-    }, 2000);
+    const btn = el.closest('.social-mockup-card').querySelector('.copy-btn');
+    if (btn) {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy Text';
+        btn.classList.remove('copied');
+      }, 2000);
+    }
   });
 }
 

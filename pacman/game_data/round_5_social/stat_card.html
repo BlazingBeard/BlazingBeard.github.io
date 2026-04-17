@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200">
+<title>Pucman Arena — Round 5 Stat Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 630px; overflow: hidden;
+    background: #0a0a1a;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    color: #e0e0e0;
+  }
+  .card {
+    width: 1200px; height: 630px;
+    background: linear-gradient(135deg, #0a1a14 0%, #0a0a1a 45%, #1a0a2e 100%);
+    display: flex; flex-direction: column;
+    padding: 44px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #00ff88, #00ffff, #FFE000, #ff00ff);
+  }
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: -120px; right: -120px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,255,136,0.10) 0%, transparent 70%);
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 14px;
+    position: relative; z-index: 2;
+  }
+  .brand {
+    font-size: 14px; text-transform: uppercase; letter-spacing: 4px;
+    color: #00ff88; opacity: 0.9;
+  }
+  .round-badge {
+    background: rgba(0, 255, 136, 0.12);
+    border: 1px solid rgba(0, 255, 136, 0.45);
+    border-radius: 8px; padding: 6px 16px;
+    font-size: 16px; font-weight: 700; color: #00ff88;
+    letter-spacing: 2px;
+  }
+  .headline {
+    font-size: 44px; font-weight: 900; line-height: 1.05;
+    color: #ffffff; margin-bottom: 6px;
+    text-shadow: 0 0 24px rgba(0,255,136,0.25);
+    position: relative; z-index: 2;
+  }
+  .subhead {
+    font-size: 18px; font-weight: 600; color: #94a3b8;
+    margin-bottom: 24px; letter-spacing: 1px;
+    position: relative; z-index: 2;
+  }
+  .result-row {
+    display: flex; align-items: center; gap: 18px;
+    margin-bottom: 22px;
+    position: relative; z-index: 2;
+  }
+  .result-label {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 2px;
+    color: #888;
+  }
+  .result-name {
+    font-size: 30px; font-weight: 900;
+    color: #FFE000;
+    text-shadow: 0 0 24px rgba(255, 224, 0, 0.45);
+    letter-spacing: 1px;
+  }
+  .result-tag {
+    font-size: 13px; padding: 4px 12px;
+    border: 1px solid rgba(255, 224, 0, 0.5);
+    border-radius: 6px; color: #FFE000;
+    letter-spacing: 1.5px; font-weight: 700;
+  }
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 16px; margin-bottom: 22px;
+    position: relative; z-index: 2;
+  }
+  .stat-box {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px; padding: 14px 10px;
+    text-align: center;
+  }
+  .stat-box.hero {
+    background: rgba(0, 255, 136, 0.06);
+    border-color: rgba(0, 255, 136, 0.4);
+  }
+  .stat-value {
+    font-size: 30px; font-weight: 900; color: #00ffff;
+  }
+  .stat-box.hero .stat-value {
+    color: #00ff88;
+    text-shadow: 0 0 14px rgba(0,255,136,0.4);
+  }
+  .stat-label {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px;
+    color: #94a3b8; margin-top: 4px;
+  }
+  .narrative {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid #00ff88;
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .narrative-title {
+    font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: #00ff88; margin-bottom: 6px; font-weight: 700;
+  }
+  .narrative-body {
+    font-size: 14px; color: #cbd5e1; line-height: 1.55;
+  }
+  .narrative-body b { color: #ffffff; }
+  .footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 18px;
+    position: relative; z-index: 2;
+  }
+  .mvp {
+    font-size: 14px; color: #00ff88; font-weight: 600;
+  }
+  .hashtag {
+    font-size: 12px; color: #666;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="brand">Pucman Arena</div>
+    <div class="round-badge">ROUND 5 · ABANDONED</div>
+  </div>
+
+  <div class="headline">THE RUNNING MAN FINALLY RUNS FREE.</div>
+  <div class="subhead">354 of 356 ticks moving · 360+ ticks survived · zero deaths · zero kills</div>
+
+  <div class="result-row">
+    <span class="result-label">Result</span>
+    <span class="result-name">🏳️ STALEMATE</span>
+    <span class="result-tag">PUCMAN UNKILLABLE</span>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-value">390</div>
+      <div class="stat-label">Final Score</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">39</div>
+      <div class="stat-label">Dots Eaten</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">354</div>
+      <div class="stat-label">Moves Made</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">360+</div>
+      <div class="stat-label">Ticks Survived</div>
+    </div>
+    <div class="stat-box hero">
+      <div class="stat-value">99.4%</div>
+      <div class="stat-label">Motion Rate</div>
+    </div>
+  </div>
+
+  <div class="narrative">
+    <div class="narrative-title">🔧 The Engineering Breakthrough</div>
+    <div class="narrative-body">
+      Pucman wasn't losing &mdash; he was frozen. The coordinator's 7.5s timeout was cutting off his
+      6.93s-average LLM responses, counting silence as "stay" roughly <b>74% of the time</b>.
+      The fix: raise the tick rate (8s&rarr;15s), decouple the query timeout (30s), add a
+      <b>timed_out</b> flag, and reset the session every tick. Motion rate went <b>26% &rarr; 99.4%</b>.
+      The ghosts never landed a kill. Neither did Pucman. <b>Feet fixed; mind next.</b>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="mvp">🏆 MVP: THE TIMEOUT FIX &mdash; 0 prompt changes, 14.2&times; more moves</div>
+    <div class="hashtag">#PucmanArena #RunningManUnbound #Stalemate</div>
+  </div>
+</div>
+</body>
+</html>
