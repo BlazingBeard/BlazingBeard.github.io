@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PUCMAN ARENA — Round 5</title>
+<title>PUCMAN ARENA — Round 5 (Corrected)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -1171,35 +1171,41 @@ section { padding: 60px 0; }
   <h1 class="hero-title">PUCMAN<br>ARENA</h1>
   <p class="hero-subtitle">Round 5 &mdash; The Running Man Unbound</p>
 
-  <div class="result-banner" style="color: var(--neon-gold); text-shadow: 0 0 30px rgba(255,215,0,0.5), 0 0 60px rgba(255,215,0,0.2); border-color: rgba(255,215,0,0.4);">&#9876;&#65039; STALEMATE &mdash; PUCMAN UNKILLABLE</div>
+  <div class="result-banner" style="color: var(--ghost-red); text-shadow: 0 0 30px rgba(255,0,0,0.5), 0 0 60px rgba(255,0,0,0.2); border-color: rgba(255,0,0,0.4);">&#128480; GHOSTS WIN &mdash; CAUGHT AT TICK 63 BY CLYDE</div>
 
   <div class="stats-row">
     <div class="stat-box fade-in">
-      <div class="stat-value">390</div>
+      <div class="stat-value">160</div>
       <div class="stat-label">Final Score</div>
     </div>
     <div class="stat-box fade-in" style="animation-delay: 0.1s">
-      <div class="stat-value">39<span style="font-size:0.6em;color:var(--text-dim)">/244</span></div>
+      <div class="stat-value">16<span style="font-size:0.6em;color:var(--text-dim)">/244</span></div>
       <div class="stat-label">Dots Eaten</div>
     </div>
     <div class="stat-box fade-in" style="animation-delay: 0.2s">
-      <div class="stat-value">360+</div>
+      <div class="stat-value">63</div>
       <div class="stat-label">Ticks Survived</div>
     </div>
     <div class="stat-box fade-in" style="animation-delay: 0.3s">
-      <div class="stat-value" style="color: var(--neon-green);">354<span style="font-size:0.55em;color:var(--text-dim)">/356</span></div>
-      <div class="stat-label">Moves Made (99.4%)</div>
+      <div class="stat-value" style="color: var(--neon-green);">62<span style="font-size:0.55em;color:var(--text-dim)">/63</span></div>
+      <div class="stat-label">Moves Made (98%)</div>
     </div>
     <div class="stat-box fade-in" style="animation-delay: 0.4s">
-      <div class="stat-value">0</div>
-      <div class="stat-label">Deaths</div>
+      <div class="stat-value" style="color: var(--ghost-red);">1</div>
+      <div class="stat-label">Caught By Clyde</div>
     </div>
   </div>
 
-  <div style="margin-top: 36px; max-width: 800px; padding: 0 20px;">
+  <div style="margin-top: 36px; max-width: 860px; padding: 0 20px;">
+    <div style="background: rgba(255, 136, 0, 0.08); border: 1px solid rgba(255, 136, 0, 0.35); border-radius: 10px; padding: 18px 22px; margin-bottom: 20px;">
+      <div style="font-size: 0.8rem; font-weight: 800; color: #ff8800; letter-spacing: 2px; margin-bottom: 8px;">&#9888;&#65039; RESULT CORRECTION</div>
+      <p style="font-size: 0.92rem; color: var(--text-dim); line-height: 1.55;">
+        R5 was originally recorded as a stalemate at tick 360+ with zero deaths. Post-match review discovered a bug in <code>game_engine.py</code>: the collision detector only checked same-cell overlaps, missing <strong>position swaps</strong> (Pucman and a ghost trading cells in one tick). Six swap-catches were masked during the match. With the engine patched and moves re-simulated, the real outcome is a <strong style="color: var(--ghost-red);">ghost win at tick 63</strong> &mdash; Clyde caught Pucman via a swap collision in the bottom-left corridor. The movement fix is still real (98% motion rate), but the "unkillable" narrative was an artifact of the bug.
+      </p>
+    </div>
     <p style="font-size: 0.95rem; color: var(--text-dim); line-height: 1.6; text-align: center;">
-      <strong style="color: var(--neon-green);">Pucman moved 354 of 356 ticks &mdash; 99.4% motion rate, up from 26% in Round 4.</strong>
-      The ghosts chased him for 360+ ticks and never landed a single kill. But he never found a power pellet, never broke his evasion loop, never won. Match abandoned.
+      <strong style="color: var(--neon-green);">Pucman moved 62 of 63 ticks &mdash; 98% motion rate, up from 26% in Round 4.</strong>
+      He ate dots at a real pace (16 in 63 ticks vs 15 in R4's 95 ticks). Then Clyde swapped into him and the engine finally registered the catch.
     </p>
   </div>
 </section>
@@ -1246,17 +1252,17 @@ section { padding: 60px 0; }
           </tr>
           <tr class="current-round">
             <td>R5 &#9889;</td>
-            <td>390</td>
-            <td>39</td>
-            <td>354</td>
-            <td>360+</td>
+            <td>160</td>
+            <td>16</td>
+            <td>62</td>
+            <td>63</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- Round 4 → Round 5 Comparison Cards -->
-    <div class="section-title" style="color: var(--neon-green);">&#128293; Round 4 &rarr; Round 5 Improvement</div>
+    <div class="section-title" style="color: var(--neon-green);">&#128293; Round 4 &rarr; Round 5 (Post-Correction)</div>
 
     <div class="comparison-grid">
       <div class="comparison-card">
@@ -1264,34 +1270,34 @@ section { padding: 60px 0; }
         <div class="comparison-values">
           <span class="comparison-old">150</span>
           <span class="comparison-arrow">&rarr;</span>
-          <span class="comparison-new">390</span>
+          <span class="comparison-new">160</span>
         </div>
-        <div class="comparison-change">+160% &#128293;</div>
+        <div class="comparison-change">+7%</div>
       </div>
       <div class="comparison-card">
         <div class="comparison-label">Dots Eaten</div>
         <div class="comparison-values">
           <span class="comparison-old">15</span>
           <span class="comparison-arrow">&rarr;</span>
-          <span class="comparison-new">39</span>
+          <span class="comparison-new">16</span>
         </div>
-        <div class="comparison-change">+160% &#128293;</div>
+        <div class="comparison-change">+7%</div>
       </div>
       <div class="comparison-card">
         <div class="comparison-label">Moves Made</div>
         <div class="comparison-values">
           <span class="comparison-old">25</span>
           <span class="comparison-arrow">&rarr;</span>
-          <span class="comparison-new">354</span>
+          <span class="comparison-new">62</span>
         </div>
-        <div class="comparison-change">+1316% &#128293;&#128293;</div>
+        <div class="comparison-change">+148% &#128293;</div>
       </div>
       <div class="comparison-card">
         <div class="comparison-label">Motion Rate</div>
         <div class="comparison-values">
           <span class="comparison-old">26%</span>
           <span class="comparison-arrow">&rarr;</span>
-          <span class="comparison-new" style="color:var(--neon-green);">99.4%</span>
+          <span class="comparison-new" style="color:var(--neon-green);">98%</span>
         </div>
         <div class="comparison-change">FEET FIXED &#129306;</div>
       </div>
@@ -1300,18 +1306,18 @@ section { padding: 60px 0; }
         <div class="comparison-values">
           <span class="comparison-old">96</span>
           <span class="comparison-arrow">&rarr;</span>
-          <span class="comparison-new" style="color:var(--neon-green);">360+</span>
+          <span class="comparison-new" style="color:var(--ghost-red);">63</span>
         </div>
-        <div class="comparison-change">+275% &#128293; RECORD!</div>
+        <div class="comparison-change" style="color: var(--ghost-red);">&minus;34% (real play = more exposure)</div>
       </div>
       <div class="comparison-card">
-        <div class="comparison-label">Deaths</div>
+        <div class="comparison-label">Dots per Move</div>
         <div class="comparison-values">
-          <span class="comparison-old">1</span>
+          <span class="comparison-old">60%</span>
           <span class="comparison-arrow">&rarr;</span>
-          <span class="comparison-new" style="color:var(--neon-green);">0</span>
+          <span class="comparison-new" style="color:var(--neon-green);">26%</span>
         </div>
-        <div class="comparison-change">UNKILLABLE &#128170;</div>
+        <div class="comparison-change">WANDERING UP</div>
       </div>
     </div>
   </div>
