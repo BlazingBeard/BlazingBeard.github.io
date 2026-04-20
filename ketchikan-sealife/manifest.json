@@ -1,0 +1,17 @@
+{
+    "name": "Ketchikan Sealife Guide",
+    "short_name": "Sealife",
+    "description": "Identify and learn about intertidal sea life in Ketchikan, Alaska",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#1a5276",
+    "theme_color": "#1a5276",
+    "icons": [
+        {
+            "src": "img/species_009_04.jpeg",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        }
+    ]
+}

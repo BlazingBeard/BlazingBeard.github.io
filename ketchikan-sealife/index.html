@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a5276">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Ketchikan Sealife Field Guide</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Username Modal -->
+<div class="username-modal hidden" id="username-modal">
+    <div class="username-card">
+        <h2>Welcome, Explorer!</h2>
+        <p>Pick a name for your field journal</p>
+        <input type="text" id="username-input" placeholder="Your name" maxlength="20" autocomplete="off">
+        <button class="btn btn-primary btn-full" id="username-save">Start Exploring</button>
+    </div>
+</div>
+
+<div class="app-container">
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <input type="search" id="search-input" placeholder="Search species..." autocomplete="off">
+        <div id="search-results" class="search-results hidden"></div>
+    </div>
+
+    <!-- Category Chips -->
+    <div class="category-chips" id="category-chips">
+        <button class="chip active" data-category="all">All</button>
+    </div>
+
+    <!-- Species Card View -->
+    <div class="card-container" id="card-container">
+        <div class="card" id="species-card">
+            <div class="card-image">
+                <img id="card-img" src="" alt="Species photo">
+                <div class="card-placeholder" id="card-placeholder">&#x1F419;</div>
+            </div>
+            <div class="card-body">
+                <h2 id="card-common-name">Loading...</h2>
+                <p class="scientific-name" id="card-scientific-name"></p>
+                <span class="category-badge" id="card-category"></span>
+                <div class="card-details">
+                    <div class="detail-section">
+                        <h4>Description</h4>
+                        <p id="card-description"></p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Habitat</h4>
+                        <p id="card-habitat"></p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>How to Identify</h4>
+                        <p id="card-tips"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="nav-arrow nav-prev" id="btn-prev">&#8249;</button>
+        <button class="nav-arrow nav-next" id="btn-next">&#8250;</button>
+    </div>
+
+    <!-- Position Counter -->
+    <div class="position-counter" id="position-counter">- / -</div>
+
+    <!-- Comments Section -->
+    <div class="comments-section" id="comments-section">
+        <h4>Notes &amp; Comments</h4>
+        <div id="comments-list"></div>
+        <div class="comment-form">
+            <textarea id="comment-input" placeholder="Add a note..." rows="2"></textarea>
+            <button id="btn-comment" class="btn btn-sm btn-primary">Post</button>
+        </div>
+    </div>
+
+    <!-- Sightings View -->
+    <div class="sightings-view hidden" id="sightings-view">
+        <h2>My Sightings</h2>
+        <div id="sightings-list"></div>
+        <div class="data-actions">
+            <button class="btn btn-outline btn-sm" id="btn-export">Export Data</button>
+            <button class="btn btn-outline btn-sm" id="btn-import">Import Data</button>
+            <input type="file" id="file-import" accept=".json" style="display:none">
+        </div>
+    </div>
+
+    <!-- New Sighting Form -->
+    <div class="new-sighting-view hidden" id="new-sighting-view">
+        <h2>Log a Find</h2>
+        <form id="sighting-form">
+            <div class="form-group">
+                <label for="sighting-title">What did you find?</label>
+                <input type="text" id="sighting-title" name="title" required placeholder="e.g., Purple shore crab under dock">
+            </div>
+            <div class="form-group">
+                <label for="sighting-species">Link to species (optional)</label>
+                <select id="sighting-species" name="species_id">
+                    <option value="">-- Select species --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sighting-notes">Notes</label>
+                <textarea id="sighting-notes" name="notes" rows="3" placeholder="Describe what you saw..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="sighting-location">Location</label>
+                <input type="text" id="sighting-location" name="location_text" placeholder="e.g., Bar Harbor tide pools">
+                <button type="button" id="btn-geolocate" class="btn btn-sm" style="margin-top:6px;">&#x1F4CD; Use GPS</button>
+                <input type="hidden" id="sighting-lat" name="latitude">
+                <input type="hidden" id="sighting-lng" name="longitude">
+            </div>
+            <div class="form-group">
+                <label for="sighting-photo">Photo</label>
+                <input type="file" id="sighting-photo" name="photo" accept="image/*" capture="environment">
+                <div id="photo-preview" class="photo-preview hidden">
+                    <img id="photo-preview-img" src="" alt="Preview">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Save Sighting</button>
+        </form>
+    </div>
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+    <button class="nav-item active" data-view="species">
+        <span class="nav-icon">&#x1F41A;</span>
+        <span class="nav-label">Species</span>
+    </button>
+    <button class="nav-item" data-view="sightings">
+        <span class="nav-icon">&#x1F4CB;</span>
+        <span class="nav-label">My Sightings</span>
+    </button>
+    <button class="nav-item" data-view="new">
+        <span class="nav-icon">&#x1F4F7;</span>
+        <span class="nav-label">Log Find</span>
+    </button>
+    <button class="nav-item" data-view="species" style="pointer-events:none;">
+        <span class="nav-icon">&#x1F464;</span>
+        <span class="nav-label" id="nav-username">Guest</span>
+    </button>
+</nav>
+
+<script src="js/species-data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
