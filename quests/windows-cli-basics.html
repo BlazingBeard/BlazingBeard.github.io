@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Windows Command Line Basics — Training Quest</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#eaecf0;--bg2:#f4f5f7;--blue:#0969da;--green:#1a7f37;--orange:#bf8700;--red:#cf222e;--text:#24292f;--text-muted:#57606a;--border:#c5ccd6;--panel-w:460px;--top-bar:52px}
+  html,body{height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#dfe2e6 0%,var(--bg) 100%);color:var(--text)}
+  .top-bar{position:fixed;top:0;left:0;right:0;height:var(--top-bar);background:rgba(234,236,240,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;z-index:100}
+  .top-bar .title{font-size:15px;font-weight:600;white-space:nowrap}.top-bar .title span{color:var(--blue)}
+  .progress-wrap{flex:1;max-width:420px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .progress-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .progress-label{font-size:13px;color:var(--text-muted);min-width:90px;text-align:right}
+  .btn-reset{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;transition:all .2s}.btn-reset:hover{border-color:var(--red);color:var(--red)}
+  .quest-map{position:fixed;top:var(--top-bar);left:0;right:0;bottom:0;overflow:hidden}
+  .quest-map svg.path-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .phase-label{position:absolute;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--text-muted);opacity:.55;pointer-events:none}
+  .phase-label.p1{top:82px;left:1%}.phase-label.p2{top:82px;left:29.6%}.phase-label.p3{top:82px;left:51.0%}.phase-label.p4{top:82px;left:72.4%}
+  .phase-divider{position:absolute;top:var(--top-bar);bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--border) 15%,var(--border) 85%,transparent);opacity:.6;pointer-events:none}
+  .phase-divider.d1{left:28.6%}.phase-divider.d2{left:50.0%}.phase-divider.d3{left:71.4%}
+  .node{position:absolute;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:10;transform:translate(-50%,-50%)}
+  .node .ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--border);transition:all .35s}
+  .node .inner{width:100%;height:100%;border-radius:50%;background:#f0f1f3;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;z-index:1;transition:all .35s;border:2px solid var(--border)}
+  .node.active .ring{border-color:var(--blue);box-shadow:0 0 20px rgba(88,166,255,.35);animation:pulse-ring 2s infinite}
+  .node.active .inner{border-color:var(--blue);background:rgba(88,166,255,.1);transform:scale(1.12)}.node.active .lock{display:none}
+  .node.complete .ring{border-color:var(--green);box-shadow:0 0 12px rgba(63,185,80,.25)}
+  .node.complete .inner{border-color:var(--green);background:rgba(63,185,80,.15)}.node.complete .lock{display:none}
+  .node:hover{transform:translate(-50%,-50%) scale(1.1)}
+  .node .label{position:absolute;top:calc(100% + 10px);white-space:nowrap;font-size:11px;font-weight:600;color:var(--text-muted);text-align:center;pointer-events:none;transition:color .3s}
+  .node.active .label{color:var(--blue)}.node.complete .label{color:var(--green)}
+  @keyframes pulse-ring{0%,100%{box-shadow:0 0 20px rgba(88,166,255,.25)}50%{box-shadow:0 0 32px rgba(88,166,255,.5)}}
+  .check-icon{display:none}.node.complete .check-icon{display:block}.node.complete .emoji{display:none}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}.overlay.open{opacity:1;pointer-events:auto}
+  .panel{position:fixed;top:0;right:0;bottom:0;width:var(--panel-w);max-width:92vw;background:#f0f1f3;border-left:1px solid var(--border);z-index:210;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.08)}.panel.open{transform:translateX(0)}
+  .panel-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+  .panel-header .emoji-big{font-size:32px;line-height:1}.panel-header .meta{flex:1}.panel-header .meta h2{font-size:18px;font-weight:700;margin-bottom:4px}.panel-header .meta .time{font-size:12px;color:var(--text-muted)}
+  .panel-close{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;padding:4px;line-height:1}.panel-close:hover{color:var(--text)}
+  .panel-body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:16px}.panel-body .desc{font-size:14px;line-height:1.55;color:var(--text)}
+  .copy-block{position:relative;background:#e4e6ea;border:1px solid var(--border);border-radius:8px;padding:12px 44px 12px 14px;font-family:'Cascadia Code','Fira Code',monospace;font-size:12.5px;line-height:1.5;color:var(--text);white-space:pre-wrap;word-break:break-word}
+  .copy-btn{position:absolute;top:8px;right:8px;background:#d5d8dd;border:none;color:var(--text-muted);width:30px;height:30px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}.copy-btn:hover{background:var(--blue);color:#fff}.copy-btn.copied{background:var(--green);color:#fff}
+  .toggle-done{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;border:2px solid var(--border);background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);transition:all .25s;width:100%}
+  .toggle-done .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
+  .toggle-done.checked{border-color:var(--green);background:rgba(63,185,80,.08)}.toggle-done.checked .dot{background:var(--green);border-color:var(--green)}
+  .substeps{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+  .substeps li{font-size:13px;color:var(--text-muted);padding-left:20px;position:relative;line-height:1.5}
+  .substeps li::before{content:'';position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%;border:2px solid var(--border)}
+  .stuck-toggle{background:none;border:none;color:var(--orange);font-size:13px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px}.stuck-toggle:hover{text-decoration:underline}
+  .stuck-content{max-height:0;overflow:hidden;transition:max-height .3s;font-size:13px;color:var(--text-muted);line-height:1.6}.stuck-content.open{max-height:500px}.stuck-content p{margin-top:8px}
+  .copy-group{display:flex;flex-direction:column;gap:8px}
+  .particle{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:999}
+  .confetti{position:fixed;width:10px;height:16px;pointer-events:none;z-index:999;border-radius:2px}
+  .rocket-anim{position:fixed;font-size:40px;z-index:999;pointer-events:none}
+  .banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(240,241,243,.97);border:2px solid var(--green);border-radius:16px;padding:32px 56px;text-align:center;z-index:999;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 12px 48px rgba(0,0,0,.15)}.banner.show{transform:translate(-50%,-50%) scale(1)}.banner h1{font-size:28px;margin-bottom:8px}.banner p{color:var(--text-muted);font-size:15px}
+  .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-track{background:transparent}.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .rar-card{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(59,130,246,.12));border:1px solid rgba(139,92,246,.3);text-decoration:none;transition:all .2s;cursor:pointer;margin-top:4px}
+  .rar-card:hover{border-color:rgba(139,92,246,.6);background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(59,130,246,.2));transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.15)}
+  .rar-card-icon{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .rar-card-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .rar-card-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+  .rar-card-name{font-size:14px;color:var(--text-bright);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rar-card-arrow{margin-left:auto;color:var(--text-muted);font-size:18px;flex-shrink:0}
+  .credit{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-muted);opacity:.6;pointer-events:none;letter-spacing:.3px;z-index:5}
+  /* ── Mobile ── */
+  @media(max-width:768px){
+    html,body{overflow:auto;height:auto}
+    .top-bar{padding:0 12px;height:48px}
+    .top-bar .title{font-size:13px}
+    .progress-wrap{max-width:none;gap:6px}
+    .progress-label{min-width:60px;font-size:12px}
+    .btn-reset{padding:4px 8px;font-size:11px}
+    :root{--top-bar:48px}
+    .quest-map,.phase-label,.phase-divider,.path-svg{display:none!important}
+    #mobileList{display:flex;flex-direction:column;padding:60px 16px 80px;gap:0}
+    .m-phase-header{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);padding:20px 0 10px;opacity:.7}
+    .m-phase-header:first-child{padding-top:0}
+    .m-item{display:flex;align-items:center;gap:14px;padding:14px 0;position:relative;cursor:pointer}
+    .m-item::before{content:'';position:absolute;left:24px;top:0;bottom:0;width:2px;background:var(--border);z-index:0}
+    .m-item:last-child::before{bottom:50%}
+    .m-phase-header+.m-item::before{top:50%}
+    .m-node{width:48px;height:48px;border-radius:50%;background:#f0f1f3;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;z-index:1;transition:all .3s}
+    .m-item.complete .m-node{border-color:var(--green);background:rgba(63,185,80,.15)}
+    .m-item.active .m-node{border-color:var(--blue);background:rgba(88,166,255,.1);box-shadow:0 0 12px rgba(88,166,255,.3)}
+    .m-item.locked .m-node{opacity:.5}
+    .m-text{flex:1;min-width:0}
+    .m-text .m-title{font-size:15px;font-weight:600;color:var(--text)}
+    .m-item.complete .m-title{color:var(--green)}
+    .m-item.active .m-title{color:var(--blue)}
+    .m-item.locked .m-title{color:var(--text-muted)}
+    .m-text .m-time{font-size:12px;color:var(--text-muted)}
+    .m-check{color:var(--green);font-size:18px;flex-shrink:0;opacity:0;transition:opacity .3s}
+    .m-item.complete .m-check{opacity:1}
+    .panel{width:100%;max-width:100%;border-left:none;border-radius:16px 16px 0 0;top:auto;bottom:0;max-height:85vh;transform:translateY(100%);box-shadow:0 -4px 24px rgba(0,0,0,.12)}.panel.open{transform:translateY(0)}
+    .panel-header{padding:16px}.panel-body{padding:16px;gap:12px}
+    .banner{padding:20px 24px}.banner h1{font-size:22px}.banner p{font-size:13px}
+    .badge-wrap canvas{max-width:280px}
+    .credit{position:relative;padding:20px 0;text-align:center;opacity:.6}
+  }
+  @media(min-width:769px){
+    #mobileList{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="title"><span>Windows Command Line Basics</span> — Training Quest</div>
+  <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div><div class="progress-label" id="progressLabel">0 of 14</div></div>
+  <button class="btn-reset" onclick="resetProgress()">Reset Progress</button>
+</div>
+<div class="phase-label p1">🥚 First Contact</div>
+<div class="phase-label p2">👀 Looking Around</div>
+<div class="phase-label p3">🧭 Navigating & Building</div>
+<div class="phase-label p4">⚡ Doing & Done</div>
+<div class="phase-divider d1"></div><div class="phase-divider d2"></div><div class="phase-divider d3"></div>
+<div class="quest-map" id="questMap"><svg class="path-svg" id="pathSvg" preserveAspectRatio="none"></svg></div>
+<div id="mobileList"></div>
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel"><div class="panel-header"><div class="emoji-big" id="panelEmoji"></div><div class="meta"><h2 id="panelTitle"></h2><div class="time" id="panelTime"></div></div><button class="panel-close" onclick="closePanel()">✕</button></div><div class="panel-body" id="panelBody"></div></div>
+<div class="banner" id="banner"><h1>⌨️ Command Line Unlocked!</h1><p>You can launch, list, navigate, create,<br>open files, and exit. The prompt is yours.</p><div class="badge-wrap" id="badgeWrap" style="display:none"><canvas id="badgeCanvas" width="600" height="315"></canvas><div class="badge-actions"><button class="badge-btn" onclick="downloadBadge()">⬇ Download Badge</button><button class="badge-btn share" onclick="shareBadge()">📤 Share</button></div></div></div>
+<div class="credit">Windows Command Line Basics — Training Quest · Generated 2026-04-20 11:35</div>
+<script>
+const CHECKPOINTS = [
+  {
+    "id": "wcli-what-is",
+    "phase": 1,
+    "emoji": "\ud83e\udd14",
+    "title": "What is a Command Prompt?",
+    "time": "2 min",
+    "desc": "A command prompt is a text window where you type commands and the computer runs them. Windows ships with two: <strong>Command Prompt</strong> (the classic <code>cmd.exe</code>, around since the 1980s) and <strong>PowerShell</strong> (a newer, more powerful version). They look similar \u2014 black/blue window, blinking cursor \u2014 but use slightly different commands. Anything you can do by clicking icons, you can also do by typing.",
+    "toggle": "I know what a prompt is \u2713",
+    "copies": [
+      {
+        "label": "What you'll see (CMD)",
+        "text": "C:\\Users\\YourName>"
+      },
+      {
+        "label": "What you'll see (PowerShell)",
+        "text": "PS C:\\Users\\YourName>"
+      }
+    ],
+    "stuck": "The text before the <code>&gt;</code> is your <em>prompt</em> \u2014 it shows the folder you're currently \"in.\" When you type a command and press <kbd>Enter</kbd>, it runs in that folder. That's it. No magic.",
+    "learn": "Two shells ship with Windows: cmd.exe (classic) and PowerShell (modern). Both are just text windows that run commands."
+  },
+  {
+    "id": "wcli-launch-cmd",
+    "phase": 1,
+    "emoji": "\ud83d\ude80",
+    "title": "Launch Command Prompt",
+    "time": "2 min",
+    "desc": "The fastest way: press the <kbd>Windows</kbd> key, type <code>cmd</code>, and press <kbd>Enter</kbd>. A black window opens with a prompt like <code>C:\\Users\\YourName&gt;</code>. You can also right-click the Start button and pick \"Terminal\" (Windows 11) or use <kbd>Win</kbd>+<kbd>R</kbd>, type <code>cmd</code>, press <kbd>Enter</kbd>.",
+    "toggle": "Command Prompt opened \u2713",
+    "copies": [
+      {
+        "label": "Run dialog command",
+        "text": "cmd"
+      },
+      {
+        "label": "Open in a specific folder (File Explorer)",
+        "text": "Type 'cmd' in the File Explorer address bar and press Enter"
+      }
+    ],
+    "stuck": "If nothing happens when you press <kbd>Win</kbd>, your keyboard's Windows key may be disabled. Use <kbd>Ctrl</kbd>+<kbd>Esc</kbd> instead, then type <code>cmd</code>. Still stuck? Open File Explorer, click the address bar, type <code>cmd</code>, hit Enter \u2014 a prompt opens already pointed at that folder.",
+    "learn": "Three ways: Start menu \u2192 type 'cmd', Win+R \u2192 'cmd', or File Explorer address bar \u2192 'cmd'."
+  },
+  {
+    "id": "wcli-launch-ps",
+    "phase": 1,
+    "emoji": "\ud83d\udc99",
+    "title": "Launch PowerShell",
+    "time": "2 min",
+    "desc": "Press <kbd>Windows</kbd>, type <code>powershell</code>, press <kbd>Enter</kbd>. A blue (or black, on Windows 11) window opens with a prompt like <code>PS C:\\Users\\YourName&gt;</code>. The <code>PS</code> prefix tells you it's PowerShell, not CMD. On Windows 11 the default \"Terminal\" app actually opens PowerShell tabs by default.",
+    "toggle": "PowerShell opened \u2713",
+    "copies": [
+      {
+        "label": "Run dialog command",
+        "text": "powershell"
+      },
+      {
+        "label": "Newer cross-platform version",
+        "text": "pwsh"
+      }
+    ],
+    "stuck": "<code>powershell</code> opens the version that ships with Windows (5.1). <code>pwsh</code> opens PowerShell 7+ if you've installed it from microsoft.com/powershell \u2014 it's free and recommended for new learners. Either is fine for this quest.",
+    "learn": "PowerShell prompt starts with 'PS '. Use 'powershell' (built-in) or 'pwsh' (modern) to launch it."
+  },
+  {
+    "id": "wcli-where-am-i",
+    "phase": 1,
+    "emoji": "\ud83d\udccd",
+    "title": "See Where You Are",
+    "time": "2 min",
+    "desc": "Every prompt has a <em>current directory</em> \u2014 the folder commands run in. The prompt itself usually shows it (e.g. <code>C:\\Users\\YourName&gt;</code>), but you can also ask explicitly. In CMD type <code>cd</code> alone (no arguments). In PowerShell type <code>pwd</code> (\"print working directory\"). Both print the full path of the folder you're in right now.",
+    "toggle": "I know where I am \u2713",
+    "copies": [
+      {
+        "label": "CMD: show current folder",
+        "text": "cd"
+      },
+      {
+        "label": "PowerShell: show current folder",
+        "text": "pwd"
+      },
+      {
+        "label": "Works in both",
+        "text": "echo %cd%"
+      }
+    ],
+    "stuck": "Confused by the slashes? Windows uses <strong>backslashes</strong> (\\) to separate folders, so <code>C:\\Users\\YourName</code> means: drive C, folder Users, folder YourName. Forward slashes (/) work in PowerShell too but not always in CMD.",
+    "learn": "CMD: 'cd' alone prints location. PowerShell: 'pwd'. Backslashes separate folders in Windows paths."
+  },
+  {
+    "id": "wcli-list-files",
+    "phase": 2,
+    "emoji": "\ud83d\udc40",
+    "title": "List Files in the Current Folder",
+    "time": "3 min",
+    "desc": "The most-used command of all. CMD uses <code>dir</code>. PowerShell uses <code>ls</code> or <code>dir</code> (both work \u2014 they're aliases for <code>Get-ChildItem</code>). You'll see one line per item: date, time, size, and name. Folders are marked <code>&lt;DIR&gt;</code> in CMD or with a <code>d</code> in PowerShell's Mode column.",
+    "toggle": "I can list files \u2713",
+    "copies": [
+      {
+        "label": "CMD: list files",
+        "text": "dir"
+      },
+      {
+        "label": "PowerShell: list files",
+        "text": "ls"
+      },
+      {
+        "label": "PowerShell: long format",
+        "text": "Get-ChildItem"
+      }
+    ],
+    "stuck": "Too much output scrolling past? In CMD use <code>dir /p</code> to pause one screen at a time. In PowerShell pipe to <code>more</code>: <code>ls | more</code>. Press <kbd>Space</kbd> for the next page, <kbd>q</kbd> to stop.",
+    "learn": "CMD: 'dir'. PowerShell: 'ls' or 'dir'. Add /p (CMD) or | more (PS) to page through long output."
+  },
+  {
+    "id": "wcli-list-hidden",
+    "phase": 2,
+    "emoji": "\ud83d\udd75\ufe0f",
+    "title": "See Hidden Files Too",
+    "time": "2 min",
+    "desc": "Some files (like <code>.env</code> or <code>.git</code>) are hidden by default. To see <em>everything</em>, add a flag. CMD: <code>dir /a</code>. PowerShell: <code>ls -Force</code>. You'll suddenly see a lot more \u2014 system files, hidden folders, and dotfiles all show up.",
+    "toggle": "Hidden files revealed \u2713",
+    "copies": [
+      {
+        "label": "CMD: show all (incl. hidden)",
+        "text": "dir /a"
+      },
+      {
+        "label": "PowerShell: show hidden too",
+        "text": "ls -Force"
+      },
+      {
+        "label": "PowerShell: only hidden",
+        "text": "ls -Hidden"
+      }
+    ],
+    "stuck": "If you see files starting with a dot (like <code>.gitignore</code>) or with weird names like <code>desktop.ini</code> \u2014 that's normal. They're system or config files. Don't delete them unless you know what they do.",
+    "learn": "CMD: 'dir /a' shows hidden. PowerShell: 'ls -Force' or 'ls -Hidden'."
+  },
+  {
+    "id": "wcli-clear",
+    "phase": 2,
+    "emoji": "\ud83e\uddf9",
+    "title": "Clear the Screen",
+    "time": "1 min",
+    "desc": "When the window gets cluttered, wipe it clean. CMD uses <code>cls</code> (\"clear screen\"). PowerShell uses <code>cls</code> or <code>clear</code> (both work). Your scrollback history is still there if you scroll up \u2014 only the visible area is cleared.",
+    "toggle": "Screen cleared \u2713",
+    "copies": [
+      {
+        "label": "CMD",
+        "text": "cls"
+      },
+      {
+        "label": "PowerShell",
+        "text": "clear"
+      }
+    ],
+    "stuck": "Keyboard shortcut: <kbd>Ctrl</kbd>+<kbd>L</kbd> works in PowerShell to clear the screen. In CMD it doesn't \u2014 you have to type <code>cls</code>.",
+    "learn": "CMD: 'cls'. PowerShell: 'cls' or 'clear' or Ctrl+L."
+  },
+  {
+    "id": "wcli-cd-into",
+    "phase": 3,
+    "emoji": "\ud83d\udeaa",
+    "title": "Enter a Folder (cd)",
+    "time": "3 min",
+    "desc": "<code>cd</code> means \"change directory.\" Type <code>cd</code> followed by a folder name to step into it. Both shells use the same command. Try <code>cd Documents</code> from your home folder. Your prompt updates to show the new location. To use a folder name with spaces, wrap it in quotes: <code>cd \"My Stuff\"</code>.",
+    "toggle": "Entered a folder \u2713",
+    "copies": [
+      {
+        "label": "Enter Documents",
+        "text": "cd Documents"
+      },
+      {
+        "label": "Folder with spaces",
+        "text": "cd \"Program Files\""
+      },
+      {
+        "label": "Jump to absolute path",
+        "text": "cd C:\\Windows"
+      }
+    ],
+    "stuck": "Got <code>The system cannot find the path specified</code>? The folder name doesn't exist where you are. Run <code>dir</code> first to see what's actually there. Tab-complete is your friend: type the first letter or two of the folder name and press <kbd>Tab</kbd> \u2014 Windows fills the rest in.",
+    "learn": "'cd FolderName' steps into a folder. Quote names with spaces. Tab completes folder names."
+  },
+  {
+    "id": "wcli-cd-up",
+    "phase": 3,
+    "emoji": "\u2b06\ufe0f",
+    "title": "Go Back Up (cd ..)",
+    "time": "2 min",
+    "desc": "Two dots mean \"the parent folder.\" <code>cd ..</code> takes you up one level. Chain them with backslashes to go up several: <code>cd ..\\..</code> goes up two. To jump straight back to your home folder, CMD uses <code>cd %USERPROFILE%</code> and PowerShell uses <code>cd ~</code> (the tilde is shorthand for home).",
+    "toggle": "I can navigate up \u2713",
+    "copies": [
+      {
+        "label": "Up one level",
+        "text": "cd .."
+      },
+      {
+        "label": "Up two levels",
+        "text": "cd ..\\.."
+      },
+      {
+        "label": "PowerShell: home",
+        "text": "cd ~"
+      },
+      {
+        "label": "CMD: home",
+        "text": "cd %USERPROFILE%"
+      }
+    ],
+    "stuck": "Lost? Just type <code>cd \\</code> in CMD or <code>cd \\</code> / <code>cd /</code> in PowerShell to jump to the root of the current drive (C:\\). From there you can navigate anywhere.",
+    "learn": "'cd ..' goes up. '~' (PS) or '%USERPROFILE%' (CMD) jumps home. 'cd \\' jumps to drive root."
+  },
+  {
+    "id": "wcli-mkdir",
+    "phase": 3,
+    "emoji": "\ud83d\udcc1",
+    "title": "Create a New Folder (mkdir)",
+    "time": "2 min",
+    "desc": "<code>mkdir</code> means \"make directory.\" Both shells use it. <code>mkdir myproject</code> creates a folder called <code>myproject</code> in your current location. CMD also accepts the older <code>md</code> as a shortcut. PowerShell can create nested folders in one go: <code>mkdir my\\nested\\path</code> creates all three levels at once.",
+    "toggle": "Folder created \u2713",
+    "copies": [
+      {
+        "label": "Make a folder",
+        "text": "mkdir myproject"
+      },
+      {
+        "label": "CMD shortcut",
+        "text": "md myproject"
+      },
+      {
+        "label": "Nested (PowerShell or CMD)",
+        "text": "mkdir my\\nested\\path"
+      },
+      {
+        "label": "Then enter it",
+        "text": "cd myproject"
+      }
+    ],
+    "stuck": "Got <code>A subdirectory or file ... already exists</code>? You already made it. Run <code>dir</code> to confirm. Want to delete an empty folder? <code>rmdir myproject</code>. <strong>Be careful with delete commands</strong> \u2014 they don't go to the Recycle Bin.",
+    "learn": "'mkdir name' creates a folder. 'md' is a CMD shortcut. Use backslashes for nested folders."
+  },
+  {
+    "id": "wcli-open-file",
+    "phase": 4,
+    "emoji": "\ud83d\udcc4",
+    "title": "Open a File from the Prompt",
+    "time": "3 min",
+    "desc": "To launch a file with its default app (just like double-clicking it in Explorer): CMD uses <code>start filename</code>, PowerShell uses <code>Invoke-Item filename</code> or its short alias <code>ii filename</code>. Try <code>start notepad.txt</code> or <code>ii notepad.txt</code>. To open the <em>current folder</em> in File Explorer, type <code>start .</code> (CMD) or <code>ii .</code> (PowerShell). The dot means \"here.\"",
+    "toggle": "Opened a file from the prompt \u2713",
+    "copies": [
+      {
+        "label": "CMD: open a file",
+        "text": "start myfile.txt"
+      },
+      {
+        "label": "PowerShell: open a file",
+        "text": "ii myfile.txt"
+      },
+      {
+        "label": "Open current folder in Explorer",
+        "text": "start ."
+      },
+      {
+        "label": "Launch a program",
+        "text": "start notepad"
+      }
+    ],
+    "stuck": "Got <code>'something' is not recognized as an internal or external command</code>? The file or program isn't in your current folder or on your <em>PATH</em> (the list of folders Windows searches). Use <code>dir</code> to confirm the file exists where you think it does, or give the full path: <code>start C:\\Users\\You\\Desktop\\myfile.txt</code>.",
+    "learn": "CMD: 'start file'. PowerShell: 'ii file'. 'start .' opens current folder in Explorer."
+  },
+  {
+    "id": "wcli-help",
+    "phase": 4,
+    "emoji": "\ud83c\udd98",
+    "title": "Ask for Help on Any Command",
+    "time": "2 min",
+    "desc": "You don't have to memorize anything. CMD: type the command followed by <code>/?</code> to see its help (e.g. <code>dir /?</code>). PowerShell: type <code>help</code> followed by the command (e.g. <code>help Get-ChildItem</code>). Both print a description, the available switches, and examples.",
+    "toggle": "I can ask for help \u2713",
+    "copies": [
+      {
+        "label": "CMD: help on dir",
+        "text": "dir /?"
+      },
+      {
+        "label": "CMD: help on cd",
+        "text": "cd /?"
+      },
+      {
+        "label": "PowerShell: help on ls",
+        "text": "help ls"
+      },
+      {
+        "label": "PowerShell: detailed help",
+        "text": "help Get-ChildItem -Detailed"
+      }
+    ],
+    "stuck": "Help text scrolling past? In CMD: <code>dir /? | more</code>. In PowerShell: <code>help Get-ChildItem | more</code>. Press <kbd>Space</kbd> for next page, <kbd>q</kbd> to quit. PowerShell also has <code>help Get-ChildItem -Examples</code> to skip straight to usage examples.",
+    "learn": "CMD: 'command /?'. PowerShell: 'help command' or 'command -?'. Both work for every built-in."
+  },
+  {
+    "id": "wcli-exit",
+    "phase": 4,
+    "emoji": "\ud83d\udc4b",
+    "title": "Close the Window (exit)",
+    "time": "1 min",
+    "desc": "When you're done, type <code>exit</code> and press <kbd>Enter</kbd>. The window closes cleanly. Both CMD and PowerShell use the same command. You can also click the X in the corner, or press <kbd>Alt</kbd>+<kbd>F4</kbd>, but <code>exit</code> is the proper way \u2014 it cleans up any background state first.",
+    "toggle": "I can exit cleanly \u2713",
+    "copies": [
+      {
+        "label": "Close the prompt",
+        "text": "exit"
+      },
+      {
+        "label": "Keyboard shortcut",
+        "text": "Alt+F4"
+      }
+    ],
+    "stuck": "If a long-running command is stuck and won't let you type, press <kbd>Ctrl</kbd>+<kbd>C</kbd> to cancel it, then type <code>exit</code>. If even Ctrl+C doesn't work, just close the window with the X \u2014 Windows will clean up.",
+    "learn": "Type 'exit' to close. Ctrl+C cancels a running command. Alt+F4 closes any window."
+  },
+  {
+    "id": "wcli-victory",
+    "phase": 4,
+    "emoji": "\ud83c\udfc6",
+    "title": "Practice Run \u2014 All Together",
+    "time": "5 min",
+    "desc": "Time to put it together. Open a fresh prompt and run this sequence: see where you are, list files, make a new folder called <code>cli-practice</code>, step into it, make a file with <code>echo</code>, list to confirm, open it, then exit. Do it once in CMD and once in PowerShell to feel the difference.",
+    "toggle": "Victory lap complete \u2713",
+    "copies": [
+      {
+        "label": "Full sequence (works in both)",
+        "text": "cd\nmkdir cli-practice\ncd cli-practice\necho Hello from the command line > hello.txt\ndir\nstart hello.txt\nexit"
+      },
+      {
+        "label": "Cleanup later (CMD)",
+        "text": "cd %USERPROFILE% && rmdir /s /q cli-practice"
+      },
+      {
+        "label": "Cleanup later (PowerShell)",
+        "text": "cd ~; Remove-Item -Recurse -Force cli-practice"
+      }
+    ],
+    "stuck": "The <code>echo Hello &gt; hello.txt</code> trick uses the redirect operator (<code>&gt;</code>) to send output to a file instead of the screen. That's a whole new world \u2014 file redirection, piping with <code>|</code>, chaining with <code>&amp;&amp;</code> \u2014 but it's the next step on your journey. For now: you've earned it.",
+    "learn": "You can chain commands, redirect output to files with '>', and string a workflow together \u2014 the prompt is now your tool."
+  }
+];
+const POSITIONS = [
+  {
+    "x": 5.7,
+    "y": 16.0
+  },
+  {
+    "x": 22.9,
+    "y": 38.0
+  },
+  {
+    "x": 5.7,
+    "y": 60.0
+  },
+  {
+    "x": 22.9,
+    "y": 82.0
+  },
+  {
+    "x": 33.2,
+    "y": 16.0
+  },
+  {
+    "x": 45.4,
+    "y": 49.0
+  },
+  {
+    "x": 33.2,
+    "y": 82.0
+  },
+  {
+    "x": 54.6,
+    "y": 16.0
+  },
+  {
+    "x": 66.8,
+    "y": 49.0
+  },
+  {
+    "x": 54.6,
+    "y": 82.0
+  },
+  {
+    "x": 77.1,
+    "y": 16.0
+  },
+  {
+    "x": 94.3,
+    "y": 38.0
+  },
+  {
+    "x": 77.1,
+    "y": 60.0
+  },
+  {
+    "x": 94.3,
+    "y": 82.0
+  }
+];
+const STORAGE_KEY = 'windows-cli-quest-' + btoa(unescape(encodeURIComponent('Windows Command Line Basics'))).slice(0,12);
+const PHASE_LABELS = ["\ud83e\udd5a First Contact", "\ud83d\udc40 Looking Around", "\ud83e\udded Navigating & Building", "\u26a1 Doing & Done"];
+let state = loadState();
+function isMobile(){return window.innerWidth<=768}
+function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);if(s)return JSON.parse(s)}catch(e){}return{completed:{}}}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function isComplete(id){return !!state.completed[id]}
+function completedCount(){return CHECKPOINTS.filter(c=>isComplete(c.id)).length}
+function render(){renderPath();renderNodes();updateProgress()}
+function updateProgress(){const n=completedCount(),t=CHECKPOINTS.length,p=Math.round(n/t*100);document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressLabel').textContent=n+' of '+t}
+function getActiveIndex(){for(let i=0;i<CHECKPOINTS.length;i++){if(!isComplete(CHECKPOINTS[i].id))return i}return CHECKPOINTS.length}
+function renderPath(){if(isMobile()){document.getElementById('pathSvg').innerHTML='';return}const svg=document.getElementById('pathSvg'),w=window.innerWidth,h=window.innerHeight-52;svg.setAttribute('viewBox','0 0 '+w+' '+h);let html='';const pts=POSITIONS.map(p=>({x:p.x/100*w,y:p.y/100*h}));const ai=getActiveIndex();for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],cx1=a.x+(b.x-a.x)*.6,cy1=a.y,cx2=a.x+(b.x-a.x)*.4,cy2=b.y;const d='M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y;const done=isComplete(CHECKPOINTS[i].id)&&isComplete(CHECKPOINTS[i+1].id);const partial=isComplete(CHECKPOINTS[i].id)&&!isComplete(CHECKPOINTS[i+1].id);const active=i===ai-1||i===ai;if(done)html+='<path d="'+d+'" fill="none" stroke="var(--green)" stroke-width="3" stroke-opacity=".5"/>';else if(partial||active)html+='<path d="'+d+'" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-opacity=".4" stroke-dasharray="8 6"><animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.5s" repeatCount="indefinite"/></path>';else html+='<path d="'+d+'" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 8" stroke-opacity=".5"/>'}svg.innerHTML=html}
+function renderNodes(){if(isMobile()){renderMobileList();return}document.querySelectorAll('.node').forEach(n=>n.remove());const map=document.getElementById('questMap'),ai=getActiveIndex();CHECKPOINTS.forEach((cp,i)=>{const pos=POSITIONS[i];if(!pos)return;const node=document.createElement('div');node.className='node';if(isComplete(cp.id))node.classList.add('complete');else if(i===ai)node.classList.add('active');node.style.left=pos.x+'%';node.style.top='calc('+pos.y+'% + 0px)';const isLocked=i>ai&&!isComplete(cp.id);node.innerHTML='<div class="ring"></div><div class="inner"><span class="emoji">'+(isLocked?'🔒':cp.emoji)+'</span><svg class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>'+(isLocked?'<span class="lock"></span>':'')+'</div><div class="label">'+cp.title+'</div>';node.addEventListener('click',()=>openPanel(i));map.appendChild(node)})}
+function renderMobileList(){const list=document.getElementById('mobileList');list.innerHTML='';const ai=getActiveIndex();let lastPhase=0;CHECKPOINTS.forEach((cp,i)=>{if(cp.phase!==lastPhase){lastPhase=cp.phase;const hdr=document.createElement('div');hdr.className='m-phase-header';hdr.textContent=PHASE_LABELS[cp.phase-1]||'Phase '+cp.phase;list.appendChild(hdr)}const item=document.createElement('div');item.className='m-item';if(isComplete(cp.id))item.classList.add('complete');else if(i===ai)item.classList.add('active');else if(i>ai)item.classList.add('locked');const isLocked=i>ai&&!isComplete(cp.id);item.innerHTML='<div class="m-node">'+(isComplete(cp.id)?'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':(isLocked?'🔒':cp.emoji))+'</div><div class="m-text"><div class="m-title">'+cp.title+'</div><div class="m-time">'+(cp.time?'⏱ '+cp.time:'')+'</div></div>';item.addEventListener('click',()=>openPanel(i));list.appendChild(item)})}let currentPanel=-1;
+function openPanel(idx){currentPanel=idx;const cp=CHECKPOINTS[idx];document.getElementById('panelEmoji').textContent=cp.emoji;document.getElementById('panelTitle').textContent=cp.title;document.getElementById('panelTime').textContent=cp.time?'⏱ '+cp.time:'';let html='<div class="desc">'+cp.desc+'</div>';if(cp.substeps){html+='<ol class="substeps">';cp.substeps.forEach(s=>html+='<li>'+s+'</li>');html+='</ol>'}if(cp.copies){html+='<div class="copy-group">';cp.copies.forEach(c=>{html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">'+c.label+'</div><div class="copy-block"><span class="copy-text">'+escHtml(c.text)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(c.text)+'\')" title="Copy">📋</button></div></div>'});html+='</div>'}if(cp.copyText&&!cp.copies){html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+(cp.copyLabel||'Copy')+'</div><div class="copy-block"><span class="copy-text">'+escHtml(cp.copyText)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(cp.copyText)+'\')" title="Copy">📋</button></div></div>'}if(cp.learn){html+='<div style="font-size:13px;color:var(--text-muted)">📚 <b>What you learn:</b> '+cp.learn+'</div>'}if(cp.rar_url){html+='<a href="'+cp.rar_url+'" target="_blank" rel="noopener" class="rar-card"><div class="rar-card-icon">🧩</div><div class="rar-card-info"><div class="rar-card-label">RAPP Agent Repository</div><div class="rar-card-name">'+escHtml(cp.rar_name)+'</div></div><div class="rar-card-arrow">→</div></a>'}const checked=isComplete(cp.id);html+='<button class="toggle-done '+(checked?'checked':'')+'" onclick="toggleDone(\''+cp.id+'\',this)"><span class="dot">'+(checked?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':'')+'</span><span>'+(cp.toggle||'Done ✓')+'</span></button>';if(cp.stuck){html+='<div><button class="stuck-toggle" onclick="this.nextElementSibling.classList.toggle(\'open\')">🆘 I\'m stuck</button><div class="stuck-content"><p>'+cp.stuck+'</p></div></div>'}document.getElementById('panelBody').innerHTML=html;document.getElementById('overlay').classList.add('open');document.getElementById('panel').classList.add('open')}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');currentPanel=-1}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escAttr(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function copyText(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)}).catch(()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)})}
+function toggleDone(id,btn){if(isComplete(id)){delete state.completed[id];btn.classList.remove('checked');btn.querySelector('.dot').innerHTML=''}else{state.completed[id]=true;btn.classList.add('checked');btn.querySelector('.dot').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>';celebrate(id)}saveState();render()}
+function celebrate(id){const idx=CHECKPOINTS.findIndex(c=>c.id===id);let x,y;if(isMobile()){const items=document.querySelectorAll('.m-item');if(items[idx]){const r=items[idx].getBoundingClientRect();x=r.left+r.width/2;y=r.top+r.height/2}else return}else{const pos=POSITIONS[idx];if(!pos)return;x=pos.x/100*window.innerWidth;y=pos.y/100*(window.innerHeight-52)+52}spawnParticles(x,y,12);for(let p=1;p<=4;p++){const phase=CHECKPOINTS.filter(c=>c.phase===p);if(phase.every(c=>isComplete(c.id))&&id===phase[phase.length-1].id)setTimeout(()=>rocketAnimation(),400)}if(completedCount()===CHECKPOINTS.length)setTimeout(()=>{confettiExplosion();showBanner()},600)}
+function spawnParticles(cx,cy,count){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff'];for(let i=0;i<count;i++){const el=document.createElement('div');el.className='particle';el.style.left=cx+'px';el.style.top=cy+'px';el.style.background=colors[i%colors.length];document.body.appendChild(el);const angle=Math.random()*Math.PI*2,dist=40+Math.random()*60,dx=Math.cos(angle)*dist,dy=Math.sin(angle)*dist;el.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(0)',opacity:0}],{duration:600+Math.random()*400,easing:'cubic-bezier(.4,0,.2,1)'}).onfinish=()=>el.remove()}}
+function rocketAnimation(){const el=document.createElement('div');el.className='rocket-anim';el.textContent='🚀';el.style.left='-50px';el.style.bottom='60%';document.body.appendChild(el);el.animate([{transform:'translate(0,0) rotate(-30deg)',opacity:1},{transform:'translate('+(window.innerWidth+100)+'px,-'+(window.innerHeight/2)+'px) rotate(-30deg)',opacity:.8}],{duration:1400,easing:'cubic-bezier(.25,.1,.25,1)'}).onfinish=()=>el.remove()}
+function confettiExplosion(){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff','#f85149','#fff'];for(let i=0;i<60;i++){const el=document.createElement('div');el.className='confetti';el.style.background=colors[i%colors.length];el.style.left=Math.random()*window.innerWidth+'px';el.style.top='-20px';el.style.width=(6+Math.random()*8)+'px';el.style.height=(10+Math.random()*12)+'px';el.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(el);const x=(Math.random()-.5)*200,spin=Math.random()*720-360;el.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+x+'px,'+(window.innerHeight+40)+'px) rotate('+spin+'deg)',opacity:.6}],{duration:2000+Math.random()*1500,easing:'cubic-bezier(.25,.1,.25,1)',delay:Math.random()*300}).onfinish=()=>el.remove()}}
+function showBanner(){const b=document.getElementById('banner');b.classList.add('show');renderBadge();document.getElementById('badgeWrap').style.display='flex'}
+function renderBadge(){const c=document.getElementById('badgeCanvas'),ctx=c.getContext('2d');const w=600,h=315;const bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#0d1117');bg.addColorStop(0.5,'#161b22');bg.addColorStop(1,'#0d1117');ctx.fillStyle=bg;ctx.beginPath();ctx.roundRect(0,0,w,h,16);ctx.fill();ctx.strokeStyle='#1a7f37';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(1,1,w-2,h-2,16);ctx.stroke();ctx.strokeStyle='rgba(88,166,255,0.04)';ctx.lineWidth=1;for(let x=0;x<w;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=0;y<h;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}const bar=ctx.createLinearGradient(0,0,w,0);bar.addColorStop(0,'#0969da');bar.addColorStop(0.5,'#1a7f37');bar.addColorStop(1,'#d29922');ctx.fillStyle=bar;ctx.fillRect(0,0,w,3);ctx.font='64px serif';ctx.textAlign='center';ctx.fillText('🏆',300,80);ctx.font='bold 28px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#e6edf3';ctx.fillText('Windows Command Line Basics',300,125);ctx.font='18px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#3fb950';ctx.fillText('\u2705 Training Quest Complete',300,158);ctx.font='14px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#8b949e';ctx.fillText(CHECKPOINTS.length+' Checkpoints \xb7 '+PHASE_LABELS.length+' Phases',300,188);const d=new Date();ctx.fillText('Completed '+d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),300,215);const dv=ctx.createLinearGradient(100,0,500,0);dv.addColorStop(0,'transparent');dv.addColorStop(0.5,'#30363d');dv.addColorStop(1,'transparent');ctx.strokeStyle=dv;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,235);ctx.lineTo(500,235);ctx.stroke();ctx.font='bold 13px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#58a6ff';ctx.fillText('blazingbeard.github.io',300,262);ctx.font='12px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#6e7681';ctx.fillText('Interactive Training Quest \xb7 Built with \ud83d\udd25 by BlazingBeard',300,285)}
+function downloadBadge(){const c=document.getElementById('badgeCanvas'),a=document.createElement('a');a.download='windows-cli-quest-complete.png';a.href=c.toDataURL('image/png');a.click()}
+function shareBadge(){const c=document.getElementById('badgeCanvas');c.toBlob(function(blob){if(navigator.share&&navigator.canShare){const file=new File([blob],'windows-cli-quest-complete.png',{type:'image/png'});if(navigator.canShare({files:[file]})){navigator.share({title:'Windows Command Line Basics Training Quest Complete!',text:'I just completed the Windows Command Line Basics Training Quest — '+CHECKPOINTS.length+' checkpoints, '+PHASE_LABELS.length+' phases! \ud83d\udd25\n\nTry it: https://blazingbeard.github.io',files:[file]}).catch(()=>{});return}}navigator.clipboard.writeText('I just completed the Windows Command Line Basics Training Quest — '+CHECKPOINTS.length+' checkpoints, '+PHASE_LABELS.length+' phases! \ud83d\udd25\n\nTry it: https://blazingbeard.github.io').then(()=>{const btn=document.querySelector('.badge-btn.share');const orig=btn.innerHTML;btn.innerHTML='\u2713 Copied to clipboard!';setTimeout(()=>btn.innerHTML=orig,2000)})},'image/png')}
+function resetProgress(){if(!confirm('Reset all progress? This cannot be undone.'))return;state={completed:{}};saveState();closePanel();render()}
+render();window.addEventListener('resize',()=>render());if(completedCount()===CHECKPOINTS.length)setTimeout(()=>{confettiExplosion();showBanner()},800);
+</script>
+</body>
+</html>
