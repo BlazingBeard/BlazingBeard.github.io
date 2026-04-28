@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brainstem · First-Day on Windows — Training Quest</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#eaecf0;--bg2:#f4f5f7;--blue:#0969da;--green:#1a7f37;--orange:#bf8700;--red:#cf222e;--text:#24292f;--text-muted:#57606a;--border:#c5ccd6;--panel-w:460px;--top-bar:52px}
+  html,body{height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#dfe2e6 0%,var(--bg) 100%);color:var(--text)}
+  .top-bar{position:fixed;top:0;left:0;right:0;height:var(--top-bar);background:rgba(234,236,240,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;z-index:100}
+  .top-bar .title{font-size:15px;font-weight:600;white-space:nowrap}.top-bar .title span{color:var(--blue)}
+  .progress-wrap{flex:1;max-width:420px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .progress-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .progress-label{font-size:13px;color:var(--text-muted);min-width:90px;text-align:right}
+  .btn-reset{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;transition:all .2s}.btn-reset:hover{border-color:var(--red);color:var(--red)}
+  .quest-map{position:fixed;top:var(--top-bar);left:0;right:0;bottom:0;overflow:hidden}
+  .quest-map svg.path-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .phase-label{position:absolute;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--text-muted);opacity:.55;pointer-events:none}
+  .phase-label.p1{top:82px;left:1%}.phase-label.p2{top:82px;left:31.8%}.phase-label.p3{top:82px;left:62.5%}.phase-label.p4{top:82px;left:85.6%}
+  .phase-divider{position:absolute;top:var(--top-bar);bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--border) 15%,var(--border) 85%,transparent);opacity:.6;pointer-events:none}
+  .phase-divider.d1{left:30.8%}.phase-divider.d2{left:61.5%}.phase-divider.d3{left:84.6%}
+  .node{position:absolute;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:10;transform:translate(-50%,-50%)}
+  .node .ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--border);transition:all .35s}
+  .node .inner{width:100%;height:100%;border-radius:50%;background:#f0f1f3;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;z-index:1;transition:all .35s;border:2px solid var(--border)}
+  .node.active .ring{border-color:var(--blue);box-shadow:0 0 20px rgba(88,166,255,.35);animation:pulse-ring 2s infinite}
+  .node.active .inner{border-color:var(--blue);background:rgba(88,166,255,.1);transform:scale(1.12)}.node.active .lock{display:none}
+  .node.complete .ring{border-color:var(--green);box-shadow:0 0 12px rgba(63,185,80,.25)}
+  .node.complete .inner{border-color:var(--green);background:rgba(63,185,80,.15)}.node.complete .lock{display:none}
+  .node:hover{transform:translate(-50%,-50%) scale(1.1)}
+  .node .label{position:absolute;top:calc(100% + 10px);white-space:nowrap;font-size:11px;font-weight:600;color:var(--text-muted);text-align:center;pointer-events:none;transition:color .3s}
+  .node.active .label{color:var(--blue)}.node.complete .label{color:var(--green)}
+  @keyframes pulse-ring{0%,100%{box-shadow:0 0 20px rgba(88,166,255,.25)}50%{box-shadow:0 0 32px rgba(88,166,255,.5)}}
+  .check-icon{display:none}.node.complete .check-icon{display:block}.node.complete .emoji{display:none}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}.overlay.open{opacity:1;pointer-events:auto}
+  .panel{position:fixed;top:0;right:0;bottom:0;width:var(--panel-w);max-width:92vw;background:#f0f1f3;border-left:1px solid var(--border);z-index:210;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.08)}.panel.open{transform:translateX(0)}
+  .panel-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+  .panel-header .emoji-big{font-size:32px;line-height:1}.panel-header .meta{flex:1}.panel-header .meta h2{font-size:18px;font-weight:700;margin-bottom:4px}.panel-header .meta .time{font-size:12px;color:var(--text-muted)}
+  .panel-close{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;padding:4px;line-height:1}.panel-close:hover{color:var(--text)}
+  .panel-body{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:16px}.panel-body .desc{font-size:14px;line-height:1.55;color:var(--text)}
+  .copy-block{position:relative;background:#e4e6ea;border:1px solid var(--border);border-radius:8px;padding:12px 44px 12px 14px;font-family:'Cascadia Code','Fira Code',monospace;font-size:12.5px;line-height:1.5;color:var(--text);white-space:pre-wrap;word-break:break-word}
+  .copy-btn{position:absolute;top:8px;right:8px;background:#d5d8dd;border:none;color:var(--text-muted);width:30px;height:30px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}.copy-btn:hover{background:var(--blue);color:#fff}.copy-btn.copied{background:var(--green);color:#fff}
+  .toggle-done{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;border:2px solid var(--border);background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);transition:all .25s;width:100%}
+  .toggle-done .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
+  .toggle-done.checked{border-color:var(--green);background:rgba(63,185,80,.08)}.toggle-done.checked .dot{background:var(--green);border-color:var(--green)}
+  .substeps{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+  .substeps li{font-size:13px;color:var(--text-muted);padding-left:20px;position:relative;line-height:1.5}
+  .substeps li::before{content:'';position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%;border:2px solid var(--border)}
+  .stuck-toggle{background:none;border:none;color:var(--orange);font-size:13px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px}.stuck-toggle:hover{text-decoration:underline}
+  .stuck-content{max-height:0;overflow:hidden;transition:max-height .3s;font-size:13px;color:var(--text-muted);line-height:1.6}.stuck-content.open{max-height:500px}.stuck-content p{margin-top:8px}
+  .copy-group{display:flex;flex-direction:column;gap:8px}
+  .particle{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:999}
+  .confetti{position:fixed;width:10px;height:16px;pointer-events:none;z-index:999;border-radius:2px}
+  .rocket-anim{position:fixed;font-size:40px;z-index:999;pointer-events:none}
+  .banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(240,241,243,.97);border:2px solid var(--green);border-radius:16px;padding:32px 56px;text-align:center;z-index:999;transition:transform .5s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 12px 48px rgba(0,0,0,.15)}.banner.show{transform:translate(-50%,-50%) scale(1)}.banner h1{font-size:28px;margin-bottom:8px}.banner p{color:var(--text-muted);font-size:15px}
+  .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-track{background:transparent}.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .rar-card{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(59,130,246,.12));border:1px solid rgba(139,92,246,.3);text-decoration:none;transition:all .2s;cursor:pointer;margin-top:4px}
+  .rar-card:hover{border-color:rgba(139,92,246,.6);background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(59,130,246,.2));transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.15)}
+  .rar-card-icon{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .rar-card-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .rar-card-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+  .rar-card-name{font-size:14px;color:var(--text-bright);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rar-card-arrow{margin-left:auto;color:var(--text-muted);font-size:18px;flex-shrink:0}
+  .credit{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-muted);opacity:.6;pointer-events:none;letter-spacing:.3px;z-index:5}
+  /* ── Mobile ── */
+  @media(max-width:768px){
+    html,body{overflow:auto;height:auto}
+    .top-bar{padding:0 12px;height:48px}
+    .top-bar .title{font-size:13px}
+    .progress-wrap{max-width:none;gap:6px}
+    .progress-label{min-width:60px;font-size:12px}
+    .btn-reset{padding:4px 8px;font-size:11px}
+    :root{--top-bar:48px}
+    .quest-map,.phase-label,.phase-divider,.path-svg{display:none!important}
+    #mobileList{display:flex;flex-direction:column;padding:60px 16px 80px;gap:0}
+    .m-phase-header{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);padding:20px 0 10px;opacity:.7}
+    .m-phase-header:first-child{padding-top:0}
+    .m-item{display:flex;align-items:center;gap:14px;padding:14px 0;position:relative;cursor:pointer}
+    .m-item::before{content:'';position:absolute;left:24px;top:0;bottom:0;width:2px;background:var(--border);z-index:0}
+    .m-item:last-child::before{bottom:50%}
+    .m-phase-header+.m-item::before{top:50%}
+    .m-node{width:48px;height:48px;border-radius:50%;background:#f0f1f3;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;z-index:1;transition:all .3s}
+    .m-item.complete .m-node{border-color:var(--green);background:rgba(63,185,80,.15)}
+    .m-item.active .m-node{border-color:var(--blue);background:rgba(88,166,255,.1);box-shadow:0 0 12px rgba(88,166,255,.3)}
+    .m-item.locked .m-node{opacity:.5}
+    .m-text{flex:1;min-width:0}
+    .m-text .m-title{font-size:15px;font-weight:600;color:var(--text)}
+    .m-item.complete .m-title{color:var(--green)}
+    .m-item.active .m-title{color:var(--blue)}
+    .m-item.locked .m-title{color:var(--text-muted)}
+    .m-text .m-time{font-size:12px;color:var(--text-muted)}
+    .m-check{color:var(--green);font-size:18px;flex-shrink:0;opacity:0;transition:opacity .3s}
+    .m-item.complete .m-check{opacity:1}
+    .panel{width:100%;max-width:100%;border-left:none;border-radius:16px 16px 0 0;top:auto;bottom:0;max-height:85vh;transform:translateY(100%);box-shadow:0 -4px 24px rgba(0,0,0,.12)}.panel.open{transform:translateY(0)}
+    .panel-header{padding:16px}.panel-body{padding:16px;gap:12px}
+    .banner{padding:20px 24px}.banner h1{font-size:22px}.banner p{font-size:13px}
+    .badge-wrap canvas{max-width:280px}
+    .credit{position:relative;padding:20px 0;text-align:center;opacity:.6}
+  }
+  @media(min-width:769px){
+    #mobileList{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="title"><span>Brainstem · First-Day on Windows</span> — Training Quest</div>
+  <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div><div class="progress-label" id="progressLabel">0 of 13</div></div>
+  <button class="btn-reset" onclick="resetProgress()">Reset Progress</button>
+</div>
+<div class="phase-label p1">🪟 Day Zero · Find Your Way</div>
+<div class="phase-label p2">🤖 Hire the Co-pilot</div>
+<div class="phase-label p3">🎨 Build Your First Agent</div>
+<div class="phase-label p4">⏯️ Operate</div>
+<div class="phase-divider d1"></div><div class="phase-divider d2"></div><div class="phase-divider d3"></div>
+<div class="quest-map" id="questMap"><svg class="path-svg" id="pathSvg" preserveAspectRatio="none"></svg></div>
+<div id="mobileList"></div>
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel"><div class="panel-header"><div class="emoji-big" id="panelEmoji"></div><div class="meta"><h2 id="panelTitle"></h2><div class="time" id="panelTime"></div></div><button class="panel-close" onclick="closePanel()">✕</button></div><div class="panel-body" id="panelBody"></div></div>
+<div class="banner" id="banner"><h1>🚀 Brainstem Operational!</h1><p>PowerShell, GitHub auth, Copilot CLI,<br>a custom UI-reviewer agent, and the muscle memory to come back tomorrow.</p><div class="badge-wrap" id="badgeWrap" style="display:none"><canvas id="badgeCanvas" width="600" height="315"></canvas><div class="badge-actions"><button class="badge-btn" onclick="downloadBadge()">⬇ Download Badge</button><button class="badge-btn share" onclick="shareBadge()">📤 Share</button></div></div></div>
+<div class="credit">Brainstem · First-Day on Windows — Training Quest · Generated 2026-04-28 12:12</div>
+<script>
+const CHECKPOINTS = [
+  {
+    "id": "bwo-launch-powershell",
+    "phase": 1,
+    "emoji": "\ud83e\ude9f",
+    "title": "Open PowerShell from the Start Menu",
+    "time": "1 min",
+    "desc": "Press the <kbd>Windows</kbd> key on your keyboard (it's the one with the four-square logo, between <kbd>Ctrl</kbd> and <kbd>Alt</kbd>). The Start menu pops up with a search box. Just start typing \u2014 type <code>powershell</code>. As soon as <b>Windows PowerShell</b> appears at the top of the results, press <kbd>Enter</kbd>. A blue (or black) window opens with a blinking cursor. <b>That's PowerShell.</b> You'll be living here for a few minutes.",
+    "toggle": "PowerShell is open \u2713",
+    "copies": [
+      {
+        "label": "What to type into the Start menu",
+        "text": "powershell"
+      },
+      {
+        "label": "What you should see at the prompt",
+        "text": "PS C:\\Users\\YourName>"
+      }
+    ],
+    "stuck": "If pressing the Windows key doesn't open the Start menu, click the Windows logo in the bottom-left corner of the screen with your mouse \u2014 same effect. If you see <b>Windows PowerShell ISE</b> in the results, ignore it and pick the plain <b>Windows PowerShell</b> entry. Either works, but the simple one is what the rest of this quest assumes.",
+    "learn": "Windows key + 'powershell' + Enter is the universal way to launch a terminal on Windows. Memorize it."
+  },
+  {
+    "id": "bwo-run-installer",
+    "phase": 1,
+    "emoji": "\ud83d\udce6",
+    "title": "Run the One-Line Installer",
+    "time": "3 min",
+    "desc": "The brainstem ships with a self-contained installer that handles <i>everything</i> \u2014 Python, git, the repo, all dependencies, and a <code>brainstem</code> command you can run from anywhere. Copy the line below, paste it into PowerShell with <kbd>Ctrl</kbd>+<kbd>V</kbd> (or right-click), and press <kbd>Enter</kbd>. Watch it work \u2014 when it finishes you'll see a <code>\u2713 Installed</code> message. <b>Re-running the same line later auto-upgrades to the newest version.</b>",
+    "toggle": "Brainstem is installed \u2713",
+    "copies": [
+      {
+        "label": "The one-liner \u2014 paste & press Enter",
+        "text": "irm https://raw.githubusercontent.com/kody-w/rapp-installer/main/install.ps1 | iex"
+      }
+    ],
+    "stuck": "If PowerShell complains about <i>'running scripts is disabled'</i>, run this once to allow signed scripts for your user, then re-run the installer: <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>. If the installer says <i>'Python not found'</i>, it'll offer to install it \u2014 say yes (<code>Y</code> + Enter). Behind the scenes the installer drops everything into <code>%USERPROFILE%\\.brainstem\\</code> \u2014 that's your home base from now on.",
+    "learn": "'irm | iex' = download a script and run it. The installer is idempotent \u2014 re-run anytime to upgrade."
+  },
+  {
+    "id": "bwo-find-in-explorer",
+    "phase": 1,
+    "emoji": "\ud83d\uddc2\ufe0f",
+    "title": "See It in File Explorer",
+    "time": "2 min",
+    "desc": "Press <kbd>Windows</kbd>+<kbd>E</kbd> to open <b>File Explorer</b>. In the left sidebar click <b>This PC</b> \u2192 <b>Local Disk (C:)</b> \u2192 <b>Users</b> \u2192 <b>your username</b>. You're now in your user directory. <b>You won't see <code>.brainstem</code> yet</b> \u2014 folders that start with a dot are hidden by default on Windows. Click the <b>View</b> tab at the top, then check <b>Hidden items</b>. Now <code>.brainstem</code> appears. Double-click into <code>.brainstem</code> \u2192 <code>src</code> \u2192 <code>rapp_brainstem</code>. <b>That's the folder you just cloned.</b>",
+    "toggle": "I can see the brainstem folder \u2713",
+    "copies": [
+      {
+        "label": "Shortcut to your user folder (paste into Explorer's address bar)",
+        "text": "%USERPROFILE%\\.brainstem\\src\\rapp_brainstem"
+      },
+      {
+        "label": "Or \u2014 open this folder from PowerShell",
+        "text": "explorer ."
+      }
+    ],
+    "stuck": "Can't find the View tab? On Windows 11 the menu reorganized \u2014 click the three-dot <b>\u2026</b> menu or use <b>View \u2192 Show \u2192 Hidden items</b>. Easier path: paste <code>%USERPROFILE%\\.brainstem</code> directly into the Explorer address bar at the top and press Enter. It jumps you there even if the folder is hidden.",
+    "learn": "Win+E opens Explorer. Dot-folders are hidden by default. 'explorer .' from PowerShell opens the current folder."
+  },
+  {
+    "id": "bwo-explorer-to-terminal",
+    "phase": 1,
+    "emoji": "\ud83e\ude84",
+    "title": "Open a Terminal Right From Explorer",
+    "time": "2 min",
+    "desc": "Tiny power move: any time you're in a folder in File Explorer, you can open a terminal already pointed at that folder \u2014 no <code>cd</code> needed. Make sure you're inside the <code>rapp_brainstem</code> folder, then <b>right-click anywhere in the empty white space</b> (don't right-click a file). On Windows 11 pick <b>Open in Terminal</b>. On Windows 10 pick <b>Open PowerShell window here</b>. A new prompt opens already inside the folder. <b>This is the trick that saves the most clicks of your life.</b>",
+    "toggle": "I know the right-click trick \u2713",
+    "copies": [
+      {
+        "label": "Verify you're in the right folder",
+        "text": "pwd"
+      },
+      {
+        "label": "List the brainstem files",
+        "text": "ls"
+      }
+    ],
+    "stuck": "Don't see <b>Open in Terminal</b> on Windows 11? Click <b>Show more options</b> at the bottom of the right-click menu (or press <kbd>Shift</kbd>+<kbd>F10</kbd> instead of right-clicking) to get the full classic menu. On Windows 10 you may need to hold <kbd>Shift</kbd> while right-clicking to see <b>Open PowerShell window here</b>.",
+    "learn": "Right-click empty space in any folder \u2192 Open in Terminal. Skips all the 'cd' typing forever."
+  },
+  {
+    "id": "bwo-install-copilot-cli",
+    "phase": 2,
+    "emoji": "\ud83e\udd16",
+    "title": "Install GitHub Copilot CLI",
+    "time": "3 min",
+    "desc": "GitHub Copilot CLI is the AI assistant we'll drive the brainstem with. Easiest install is via <code>npm</code>. If you don't have <code>node</code>/<code>npm</code> yet, the second command installs it via winget. Run the test first; only run the install if it fails.",
+    "toggle": "Copilot CLI is installed \u2713",
+    "copies": [
+      {
+        "label": "Test if npm is installed",
+        "text": "npm --version"
+      },
+      {
+        "label": "Install Node.js if needed (then close & reopen PowerShell)",
+        "text": "winget install --id OpenJS.NodeJS.LTS -e"
+      },
+      {
+        "label": "Install Copilot CLI",
+        "text": "npm install -g @github/copilot"
+      },
+      {
+        "label": "Verify the install",
+        "text": "copilot --version"
+      }
+    ],
+    "stuck": "If <code>npm install -g</code> errors with a permissions message, it's almost always because PowerShell wasn't restarted after Node.js installed \u2014 close the window, open a fresh PowerShell, and try again. If you get an EACCES error on the global folder, run PowerShell as Administrator (Win key \u2192 type powershell \u2192 right-click \u2192 <b>Run as administrator</b>) and re-run the install.",
+    "learn": "'npm install -g <package>' installs a tool globally. The '-g' is what makes 'copilot' usable from any folder."
+  },
+  {
+    "id": "bwo-github-device-auth",
+    "phase": 2,
+    "emoji": "\ud83d\udd10",
+    "title": "Authenticate to GitHub (8-Digit Device Code)",
+    "time": "3 min",
+    "desc": "First time you run <code>copilot</code> it'll ask you to sign in to GitHub. It prints an <b>8-character code</b> (something like <code>WDJB-MJHT</code>) and a URL (<code>https://github.com/login/device</code>). Here's the move: <b>(1)</b> copy the 8-character code, <b>(2)</b> open <code>https://github.com/login/device</code> in your browser, <b>(3)</b> paste the code and click <b>Continue</b>, <b>(4)</b> click <b>Authorize</b>. Switch back to PowerShell \u2014 you'll see <code>\u2713 Logged in as YourGitHubName</code>. <b>That's it. No API key, no credit card.</b>",
+    "toggle": "Authenticated \u2713",
+    "copies": [
+      {
+        "label": "Start Copilot for the first time (kicks off the device flow)",
+        "text": "copilot"
+      },
+      {
+        "label": "Open the device-login page in your browser",
+        "text": "start https://github.com/login/device"
+      },
+      {
+        "label": "If you get logged out later \u2014 re-auth",
+        "text": "copilot auth login"
+      }
+    ],
+    "stuck": "The 8-character code is case-insensitive but the dash matters \u2014 paste it exactly as shown. If the page says 'invalid code', the code probably expired (15 min window) \u2014 quit Copilot with <kbd>Ctrl</kbd>+<kbd>C</kbd>, rerun <code>copilot</code>, and use the fresh code. If your GitHub account doesn't have Copilot access, you'll see 'no Copilot subscription found' \u2014 sign up at <code>github.com/features/copilot</code> first.",
+    "learn": "GitHub device-code flow: a code in the terminal, paste it on github.com/login/device. Same pattern for gh, copilot, and more."
+  },
+  {
+    "id": "bwo-close-reopen",
+    "phase": 2,
+    "emoji": "\ud83d\udd01",
+    "title": "Close It. Reopen It. Get Back Where You Were.",
+    "time": "2 min",
+    "desc": "Critical muscle memory: <b>closing and reopening shouldn't lose you anything important.</b> Inside Copilot, type <code>/exit</code> and press <kbd>Enter</kbd> to leave the session cleanly. Then close PowerShell with <code>exit</code>. Now reopen PowerShell (Win key \u2192 powershell \u2192 Enter), navigate back to the brainstem folder, and start Copilot again \u2014 <b>your previous conversation is still there.</b> Copilot saves a session you can resume.",
+    "toggle": "I can come and go safely \u2713",
+    "copies": [
+      {
+        "label": "Exit Copilot cleanly",
+        "text": "/exit"
+      },
+      {
+        "label": "Close PowerShell",
+        "text": "exit"
+      },
+      {
+        "label": "Reopen \u2192 jump back to brainstem folder",
+        "text": "cd $HOME\\.brainstem\\src\\rapp_brainstem"
+      },
+      {
+        "label": "Start Copilot and resume the most recent session",
+        "text": "copilot --resume"
+      },
+      {
+        "label": "Or pick from a list of past sessions",
+        "text": "copilot resume"
+      }
+    ],
+    "stuck": "If <code>copilot --resume</code> says 'no session to resume', you're fine \u2014 just run <code>copilot</code> and start fresh. The very first run after install creates the first session. From then on, every Copilot run saves automatically. Slash commands (anything starting with <code>/</code>) only work <i>inside</i> Copilot, not at the PowerShell prompt.",
+    "learn": "/exit leaves Copilot. 'exit' closes PowerShell. 'copilot --resume' picks up your last session."
+  },
+  {
+    "id": "bwo-switch-models",
+    "phase": 2,
+    "emoji": "\ud83e\udde0",
+    "title": "Switch Models (GPT, Claude, \u2026)",
+    "time": "2 min",
+    "desc": "Copilot CLI lets you change which AI model is doing the thinking \u2014 without restarting. Inside Copilot, type <code>/model</code> and press <kbd>Enter</kbd>. You'll see a list (Claude Sonnet, Claude Opus, GPT-5, etc.). Use the <kbd>\u2191</kbd>/<kbd>\u2193</kbd> arrow keys to highlight one and press <kbd>Enter</kbd> to select. The next message you send uses the new model. <b>Try the same question on two different models</b> \u2014 it's the fastest way to feel the difference.",
+    "toggle": "I can switch models \u2713",
+    "copies": [
+      {
+        "label": "Open the model picker (inside Copilot)",
+        "text": "/model"
+      },
+      {
+        "label": "Test prompt to compare models",
+        "text": "Explain how a transformer attention head works in one short paragraph."
+      }
+    ],
+    "stuck": "Some models (the ones tagged <i>premium</i>) consume your monthly Copilot quota faster \u2014 Claude Sonnet and GPT mini are good defaults for daily work. If a model isn't in your list, your Copilot plan may not include it; the cheaper plan shows fewer options.",
+    "learn": "/model = pick the AI brain. Arrow keys + Enter to choose. No restart, no config file."
+  },
+  {
+    "id": "bwo-help-tour",
+    "phase": 3,
+    "emoji": "\ud83e\udded",
+    "title": "The Slash Commands That Save Your Life",
+    "time": "3 min",
+    "desc": "Inside Copilot, type <code>/help</code> and press Enter \u2014 you get the full menu. The five worth memorizing: <code>/help</code> (this menu), <code>/model</code> (switch model), <code>/clear</code> (start fresh), <code>/resume</code> (pick a past session), <code>/exit</code> (leave). Slash commands always start with <b>/</b> and only work <i>inside</i> Copilot \u2014 not at PowerShell.",
+    "toggle": "I know the slash menu \u2713",
+    "copies": [
+      {
+        "label": "See the full slash-command menu",
+        "text": "/help"
+      },
+      {
+        "label": "Wipe the current conversation, keep the session",
+        "text": "/clear"
+      },
+      {
+        "label": "Pick a past session to continue",
+        "text": "/resume"
+      }
+    ],
+    "stuck": "If you accidentally type <code>/help</code> at PowerShell (outside Copilot) it'll fail with <i>'/help is not recognized'</i>. That's the giveaway you're not inside Copilot \u2014 start it with <code>copilot</code>.",
+    "learn": "Slash commands are Copilot's control panel. /help is your map."
+  },
+  {
+    "id": "bwo-create-ui-agent",
+    "phase": 3,
+    "emoji": "\ud83c\udfa8",
+    "title": "Create a New Agent: UI Reviewer",
+    "time": "5 min",
+    "desc": "Time for the magic. Make sure you're inside the <code>rapp_brainstem</code> folder, then start Copilot. Paste the prompt below \u2014 Copilot will write a new agent file under <code>agents/</code>, register it, and tell you how to call it. <b>You just hired a UI reviewer in under a minute.</b> Then test it on a real page.",
+    "toggle": "My UI reviewer agent exists \u2713",
+    "copies": [
+      {
+        "label": "Make sure you're in the brainstem folder",
+        "text": "cd $HOME\\.brainstem\\src\\rapp_brainstem"
+      },
+      {
+        "label": "Start Copilot",
+        "text": "copilot"
+      },
+      {
+        "label": "The prompt \u2014 paste this into Copilot",
+        "text": "Create a new agent in agents/ called ui_reviewer_agent.py. It takes a path to an HTML file, reads it, and returns a Tufte-style critique that calls out chartjunk, redundant typography, decorative noise, and low data-ink ratio. It should suggest what to REMOVE, not what to add. Follow the BasicAgent pattern used by the other agents in agents/ \u2014 class extending BasicAgent, self.name, self.metadata with name/description/parameters, and a perform(**kwargs) method that returns a string."
+      },
+      {
+        "label": "After it's created \u2014 test it on the brainstem's own UI",
+        "text": "Use the UIReviewer agent to critique the index.html file in this folder."
+      }
+    ],
+    "stuck": "If Copilot says it can't find the <code>agents/</code> folder, you're probably not in the brainstem directory \u2014 run <code>pwd</code> to confirm, then <code>cd</code> there. If the new agent doesn't show up when you ask 'what agents are loaded?', tell Copilot: <i>'list everything in the agents folder and confirm ui_reviewer_agent.py exists.'</i> Brainstem hot-reloads agents on every chat \u2014 if you have the brainstem web server running too, just refresh.",
+    "learn": "You ask Copilot in plain English; it writes the file, follows the existing pattern, and your brainstem auto-discovers it."
+  },
+  {
+    "id": "bwo-iterate",
+    "phase": 3,
+    "emoji": "\u270f\ufe0f",
+    "title": "Iterate Without Starting Over",
+    "time": "3 min",
+    "desc": "Now refine it. Ask Copilot to upgrade the agent \u2014 same conversation, no restart. This is the core loop: <b>describe \u2192 review what was made \u2192 describe the next change.</b> Try the prompts below in order. Notice you never had to re-explain context \u2014 Copilot remembers the file it just wrote.",
+    "toggle": "I iterated successfully \u2713",
+    "copies": [
+      {
+        "label": "Add a severity score",
+        "text": "Update the UIReviewer agent to also return a severity score from 1-10 (1 = ship it, 10 = needs full rewrite) and a one-sentence headline verdict at the top."
+      },
+      {
+        "label": "Make output Markdown",
+        "text": "Have the UIReviewer return the critique as Markdown with a headline, a bullet list of findings, and a 'what to remove' section."
+      },
+      {
+        "label": "Test it again",
+        "text": "Re-run UIReviewer on the index.html in this folder and show me the new format."
+      }
+    ],
+    "stuck": "If Copilot rewrites a file you didn't want changed, just say <i>'undo that last change to file X'</i> \u2014 it'll restore from the previous version. You can also git-restore with <code>git checkout -- agents/ui_reviewer_agent.py</code> from PowerShell.",
+    "learn": "Iteration in plain English. No 'edit/save/restart' loop \u2014 just describe what to change next."
+  },
+  {
+    "id": "bwo-resume-later",
+    "phase": 4,
+    "emoji": "\u23ef\ufe0f",
+    "title": "Come Back Tomorrow \u2014 Resume the Session",
+    "time": "2 min",
+    "desc": "The full daily cycle, with confidence: shut your laptop, do something else, come back. Open PowerShell (Win key \u2192 <code>powershell</code> \u2192 Enter), <code>cd</code> back to the brainstem folder, and run <code>copilot --resume</code>. Your previous turn is the last thing on screen. Type your next message and keep going. <b>The thread doesn't break.</b>",
+    "toggle": "I can resume tomorrow \u2713",
+    "copies": [
+      {
+        "label": "1 \u2014 open PowerShell from Start menu",
+        "text": "powershell"
+      },
+      {
+        "label": "2 \u2014 go to the brainstem folder",
+        "text": "cd $HOME\\.brainstem\\src\\rapp_brainstem"
+      },
+      {
+        "label": "3 \u2014 resume the most recent Copilot session",
+        "text": "copilot --resume"
+      },
+      {
+        "label": "Or \u2014 pick from a list of past sessions",
+        "text": "copilot resume"
+      }
+    ],
+    "stuck": "If <code>--resume</code> opens a session you didn't expect, exit and try <code>copilot resume</code> (no dashes) \u2014 that one shows a picker so you can choose by date and topic. Sessions are stored under <code>%USERPROFILE%\\.copilot\\sessions\\</code> if you ever want to see them on disk.",
+    "learn": "PowerShell + cd + copilot --resume = pick up exactly where you left off. Same on day 1 or day 100."
+  },
+  {
+    "id": "bwo-the-three-laws",
+    "phase": 4,
+    "emoji": "\ud83c\udfc6",
+    "title": "The Three Things You Now Know",
+    "time": "1 min",
+    "desc": "If you remember nothing else, remember these three. <b>(1)</b> <code>Win key \u2192 powershell \u2192 Enter</code> opens your control panel. <b>(2)</b> <code>cd $HOME\\.brainstem\\src\\rapp_brainstem; copilot --resume</code> drops you back into your work. <b>(3)</b> <i>'Hey Copilot, write me an agent that does X'</i> is how you grow your team. Everything else is detail.",
+    "toggle": "I'm operational \u2713",
+    "copies": [
+      {
+        "label": "The full daily warm-up \u2014 paste into PowerShell",
+        "text": "cd $HOME\\.brainstem\\src\\rapp_brainstem; copilot --resume"
+      },
+      {
+        "label": "Make a brand-new agent (template prompt)",
+        "text": "Create a new agent in agents/ called ___ that does ___. Follow the BasicAgent pattern from the other files in agents/."
+      }
+    ],
+    "stuck": "Bookmark this quest page. Re-run any step at any time. The whole point of the brainstem is that you can keep adding teammates as you find work for them \u2014 your second agent will take half the time of your first.",
+    "learn": "Three muscles: launch terminal, resume Copilot, ask for a new agent. That's the whole job."
+  }
+];
+const POSITIONS = [
+  {
+    "x": 6.0,
+    "y": 16.0
+  },
+  {
+    "x": 24.8,
+    "y": 38.0
+  },
+  {
+    "x": 6.0,
+    "y": 60.0
+  },
+  {
+    "x": 24.8,
+    "y": 82.0
+  },
+  {
+    "x": 36.8,
+    "y": 16.0
+  },
+  {
+    "x": 55.5,
+    "y": 38.0
+  },
+  {
+    "x": 36.8,
+    "y": 60.0
+  },
+  {
+    "x": 55.5,
+    "y": 82.0
+  },
+  {
+    "x": 66.4,
+    "y": 16.0
+  },
+  {
+    "x": 79.8,
+    "y": 49.0
+  },
+  {
+    "x": 66.4,
+    "y": 82.0
+  },
+  {
+    "x": 88.3,
+    "y": 16.0
+  },
+  {
+    "x": 96.3,
+    "y": 82.0
+  }
+];
+const STORAGE_KEY = 'brainstem-onboarding-quest-' + btoa(unescape(encodeURIComponent('Brainstem · First-Day on Windows'))).slice(0,12);
+const PHASE_LABELS = ["\ud83e\ude9f Day Zero \u00b7 Find Your Way", "\ud83e\udd16 Hire the Co-pilot", "\ud83c\udfa8 Build Your First Agent", "\u23ef\ufe0f Operate"];
+let state = loadState();
+function isMobile(){return window.innerWidth<=768}
+function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);if(s)return JSON.parse(s)}catch(e){}return{completed:{}}}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function isComplete(id){return !!state.completed[id]}
+function completedCount(){return CHECKPOINTS.filter(c=>isComplete(c.id)).length}
+function render(){renderPath();renderNodes();updateProgress()}
+function updateProgress(){const n=completedCount(),t=CHECKPOINTS.length,p=Math.round(n/t*100);document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressLabel').textContent=n+' of '+t}
+function getActiveIndex(){for(let i=0;i<CHECKPOINTS.length;i++){if(!isComplete(CHECKPOINTS[i].id))return i}return CHECKPOINTS.length}
+function renderPath(){if(isMobile()){document.getElementById('pathSvg').innerHTML='';return}const svg=document.getElementById('pathSvg'),w=window.innerWidth,h=window.innerHeight-52;svg.setAttribute('viewBox','0 0 '+w+' '+h);let html='';const pts=POSITIONS.map(p=>({x:p.x/100*w,y:p.y/100*h}));const ai=getActiveIndex();for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],cx1=a.x+(b.x-a.x)*.6,cy1=a.y,cx2=a.x+(b.x-a.x)*.4,cy2=b.y;const d='M'+a.x+','+a.y+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+b.x+','+b.y;const done=isComplete(CHECKPOINTS[i].id)&&isComplete(CHECKPOINTS[i+1].id);const partial=isComplete(CHECKPOINTS[i].id)&&!isComplete(CHECKPOINTS[i+1].id);const active=i===ai-1||i===ai;if(done)html+='<path d="'+d+'" fill="none" stroke="var(--green)" stroke-width="3" stroke-opacity=".5"/>';else if(partial||active)html+='<path d="'+d+'" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-opacity=".4" stroke-dasharray="8 6"><animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.5s" repeatCount="indefinite"/></path>';else html+='<path d="'+d+'" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 8" stroke-opacity=".5"/>'}svg.innerHTML=html}
+function renderNodes(){if(isMobile()){renderMobileList();return}document.querySelectorAll('.node').forEach(n=>n.remove());const map=document.getElementById('questMap'),ai=getActiveIndex();CHECKPOINTS.forEach((cp,i)=>{const pos=POSITIONS[i];if(!pos)return;const node=document.createElement('div');node.className='node';if(isComplete(cp.id))node.classList.add('complete');else if(i===ai)node.classList.add('active');node.style.left=pos.x+'%';node.style.top='calc('+pos.y+'% + 0px)';const isLocked=i>ai&&!isComplete(cp.id);node.innerHTML='<div class="ring"></div><div class="inner"><span class="emoji">'+(isLocked?'🔒':cp.emoji)+'</span><svg class="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>'+(isLocked?'<span class="lock"></span>':'')+'</div><div class="label">'+cp.title+'</div>';node.addEventListener('click',()=>openPanel(i));map.appendChild(node)})}
+function renderMobileList(){const list=document.getElementById('mobileList');list.innerHTML='';const ai=getActiveIndex();let lastPhase=0;CHECKPOINTS.forEach((cp,i)=>{if(cp.phase!==lastPhase){lastPhase=cp.phase;const hdr=document.createElement('div');hdr.className='m-phase-header';hdr.textContent=PHASE_LABELS[cp.phase-1]||'Phase '+cp.phase;list.appendChild(hdr)}const item=document.createElement('div');item.className='m-item';if(isComplete(cp.id))item.classList.add('complete');else if(i===ai)item.classList.add('active');else if(i>ai)item.classList.add('locked');const isLocked=i>ai&&!isComplete(cp.id);item.innerHTML='<div class="m-node">'+(isComplete(cp.id)?'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':(isLocked?'🔒':cp.emoji))+'</div><div class="m-text"><div class="m-title">'+cp.title+'</div><div class="m-time">'+(cp.time?'⏱ '+cp.time:'')+'</div></div>';item.addEventListener('click',()=>openPanel(i));list.appendChild(item)})}let currentPanel=-1;
+function openPanel(idx){currentPanel=idx;const cp=CHECKPOINTS[idx];document.getElementById('panelEmoji').textContent=cp.emoji;document.getElementById('panelTitle').textContent=cp.title;document.getElementById('panelTime').textContent=cp.time?'⏱ '+cp.time:'';let html='<div class="desc">'+cp.desc+'</div>';if(cp.substeps){html+='<ol class="substeps">';cp.substeps.forEach(s=>html+='<li>'+s+'</li>');html+='</ol>'}if(cp.copies){html+='<div class="copy-group">';cp.copies.forEach(c=>{html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">'+c.label+'</div><div class="copy-block"><span class="copy-text">'+escHtml(c.text)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(c.text)+'\')" title="Copy">📋</button></div></div>'});html+='</div>'}if(cp.copyText&&!cp.copies){html+='<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+(cp.copyLabel||'Copy')+'</div><div class="copy-block"><span class="copy-text">'+escHtml(cp.copyText)+'</span><button class="copy-btn" onclick="copyText(this,\''+escAttr(cp.copyText)+'\')" title="Copy">📋</button></div></div>'}if(cp.learn){html+='<div style="font-size:13px;color:var(--text-muted)">📚 <b>What you learn:</b> '+cp.learn+'</div>'}if(cp.rar_url){html+='<a href="'+cp.rar_url+'" target="_blank" rel="noopener" class="rar-card"><div class="rar-card-icon">🧩</div><div class="rar-card-info"><div class="rar-card-label">RAPP Agent Repository</div><div class="rar-card-name">'+escHtml(cp.rar_name)+'</div></div><div class="rar-card-arrow">→</div></a>'}const checked=isComplete(cp.id);html+='<button class="toggle-done '+(checked?'checked':'')+'" onclick="toggleDone(\''+cp.id+'\',this)"><span class="dot">'+(checked?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>':'')+'</span><span>'+(cp.toggle||'Done ✓')+'</span></button>';if(cp.stuck){html+='<div><button class="stuck-toggle" onclick="this.nextElementSibling.classList.toggle(\'open\')">🆘 I\'m stuck</button><div class="stuck-content"><p>'+cp.stuck+'</p></div></div>'}document.getElementById('panelBody').innerHTML=html;document.getElementById('overlay').classList.add('open');document.getElementById('panel').classList.add('open')}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');currentPanel=-1}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escAttr(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function copyText(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)}).catch(()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.classList.add('copied');btn.textContent='✓';setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋'},1500)})}
+function toggleDone(id,btn){if(isComplete(id)){delete state.completed[id];btn.classList.remove('checked');btn.querySelector('.dot').innerHTML=''}else{state.completed[id]=true;btn.classList.add('checked');btn.querySelector('.dot').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="4 12 10 18 20 6"/></svg>';celebrate(id)}saveState();render()}
+function celebrate(id){const idx=CHECKPOINTS.findIndex(c=>c.id===id);let x,y;if(isMobile()){const items=document.querySelectorAll('.m-item');if(items[idx]){const r=items[idx].getBoundingClientRect();x=r.left+r.width/2;y=r.top+r.height/2}else return}else{const pos=POSITIONS[idx];if(!pos)return;x=pos.x/100*window.innerWidth;y=pos.y/100*(window.innerHeight-52)+52}spawnParticles(x,y,12);for(let p=1;p<=4;p++){const phase=CHECKPOINTS.filter(c=>c.phase===p);if(phase.every(c=>isComplete(c.id))&&id===phase[phase.length-1].id)setTimeout(()=>rocketAnimation(),400)}if(completedCount()===CHECKPOINTS.length)setTimeout(()=>{confettiExplosion();showBanner()},600)}
+function spawnParticles(cx,cy,count){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff'];for(let i=0;i<count;i++){const el=document.createElement('div');el.className='particle';el.style.left=cx+'px';el.style.top=cy+'px';el.style.background=colors[i%colors.length];document.body.appendChild(el);const angle=Math.random()*Math.PI*2,dist=40+Math.random()*60,dx=Math.cos(angle)*dist,dy=Math.sin(angle)*dist;el.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(0)',opacity:0}],{duration:600+Math.random()*400,easing:'cubic-bezier(.4,0,.2,1)'}).onfinish=()=>el.remove()}}
+function rocketAnimation(){const el=document.createElement('div');el.className='rocket-anim';el.textContent='🚀';el.style.left='-50px';el.style.bottom='60%';document.body.appendChild(el);el.animate([{transform:'translate(0,0) rotate(-30deg)',opacity:1},{transform:'translate('+(window.innerWidth+100)+'px,-'+(window.innerHeight/2)+'px) rotate(-30deg)',opacity:.8}],{duration:1400,easing:'cubic-bezier(.25,.1,.25,1)'}).onfinish=()=>el.remove()}
+function confettiExplosion(){const colors=['#58a6ff','#3fb950','#d29922','#f778ba','#bc8cff','#f85149','#fff'];for(let i=0;i<60;i++){const el=document.createElement('div');el.className='confetti';el.style.background=colors[i%colors.length];el.style.left=Math.random()*window.innerWidth+'px';el.style.top='-20px';el.style.width=(6+Math.random()*8)+'px';el.style.height=(10+Math.random()*12)+'px';el.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(el);const x=(Math.random()-.5)*200,spin=Math.random()*720-360;el.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+x+'px,'+(window.innerHeight+40)+'px) rotate('+spin+'deg)',opacity:.6}],{duration:2000+Math.random()*1500,easing:'cubic-bezier(.25,.1,.25,1)',delay:Math.random()*300}).onfinish=()=>el.remove()}}
+function showBanner(){const b=document.getElementById('banner');b.classList.add('show');renderBadge();document.getElementById('badgeWrap').style.display='flex'}
+function renderBadge(){const c=document.getElementById('badgeCanvas'),ctx=c.getContext('2d');const w=600,h=315;const bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#0d1117');bg.addColorStop(0.5,'#161b22');bg.addColorStop(1,'#0d1117');ctx.fillStyle=bg;ctx.beginPath();ctx.roundRect(0,0,w,h,16);ctx.fill();ctx.strokeStyle='#1a7f37';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(1,1,w-2,h-2,16);ctx.stroke();ctx.strokeStyle='rgba(88,166,255,0.04)';ctx.lineWidth=1;for(let x=0;x<w;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=0;y<h;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}const bar=ctx.createLinearGradient(0,0,w,0);bar.addColorStop(0,'#0969da');bar.addColorStop(0.5,'#1a7f37');bar.addColorStop(1,'#d29922');ctx.fillStyle=bar;ctx.fillRect(0,0,w,3);ctx.font='64px serif';ctx.textAlign='center';ctx.fillText('🚀',300,80);ctx.font='bold 28px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#e6edf3';ctx.fillText('Brainstem · First-Day on Windows',300,125);ctx.font='18px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#3fb950';ctx.fillText('\u2705 Training Quest Complete',300,158);ctx.font='14px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#8b949e';ctx.fillText(CHECKPOINTS.length+' Checkpoints \xb7 '+PHASE_LABELS.length+' Phases',300,188);const d=new Date();ctx.fillText('Completed '+d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),300,215);const dv=ctx.createLinearGradient(100,0,500,0);dv.addColorStop(0,'transparent');dv.addColorStop(0.5,'#30363d');dv.addColorStop(1,'transparent');ctx.strokeStyle=dv;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,235);ctx.lineTo(500,235);ctx.stroke();ctx.font='bold 13px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#58a6ff';ctx.fillText('blazingbeard.github.io',300,262);ctx.font='12px "Segoe UI",system-ui,sans-serif';ctx.fillStyle='#6e7681';ctx.fillText('Interactive Training Quest \xb7 Built with \ud83d\udd25 by BlazingBeard',300,285)}
+function downloadBadge(){const c=document.getElementById('badgeCanvas'),a=document.createElement('a');a.download='brainstem-onboarding-quest-complete.png';a.href=c.toDataURL('image/png');a.click()}
+function shareBadge(){const c=document.getElementById('badgeCanvas');c.toBlob(function(blob){if(navigator.share&&navigator.canShare){const file=new File([blob],'brainstem-onboarding-quest-complete.png',{type:'image/png'});if(navigator.canShare({files:[file]})){navigator.share({title:'Brainstem · First-Day on Windows Training Quest Complete!',text:'I just completed the Brainstem · First-Day on Windows Training Quest — '+CHECKPOINTS.length+' checkpoints, '+PHASE_LABELS.length+' phases! \ud83d\udd25\n\nTry it: https://blazingbeard.github.io',files:[file]}).catch(()=>{});return}}navigator.clipboard.writeText('I just completed the Brainstem · First-Day on Windows Training Quest — '+CHECKPOINTS.length+' checkpoints, '+PHASE_LABELS.length+' phases! \ud83d\udd25\n\nTry it: https://blazingbeard.github.io').then(()=>{const btn=document.querySelector('.badge-btn.share');const orig=btn.innerHTML;btn.innerHTML='\u2713 Copied to clipboard!';setTimeout(()=>btn.innerHTML=orig,2000)})},'image/png')}
+function resetProgress(){if(!confirm('Reset all progress? This cannot be undone.'))return;state={completed:{}};saveState();closePanel();render()}
+render();window.addEventListener('resize',()=>render());if(completedCount()===CHECKPOINTS.length)setTimeout(()=>{confettiExplosion();showBanner()},800);
+</script>
+</body>
+</html>
