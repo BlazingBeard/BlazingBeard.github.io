@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Howard &amp; The Swarm — Hire the AI Master, Get the Army</title>
+<style>
+  :root {
+    --bg: #0a0d12;
+    --panel: #11161d;
+    --panel-2: #161c25;
+    --ink: #e8eef5;
+    --muted: #8a97a8;
+    --accent: #ff5b3a;     /* anvil orange */
+    --accent-2: #36e0c9;   /* hologram cyan */
+    --accent-3: #c084fc;   /* persona violet */
+    --line: #1f2630;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI", Inter, system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { word-break: break-word; overflow-wrap: anywhere; background: rgba(255,255,255,.04); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+  img, svg { max-width: 100%; height: auto; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 56px 28px 80px; }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 44px 40px;
+    background:
+      radial-gradient(1200px 400px at -10% -20%, rgba(255,91,58,0.18), transparent 60%),
+      radial-gradient(900px 360px at 110% 0%, rgba(54,224,201,0.16), transparent 55%),
+      linear-gradient(180deg, #11161d, #0d1218);
+    overflow: hidden;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 11px;
+    color: var(--accent-2);
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1.05;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+  }
+  h1 .accent { color: var(--accent); }
+  .tagline {
+    font-size: clamp(17px, 1.6vw, 21px);
+    color: var(--muted);
+    max-width: 760px;
+    margin: 0 0 24px;
+  }
+  .pitch {
+    font-size: 18px;
+    color: var(--ink);
+    border-left: 3px solid var(--accent);
+    padding: 6px 0 6px 16px;
+    margin: 18px 0 26px;
+    max-width: 760px;
+  }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 10px 20px;
+    color: var(--muted); font-size: 14px;
+  }
+  .meta span b { color: var(--ink); font-weight: 600; }
+
+  /* SECTIONS */
+  section { margin-top: 56px; }
+  h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    color: var(--accent-2);
+    margin: 0 0 18px;
+  }
+  h3 { font-size: 22px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  p  { color: #d4dbe4; }
+
+  /* STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .stat .num {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .stat .num.accent { color: var(--accent); }
+  .stat .num.cyan   { color: var(--accent-2); }
+  .stat .num.violet { color: var(--accent-3); }
+  .stat .label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-top: 4px;
+  }
+
+  /* HOW HE WORKS */
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .principle {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .principle .k {
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .principle b { color: var(--ink); }
+
+  /* AGENT GRID */
+  .agents {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .card {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+    transition: transform .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: #2a3340;
+    background: var(--panel-2);
+  }
+  .card .role {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent-2);
+    margin-bottom: 6px;
+  }
+  .card .name {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+  .card .desc {
+    color: #c9d2dd;
+    font-size: 14.5px;
+    margin: 0 0 12px;
+  }
+  .card .tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .tag {
+    font-size: 11px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: #1c2330;
+    color: var(--muted);
+    border: 1px solid #232b38;
+  }
+  .tag.hot   { color: var(--accent);   border-color: rgba(255,91,58,0.35); background: rgba(255,91,58,0.08); }
+  .tag.cyan  { color: var(--accent-2); border-color: rgba(54,224,201,0.35); background: rgba(54,224,201,0.08); }
+  .tag.violet{ color: var(--accent-3); border-color: rgba(192,132,252,0.35); background: rgba(192,132,252,0.08); }
+  .tag.role { color: #ffd6cd; border-color: rgba(255,91,58,0.55); background: rgba(255,91,58,0.14); font-weight:600; }
+
+  /* BENCH — promoted consulting roles */
+  .bench {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .bench .card {
+    background: linear-gradient(180deg, rgba(255,91,58,0.06), rgba(54,224,201,0.04));
+    border-color: rgba(255,91,58,0.22);
+  }
+  .bench .card .name { font-size: 20px; }
+  .bench .card .maps {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px dashed #2a3340;
+    padding-top: 8px;
+  }
+  .bench .card .maps b { color: #c9d2dd; }
+
+  /* DAY-IN-THE-LIFE flow strip */
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 14px 0 22px;
+  }
+  .flow .step {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px 16px 56px;
+  }
+  .flow .step .n {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 14px;
+  }
+  .flow .step .ttl {
+    font-weight: 700; color: #fff; margin-bottom: 4px; font-size: 15px;
+  }
+  .flow .step .who {
+    font-size: 12.5px; color: #a8b3c0;
+  }
+  .flow .step .who b { color: var(--accent-2); font-weight: 600; }
+
+  /* BAND headings inside the swarm */
+  .band {
+    margin: 28px 0 10px;
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  .band h3 {
+    margin: 0; font-size: 17px; color: #fff; letter-spacing: 0.02em;
+  }
+  .band .b-sub {
+    color: var(--muted); font-size: 13px;
+  }
+  .band-sub-grid { /* compact cards for engineering substrate */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .band-sub-grid .card { padding: 14px 16px; }
+  .band-sub-grid .card .name { font-size: 16px; margin-bottom: 4px; }
+  .band-sub-grid .card .desc { font-size: 13px; margin-bottom: 6px; }
+
+  .utilities-line {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: var(--panel);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .utilities-line b { color: #c9d2dd; }
+
+  @media (max-width: 1000px) {
+    .bench, .flow { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* STACK */
+  .stack {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .stack .col {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .stack ul { margin: 0; padding-left: 18px; color: #d4dbe4; }
+  .stack li { margin-bottom: 6px; }
+
+  /* PROOF */
+  .proof {
+    background: linear-gradient(135deg, rgba(255,91,58,0.08), rgba(54,224,201,0.08));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .quote {
+    font-size: 18px;
+    font-style: italic;
+    color: var(--ink);
+    margin: 0 0 8px;
+  }
+  .quote .by { display:block; margin-top: 8px; color: var(--muted); font-style: normal; font-size: 13px; }
+
+  /* CTA */
+  .cta {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    align-items: center; justify-content: space-between;
+    background: linear-gradient(135deg, #ff5b3a, #c34324);
+    color: #fff;
+    border-radius: 16px;
+    padding: 28px 32px;
+  }
+  .cta h3 { color: #fff; margin: 0; font-size: 24px; }
+  .cta p { color: #ffe5dd; margin: 4px 0 0; }
+  .cta .btn {
+    background: #0a0d12;
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 50px;
+  }
+
+  @media (max-width: 780px) {
+    .wrap    { padding: 32px 18px 60px; }
+    .stats   { grid-template-columns: repeat(2, 1fr); }
+    .principles, .agents, .stack, .bench, .flow, .band-sub-grid { grid-template-columns: 1fr; }
+    .hero    { padding: 28px 20px; border-radius: 14px; }
+    .pitch   { font-size: 16px; padding-left: 12px; }
+    .meta    { font-size: 13px; gap: 8px 14px; }
+    .card    { padding: 18px; }
+    .bench .card .name { font-size: 18px; }
+    .stat    { padding: 14px; }
+    .stat .num { font-size: 26px; }
+    .cta     { padding: 22px; flex-direction: column; align-items: flex-start; text-align: left; }
+    .cta h3  { font-size: 20px; }
+    .cta .btn{ width: 100%; text-align: center; }
+    .band    { flex-wrap: wrap; gap: 4px 10px; margin-top: 22px; }
+    .band .b-sub { font-size: 12px; }
+    .flow .step  { padding: 14px 14px 14px 50px; }
+    .flow .step .n { left: 12px; width: 26px; height: 26px; font-size: 13px; }
+    section  { margin-top: 40px; }
+    h1       { letter-spacing: -0.015em; }
+    h2       { letter-spacing: 0.18em; }
+  }
+
+  @media (max-width: 460px) {
+    .wrap    { padding: 24px 14px 48px; }
+    .stats   { grid-template-columns: 1fr; }
+    .meta    { flex-direction: column; gap: 6px; }
+    .tagline { font-size: 16px; }
+    .pitch   { font-size: 15px; }
+    h2       { font-size: 12px; }
+    .bench .card { padding: 16px; }
+    .bench .card .maps { font-size: 11px; }
+  }
+
+  @media print {
+    body { background: #fff; color: #111; }
+    .hero, .card, .stat, .principle, .stack .col, .proof, .flow .step, .utilities-line { background: #fff; border-color: #ddd; }
+    .bench .card { background: #fff; border-color: #ccc; }
+    .flow .step .n { background: #c34324; }
+    .band h3 { color: #111; }
+    .cta { background: #f4f4f4; color: #111; }
+    .cta .btn { background: #111; }
+    a { color: #c34324; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="eyebrow">You're not hiring an engineer. You're hiring an AI master + his swarm.</div>
+    <h1>Howard <span class="accent">&amp; The Swarm</span></h1>
+    <p class="tagline">
+      AI master. Agent architect. Howard doesn't write features — he conjures
+      <b>autonomous teammates on demand</b>. The number isn't the point.
+      The point is: <b>any new specialist you need exists in minutes — not hours, not days.</b>
+    </p>
+    <div class="pitch">
+      "Most engineers ship code. Howard ships <b>colleagues</b>. He already commands
+      <b>hundreds of agents</b>, and the moment a new human task appears he can
+      <b>generate it, assimilate it from an existing tool, or modify one he already has</b> —
+      and you're using it the same meeting. The bottleneck of 'we'll need to hire for that'
+      is gone."
+    </div>
+    <div class="meta">
+      <span>🧠 <b>Hundreds of agents</b> already on the bench</span>
+      <span>🪄 <b>New agent in minutes</b> — generated, assimilated, or modified to fit</span>
+      <span>⚡ Hot-reloads the swarm with zero downtime</span>
+      <span>🛡️ Local-first by default. Cloud (GitHub / Azure) only when you opt in.</span>
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <section>
+    <h2>By the numbers</h2>
+    <div class="stats">
+      <div class="stat"><div class="num accent">100s</div><div class="label">Agents on the bench</div></div>
+      <div class="stat"><div class="num cyan">min</div><div class="label">Time-to-new-agent (not hrs / days)</div></div>
+      <div class="stat"><div class="num violet">3</div><div class="label">Ways to add one: generate · assimilate · modify</div></div>
+      <div class="stat"><div class="num">0</div><div class="label">External services required</div></div>
+    </div>
+  </section>
+
+  <!-- PHILOSOPHY -->
+  <section>
+    <h2>How Howard builds</h2>
+    <div class="principles">
+      <div class="principle">
+        <div class="k">Engine, not experience</div>
+        <b>Infrastructure first.</b> No opinionated UI, no lock-in. Every agent is a tool the LLM picks up when needed.
+      </div>
+      <div class="principle">
+        <div class="k">Evidence over assertion</div>
+        <b>Verification is tool calls, not claims.</b> The Anvil agent enforces an SQL-style ledger of proof for every change.
+      </div>
+      <div class="principle">
+        <div class="k">Assimilate &amp; adapt</div>
+        <b>Borg the best ideas.</b> TinyTroupe, Remotion, soul.md, gt-telegram — all distilled into single-file agents that just work.
+      </div>
+    </div>
+  </section>
+
+  <!-- VELOCITY: the real superpower -->
+  <section>
+    <h2>The real superpower: <span class="accent">new agent in minutes</span></h2>
+    <p style="margin:-6px 0 18px;color:#9aa3b8;max-width:85ch">
+      Counting agents misses the point. The leverage is the <b>factory</b>: any new human task that walks
+      through the door becomes a working teammate before the meeting ends. Three paths in, one swarm out.
+    </p>
+    <div class="principles">
+      <div class="principle">
+        <div class="k">① Generate</div>
+        <b>From a sentence.</b> Describe the job — "watch this folder, summarize new PDFs, post to Teams" — and a new agent is scaffolded, registered, and live on the next request. No deploy, no PR, no ticket.
+      </div>
+      <div class="principle">
+        <div class="k">② Assimilate</div>
+        <b>From the wild.</b> Point at any GitHub repo, API, CLI, or doc. Borg ingests it, distills the useful surface, and wraps it as a single-file agent the LLM can invoke like any other tool. Other people's work becomes your team's reflex.
+      </div>
+      <div class="principle">
+        <div class="k">③ Modify</div>
+        <b>Fork an existing one.</b> Hot-reload from disk means edit-save-use. A 30-line change turns a generic researcher into a domain specialist — pricing analyst, compliance checker, model reviewer — without restarting anything.
+      </div>
+    </div>
+    <p style="margin:18px 0 0;color:#cbd5e1;max-width:85ch;font-size:14.5px">
+      <b>Translation for the hiring manager:</b> the question changes from <i>"do you have an agent for X?"</i>
+      to <i>"how soon do you need it?"</i> Answer is almost always <b>this afternoon</b>.
+    </p>
+  </section>
+
+  <!-- THE BENCH -->
+  <section>
+    <h2>The bench you inherit on day one</h2>
+    <p style="margin:-6px 0 16px;color:#9aa3b8;max-width:85ch">
+      Forget the count. What you get walking through the door is a <b>working consulting team</b> —
+      a Chief of Staff, an Architect, an Engagement Lead, an FRD Analyst, a Deck Smith, and a Model Sentinel —
+      already at the table. Each one is a real, running agent today, not a roadmap.
+    </p>
+
+    <div class="bench">
+
+      <div class="card">
+        <div class="role">Engagement orchestration</div>
+        <div class="name">🪖 Chief of Staff</div>
+        <p class="desc">Owns the engagement memory: stakeholders, decisions, follow-ups, weekly briefs. Never lets a commitment fall through. Drafts your Monday-morning catch-up before you ask.</p>
+        <div class="tags"><span class="tag role">consulting</span><span class="tag hot">flagship</span></div>
+        <div class="maps"><b>Built on:</b> ManageMemory + ContextMemory + VaultMind</div>
+      </div>
+
+      <div class="card">
+        <div class="role">Solution architecture</div>
+        <div class="name">🏛️ Architect</div>
+        <p class="desc">Turns interviews and source-of-record into target-state diagrams, ADRs, and dependency maps in the same session. Mermaid out, Markdown out, decision-log out.</p>
+        <div class="tags"><span class="tag role">consulting</span><span class="tag hot">flagship</span></div>
+        <div class="maps"><b>Built on:</b> Spine/DAG agent + Borg + diagram generator</div>
+      </div>
+
+      <div class="card">
+        <div class="role">PMO · RAID · status</div>
+        <div class="name">📋 Engagement Lead</div>
+        <p class="desc">Workstream tracker, RAID log, weekly status pack — auto-drafted from the week's notes. Surfaces past-due items before the client does.</p>
+        <div class="tags"><span class="tag role">consulting</span></div>
+        <div class="maps"><b>Built on:</b> VaultMind tasks + ManageMemory</div>
+      </div>
+
+      <div class="card">
+        <div class="role">Requirements gap matrix</div>
+        <div class="name">🔍 FRD Analyst</div>
+        <p class="desc">Reads any client FRD or RFP and produces an FR-by-FR coverage matrix — covered / partial / gap — plus a ranked recommendations list. Proven on a real Fortune-500 NIS engagement.</p>
+        <div class="tags"><span class="tag role">consulting</span><span class="tag">RFP</span></div>
+        <div class="maps"><b>Pattern:</b> proven via the <code>frd_alignment</code> deliverable</div>
+      </div>
+
+      <div class="card">
+        <div class="role">Client-ready storytelling</div>
+        <div class="name">🎯 Deck Smith</div>
+        <p class="desc">Turns analysis into 8-slide partner-grade decks: eyebrow / before-after / metrics / phased plan. Same pattern that produced the live POC pitch.</p>
+        <div class="tags"><span class="tag role">consulting</span><span class="tag">deliverable</span></div>
+        <div class="maps"><b>Pattern:</b> proven via the live <code>pitch.html</code> generator</div>
+      </div>
+
+      <div class="card">
+        <div class="role">Financial-model review</div>
+        <div class="name">💹 Model Sentinel</div>
+        <p class="desc">Vets a financial model against best-practice rules (Ian-Bennett-style). Flags load-bearing assumptions, suggests sensitivity tests, builds an Obsidian brain of the model.</p>
+        <div class="tags"><span class="tag role">consulting</span><span class="tag">finance</span></div>
+        <div class="maps"><b>Built on:</b> Financial-Model Reviewer agent + Obsidian brain</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DAY IN THE LIFE -->
+  <section>
+    <h2>A day in a Howard engagement</h2>
+    <p style="margin:-6px 0 4px;color:#9aa3b8;max-width:80ch">Four phases. Each one already has named agents on the bench. None of this is theoretical.</p>
+    <div class="flow">
+      <div class="step">
+        <div class="n">1</div>
+        <div class="ttl">Discover</div>
+        <div class="who"><b>Borg</b> + <b>FRD Analyst</b> ingest the repo, RFP, or data room. <b>Architect</b> maps current state.</div>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <div class="ttl">Synthesize</div>
+        <div class="who"><b>Chief of Staff</b> catalogs decisions. <b>Spine/DAG</b> plots dependencies. <b>Model Sentinel</b> vets the numbers.</div>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <div class="ttl">Deliver</div>
+        <div class="who"><b>Deck Smith</b> produces the partner-grade readout. <b>PromptToVideo</b> / <b>DemoVideo</b> if a recorded walkthrough is wanted.</div>
+      </div>
+      <div class="step">
+        <div class="n">4</div>
+        <div class="ttl">Govern</div>
+        <div class="who"><b>Engagement Lead</b> runs the RAID + weekly status. <b>Anvil</b> enforces evidence on every change. <b>Memory</b> carries decisions into the next sprint.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE FULL ROSTER -->
+  <section>
+    <h2>The rest of the roster</h2>
+    <p style="margin:-6px 0 6px;color:#9aa3b8;max-width:80ch">The bench above is the consulting front-line. Behind them sits the rest of the org — discovery, synthesis, simulation, and the engineering substrate that keeps the lights on.</p>
+
+    <div class="band">
+      <h3>Discovery &amp; analysis</h3>
+      <span class="b-sub">— recon, requirements, dependency, numbers</span>
+    </div>
+    <div class="agents">
+
+      <div class="card">
+        <div class="role">Knowledge Acquisition</div>
+        <div class="name">🛸 Borg</div>
+        <p class="desc">Point it at any GitHub repo or URL. It assimilates the codebase, analyzes the stack, and returns a structured intel report HOLO can act on.</p>
+        <div class="tags"><span class="tag hot">flagship</span><span class="tag">recon</span><span class="tag">github</span></div>
+      </div>
+
+      <div class="card">
+        <div class="role">Process Architecture</div>
+        <div class="name">🕸️ Spine / DAG Analyst</div>
+        <p class="desc">Walks any process or system as a dependency graph. Surfaces who owns what, where the cascades go, and which fields gate the next milestone. Same engine that drives a live NIS POC.</p>
+        <div class="tags"><span class="tag hot">flagship</span><span class="tag">process</span></div>
+      </div>
+
+      <div class="card">
+        <div class="role">Signal aggregation</div>
+        <div class="name">📡 Brief Builder</div>
+        <p class="desc">Pulls trending repos, top stories, and named-source feeds into a morning brief. Filtered by language, topic, or saved query. Fuel for the rest of the bench.</p>
+        <div class="tags"><span class="tag">signal</span></div>
+      </div>
+
+    </div>
+
+    <div class="band">
+      <h3>Synthesis &amp; deliverables</h3>
+      <span class="b-sub">— turn analysis into something a client can hold</span>
+    </div>
+    <div class="agents">
+
+      <div class="card">
+        <div class="role">Video Production</div>
+        <div class="name">🎬 PromptToVideo</div>
+        <p class="desc">Ships a Remotion workspace and renders MP4s from scene descriptions. Title, content, quote, list scenes with style presets (bold / minimal / neon / warm).</p>
+        <div class="tags"><span class="tag">remotion</span><span class="tag">render</span></div>
+      </div>
+
+      <div class="card">
+        <div class="role">Demo Automation</div>
+        <div class="name">📹 DemoVideo</div>
+        <p class="desc">Playwright drives your live web app — clicks, types, scrolls, zooms — while Remotion composites a polished demo with animated cursor and zoom controls.</p>
+        <div class="tags"><span class="tag">playwright</span><span class="tag">demo</span></div>
+      </div>
+
+      <div class="card">
+        <div class="role">Thought leadership</div>
+        <div class="name">✍️ POV Writer</div>
+        <p class="desc">Drafts a point-of-view memo or LinkedIn-grade post from a topic + a few bullets. Keeps tone, citations, and structure consistent across an engagement's external voice.</p>
+        <div class="tags"><span class="tag">writing</span></div>
+      </div>
+
+    </div>
+
+    <div class="band">
+      <h3>Memory &amp; governance</h3>
+      <span class="b-sub">— so nothing slips, and every change is defensible</span>
+    </div>
+    <div class="agents">
+
+      <div class="card">
+        <div class="role">Persistent Memory</div>
+        <div class="name">🧠 ManageMemory + ContextMemory</div>
+        <p class="desc">A two-agent cortex: one writes durable memories with importance + tags, the other recalls them by keyword and injects them into the system prompt every turn.</p>
+        <div class="tags"><span class="tag cyan">cortex</span><span class="tag">RAG-lite</span></div>
+      </div>
+
+      <div class="card">
+        <div class="role">Verification &amp; QA</div>
+        <div class="name">⚒️ Anvil</div>
+        <p class="desc">Evidence-first verification ledger. Pushes back on unverified claims, snapshots baselines, and runs adversarial reviews. Stops "trust me" engineering — and "trust me" consulting.</p>
+        <div class="tags"><span class="tag hot">flagship</span><span class="tag">audit</span></div>
+      </div>
+
+      <div class="card">
+        <div class="role">Productivity OS</div>
+        <div class="name">📒 VaultMind</div>
+        <p class="desc">"Your second brain has a brain." 28 actions over Obsidian: 30/60/90 plans, OKRs, kanban, team dashboards, morning briefs, scheduled automations.</p>
+        <div class="tags"><span class="tag hot">flagship</span><span class="tag">obsidian</span></div>
+      </div>
+
+    </div>
+
+    <div class="band">
+      <h3>Simulation &amp; rehearsal</h3>
+      <span class="b-sub">— stress-test the plan before the client meeting</span>
+    </div>
+    <div class="agents">
+
+      <div class="card">
+        <div class="role">Persona Engineering</div>
+        <div class="name">🧬 Persona Factory</div>
+        <p class="desc">Natural language → a complete soul.md, a brainstem clone, its own port, and a holo.local route. Spawn a "skeptical Rust-obsessed security engineer" — or a CFO, or a procurement director — in seconds.</p>
+        <div class="tags"><span class="tag violet">spawner</span><span class="tag">multi-agent</span></div>
+      </div>
+
+      <div class="card">
+        <div class="role">Multi-Agent Simulation</div>
+        <div class="name">🌍 TinyWorld</div>
+        <p class="desc">Puts brainstem personalities in a room together to debate, review, or rehearse a steerco — so you can simulate-before-build instead of guess-then-rewrite.</p>
+        <div class="tags"><span class="tag violet">simulation</span><span class="tag">design</span></div>
+      </div>
+
+      <div class="card">
+        <div class="role">Experimentation</div>
+        <div class="name">🧪 Experiment</div>
+        <p class="desc">A/B tests the same prompt across multiple brainstems and scores the results. Treat personalities like model variants.</p>
+        <div class="tags"><span class="tag">A/B</span><span class="tag">eval</span></div>
+      </div>
+
+    </div>
+
+    <div class="band">
+      <h3>Engineering substrate</h3>
+      <span class="b-sub">— the plumbing that keeps everything else cheap to run</span>
+    </div>
+    <div class="band-sub-grid">
+
+      <div class="card">
+        <div class="role">Platform Integration</div>
+        <div class="name">🌉 Bridge</div>
+        <p class="desc">Universal chat-platform bridge. Telegram, Discord, Slack, any webhook — one platform-agnostic message format.</p>
+      </div>
+
+      <div class="card">
+        <div class="role">Messaging</div>
+        <div class="name">💬 Telegram</div>
+        <p class="desc">Routes <code>/holo</code> and <code>/mau</code> to different brainstems, chunks long replies, ships with allow-list security.</p>
+      </div>
+
+      <div class="card">
+        <div class="role">Service Mesh</div>
+        <div class="name">🛰️ HOLO Naming</div>
+        <p class="desc">Star-Trek-themed service registry on <code>holo.local</code> with a built-in reverse proxy. One hosts entry, zero friction.</p>
+      </div>
+
+      <div class="card">
+        <div class="role">Foundation</div>
+        <div class="name">⚙️ BasicAgent</div>
+        <p class="desc">The base class every agent inherits. Defines the OpenAI tool schema, system-context injection, and the contract the brainstem auto-discovers from disk.</p>
+      </div>
+
+    </div>
+
+    <div class="utilities-line">
+      <b>And utilities for —</b> trending-repo scraping, Hacker News firehose, agent trading-cards, gamified onboarding quests, and a few more. Small, sharp, and forkable into whatever the next engagement needs.
+    </div>
+
+  </section>
+
+  <!-- STACK -->
+  <section>
+    <h2>Stack &amp; Capabilities</h2>
+    <div class="stack">
+      <div class="col">
+        <h3>Engineering</h3>
+        <ul>
+          <li><b>Languages:</b> Python, JavaScript/TypeScript, HTML/CSS, Bash/PowerShell</li>
+          <li><b>AI:</b> OpenAI function-calling, GitHub Copilot API, prompt engineering, multi-agent orchestration</li>
+          <li><b>Web:</b> Flask, single-file servers, reverse proxies, webhooks</li>
+          <li><b>Automation:</b> Playwright, Remotion, scrapers, scheduled jobs</li>
+          <li><b>Integrations:</b> Telegram, Obsidian, GitHub, Hacker News, Discord/Slack-ready</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Operating model</h3>
+        <ul>
+          <li><b>Local-first by default</b> — runs offline; uses GitHub Copilot / Azure OpenAI when you choose to wire them up</li>
+          <li><b>Hot-reload everything</b> — agents reload from disk on every request</li>
+          <li><b>Auto-install</b> missing pip deps at import time</li>
+          <li><b>Cloud-portable</b> — local storage shim mirrors Azure File Storage API</li>
+          <li><b>Single dependency</b> — a GitHub account with Copilot access</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROOF -->
+  <section>
+    <h2>What hiring Howard actually buys you</h2>
+    <div class="proof">
+      <p class="quote">
+        "When you hire Howard, you're not buying hours. You're buying a roster. He arrives with
+        verification, memory, simulation, video, messaging, and persona-spawning already wired up.
+        The first week he doesn't write your software — he <b>installs his department</b> next to it."
+        <span class="by">— the case for Howard, in one paragraph</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section>
+    <div class="cta">
+      <div>
+        <h3>Hire Howard. Inherit the swarm — and the factory that builds more.</h3>
+        <p>Hundreds of agents on day one. Any new one you need: <b>minutes, not days.</b></p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <a class="btn" href="mailto:hhoy@live.com">Start the conversation →</a>
+        <a class="btn" href="https://www.linkedin.com/in/aienabledhuman/" target="_blank" rel="noopener" style="background:#0a66c2;border-color:rgba(255,255,255,.25);white-space:nowrap">LinkedIn · @aienabledhuman ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Howard · AI Master &amp; Agent Architect · "I don't write features. I summon teammates."
+    · <a href="mailto:hhoy@live.com">hhoy@live.com</a>
+    · <a href="https://www.linkedin.com/in/aienabledhuman/" target="_blank" rel="noopener">LinkedIn</a>
+  </footer>
+</div>
+</body>
+</html>
