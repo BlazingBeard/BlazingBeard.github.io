@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>My Twin · kited</title>
+<style>
+  :root { color-scheme: dark; --bg:#0d1117; --card:#161b22; --line:#30363d; --me:#1f6feb; --twin:#21262d; --accent:#3fb950; }
+  * { box-sizing:border-box; }
+  html,body { height:100%; }
+  body { margin:0; background:var(--bg); color:#e6edf3;
+         font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+         display:flex; flex-direction:column; }
+  header { padding:14px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+  header h1 { font-size:16px; margin:0; font-weight:700; }
+  .pill { display:inline-block; background:#0d1117; border:1px solid var(--line); border-radius:20px;
+          padding:3px 10px; font-size:12px; color:#8b949e; }
+  .pill.on { color:var(--accent); border-color:#238636; }
+  .kite { width:30px; height:30px; }
+  #log { flex:1 1 auto; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
+  .msg { max-width:85%; padding:9px 13px; border-radius:14px; white-space:pre-wrap; word-wrap:break-word; }
+  .msg.me { align-self:flex-end; background:var(--me); color:#fff; border-bottom-right-radius:4px; }
+  .msg.twin { align-self:flex-start; background:var(--twin); border:1px solid var(--line); border-bottom-left-radius:4px; }
+  .msg.sys { align-self:center; background:transparent; color:#8b949e; font-size:12.5px; text-align:center; max-width:100%; }
+  .msg.err { align-self:center; color:#f85149; font-size:13px; max-width:100%; text-align:center; }
+  form { display:flex; gap:8px; padding:12px 16px; border-top:1px solid var(--line); background:var(--bg); }
+  textarea { flex:1; resize:none; background:var(--card); border:1px solid var(--line); border-radius:10px;
+             color:#e6edf3; padding:10px 12px; font:15px inherit; max-height:120px; }
+  button { background:#238636; border:0; color:#fff; padding:0 18px; border-radius:10px; font-size:15px;
+           font-weight:600; cursor:pointer; }
+  button:disabled { background:#30363d; color:#8b949e; cursor:default; }
+  .typing { font-size:13px; color:#8b949e; }
+  .typing span { animation:blink 1.2s infinite; } .typing span:nth-child(2){ animation-delay:.2s; } .typing span:nth-child(3){ animation-delay:.4s; }
+  @keyframes blink { 0%,60%,100%{opacity:.2} 30%{opacity:1} }
+</style>
+</head>
+<body>
+  <header>
+    <svg class="kite" viewBox="0 0 100 134" aria-hidden="true">
+      <polygon points="50,40 50,6 10,40" fill="#e07a5f"/><polygon points="50,40 90,40 50,6" fill="#81b29a"/>
+      <polygon points="50,40 10,40 50,98" fill="#3d5a80"/><polygon points="50,40 50,98 90,40" fill="#f2cc8f"/>
+      <path d="M50 6 L10 40 L50 98 L90 40 Z M50 6 V98 M10 40 H90" fill="none" stroke="#fff" stroke-width="2"/>
+      <line x1="50" y1="98" x2="50" y2="124" stroke="#fff" stroke-width="2"/>
+    </svg>
+    <h1 id="title">My Twin</h1>
+    <span class="pill" id="status" style="margin-left:auto">connecting…</span>
+  </header>
+
+  <div id="log"></div>
+
+  <form id="form">
+    <textarea id="input" rows="1" placeholder="Message your twin…" autocomplete="off"></textarea>
+    <button id="send" type="submit" disabled>Send</button>
+  </form>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const logEl = $('#log');
+
+// ── Pairing comes in the URL FRAGMENT (#p=peer&s=secret[&b=broker][&n=name]).
+//    The fragment is never sent to any server — the secret stays private (out-of-band, §8).
+const frag = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+const HUB    = frag.get('p');
+const SECRET = frag.get('s');
+const BROKER = frag.get('b') || '';            // optional custom PeerJS broker host
+const TWIN_NAME = frag.get('n') || 'My Twin';
+$('#title').textContent = TWIN_NAME;
+document.title = TWIN_NAME + ' · kited';
+
+// Stable identity for this device (so the twin can tell neighbors apart).
+let RAPPID = localStorage.getItem('mytwin_rappid');
+if (!RAPPID) { RAPPID = (crypto.randomUUID ? crypto.randomUUID() : 'ph-' + Date.now().toString(36)); localStorage.setItem('mytwin_rappid', RAPPID); }
+
+// ── §8 sealed channel — AES-256-GCM, PBKDF2-SHA256(210000, salt 'rapp-neighborhood-5a/1').
+//    Byte-identical scheme to the RAPP neighborhood, so this page is protocol-conformant.
+const SALT = 'rapp-neighborhood-5a/1', ITERS = 210000;
+const _b64  = u8 => btoa(String.fromCharCode.apply(null, new Uint8Array(u8)));
+const _ub64 = s  => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+let _key = null;
+async function channelKey(secret){
+  if (_key) return _key;
+  const enc = new TextEncoder();
+  const base = await crypto.subtle.importKey('raw', enc.encode(secret), 'PBKDF2', false, ['deriveKey']);
+  _key = await crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt:enc.encode(SALT), iterations:ITERS, hash:'SHA-256' },
+    base, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
+  return _key;
+}
+async function seal(obj){
+  const k = await channelKey(SECRET);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, k, new TextEncoder().encode(JSON.stringify(obj)));
+  return { schema:'rapp-sealed/1.0', iv:_b64(iv), ct:_b64(ct) };
+}
+async function unseal(s){
+  const k = await channelKey(SECRET);
+  const pt = await crypto.subtle.decrypt({ name:'AES-GCM', iv:_ub64(s.iv) }, k, _ub64(s.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+
+// ── UI helpers ──
+function bubble(cls, text){ const d=document.createElement('div'); d.className='msg '+cls; d.textContent=text; logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight; return d; }
+function setStatus(txt, on){ const s=$('#status'); s.textContent=txt; s.classList.toggle('on', !!on); }
+
+// ── Channel state ──
+let peer=null, conn=null, ready=false, busy=false;
+let sessionId = 'kite-' + RAPPID.slice(0,8);
+const history = [];                         // {role, content} pairs for twin context
+const pending = {};                         // nonce -> resolve()
+
+function newPeer(){
+  return BROKER ? new Peer(undefined, { host:BROKER, secure:true, port:443 }) : new Peer();
+}
+
+function connect(){
+  if (!HUB || !SECRET){ bubble('err', 'Missing pairing info — scan the twin\'s QR again.'); setStatus('no pairing'); return; }
+  setStatus('connecting…');
+  peer = newPeer();
+  peer.on('open', () => {
+    conn = peer.connect(HUB, { reliable:true });
+    conn.on('open', () => { ready=true; setStatus('connected', true); $('#send').disabled=false; bubble('sys','🔒 Sealed connection open. Say hi to your twin.'); });
+    conn.on('data', onData);
+    conn.on('close', () => { ready=false; setStatus('disconnected'); $('#send').disabled=true; });
+    conn.on('error', e => bubble('err','channel error: '+((e&&e.message)||e)));
+  });
+  peer.on('error', e => {
+    const t=(e&&e.type)||e;
+    setStatus('error');
+    if (t==='peer-unavailable') bubble('err','Twin not hosting (peer offline). Re-host the bridge and scan again.');
+    else if (t==='network'||t==='server-error') bubble('err','Signaling broker unreachable. Check your connection.');
+    else bubble('err','peer error: '+t);
+  });
+}
+
+async function onData(raw){
+  try {
+    if (!raw || raw.schema !== 'rapp-sealed/1.0') return;     // only sealed traffic accepted
+    const msg = await unseal(raw);
+    if (msg.schema !== 'rapp-twin-chat-response/1.0') return;
+    const nonce = msg.envelope && msg.envelope.nonce;
+    const done = pending[nonce]; if (done){ delete pending[nonce]; done(msg); }
+  } catch(e){ /* drop messages we can't authenticate */ }
+}
+
+async function ask(text){
+  const nonce = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()));
+  const env = {
+    schema:'rapp-twin-chat/1.0', from_rappid:RAPPID, to_rappid:HUB,
+    utc:new Date().toISOString(), nonce, kind:'say',
+    payload:{ text, conversation_history:history.slice(-20), session_id:sessionId }, facets:[]
+  };
+  const reply = new Promise((res, rej) => {
+    pending[nonce] = res;
+    setTimeout(() => { if (pending[nonce]){ delete pending[nonce]; rej(new Error('timed out — twin did not answer')); } }, 120000);
+  });
+  conn.send(await seal(env));
+  const msg = await reply;
+  if (msg.status !== 200) throw new Error((msg.response && msg.response.error) || ('twin error '+msg.status));
+  return msg.response || {};
+}
+
+// ── Compose ──
+const input = $('#input');
+input.addEventListener('input', () => { input.style.height='auto'; input.style.height=Math.min(120,input.scrollHeight)+'px'; });
+input.addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey){ e.preventDefault(); $('#form').requestSubmit(); } });
+
+$('#form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text || !ready || busy) return;
+  busy = true;
+  input.value=''; input.style.height='auto'; $('#send').disabled=true;
+  bubble('me', text);
+  history.push({ role:'user', content:text });
+  const typing = bubble('twin', ''); typing.className='msg twin typing'; typing.innerHTML='<span>●</span><span>●</span><span>●</span>';
+  try {
+    const r = await ask(text);
+    const answer = (r.response != null ? r.response : JSON.stringify(r));
+    if (r.session_id) sessionId = r.session_id;
+    typing.className='msg twin'; typing.textContent = answer;
+    history.push({ role:'assistant', content:answer });
+  } catch(err) {
+    typing.remove();
+    bubble('err', (err && err.message) || String(err));
+  } finally {
+    busy = false;
+    $('#send').disabled = !ready;
+    input.focus();
+  }
+});
+
+connect();
+</script>
+</body>
+</html>
