@@ -189,7 +189,7 @@ const CHECKPOINTS = [
     "emoji": "\ud83d\udcac",
     "title": "First Conversation",
     "time": "3 min",
-    "desc": "Open localhost:7071 in your browser. Type anything and see your brainstem respond. It uses your soul.md personality on every turn.",
+    "desc": "Open localhost:7071 in your browser. Type anything and see your brainstem respond. It uses your soul.md personality on every turn. Tip: the welcome screen has a \u2728 5-minute guided tour built in (v0.6.9+) \u2014 it walks the same first steps interactively and points back to this quest at the end.",
     "toggle": "Had my first conversation \u2713",
     "copies": [
       {
@@ -233,15 +233,15 @@ const CHECKPOINTS = [
     "toggle": "Switched models \u2713",
     "copies": [
       {
-        "label": "List models",
-        "text": "curl http://localhost:7071/models"
+        "label": "Try the picker",
+        "text": "Click the model name in the top-right \u2192 pick a different model \u2192 send any message"
       },
       {
-        "label": "Check health",
-        "text": "curl http://localhost:7071/health"
+        "label": "Ask it directly",
+        "text": "Which model are you running on right now?"
       }
     ],
-    "stuck": "The model picker is in the top-right corner of the chat UI. Default is gpt-4o from .env GITHUB_MODEL. Falls back automatically if a model fails."
+    "stuck": "The model picker is in the top-right corner of the chat UI. Default is auto from .env GITHUB_MODEL. Falls back automatically if a model fails. Power-user check from a terminal: curl http://localhost:7071/models"
   },
   {
     "id": "memory-system",
@@ -273,19 +273,19 @@ const CHECKPOINTS = [
     "emoji": "\ud83e\udd16",
     "title": "Meet Your Agents",
     "time": "5 min",
-    "desc": "Open localhost:7071 and click the \ud83e\udd16 icon in the top-right toolbar. This is your agent control panel \u2014 browse, export, and delete agents.",
+    "desc": "Open localhost:7071 and click the \u2295 icon in the top-right toolbar. This is your agent control panel \u2014 browse, export, and delete agents.",
     "toggle": "I know my agents \u2713",
     "copies": [
       {
         "label": "List agents",
-        "text": "What agents do you have loaded? Give me a one-line description of each."
+        "text": "List your agents one by one, with what each one does."
       },
       {
-        "label": "API check",
-        "text": "curl http://localhost:7071/agents"
+        "label": "Test its honesty",
+        "text": "Which of your agents would you use to get tech news, and why?"
       }
     ],
-    "stuck": "The agents panel is the \ud83e\udd16 icon in the top-right toolbar. Agents are *_agent.py files in agents/ (not subfolders). They reload from disk on every chat \u2014 no restart needed."
+    "stuck": "The agents panel is the \u2295 icon in the top-right toolbar. As of brainstem v0.6.9 the assistant always knows its exact loaded agents \u2014 the list it gives you is authoritative. Power-user check: curl http://localhost:7071/agents. Agents are *_agent.py files in agents/ (not subfolders). They reload from disk on every chat \u2014 no restart needed."
   },
   {
     "id": "agent-hackernews",
@@ -395,12 +395,12 @@ const CHECKPOINTS = [
     "toggle": "Swapped agents \u2713",
     "copies": [
       {
-        "label": "List loaded",
-        "text": "curl http://localhost:7071/agents"
-      },
-      {
         "label": "Ask brainstem",
         "text": "How many agents do you have loaded right now?"
+      },
+      {
+        "label": "Prove a removal",
+        "text": "After deleting one in the panel: ask the same question again \u2014 watch the count drop, live"
       }
     ],
     "stuck": "agents/experimental/ is excluded from auto-loading. Set AGENTS_PATH in .env for per-project agent sets. Agents reload from disk on every chat request."
@@ -416,18 +416,18 @@ const CHECKPOINTS = [
     "copies": [
       {
         "label": "Export",
-        "text": "curl http://localhost:7071/agents/export/deep_brief_agent.py -o deep_brief_agent.py"
+        "text": "Open the \u2295 agents panel \u2192 click Export on any agent \u2014 it downloads as a single .py file"
       },
       {
         "label": "Import",
-        "text": "curl -X POST http://localhost:7071/agents/import -F \"file=@my_agent.py\""
+        "text": "Drag any exported .py file from Downloads onto the chat window \u2014 it hot-loads instantly, no restart"
       },
       {
         "label": "RAR registry",
         "text": "What agents are available in the RAR registry?"
       }
     ],
-    "stuck": "The agents panel (\ud83e\udd16 icon, top-right) has \u2193 export and \ud83d\uddd1\ufe0f delete buttons. Drag .py files onto the page to import. The RARRemoteAgent connects to the community RAPP Agent Registry."
+    "stuck": "The agents panel (\u2295 icon, top-right) has export and delete buttons. Drag .py files onto the page to import. The RARRemoteAgent connects to the community RAPP Agent Registry. Power-user equivalents: curl http://localhost:7071/agents/export/<file> and curl -X POST http://localhost:7071/agents/import -F \"file=@my_agent.py\""
   },
   {
     "id": "restart-brainstem",
