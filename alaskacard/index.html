@@ -407,6 +407,12 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
 
 .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(160%); background: var(--cp-panel-strong); border: 1px solid var(--cp-border); color: var(--cp-text); padding: 11px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; z-index: 200; box-shadow: var(--cp-shadow); transition: transform .35s cubic-bezier(.2,.9,.2,1); }
 
+/* ---- EMPTY DECK ---- */
+.empty-deck { grid-column: 1 / -1; text-align: center; padding: 54px 24px; border: 1px dashed var(--cp-border-strong); border-radius: 16px; background: var(--cp-surface); }
+.empty-deck .ed-ic { font-size: 34px; color: var(--cp-text-soft); margin-bottom: 10px; }
+.empty-deck h4 { font-size: 19px; margin: 0 0 6px; }
+.empty-deck p { max-width: 46ch; margin: 0 auto 18px; font-size: 14px; line-height: 1.6; color: var(--cp-text-muted); }
+
 /* ---- MODAL CLAIM STRIP ---- */
 .claim-strip { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; margin: 16px 0 18px; padding: 14px; border: 1px solid var(--cp-border); border-radius: 12px; background: var(--cp-surface-soft); }
 .claim-strip .cs-qr { width: 96px; height: 96px; background: #fff; padding: 6px; border-radius: 8px; border: 1px solid var(--cp-border); }
@@ -478,7 +484,7 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
     <div class="brand"><span class="seal">★</span> ALASKA CARD</div>
     <span class="spacer"></span>
     <a class="navlink" href="#claim-sec">Claim a Card</a>
-    <a class="navlink" href="#collection">My Deck</a>
+    <a class="navlink" href="#collection" id="navDeck">My Deck</a>
     <a class="navlink" href="#quest">Shore Quest</a>
     <button class="btn ghost" id="themeBtn" title="Toggle theme">◐</button>
     <button class="btn" id="kioskBtn">Dock Kiosk</button>
@@ -502,7 +508,7 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
       </p>
       <div class="hero-cta">
         <a class="btn primary" href="#claim-sec">◱ Claim a Card</a>
-        <a class="btn" href="#collection">See My Deck</a>
+        <a class="btn" href="#collection" id="heroDeck">See My Deck</a>
         <button class="btn ghost" id="heroPack">⚡ Rip a Pack</button>
       </div>
       <div class="stat-row">
@@ -1945,8 +1951,8 @@ function refreshStats() {
 let filter = "visitor";
 const grid = document.getElementById("grid"), filters = document.getElementById("filters");
 function renderFilters() {
-  const opts = [["visitor","Visitor Series"],["resident","Resident Series"],["all","All"]]
-    .concat(Object.keys(RARITY).map(k => [k, RARITY[k].label]), [["earned","Earned"]]);
+  const opts = [["earned","My Deck"],["visitor","Visitor Series"],["resident","Resident Series"],["all","All"]]
+    .concat(Object.keys(RARITY).map(k => [k, RARITY[k].label]));
   filters.innerHTML = opts.map(([k, l]) => {
     const n = k === "all" ? DECK.length : k === "earned" ? totals().count
       : (k === "visitor" || k === "resident") ? DECK.filter(c => c.ser === k).length
@@ -1962,8 +1968,25 @@ function renderGrid() {
     : (filter === "visitor" || filter === "resident") ? c.ser === filter
     : c.r === filter).sort((a, b) => b.p - a.p);
   grid.querySelectorAll(".card").forEach(c => { gyroWatch.unobserve(c); gyroCards.delete(c); });
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-deck">
+      <div class="ed-ic">◱</div>
+      <h4>${filter === "earned" ? "Your deck is empty — for now." : "Nothing here yet."}</h4>
+      <p>${filter === "earned"
+        ? "Every card starts locked. Go do the thing, then scan the code on the card to claim it. Your deck lives on this device."
+        : "No cards match that filter."}</p>
+      ${filter === "earned" ? `<a class="btn primary" href="#claim-sec">◱ Claim your first card</a>` : ""}
+    </div>`;
+    return;
+  }
   grid.innerHTML = list.map(c => cardHTML(c)).join("");
   bindTilt(grid, card => openModal(card.dataset.id));
+}
+
+/* "See My Deck" always means: show only what I've actually earned. */
+function showMyDeck() {
+  filter = "earned"; renderFilters(); renderGrid();
+  document.getElementById("collection").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 function renderFan() {
   const picks = ["storm-kayak","boat-sinker","outhouse-inferno","misty","eagle-theft"].map(id => DECK.find(c => c.id === id));
@@ -2152,8 +2175,7 @@ const claimEl = document.getElementById("claim");
 function closeClaim() { claimEl.classList.remove("on"); }
 document.getElementById("clDone").onclick = () => {
   closeClaim();
-  const sec = document.getElementById("grid");
-  if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+  showMyDeck();
 };
 document.getElementById("clStory").onclick = () => {
   const id = claimEl.dataset.card;
@@ -2217,6 +2239,12 @@ function handleScan() {
 }
 handleScan();
 
+/* ---- "My Deck" links show only what you've earned ---- */
+["navDeck","heroDeck"].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.onclick = e => { e.preventDefault(); showMyDeck(); };
+});
+
 /* ---- claim picker (no physical card in hand) ---- */
 const claimSel = document.getElementById("claimSel");
 claimSel.innerHTML = DECK.slice().sort((a, b) => a.p - b.p)
@@ -2235,10 +2263,7 @@ if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEve
   document.addEventListener("click", ask, { once: true });
 } else { startGyro(); }
 
-if (!Object.keys(state).length) {
-  ["gangway","tram","first-eagle","eagle-theft","soaked","rain"].forEach(id => state[id] = { earned: true, loc: "Ketchikan, AK" });
-  save(); refreshStats(); renderFilters(); renderGrid();
-}
+if (!Object.keys(state).length) { refreshStats(); renderFilters(); renderGrid(); }
 </script>
 </body>
 </html>
