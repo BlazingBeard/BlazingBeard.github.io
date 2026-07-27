@@ -407,8 +407,14 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
 
 .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(160%); background: var(--cp-panel-strong); border: 1px solid var(--cp-border); color: var(--cp-text); padding: 11px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; z-index: 200; box-shadow: var(--cp-shadow); transition: transform .35s cubic-bezier(.2,.9,.2,1); }
 
-/* ---- EMPTY DECK ---- */
-.empty-deck { grid-column: 1 / -1; text-align: center; padding: 54px 24px; border: 1px dashed var(--cp-border-strong); border-radius: 16px; background: var(--cp-surface); }
+/* ---- FOOTER ---- */
+.foot-bar { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--cp-border); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--cp-text-muted); }
+.foot-bar a { color: var(--cp-link); text-decoration: none; font-weight: 600; }
+.foot-bar a:hover { text-decoration: underline; }
+.foot-bar .dot { opacity: .5; }
+.foot-note { margin-top: 9px; font-size: 12px; color: var(--cp-text-soft); }
+
+/* ---- EMPTY DECK ---- */ grid-column: 1 / -1; text-align: center; padding: 54px 24px; border: 1px dashed var(--cp-border-strong); border-radius: 16px; background: var(--cp-surface); }
 .empty-deck .ed-ic { font-size: 34px; color: var(--cp-text-soft); margin-bottom: 10px; }
 .empty-deck h4 { font-size: 19px; margin: 0 0 6px; }
 .empty-deck p { max-width: 46ch; margin: 0 auto 18px; font-size: 14px; line-height: 1.6; color: var(--cp-text-muted); }
@@ -606,6 +612,12 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
 <footer><div class="wrap">
   <b>ALASKA CARD</b> — Official Alaska Cred · Ketchikan, AK · Collect stories, not just cards.
   <div style="margin-top:8px">Tilt any card for the foil. Click to open it, flip it, and see the printed back with a live, scannable QR code. Your deck saves to this device.</div>
+  <div class="foot-bar">
+    <span>&copy; <span id="yr">2026</span> BlazingBeard. All rights reserved.</span>
+    <span class="dot">·</span>
+    <span>Feedback or questions: <a href="mailto:hhoy@live.com?subject=Alaska%20Card%20feedback">hhoy@live.com</a></span>
+  </div>
+  <div class="foot-note">Early test build — your deck is stored on this device only. Clearing your browser data will erase it.</div>
 </div></footer>
 
 <!-- MODAL -->
@@ -2069,7 +2081,7 @@ function startPack() {
   packStage.classList.add("on");
   packSlot.innerHTML = `<div class="envelope"><h4>ALASKA</h4><p>Sealed Foil Pack</p><h4 style="font-size:34px">✦</h4><p>5 Cards · 1 Guaranteed Holo</p></div>`;
   packHint.textContent = "Click the pack to rip it";
-  packCount.textContent = "";
+  packCount.textContent = "Preview only — cards are claimed by scanning the real thing";
   packSlot.querySelector(".envelope").onclick = nextCard;
 }
 function nextCard() {
@@ -2081,7 +2093,7 @@ function nextCard() {
   packSlot.innerHTML = `<div class="reveal-card">${cardHTML(c, { forceUnlocked: true })}</div>`;
   bindTilt(packSlot, () => nextCard());
   packHint.textContent = c.r === "mythic" ? "★★ MYTHIC PULL ★★" : c.r === "legendary" ? "★ LEGENDARY ★" : "Click for next card";
-  packCount.textContent = `${pullIdx + 1} / ${pull.length} · ${RARITY[c.r].label} · ${c.p} pts`;
+  packCount.textContent = `${pullIdx + 1} / ${pull.length} · ${RARITY[c.r].label} · ${c.p} pts · preview only`;
 }
 packStage.onclick = ev => { if (ev.target === packStage) nextCard(); };
 document.getElementById("packClose").onclick = e => { e.stopPropagation(); packStage.classList.remove("on"); };
@@ -2162,7 +2174,7 @@ const TICK = [
   "◆ Front Street · Creek Street · Berth 2", "◆ Collect stories, not just cards",
   "◆ Mythic pull rate 1:288", "◆ Ketchikan, Alaska"
 ];
-document.getElementById("tick").innerHTML = (TICK.join("") ? TICK.concat(TICK).map(t => `<span>${t}</span>`).join("") : "");
+document.getElementById("tick").innerHTML =(TICK.join("") ? TICK.concat(TICK).map(t => `<span>${t}</span>`).join("") : "");
 
 renderFan(); renderFilters(); renderGrid(); refreshStats(); renderQR(); genQuest();
 
@@ -2238,6 +2250,9 @@ function handleScan() {
   if (touched) history.replaceState({}, "", location.pathname);
 }
 handleScan();
+
+const yrEl = document.getElementById("yr");
+if (yrEl) yrEl.textContent = new Date().getFullYear();
 
 /* ---- "My Deck" links show only what you've earned ---- */
 ["navDeck","heroDeck"].forEach(id => {
