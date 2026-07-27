@@ -168,14 +168,14 @@ p { line-height: 1.55; }
   transform: rotateX(var(--rx, 0deg)) rotateY(calc(var(--ry, 0deg) + var(--flip, 0deg))) scale(var(--sc, 1));
   transition: transform .55s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
   box-shadow: 0 0 2px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.14);
-  cursor: pointer; isolation: isolate; background: transparent;
+  cursor: pointer; background: transparent;
   touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .card.live, .card.flipping { will-change: transform; }
 .card.live { transition: transform .06s linear; }
 .card:focus-visible { outline: 2px solid var(--cp-accent); outline-offset: 4px; }
 .card-face, .card-back { position: absolute; inset: 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--ak-gold-lo);
   backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.card-face { transform: translateZ(.5px); }
+.card-face { transform: translateZ(.5px); isolation: isolate; }
 .card-face { background:
   linear-gradient(150deg, color-mix(in srgb, var(--rar) 22%, transparent) 0%, transparent 42%, color-mix(in srgb, var(--rar) 14%, transparent) 100%),
   radial-gradient(120% 90% at 50% 8%, color-mix(in srgb, var(--tone, #182228) 78%, #ffffff 22%), var(--tone, #182228) 62%, color-mix(in srgb, var(--tone, #182228) 72%, #000000 28%) 100%);
@@ -1819,6 +1819,8 @@ function cardHTML(c, opts) {
           <div class="serial">${ser} · KETCHIKAN, AK</div>
           ${earned ? '<div class="earned-stamp">Earned</div>' : ""}
         </div>
+        <div class="holo"></div><div class="glare"></div><div class="sparkle"></div>
+        ${!unlocked ? '<div class="lock-tag">Not yet earned</div>' : ""}
       </div>
       <div class="card-back">
         <div class="back-top"><span class="bt">ALASKA CARD</span><span class="bn">${ser}</span></div>
@@ -1839,8 +1841,6 @@ function cardHTML(c, opts) {
           </div>
         </div>
       </div>
-      <div class="holo"></div><div class="glare"></div><div class="sparkle"></div>
-      ${!unlocked ? '<div class="lock-tag">Not yet earned</div>' : ""}
     </div></div>`;
 }
 
