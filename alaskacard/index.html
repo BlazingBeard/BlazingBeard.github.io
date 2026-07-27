@@ -73,6 +73,7 @@ html[data-theme="dark"] {
 :root {
   --ak-ink: #0d1a17;
   --ak-parch: #efe3c2;
+  --ak-serif: "Bookman Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
   --ak-parch-2: #d9c89b;
   --ak-parch-bg: #f0e6cd;
   --ak-gold: #d9b45b;
@@ -170,18 +171,31 @@ p { line-height: 1.55; }
 .card.live { transition: transform .06s linear; }
 .card:focus-visible { outline: 2px solid var(--cp-accent); outline-offset: 4px; }
 .card-face, .card-back { position: absolute; inset: 0; border-radius: 16px; overflow: hidden; backface-visibility: hidden; border: 1px solid var(--ak-gold-lo); }
-.card-face { background: linear-gradient(150deg, color-mix(in srgb, var(--rar) 30%, var(--ak-frame)) 0%, var(--ak-frame) 55%, color-mix(in srgb, var(--rar) 18%, var(--ak-frame)) 100%); padding: 9px; display: flex; flex-direction: column; }
+.card-face { background:
+  linear-gradient(150deg, color-mix(in srgb, var(--rar) 22%, transparent) 0%, transparent 42%, color-mix(in srgb, var(--rar) 14%, transparent) 100%),
+  radial-gradient(120% 90% at 50% 8%, color-mix(in srgb, var(--tone, #182228) 78%, #ffffff 22%), var(--tone, #182228) 62%, color-mix(in srgb, var(--tone, #182228) 72%, #000000 28%) 100%);
+  padding: 9px; display: flex; flex-direction: column; }
+.card-face::after { content: ""; position: absolute; inset: 3px; border-radius: 13px; border: 1px solid rgba(255,255,255,.06); pointer-events: none; }
 .card-inner { flex: 1; border: 2px solid var(--ak-gold); border-radius: 9px; background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.42)); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+.card-inner .cnr { position: absolute; width: 15px; height: 15px; z-index: 4; pointer-events: none; opacity: .95; }
+.card-inner .cnr::before { content: ""; position: absolute; inset: 0; border: 0 solid var(--ak-gold-hi); }
+.card-inner .cnr::after { content: ""; position: absolute; width: 4px; height: 4px; background: var(--ak-gold-hi); transform: rotate(45deg); box-shadow: 0 0 5px rgba(217,180,91,.8); }
+.card-inner .cnr.tl { top: 3px; left: 3px; } .card-inner .cnr.tl::before { border-top-width: 2px; border-left-width: 2px; border-radius: 6px 0 0 0; }
+.card-inner .cnr.tr { top: 3px; right: 3px; } .card-inner .cnr.tr::before { border-top-width: 2px; border-right-width: 2px; border-radius: 0 6px 0 0; }
+.card-inner .cnr.bl { bottom: 3px; left: 3px; } .card-inner .cnr.bl::before { border-bottom-width: 2px; border-left-width: 2px; border-radius: 0 0 0 6px; }
+.card-inner .cnr.br { bottom: 3px; right: 3px; } .card-inner .cnr.br::before { border-bottom-width: 2px; border-right-width: 2px; border-radius: 0 0 6px 0; }
+.card-inner .cnr.tl::after { top: 5px; left: 5px; } .card-inner .cnr.tr::after { top: 5px; right: 5px; }
+.card-inner .cnr.bl::after { bottom: 5px; left: 5px; } .card-inner .cnr.br::after { bottom: 5px; right: 5px; }
 .card-head { text-align: center; padding: 9px 8px 4px; }
-.card-head .ttl { font-size: 17px; font-weight: 900; letter-spacing: .10em; color: var(--ak-gold-hi); text-shadow: 0 1px 0 var(--ak-gold-lo), 0 0 12px rgba(217,180,91,.35); }
+.card-head .ttl { font-family: var(--ak-serif); font-size: 17.5px; font-weight: 700; letter-spacing: .13em; color: var(--ak-gold-hi); text-shadow: 0 1px 0 rgba(0,0,0,.6), 0 0 12px rgba(217,180,91,.35); }
 .card-head .sub { display: inline-block; margin-top: 3px; font-size: 8px; letter-spacing: .2em; text-transform: uppercase; color: var(--ak-frame); background: linear-gradient(180deg, var(--ak-gold-hi), var(--ak-gold)); padding: 1px 12px; border-radius: 2px; font-weight: 800; clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%); }
-.art { margin: 6px 9px; border: 1px solid var(--ak-gold-lo); border-radius: 4px; overflow: hidden; aspect-ratio: 4 / 3; position: relative; background: var(--ak-ink); }
+.art { margin: 6px 9px; border: 1px solid var(--ak-gold-lo); border-radius: 4px; overflow: hidden; aspect-ratio: 4 / 3; position: relative; background: var(--ak-ink); box-shadow: 0 0 0 1px rgba(0,0,0,.55), inset 0 0 20px rgba(0,0,0,.45); }
 .art svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.art .motif { position: absolute; inset: 0; display: grid; place-items: center; font-size: 60px; line-height: 1; filter: drop-shadow(0 6px 10px rgba(0,0,0,.6)) saturate(1.15); }
+.art .grain { position: absolute; inset: 0; opacity: .16; mix-blend-mode: overlay; background-image: radial-gradient(rgba(255,255,255,.9) .5px, transparent .6px), radial-gradient(rgba(0,0,0,.9) .5px, transparent .6px); background-size: 3px 3px, 4px 4px; background-position: 0 0, 1px 2px; }
 .art .vig { position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 40%, transparent 45%, rgba(0,0,0,.55)); }
 .card-body { padding: 4px 12px 0; text-align: center; flex: 1; }
-.card-body h3 { font-size: 15px; font-weight: 900; letter-spacing: .07em; color: var(--ak-parch); text-transform: uppercase; margin: 2px 0 4px; }
-.card-body p { margin: 0; font-size: 10.5px; line-height: 1.35; color: var(--ak-parch-2); }
+.card-body h3 { font-family: var(--ak-serif); font-size: 15.5px; font-weight: 700; letter-spacing: .05em; color: var(--ak-parch); text-transform: uppercase; margin: 2px 0 4px; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.card-body p { margin: 0; font-family: var(--ak-serif); font-size: 10.5px; line-height: 1.38; color: var(--ak-parch-2); }
 .card-foot { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px 9px; gap: 6px; }
 .rar-badge { font-size: 8.5px; letter-spacing: .18em; font-weight: 800; text-transform: uppercase; padding: 3px 14px; border-radius: 2px; color: #fff; background: linear-gradient(180deg, color-mix(in srgb, var(--rar) 85%, #fff 15%), var(--rar)); border: 1px solid rgba(0,0,0,.35); clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 50%, 100% 100%, 0 100%, 6px 50%); }
 .pts { width: 40px; height: 40px; border-radius: 50%; flex: none; background: radial-gradient(circle at 34% 28%, var(--ak-gold-hi), var(--ak-gold) 48%, var(--ak-gold-lo)); border: 1px solid var(--ak-gold-lo); color: var(--ak-frame); display: grid; place-items: center; line-height: 1; text-align: center; }
@@ -192,7 +206,19 @@ p { line-height: 1.55; }
 /* ---- CARD BACK ---- */
 .card-back { transform: rotateY(180deg);
   background: linear-gradient(160deg, var(--ak-parch-bg), var(--ak-parch-2));
-  padding: 12px 13px; display: flex; flex-direction: column; color: var(--ak-frame); }
+  padding: 12px 13px; display: flex; flex-direction: column; color: var(--ak-frame); font-family: var(--ak-serif); }
+.card-back::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background-image:
+    repeating-linear-gradient(92deg, rgba(120,96,52,.055) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(3deg, rgba(120,96,52,.045) 0 1px, transparent 1px 6px),
+    radial-gradient(60% 45% at 78% 84%, rgba(120,96,52,.16), transparent 70%),
+    radial-gradient(50% 40% at 14% 12%, rgba(120,96,52,.12), transparent 70%); }
+.card-back::after { content: ""; position: absolute; width: 132px; height: 132px; left: 50%; top: 46%; transform: translate(-50%,-50%) rotate(22deg); pointer-events: none; opacity: .13;
+  background:
+    conic-gradient(from 0deg, var(--ak-frame) 0 1.4deg, transparent 1.4deg 88.6deg, var(--ak-frame) 88.6deg 91.4deg, transparent 91.4deg 178.6deg, var(--ak-frame) 178.6deg 181.4deg, transparent 181.4deg 268.6deg, var(--ak-frame) 268.6deg 271.4deg, transparent 271.4deg);
+  -webkit-mask: radial-gradient(circle, #000 0 62%, transparent 63%); mask: radial-gradient(circle, #000 0 62%, transparent 63%);
+  border: 1.5px solid var(--ak-frame); border-radius: 50%; }
+.card-back > * { position: relative; z-index: 2; }
 .back-top { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--ak-frame); padding-bottom: 5px; }
 .back-top .bt { font-size: 12px; font-weight: 900; letter-spacing: .18em; }
 .back-top .bn { font-size: 9px; font-weight: 800; letter-spacing: .1em; opacity: .7; }
@@ -1124,41 +1150,781 @@ const PORTS = [
 ];
 
 /* ============================================================
-   SCENE ART
+   PAINTED SCENE ENGINE  —  every card is an illustration
+   200x150 viewBox. Horizon (waterline) default y=96.
    ============================================================ */
-const SCENES = {
-  sea:    { sky:["#7fb2d6","#cfe4ef"], sea:["#1c4a63","#0d2b3c"], mtn:"#2b4b58", wave:1 },
-  wreck:  { sky:["#3b4a58","#8d9aa5"], sea:["#20404f","#0a1c26"], mtn:"#1e3540", wave:2 },
-  storm:  { sky:["#5b6b78","#b9c6cf"], sea:["#1e4a5c","#0a2230"], mtn:"#26404c", wave:3 },
-  aurora: { sky:["#07131f","#123048"], sea:["#0b2233","#050e16"], mtn:"#0e2230", wave:0, aurora:1, star:1 },
-  forest: { sky:["#8fb0a3","#d6e2d6"], sea:["#20402f","#0d1f18"], mtn:"#1d3a2c", wave:0, trees:1 },
-  cabin:  { sky:["#22394a","#4d6a75"], sea:["#1a2c22","#0c1712"], mtn:"#1b3a30", wave:0, trees:1, star:1 },
-  sky:    { sky:["#7ab0da","#dfeef7"], sea:["#1f5470","#0d2c3e"], mtn:"#33566a", wave:1, cloud:1 },
-  fire:   { sky:["#2a1408","#7a3410"], sea:["#241209","#0d0603"], mtn:"#2c1a0e", wave:0, ember:1 },
-  ice:    { sky:["#9dc6de","#e6f2f7"], sea:["#4a86a4","#1c4a63"], mtn:"#7fb6cf", wave:0 },
-  town:   { sky:["#6b7f8c","#c3d1d8"], sea:["#25454f","#0f2229"], mtn:"#264049", wave:1, rain:1 }
+const PAL = {
+  day:   ["#5f9fd0", "#9fcbe6", "#dfeef5"],
+  bright:["#3f86c4", "#8fc2e2", "#e8f4f8"],
+  dawn:  ["#20325e", "#8e5a86", "#f0b077"],
+  dusk:  ["#152444", "#5b3f74", "#e08a55"],
+  storm: ["#2f3941", "#586873", "#93a4ae"],
+  gale:  ["#242c33", "#465661", "#7d8f9a"],
+  night: ["#03080f", "#081a2c", "#123048"],
+  rain:  ["#4a5a66", "#7d8e99", "#b5c3cb"],
+  fire:  ["#0d0603", "#4a1806", "#d9541a"],
+  ice:   ["#5e9ec4", "#a9d6ea", "#e9f7fd"],
+  moss:  ["#4d7a74", "#89ae9c", "#cfdfcd"],
+  gold:  ["#2a4a70", "#c9834f", "#f6d79a"]
 };
-function sceneSVG(key, uid) {
-  const c = SCENES[key] || SCENES.sea, g = "sky" + uid, w = "sea" + uid;
-  let extra = "";
-  if (c.aurora) extra += `<g opacity=".85">
-    <path d="M0,26 C40,6 80,44 120,20 C160,-2 190,30 200,18 L200,46 L0,46 Z" fill="#3ef2a0" opacity=".38"/>
-    <path d="M0,34 C36,16 76,52 116,28 C156,6 186,36 200,26 L200,52 L0,52 Z" fill="#41b7ff" opacity=".3"/>
-    <path d="M0,20 C44,2 74,36 118,14 C150,-2 184,22 200,12 L200,36 L0,36 Z" fill="#b46bff" opacity=".22"/></g>`;
-  if (c.star) for (let i = 0; i < 26; i++) extra += `<circle cx="${(i * 37) % 200}" cy="${(i * 23) % 58}" r=".7" fill="#fff" opacity="${.25 + ((i % 4) * .18)}"/>`;
-  if (c.cloud) extra += `<g fill="#ffffff" opacity=".8"><ellipse cx="46" cy="34" rx="26" ry="9"/><ellipse cx="66" cy="30" rx="18" ry="8"/><ellipse cx="146" cy="26" rx="24" ry="8"/></g>`;
-  if (c.ember) for (let i = 0; i < 24; i++) extra += `<circle cx="${(i * 53) % 200}" cy="${(i * 31) % 86}" r="${.6 + (i % 3) * .5}" fill="#ffb43d" opacity="${.35 + ((i % 3) * .2)}"/>`;
-  if (c.rain) for (let i = 0; i < 40; i++) extra += `<line x1="${(i * 29) % 205}" y1="${(i * 17) % 110}" x2="${((i * 29) % 205) - 4}" y2="${((i * 17) % 110) + 9}" stroke="#dff0ff" stroke-width=".7" opacity=".45"/>`;
-  let trees = "";
-  if (c.trees) for (let i = 0; i < 16; i++) { const x = 4 + i * 13 + ((i % 3) * 3), h = 26 + ((i * 7) % 16); trees += `<path d="M${x},96 L${x + 5},${96 - h} L${x + 10},96 Z" fill="#0b1c14" opacity=".92"/>`; }
-  let waves = "";
-  if (c.wave) for (let i = 0; i < c.wave + 1; i++) { const y = 92 + i * 8; waves += `<path d="M0,${y} C25,${y - 4} 45,${y + 4} 70,${y} C95,${y - 4} 120,${y + 4} 145,${y} C170,${y - 4} 190,${y + 3} 200,${y - 1}" stroke="#dff0ff" stroke-width="1.1" fill="none" opacity="${.5 - i * .1}"/>`; }
-  return `<svg viewBox="0 0 200 150" preserveAspectRatio="none"><defs>
-    <linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c.sky[0]}"/><stop offset="100%" stop-color="${c.sky[1]}"/></linearGradient>
-    <linearGradient id="${w}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c.sea[0]}"/><stop offset="100%" stop-color="${c.sea[1]}"/></linearGradient></defs>
-    <rect width="200" height="150" fill="url(#${g})"/>${extra}
-    <path d="M0,88 L26,58 L44,74 L68,44 L92,72 L114,52 L140,80 L164,60 L200,86 L200,100 L0,100 Z" fill="${c.mtn}"/>
-    <path d="M0,92 L200,92 L200,150 L0,150 Z" fill="url(#${w})"/>${trees}${waves}</svg>`;
+const RIDGEC = {
+  day:   ["#7799ac", "#456a7c", "#22404f"],
+  bright:["#6d94ab", "#3d6478", "#1c3a49"],
+  dawn:  ["#6b5a80", "#3c3557", "#1d1c33"],
+  dusk:  ["#5d4c72", "#33304f", "#171a2c"],
+  storm: ["#6b7a85", "#414f59", "#232d35"],
+  gale:  ["#5b6a75", "#36434c", "#1b232a"],
+  night: ["#16324a", "#0e2234", "#07131e"],
+  rain:  ["#8496a1", "#4f616c", "#2a3841"],
+  fire:  ["#4a2a18", "#2c160c", "#150903"],
+  ice:   ["#9fc9e0", "#6fa2c0", "#3f7495"],
+  moss:  ["#75988a", "#41695c", "#1f3b32"],
+  gold:  ["#8a7a86", "#4a4258", "#241f33"]
+};
+const RIDGE = {
+  far: "M0,72 L16,56 L28,64 L44,46 L58,60 L76,40 L92,58 L110,47 L128,62 L146,50 L166,66 L184,54 L200,68 L200,100 L0,100 Z",
+  mid: "M0,84 L20,66 L34,77 L54,60 L72,79 L92,68 L114,83 L134,70 L156,84 L176,72 L200,85 L200,102 L0,102 Z",
+  near:"M0,95 L14,84 L28,90 L40,86 L52,93 L66,88 L80,94 L98,90 L118,95 L136,91 L158,96 L178,92 L200,97 L200,104 L0,104 Z"
+};
+const SNOW = `<g fill="#eef7fc" opacity=".88">
+<path d="M44,46 L38,56 L42,54 L46,57 L51,53 Z"/><path d="M76,40 L69,53 L74,50 L79,55 L86,51 Z"/>
+<path d="M110,47 L104,57 L108,55 L113,59 L118,55 Z"/><path d="M146,50 L140,60 L144,58 L149,62 L154,58 Z"/>
+<path d="M184,54 L179,63 L183,61 L187,64 L191,61 Z"/></g>`;
+
+const rnd = (s) => { let x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+function stars(u) {
+  let o = "";
+  for (let i = 0; i < 46; i++) {
+    const x = rnd(i + u) * 200, y = rnd(i * 3.1 + 7) * 74, r = .35 + rnd(i * 5.7) * .85;
+    o += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(2)}" fill="#fff" opacity="${(.3 + rnd(i * 9.3) * .65).toFixed(2)}"/>`;
+  }
+  return o;
+}
+function aurora(u) {
+  return `<g style="mix-blend-mode:screen">
+  <path d="M-10,30 C30,8 60,46 100,22 C140,0 170,34 210,14 L210,62 C170,80 140,50 100,68 C60,86 30,52 -10,72 Z" fill="#3df2a6" opacity=".34"/>
+  <path d="M-10,40 C34,20 66,56 108,32 C146,10 176,42 210,24 L210,58 C176,74 146,48 108,64 C66,82 34,54 -10,74 Z" fill="#39b8ff" opacity=".26"/>
+  <path d="M-10,22 C36,2 62,38 106,12 C144,-8 178,26 210,8 L210,36 C178,52 144,26 106,44 C62,64 36,32 -10,52 Z" fill="#b070ff" opacity=".2"/>
+  <path d="M-10,34 C40,14 70,50 112,26 C150,6 180,38 210,20 L210,30 C180,46 150,20 112,38 C70,58 40,26 -10,46 Z" fill="#ffffff" opacity=".14"/></g>`;
+}
+function clouds(u, y, c, op) {
+  c = c || "#ffffff"; op = op == null ? .8 : op; y = y || 26;
+  let o = `<g fill="${c}" opacity="${op}">`;
+  for (let i = 0; i < 5; i++) {
+    const cx = 12 + rnd(i + u * .7) * 190, cy = y + rnd(i * 2.3) * 22 - 8, rx = 14 + rnd(i * 4.1) * 22;
+    o += `<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${(rx * .3 + 2).toFixed(1)}"/>`;
+    o += `<ellipse cx="${(cx + rx * .4).toFixed(1)}" cy="${(cy - 3).toFixed(1)}" rx="${(rx * .6).toFixed(1)}" ry="${(rx * .28 + 2).toFixed(1)}"/>`;
+  }
+  return o + "</g>";
+}
+function rainfall(u, n, op) {
+  let o = `<g stroke="#dff0ff" stroke-width=".7" opacity="${op || .4}">`;
+  for (let i = 0; i < (n || 44); i++) {
+    const x = rnd(i + u) * 210, y = rnd(i * 2.7 + 3) * 150;
+    o += `<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${(x - 4).toFixed(1)}" y2="${(y + 11).toFixed(1)}"/>`;
+  }
+  return o + "</g>";
+}
+function embers(u, n) {
+  let o = "";
+  for (let i = 0; i < (n || 30); i++) {
+    const x = rnd(i + u) * 200, y = 10 + rnd(i * 3.3) * 100, r = .5 + rnd(i * 7.1) * 1.1;
+    o += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(2)}" fill="${i % 3 ? "#ffd76a" : "#ff8a1f"}" opacity="${(.35 + rnd(i * 2.2) * .5).toFixed(2)}"/>`;
+  }
+  return o;
+}
+function spruce(x, base, h, fill, w) {
+  w = w || h * .3;
+  return `<path d="M${x},${base - h} L${x + w * .62},${base - h * .5} L${x + w * .34},${base - h * .52} L${x + w},${base - h * .16} L${x + w * .5},${base - h * .18} L${x + w * 1.05},${base} L${x - w * 1.05},${base} L${x - w * .5},${base - h * .18} L${x - w},${base - h * .16} L${x - w * .34},${base - h * .52} L${x - w * .62},${base - h * .5} Z" fill="${fill}"/>`;
+}
+function forestLine(base, count, fill, seed, minH, maxH) {
+  let o = "";
+  for (let i = 0; i < count; i++) {
+    const x = -4 + (i * 208) / count + rnd(i + seed) * 6;
+    const h = (minH || 14) + rnd(i * 3.7 + seed) * ((maxH || 30) - (minH || 14));
+    o += spruce(x, base, h, fill);
+  }
+  return o;
+}
+function swells(y, n, c, op, amp) {
+  let o = "";
+  for (let i = 0; i < (n || 3); i++) {
+    const yy = y + i * 9, a = (amp || 3) - i * .3;
+    o += `<path d="M0,${yy} C24,${yy - a} 42,${yy + a} 66,${yy} C90,${yy - a} 112,${yy + a} 136,${yy} C160,${yy - a} 180,${yy + a} 200,${yy - 1}" fill="none" stroke="${c || "#dff0ff"}" stroke-width="${(1.2 - i * .12).toFixed(2)}" opacity="${(op || .45) - i * .07}"/>`;
+  }
+  return o;
+}
+function reflect(hz, c) {
+  return `<g opacity=".3" fill="${c || "#ffffff"}"><ellipse cx="126" cy="${hz + 16}" rx="30" ry="9"/><ellipse cx="126" cy="${hz + 30}" rx="20" ry="5"/></g>`;
+}
+
+/* ---------- foreground subjects ---------- */
+function paddler(x, y, s, coat, hood) {
+  return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-5,0 C-5,-9 5,-9 5,0 Z" fill="${coat}"/>
+  <circle cx="0" cy="-11" r="4.2" fill="${hood}"/>
+  <path d="M-1.5,-13 a4.2,4.2 0 0 1 5,3" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1"/></g>`;
+}
+function paddle(x, y, rot) {
+  return `<g transform="translate(${x},${y}) rotate(${rot})"><rect x="-16" y="-.7" width="32" height="1.4" rx=".7" fill="#e8d9b0"/>
+  <ellipse cx="-17" cy="0" rx="3.4" ry="1.9" fill="#d9482f"/><ellipse cx="17" cy="0" rx="3.4" ry="1.9" fill="#d9482f"/></g>`;
+}
+function hull(cx, cy, w, h, top, side, rot) {
+  return `<g transform="translate(${cx},${cy}) rotate(${rot || 0})">
+  <path d="M${-w},0 C${-w * .7},${h} ${w * .7},${h} ${w},0 Z" fill="${side}"/>
+  <path d="M${-w},0 C${-w * .6},${-h * .35} ${w * .6},${-h * .35} ${w},0 Z" fill="${top}"/></g>`;
+}
+function windows(x, y, n, w, h, gap, c) {
+  let o = "";
+  for (let i = 0; i < n; i++) o += `<rect x="${x + i * (w + gap)}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
+  return o;
+}
+
+const FG = {
+/* ============ RESIDENT ============ */
+kayak: (u) => `
+  <path d="M-10,100 C24,80 56,116 96,96 C132,78 168,110 210,90 L210,150 L-10,150 Z" fill="#123243"/>
+  <path d="M-10,110 C26,96 58,126 100,108 C140,90 174,118 210,104 L210,150 L-10,150 Z" fill="#0a2130" opacity=".95"/>
+  <path d="M-10,100 C24,80 56,116 96,96 C132,78 168,110 210,90" fill="none" stroke="#cfe8f2" stroke-width="2" opacity=".8"/>
+  <g transform="translate(92,97) rotate(-11)">
+    <path d="M-32,0 C-22,8 22,8 32,0 C22,-5 -22,-5 -32,0 Z" fill="#c8452c"/>
+    <path d="M-32,0 C-22,8 22,8 32,0 C22,4 -22,4 -32,0 Z" fill="#7d2617"/>
+    <rect x="-15" y="-3.6" width="30" height="3.6" rx="1.6" fill="#2b1a12"/>
+    ${paddler(-9, -3, 1, "#f2b134", "#f7d271")}${paddler(10, -3, 1, "#e8e2d0", "#d9d2bd")}
+    ${paddle(-9, -9, 24)}${paddle(10, -9, -28)}
+  </g>
+  <g fill="#eaf6fb" opacity=".7"><ellipse cx="70" cy="92" rx="17" ry="6"/><ellipse cx="126" cy="90" rx="13" ry="5"/><ellipse cx="46" cy="102" rx="10" ry="4"/></g>`,
+
+outhouse: (u) => `
+  <g><rect x="70" y="62" width="42" height="56" fill="#3a2317"/>
+  <path d="M66,64 L91,48 L116,64 Z" fill="#2a1810"/>
+  <rect x="74" y="66" width="34" height="48" fill="#5a3a22"/>
+  <path d="M88,72 L94,72 L94,80 L88,80 Z M85,76 L97,76" stroke="#1a0d06" stroke-width="1.6" fill="none"/>
+  <g><path d="M74,114 C76,96 84,104 86,84 C92,100 96,88 98,110 C104,92 108,104 108,114 Z" fill="#ff9a1f" opacity=".95"/>
+  <path d="M78,114 C80,100 86,106 88,92 C93,104 97,94 98,112 C102,98 105,106 105,114 Z" fill="#ffd34d"/>
+  <path d="M84,114 C86,104 90,108 91,98 C95,108 98,102 99,114 Z" fill="#fff0b0"/></g>
+  <path d="M66,64 C74,40 84,52 91,26 C98,50 108,40 116,64 Z" fill="#ff7a12" opacity=".45"/>
+  <path d="M74,58 C80,38 88,48 92,30 C97,48 105,40 110,60 Z" fill="#ffb03a" opacity=".5"/></g>
+  ${embers(u, 34)}
+  <path d="M0,118 L200,112 L200,150 L0,150 Z" fill="#1a0f07"/>
+  <g fill="#ff8a1f" opacity=".28"><ellipse cx="91" cy="120" rx="60" ry="12"/></g>`,
+
+genboom: (u) => `
+  <rect x="20" y="86" width="160" height="6" fill="#1a1410"/>
+  <g><rect x="66" y="62" width="54" height="30" rx="3" fill="#3b4a3f"/>
+  <rect x="66" y="62" width="54" height="8" fill="#55685a"/>
+  <rect x="72" y="74" width="16" height="12" fill="#222b25"/>
+  <circle cx="106" cy="80" r="6" fill="#222b25"/><circle cx="106" cy="80" r="2.4" fill="#8fa596"/>
+  <rect x="118" y="70" width="8" height="4" fill="#2a332c"/></g>
+  <g><path d="M93,66 L104,30 L86,46 L98,8 L74,42 L82,26 L64,58 L78,50 L70,70 Z" fill="#ffd76a" opacity=".95"/>
+  <path d="M93,66 L100,40 L88,50 L96,24 L80,46 L86,36 L74,58 Z" fill="#fff4c9"/></g>
+  <circle cx="92" cy="58" r="30" fill="#ff9a1f" opacity=".28"/>
+  <circle cx="92" cy="58" r="18" fill="#ffd76a" opacity=".3"/>
+  ${embers(u, 26)}
+  <g stroke="#141a16" stroke-width="1.4" fill="none" opacity=".9"><path d="M120,74 C134,70 140,80 152,72"/><path d="M66,78 C52,74 46,84 34,76"/></g>
+  <path d="M0,92 L200,88 L200,150 L0,150 Z" fill="#101812"/>`,
+
+sinking: (u) => `
+  <g transform="translate(104,98) rotate(-34)">
+    <path d="M-40,0 C-28,13 28,13 40,0 C28,-7 -28,-7 -40,0 Z" fill="#1e2b33"/>
+    <path d="M-40,0 C-28,13 28,13 40,0 C28,7 -28,7 -40,0 Z" fill="#0d161c"/>
+    <rect x="-40" y="-3" width="80" height="3" fill="#c9d6dc"/>
+    <rect x="-12" y="-16" width="24" height="14" fill="#dfe8ec"/>
+    ${windows(-8, -13, 3, 5, 5, 2, "#2b3d46")}
+    <rect x="-1.6" y="-30" width="3.2" height="15" fill="#b9c6cc"/>
+  </g>
+  <g fill="none" stroke="#e6f4fa" stroke-width="1.4" opacity=".75">
+   <ellipse cx="104" cy="104" rx="46" ry="10"/><ellipse cx="104" cy="106" rx="30" ry="7"/></g>
+  <g fill="#e6f4fa" opacity=".55"><circle cx="76" cy="112" r="2.4"/><circle cx="132" cy="116" r="1.8"/><circle cx="112" cy="122" r="3"/><circle cx="90" cy="126" r="1.6"/></g>
+  ${swells(114, 3, "#cfe6f0", .4, 3)}`,
+
+salvage: (u) => `
+  <g><rect x="36" y="26" width="5" height="76" fill="#2b3a44"/>
+  <path d="M38,30 L150,58" stroke="#4c5f6b" stroke-width="4"/>
+  <path d="M148,58 L148,74" stroke="#8b9aa3" stroke-width="1.6"/>
+  <path d="M30,102 L52,102 L48,110 L34,110 Z" fill="#1b262d"/></g>
+  <g transform="translate(146,86)">
+    <path d="M-26,0 C-18,10 18,10 26,0 C18,-6 -18,-6 -26,0 Z" fill="#2b3f4a"/>
+    <path d="M-26,0 C-18,10 18,10 26,0 C18,5 -18,5 -26,0 Z" fill="#14232b"/>
+    <rect x="-26" y="-2.4" width="52" height="2.4" fill="#d8c48a"/>
+    <rect x="-7" y="-12" width="15" height="10" fill="#cdd8dd"/>
+  </g>
+  <g fill="#f2913a"><circle cx="120" cy="98" r="5"/><circle cx="172" cy="98" r="5"/></g>
+  <g fill="none" stroke="#cfe6f0" stroke-width="1" opacity=".6"><path d="M120,98 C126,106 166,106 172,98"/></g>
+  ${swells(108, 3, "#bcd8e4", .4, 2.4)}`,
+
+solarcabin: (u) => `
+  ${forestLine(96, 12, "#173026", 4, 14, 26)}
+  <g><path d="M58,84 L92,60 L126,84 Z" fill="#3d2a1c"/>
+  <rect x="62" y="82" width="60" height="30" fill="#6b4a30"/>
+  <g stroke="#4a3220" stroke-width=".8"><path d="M62,90 H122 M62,98 H122 M62,106 H122"/></g>
+  <rect x="86" y="92" width="12" height="20" fill="#2a1c12"/>
+  <rect x="68" y="90" width="12" height="10" fill="#ffd98a"/><rect x="104" y="90" width="12" height="10" fill="#ffd98a"/>
+  <rect x="70" y="52" width="4" height="12" fill="#3a2a1e"/>
+  <g transform="translate(92,62) rotate(-22)"><rect x="-26" y="-16" width="52" height="16" fill="#1d3a55"/>
+   <g stroke="#3f6d94" stroke-width=".9"><path d="M-13,-16 V0 M0,-16 V0 M13,-16 V0 M-26,-8 H26"/></g>
+   <rect x="-26" y="-16" width="52" height="16" fill="none" stroke="#9fb6c6" stroke-width="1"/></g>
+  <rect x="134" y="94" width="16" height="18" rx="2" fill="#2c3a33"/><rect x="136" y="97" width="12" height="4" fill="#7fd4a0"/></g>
+  <g fill="#fff6d0" opacity=".5"><ellipse cx="92" cy="60" rx="46" ry="20"/></g>`,
+
+stilthouse: (u) => `
+  <path d="M40,96 C56,84 92,80 124,88 C146,94 158,96 168,98 L168,104 L40,104 Z" fill="#1e3a2c"/>
+  ${forestLine(94, 9, "#122a20", 9, 12, 24)}
+  <g><path d="M74,80 L104,62 L134,80 Z" fill="#43301f"/>
+  <rect x="78" y="78" width="52" height="22" fill="#7a5636"/>
+  <rect x="98" y="84" width="11" height="16" fill="#2a1c12"/>
+  <rect x="82" y="83" width="10" height="8" fill="#ffd98a"/><rect x="116" y="83" width="10" height="8" fill="#ffd98a"/>
+  <g fill="#4a3520"><rect x="80" y="100" width="3" height="14"/><rect x="98" y="100" width="3" height="14"/><rect x="116" y="100" width="3" height="14"/><rect x="126" y="100" width="3" height="14"/></g>
+  <rect x="74" y="98" width="60" height="3" fill="#5c422a"/>
+  <path d="M134,100 L162,104" stroke="#5c422a" stroke-width="2.4"/></g>
+  <g fill="#0d2130" opacity=".45"><rect x="74" y="114" width="60" height="10"/></g>
+  ${swells(120, 2, "#bcd8e4", .35, 2)}`,
+
+glacier: (u) => `
+  <path d="M0,58 L44,44 L88,54 L134,42 L200,56 L200,150 L0,150 Z" fill="#a9d6ea"/>
+  <path d="M0,74 C40,64 70,82 110,72 C146,63 176,80 200,72 L200,150 L0,150 Z" fill="#cfeaf6"/>
+  <path d="M0,92 C36,84 66,100 104,92 C142,84 174,98 200,92 L200,150 L0,150 Z" fill="#e9f7fd"/>
+  <g fill="#3f88b4" opacity=".85"><path d="M28,96 L38,78 L44,96 Z"/><path d="M92,102 L102,80 L110,102 Z"/><path d="M148,98 L156,82 L164,98 Z"/></g>
+  <g stroke="#7fb6d4" stroke-width="1.1" fill="none" opacity=".8"><path d="M0,84 C40,76 74,90 112,82 C148,74 176,88 200,82"/><path d="M0,100 C40,94 72,108 112,100 C150,92 178,104 200,100"/></g>
+  <g transform="translate(140,104)"><path d="M-3,0 L-3,-9 L3,-9 L3,0 Z" fill="#d94f2b"/><circle cx="0" cy="-12" r="2.6" fill="#f2c98a"/><path d="M-6,-8 L-9,2 M6,-8 L9,2" stroke="#1e2b33" stroke-width="1.3"/><path d="M4,-10 L12,4" stroke="#2b3a44" stroke-width="1"/></g>
+  <path d="M0,124 L200,120 L200,150 L0,150 Z" fill="#bfe1ef"/>`,
+
+whale: (u) => `
+  <g fill="none" stroke="#eaf6fb" stroke-width="1.2" opacity=".65">
+   <circle cx="96" cy="106" r="30"/><circle cx="96" cy="106" r="21"/><circle cx="96" cy="106" r="12"/></g>
+  <g fill="#e8f6fc" opacity=".5">${[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => `<circle cx="${96 + Math.cos(i) * 28}" cy="${106 + Math.sin(i * 1.7) * 12}" r="${1 + (i % 3)}"/>`).join("")}</g>
+  <g transform="translate(84,96) rotate(-24)">
+   <path d="M0,0 C-8,-26 10,-42 20,-40 C28,-38 26,-22 18,-6 Z" fill="#22333c"/>
+   <path d="M2,-2 C-4,-24 10,-38 18,-37 C24,-35 22,-22 16,-8 Z" fill="#3d5661"/>
+   <path d="M14,-40 C22,-46 30,-40 26,-34 Z" fill="#e6eef2"/>
+   <path d="M4,-14 C-10,-18 -16,-6 -6,-2 Z" fill="#1a262d"/></g>
+  <g transform="translate(118,102) rotate(16)">
+   <path d="M0,0 C-6,-20 8,-32 16,-30 C22,-28 20,-16 14,-4 Z" fill="#1c2b33"/>
+   <path d="M12,-30 C18,-35 25,-30 21,-25 Z" fill="#dfe9ee"/></g>
+  <g fill="#ffffff" opacity=".8"><ellipse cx="94" cy="98" rx="26" ry="7"/></g>
+  ${swells(120, 3, "#cfe6f0", .4, 2.4)}`,
+
+windtree: (u) => `
+  <g>${[[26, 30], [50, 40], [76, 34], [104, 44], [132, 36], [160, 30], [184, 26]].map((t, i) =>
+    `<g transform="translate(${t[0]},112) rotate(${16 + (i % 3) * 5})">${spruce(0, 0, t[1] + 26, i % 2 ? "#15291f" : "#1c3527")}</g>`).join("")}</g>
+  <g stroke="#dff0ff" stroke-width="1.1" fill="none" opacity=".55">
+   <path d="M-6,40 C30,32 60,48 96,40 C130,32 166,46 206,38"/>
+   <path d="M-6,58 C34,50 62,66 100,58 C138,50 170,64 206,56"/>
+   <path d="M-6,76 C30,70 64,84 100,76 C136,68 172,82 206,74"/></g>
+  <g fill="#2c4a36" opacity=".8">${[0, 1, 2, 3, 4, 5].map(i => `<ellipse cx="${20 + i * 34}" cy="${52 + (i % 3) * 14}" rx="4" ry="1.6" transform="rotate(-18 ${20 + i * 34} ${52 + (i % 3) * 14})"/>`).join("")}</g>
+  <path d="M0,112 L200,108 L200,150 L0,150 Z" fill="#0f1f18"/>`,
+
+bear: (u) => `
+  ${forestLine(92, 10, "#12281e", 3, 14, 26)}
+  <path d="M0,96 L200,92 L200,150 L0,150 Z" fill="#2c3a2c"/>
+  <g fill="#c8b48a" opacity=".5"><path d="M0,104 L200,100 L200,116 L0,120 Z"/></g>
+  <g transform="translate(104,104)">
+   <path d="M-30,0 C-32,-18 -14,-24 0,-24 C16,-24 32,-18 30,0 Z" fill="#3b2a1c"/>
+   <path d="M-26,0 C-27,-14 -12,-19 0,-19 C14,-19 27,-14 26,0 Z" fill="#5a4128"/>
+   <g transform="translate(-30,-16)"><circle cx="0" cy="0" r="9" fill="#3b2a1c"/><circle cx="-1" cy="1" r="7.4" fill="#6b4d2e"/>
+    <circle cx="-5" cy="-7" r="2.6" fill="#3b2a1c"/><circle cx="4" cy="-8" r="2.6" fill="#3b2a1c"/>
+    <path d="M-8,2 C-11,4 -11,7 -7,7 C-4,7 -3,4 -5,2 Z" fill="#241a10"/>
+    <circle cx="-4" cy="-1" r="1" fill="#12100c"/><circle cx="2" cy="-2" r="1" fill="#12100c"/></g>
+   <path d="M18,0 C24,-6 30,-4 28,2 Z" fill="#3b2a1c"/>
+   <g fill="#241a10"><ellipse cx="-16" cy="1" rx="5" ry="2.4"/><ellipse cx="12" cy="1" rx="5" ry="2.4"/></g></g>
+  <g fill="#1f2c1f">${[10, 34, 62, 150, 176].map(x => `<ellipse cx="${x}" cy="112" rx="10" ry="4"/>`).join("")}</g>`,
+
+narrows: (u) => `
+  <path d="M0,52 L18,40 L34,58 L48,44 L60,96 L0,96 Z" fill="#1c3a2c"/>
+  <path d="M200,48 L182,36 L166,56 L152,42 L140,96 L200,96 Z" fill="#173226"/>
+  ${forestLine(96, 6, "#0d1f17", 11, 10, 20)}
+  <g transform="translate(100,106)">
+   <path d="M-24,0 C-16,9 16,9 24,0 C16,-5 -16,-5 -24,0 Z" fill="#22323b"/>
+   <path d="M-24,0 C-16,9 16,9 24,0 C16,4 -16,4 -24,0 Z" fill="#0f1e26"/>
+   <rect x="-24" y="-2.2" width="48" height="2.2" fill="#e2d5ab"/>
+   <rect x="-8" y="-13" width="17" height="11" fill="#e8eef1"/>${windows(-5, -10, 3, 3.4, 3.4, 1.6, "#33454f")}
+   <rect x="-1.2" y="-21" width="2.4" height="9" fill="#b9c6cc"/></g>
+  <g fill="none" stroke="#dff0ff" stroke-width="1.3" opacity=".7"><path d="M76,110 C58,118 40,120 20,118"/><path d="M124,110 C142,118 160,120 180,118"/></g>
+  ${swells(122, 2, "#a9cede", .4, 2.6)}`,
+
+deer: (u) => `
+  ${forestLine(90, 9, "#12281e", 6, 16, 30)}
+  <path d="M0,94 C40,88 60,98 100,94 C140,90 168,98 200,94 L200,150 L0,150 Z" fill="#5a6b45"/>
+  <g fill="#7d8c58" opacity=".7">${[0, 1, 2, 3, 4, 5, 6, 7].map(i => `<ellipse cx="${12 + i * 26}" cy="${104 + (i % 3) * 8}" rx="12" ry="3.4"/>`).join("")}</g>
+  <g transform="translate(102,102)">
+   <path d="M-22,0 C-24,-12 -10,-16 2,-16 C14,-16 22,-12 22,0 L18,0 L16,-8 L-16,-8 L-18,0 Z" fill="#7a5334"/>
+   <path d="M-20,-4 C-20,-13 -8,-16 2,-16 C12,-16 20,-12 20,-4 Z" fill="#9a6c44"/>
+   <g fill="#7a5334"><rect x="-18" y="-2" width="3.4" height="12"/><rect x="-9" y="-2" width="3.4" height="12"/><rect x="9" y="-2" width="3.4" height="12"/><rect x="17" y="-2" width="3.4" height="12"/></g>
+   <g transform="translate(20,-18)"><path d="M0,0 C6,-2 10,-6 11,-12 L7,-13 C6,-8 3,-5 -2,-4 Z" fill="#9a6c44"/>
+    <ellipse cx="9" cy="-13" rx="3.4" ry="2.4" fill="#5f3f26"/>
+    <path d="M7,-15 C7,-22 3,-24 1,-26 M11,-15 C13,-22 17,-23 19,-26" stroke="#c9b48a" stroke-width="1.3" fill="none"/>
+    <path d="M3,-22 L-1,-24 M15,-21 L19,-23" stroke="#c9b48a" stroke-width="1.1" fill="none"/>
+    <path d="M4,-14 C2,-17 -1,-16 -2,-13 Z" fill="#7a5334"/></g></g>`,
+
+tidepool: (u) => `
+  <path d="M0,84 C40,76 70,90 110,82 C148,74 176,88 200,82 L200,150 L0,150 Z" fill="#3a4a48"/>
+  <g fill="#2b3a38">${[0, 1, 2, 3, 4, 5, 6].map(i => `<ellipse cx="${14 + i * 30}" cy="${96 + (i % 3) * 10}" rx="${10 + (i % 3) * 5}" ry="5"/>`).join("")}</g>
+  <path d="M28,116 C40,104 92,102 122,112 C150,122 120,138 84,136 C50,134 18,128 28,116 Z" fill="#2f6f80"/>
+  <path d="M34,116 C46,108 90,106 116,114 C142,122 116,132 84,131 C54,130 26,124 34,116 Z" fill="#4fa0ad" opacity=".85"/>
+  <g><path d="M56,124 C66,116 84,116 94,122 C102,127 92,132 78,132 C64,132 50,129 56,124 Z" fill="#7a3b2c"/>
+   <path d="M58,123 C68,117 84,117 92,122" stroke="#b4614a" stroke-width="2" fill="none"/>
+   <g fill="#c98a6a">${[0, 1, 2, 3, 4].map(i => `<circle cx="${62 + i * 7}" cy="${121 + (i % 2) * 2}" r="1.4"/>`).join("")}</g></g>
+  <g fill="#c8543f"><path d="M110,120 l4,-6 l4,6 l-2,5 l-4,0 Z"/><circle cx="114" cy="112" r="3.4"/></g>
+  <g fill="#e0b060" opacity=".9"><path d="M132,118 l3.4,-5 l3.4,5 l-1.7,4.4 l-3.4,0 Z"/></g>
+  <g fill="#3f6b4a" opacity=".8">${[0, 1, 2, 3].map(i => `<path d="M${40 + i * 22},134 C${44 + i * 22},124 ${36 + i * 22},120 ${42 + i * 22},112" stroke="#3f6b4a" stroke-width="2.4" fill="none"/>`).join("")}</g>`,
+
+halibut: (u) => `
+  <g><rect x="0" y="118" width="200" height="32" fill="#2a3a44"/>
+   <rect x="0" y="112" width="200" height="7" fill="#c9b48a"/></g>
+  <g transform="translate(96,86) rotate(-8)">
+   <path d="M-42,0 C-34,-24 34,-26 44,0 C34,26 -34,24 -42,0 Z" fill="#4a5a58"/>
+   <path d="M-42,0 C-34,-24 34,-26 44,0 C34,10 -34,10 -42,0 Z" fill="#6d7d78"/>
+   <path d="M-42,0 C-46,-6 -50,4 -44,6 Z" fill="#3a4a48"/>
+   <g fill="#2f3d3b" opacity=".7">${[0, 1, 2, 3, 4, 5, 6, 7].map(i => `<circle cx="${-30 + i * 9}" cy="${-8 + (i % 3) * 7}" r="${1.4 + (i % 2)}"/>`).join("")}</g>
+   <circle cx="26" cy="-9" r="3.4" fill="#e8e2d0"/><circle cx="27" cy="-9" r="1.6" fill="#141a1a"/>
+   <circle cx="33" cy="-5" r="3" fill="#e8e2d0"/><circle cx="34" cy="-5" r="1.4" fill="#141a1a"/>
+   <path d="M-38,-14 C-20,-22 20,-24 40,-8" stroke="#8b9a94" stroke-width="1.4" fill="none"/></g>
+  <g stroke="#1b262c" stroke-width="2" fill="none"><path d="M60,60 L84,80 M140,60 L118,78"/></g>`,
+
+engine: (u) => `
+  <path d="M0,96 L200,92 L200,150 L0,150 Z" fill="#16323f"/>
+  <rect x="0" y="96" width="200" height="54" fill="#2b3a42"/>
+  <g stroke="#3d4f58" stroke-width="1"><path d="M0,106 H200 M0,118 H200 M0,130 H200 M0,142 H200"/></g>
+  <g><rect x="62" y="52" width="76" height="52" rx="4" fill="#20302a"/>
+   <rect x="62" y="52" width="76" height="10" fill="#33473e"/>
+   <rect x="70" y="66" width="24" height="18" fill="#141f1b"/>
+   <circle cx="118" cy="76" r="10" fill="#141f1b"/><circle cx="118" cy="76" r="4" fill="#7f9a8c"/>
+   <rect x="70" y="88" width="60" height="6" fill="#3d5449"/>
+   <g stroke="#6d8478" stroke-width="1.4" fill="none"><path d="M94,60 C104,50 118,54 126,46"/></g>
+   <g fill="#c8a34a"><rect x="98" y="66" width="4" height="4"/><rect x="106" y="66" width="4" height="4"/></g></g>
+  <g transform="translate(46,84)"><path d="M0,0 C-8,-4 -14,4 -6,8 Z" fill="#f2b134"/>
+   <rect x="-4" y="6" width="8" height="20" fill="#d9482f"/><circle cx="0" cy="-6" r="5" fill="#e8c9a0"/>
+   <path d="M6,10 C16,6 26,14 34,10" stroke="#e8c9a0" stroke-width="3.4" fill="none"/></g>
+  <g stroke="#8b9aa3" stroke-width="1.6" fill="none"><path d="M138,70 L156,64 L152,78"/></g>
+  <g fill="#c8a34a" opacity=".9"><rect x="150" y="86" width="20" height="4" rx="1"/><rect x="156" y="80" width="4" height="8" rx="1"/></g>`,
+
+ferry: (u) => `
+  ${swells(112, 2, "#e6bd8a", .3, 2)}
+  <g transform="translate(104,92)">
+   <path d="M-56,0 C-46,14 46,14 56,0 C46,-6 -46,-6 -56,0 Z" fill="#1b2a33"/>
+   <path d="M-56,0 C-46,14 46,14 56,0 C46,8 -46,8 -56,0 Z" fill="#0f1d25"/>
+   <rect x="-56" y="-3" width="112" height="3" fill="#e0d4ae"/>
+   <rect x="-44" y="-14" width="88" height="11" fill="#e6ecef"/>
+   ${windows(-40, -11, 14, 3.6, 4.4, 2, "#f7d98a")}
+   <rect x="-20" y="-24" width="42" height="10" fill="#dfe6ea"/>
+   ${windows(-16, -21, 7, 3.6, 4, 2, "#f7d98a")}
+   <rect x="-6" y="-33" width="14" height="9" fill="#1f5f43"/>
+   <rect x="10" y="-38" width="5" height="14" fill="#d9d2c0"/>
+   <path d="M-40,-3 L-40,-14 M-24,-3 L-24,-14 M40,-3 L40,-14" stroke="#b9c4c9" stroke-width=".8"/></g>
+  <g fill="#f7d98a" opacity=".35"><ellipse cx="104" cy="112" rx="56" ry="9"/></g>
+  ${swells(120, 2, "#cbb28a", .35, 2.2)}`,
+
+raintown: (u) => `
+  <path d="M0,90 L200,86 L200,150 L0,150 Z" fill="#22343c"/>
+  <g>${[[10, 74, 30, 26, "#7a4b3a"], [44, 68, 26, 32, "#3f5c63"], [74, 76, 22, 24, "#8a6a3f"], [100, 66, 30, 34, "#4a5f4a"], [134, 74, 24, 26, "#7a4b3a"], [162, 70, 28, 30, "#3f5c63"]].map(b =>
+    `<g><rect x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" fill="${b[4]}"/>
+    <path d="M${b[0] - 3},${b[1]} L${b[0] + b[2] / 2},${b[1] - 9} L${b[0] + b[2] + 3},${b[1]} Z" fill="#2b3a40"/>
+    <rect x="${b[0] + 4}" y="${b[1] + 6}" width="6" height="7" fill="#ffd98a"/>
+    <rect x="${b[0] + b[2] - 10}" y="${b[1] + 6}" width="6" height="7" fill="#ffd98a"/>
+    <rect x="${b[0] + b[2] / 2 - 4}" y="${b[1] + b[3] - 12}" width="8" height="12" fill="#241c16"/></g>`).join("")}</g>
+  <g fill="#5c4530">${[16, 52, 84, 118, 150, 180].map(x => `<rect x="${x}" y="98" width="3" height="16"/>`).join("")}</g>
+  <rect x="0" y="96" width="200" height="5" fill="#6b4f36"/>
+  <g fill="#0f2028" opacity=".55"><rect x="0" y="114" width="200" height="36"/></g>
+  <g opacity=".35" fill="#ffd98a">${[20, 56, 88, 122, 154].map(x => `<ellipse cx="${x}" cy="126" rx="5" ry="12"/>`).join("")}</g>
+  ${rainfall(u, 60, .45)}`,
+
+boots: (u) => `
+  <rect x="0" y="60" width="200" height="90" fill="#6b4f36"/>
+  <g stroke="#4f3a26" stroke-width="1.4">${[64, 76, 88, 100, 112, 124, 136, 148].map(y => `<path d="M0,${y} H200"/>`).join("")}</g>
+  <g fill="#3f2c1c" opacity=".5">${[0, 1, 2, 3, 4, 5].map(i => `<ellipse cx="${18 + i * 34}" cy="${72 + (i % 3) * 22}" rx="9" ry="3"/>`).join("")}</g>
+  <g transform="translate(72,64)">
+   <path d="M0,0 L22,0 L22,40 C22,50 30,52 34,56 L34,64 L0,64 Z" fill="#6b4222"/>
+   <path d="M0,0 L8,0 L8,64 L0,64 Z" fill="#8a5a30" opacity=".6"/>
+   <rect x="-1" y="60" width="36" height="6" rx="2" fill="#2b1a0e"/>
+   <rect x="0" y="0" width="22" height="5" fill="#3f2712"/></g>
+  <g transform="translate(112,68)">
+   <path d="M0,0 L22,0 L22,38 C22,48 30,50 34,54 L34,60 L0,60 Z" fill="#7a4c26"/>
+   <path d="M0,0 L8,0 L8,60 L0,60 Z" fill="#96633a" opacity=".6"/>
+   <rect x="-1" y="56" width="36" height="6" rx="2" fill="#2b1a0e"/>
+   <rect x="0" y="0" width="22" height="5" fill="#4a2e15"/></g>
+  <g fill="#1b1008" opacity=".35"><ellipse cx="90" cy="132" rx="48" ry="7"/></g>
+  ${rainfall(u, 26, .22)}`,
+
+dockmeal: (u) => `
+  <path d="M0,88 L200,84 L200,150 L0,150 Z" fill="#17414f"/>
+  <rect x="0" y="96" width="200" height="54" fill="#7a5a3c"/>
+  <g stroke="#5c4128" stroke-width="1.2">${[104, 116, 128, 140].map(y => `<path d="M0,${y} H200"/>`).join("")}</g>
+  <g transform="translate(60,94)">
+   <ellipse cx="0" cy="0" rx="24" ry="8" fill="#e8e2d0"/><ellipse cx="0" cy="-2" rx="24" ry="8" fill="#f7f2e2"/>
+   <path d="M-12,-4 C-8,-12 8,-13 13,-4 C8,0 -8,0 -12,-4 Z" fill="#c96a2c"/>
+   <path d="M-10,-5 C-6,-10 6,-11 10,-5" stroke="#e8a45c" stroke-width="1.6" fill="none"/>
+   <g fill="#5f7f3f"><ellipse cx="-16" cy="-3" rx="5" ry="2.4"/><ellipse cx="16" cy="-3" rx="5" ry="2.4"/></g></g>
+  <g transform="translate(146,64)">
+   <rect x="-4" y="24" width="8" height="34" fill="#4a3520"/>
+   <path d="M-4,24 C-16,20 -20,4 -8,-6 C0,-13 14,-12 18,-2 C22,8 12,22 4,24 Z" fill="#3b2a1c"/>
+   <path d="M-6,10 C-16,6 -18,-4 -8,-8 C-2,-11 6,-10 8,-4 Z" fill="#5a4128"/>
+   <path d="M4,-8 C10,-16 22,-14 22,-6 C22,0 12,2 6,-2 Z" fill="#f4f1e8"/>
+   <circle cx="16" cy="-9" r="1.4" fill="#20180f"/>
+   <path d="M22,-8 C28,-8 30,-4 26,-2 L21,-4 Z" fill="#e8b23a"/></g>
+  <g fill="#2a1c10" opacity=".35"><ellipse cx="146" cy="100" rx="14" ry="4"/></g>`,
+
+bowwave: (u) => `
+  <g transform="translate(104,110) rotate(6)">
+   <path d="M-70,0 L70,0 L54,-26 L-70,-30 Z" fill="#22333c"/>
+   <path d="M-70,-30 L54,-26 L54,-22 L-70,-25 Z" fill="#d8cba0"/>
+   <rect x="-40" y="-52" width="60" height="26" fill="#dfe6ea"/>
+   ${windows(-34, -46, 5, 8, 8, 3, "#2b3d46")}
+   <rect x="-6" y="-64" width="4" height="12" fill="#b9c4c9"/></g>
+  <path d="M-10,60 C20,50 40,86 76,72 C110,58 140,90 210,66 L210,150 L-10,150 Z" fill="#1e4a5e" opacity=".95"/>
+  <g fill="#eaf6fb" opacity=".92">
+   <path d="M20,86 C36,44 66,40 92,58 C118,76 96,96 60,100 C36,102 12,98 20,86 Z"/>
+   <path d="M100,74 C112,52 136,52 150,70 C160,84 138,92 116,90 C102,88 94,84 100,74 Z" opacity=".8"/></g>
+  <g fill="#ffffff" opacity=".7">${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => `<circle cx="${20 + rnd(i + u) * 150}" cy="${40 + rnd(i * 3.3) * 46}" r="${1 + rnd(i * 5.1) * 3}"/>`).join("")}</g>
+  ${swells(126, 2, "#cfe6f0", .35, 2)}`,
+
+seacuke: (u) => `
+  <path d="M0,86 C36,78 70,92 108,84 C146,76 176,90 200,84 L200,150 L0,150 Z" fill="#1d3a44"/>
+  <path d="M0,102 C40,96 68,108 108,100 C148,92 176,104 200,98 L200,150 L0,150 Z" fill="#123039"/>
+  <g fill="#7a2f26">
+   <path d="M40,124 C48,110 76,106 96,114 C114,121 108,134 86,136 C62,138 32,136 40,124 Z"/>
+   <path d="M104,132 C112,120 140,118 152,126 C162,133 148,140 128,140 C112,140 98,140 104,132 Z" opacity=".9"/></g>
+  <g fill="#b4553f">${[0, 1, 2, 3, 4, 5].map(i => `<circle cx="${48 + i * 10}" cy="${118 + (i % 2) * 6}" r="2.4"/>`).join("")}
+   ${[0, 1, 2, 3].map(i => `<circle cx="${112 + i * 11}" cy="${126 + (i % 2) * 5}" r="2"/>`).join("")}</g>
+  <g stroke="#3f7f6b" stroke-width="2.4" fill="none" opacity=".8">${[0, 1, 2, 3, 4].map(i => `<path d="M${18 + i * 40},146 C${24 + i * 40},130 ${12 + i * 40},122 ${20 + i * 40},106"/>`).join("")}</g>
+  <g fill="#e8c98a" opacity=".35"><ellipse cx="100" cy="96" rx="70" ry="10"/></g>`,
+
+aurorascene: (u) => `
+  ${forestLine(104, 14, "#050f0b", 8, 16, 34)}
+  <g><path d="M62,92 L92,72 L122,92 Z" fill="#0d1a14"/>
+   <rect x="66" y="90" width="52" height="22" fill="#101f18"/>
+   <rect x="76" y="94" width="12" height="9" fill="#ffcf6a"/><rect x="98" y="94" width="12" height="9" fill="#ffcf6a"/>
+   <rect x="86" y="102" width="10" height="10" fill="#2a1c10"/>
+   <path d="M76,72 L76,60" stroke="#0d1a14" stroke-width="3"/>
+   <g fill="#cfd9dd" opacity=".35"><path d="M76,58 C72,50 80,48 78,40"/></g></g>
+  <g fill="#3ef2a6" opacity=".18"><ellipse cx="100" cy="112" rx="90" ry="12"/></g>
+  <path d="M0,114 L200,110 L200,150 L0,150 Z" fill="#050d14"/>
+  <g fill="#7ef7c0" opacity=".12"><rect x="0" y="114" width="200" height="20"/></g>`
+};
+
+/* ============ VISITOR ============ */
+Object.assign(FG, {
+fjords: (u) => `
+  <path d="M0,20 L14,16 L26,30 L34,22 L44,110 L0,110 Z" fill="#2a4450"/>
+  <path d="M200,14 L186,10 L172,26 L162,18 L152,110 L200,110 Z" fill="#243d48"/>
+  <path d="M40,40 L52,30 L60,44 L70,34 L78,110 L40,110 Z" fill="#3a5462" opacity=".9"/>
+  <path d="M160,36 L150,28 L142,42 L134,32 L126,110 L160,110 Z" fill="#334d5a" opacity=".9"/>
+  <g fill="#dff0f7" opacity=".55"><rect x="0" y="56" width="200" height="18"/><rect x="0" y="78" width="200" height="10" opacity=".6"/></g>
+  <g stroke="#eaf6fb" stroke-width="1.6" fill="none" opacity=".7"><path d="M28,34 C32,50 26,64 30,80"/><path d="M176,30 C172,46 178,58 174,74"/></g>
+  ${plane(112, 62, .85, -8)}
+  <path d="M0,106 C40,102 70,110 110,106 C148,102 176,109 200,106 L200,150 L0,150 Z" fill="#153b4a"/>
+  <g fill="#dff0f7" opacity=".3"><ellipse cx="112" cy="116" rx="26" ry="5"/></g>
+  ${swells(122, 2, "#9fc8d8", .35, 2)}`,
+
+floatplane: (u) => `
+  <path d="M0,96 C40,92 70,100 110,96 C148,92 176,99 200,96 L200,150 L0,150 Z" fill="#1a4a5e"/>
+  ${plane(100, 92, 1.25, 0)}
+  <g fill="#eaf6fb" opacity=".8"><path d="M62,112 C78,104 124,104 140,112 C124,118 78,118 62,112 Z"/></g>
+  <g fill="none" stroke="#dff0ff" stroke-width="1.2" opacity=".6"><path d="M50,120 C74,114 128,114 152,120"/><path d="M38,128 C70,122 132,122 164,128"/></g>`,
+
+eaglesteal: (u) => `
+  <g transform="translate(96,64) scale(1.35)">
+   <path d="M0,0 C-6,-6 -10,-2 -14,4 C-30,-2 -46,-6 -58,-2 C-44,4 -26,12 -8,12 L8,12 C26,12 44,4 58,-2 C46,-6 30,-2 14,4 C10,-2 6,-6 0,0 Z" fill="#3b2a1c"/>
+   <path d="M-8,10 C-4,20 4,20 8,10 Z" fill="#4a3524"/>
+   <path d="M-58,-2 C-44,2 -26,9 -8,9 L8,9 C26,9 44,2 58,-2" stroke="#241a10" stroke-width=".8" fill="none"/>
+   <circle cx="0" cy="-3" r="6" fill="#f5f2ea"/>
+   <path d="M5,-4 C11,-5 12,-1 7,0 Z" fill="#e8b23a"/>
+   <circle cx="3" cy="-5" r="1.2" fill="#181410"/>
+   <path d="M-3,10 L-5,16 M3,10 L5,16" stroke="#e8b23a" stroke-width="1.6"/>
+   <path d="M-6,15 C-2,20 4,20 7,15 C4,13 -2,13 -6,15 Z" fill="#c96a2c"/></g>
+  <g fill="#e8e2d0" opacity=".9">${[0, 1, 2, 3, 4].map(i => `<ellipse cx="${88 + i * 7}" cy="${104 + i * 6}" rx="2.4" ry="1.2" transform="rotate(${20 + i * 12} ${88 + i * 7} ${104 + i * 6})"/>`).join("")}</g>
+  <rect x="0" y="118" width="200" height="32" fill="#6b4f36"/>
+  <g stroke="#4f3a26" stroke-width="1.2"><path d="M0,126 H200 M0,136 H200 M0,146 H200"/></g>
+  <g transform="translate(52,118)"><ellipse cx="0" cy="0" rx="20" ry="6" fill="#f7f2e2"/>
+   <path d="M-9,-2 C-5,-9 6,-9 10,-2 C6,1 -5,1 -9,-2 Z" fill="#c96a2c"/></g>`,
+
+lumberjack: (u) => `
+  ${forestLine(86, 10, "#12281e", 5, 14, 26)}
+  <path d="M0,90 L200,86 L200,150 L0,150 Z" fill="#2f5a4a"/>
+  <path d="M0,104 C40,100 68,110 108,104 C146,98 176,108 200,102 L200,150 L0,150 Z" fill="#1b3f4f"/>
+  <g transform="translate(80,96)">
+   <ellipse cx="0" cy="8" rx="26" ry="7" fill="#7a5836"/><ellipse cx="0" cy="4" rx="26" ry="7" fill="#a5793f"/>
+   <ellipse cx="0" cy="4" rx="16" ry="4.4" fill="#c9994f"/>
+   <g transform="translate(0,-6)"><rect x="-5" y="-16" width="10" height="20" fill="#b53a2c"/>
+    <path d="M-5,-16 L5,-16 L7,-8 L-7,-8 Z" fill="#d94f3a"/>
+    <circle cx="0" cy="-21" r="5" fill="#e8c9a0"/><path d="M-5,-24 a5,5 0 0 1 10,0 Z" fill="#3b2a1c"/>
+    <rect x="-6" y="4" width="5" height="14" fill="#2b4a6b"/><rect x="1" y="4" width="5" height="14" fill="#2b4a6b"/>
+    <g transform="translate(9,-12) rotate(-30)"><rect x="0" y="-1.4" width="20" height="2.8" fill="#8a6236"/>
+     <path d="M19,-7 L27,-4 L27,4 L19,7 Z" fill="#c9d2d6"/></g></g></g>
+  <g transform="translate(146,104)"><rect x="-3" y="-24" width="6" height="24" fill="#8a6236"/>
+   <path d="M-3,-24 C-14,-30 -14,-42 -3,-46 L3,-46 C14,-42 14,-30 3,-24 Z" fill="#3f6b4a"/></g>
+  <g fill="#dff0ff" opacity=".5"><ellipse cx="80" cy="112" rx="30" ry="5"/></g>`,
+
+boardwalk: (u) => `
+  <path d="M0,88 L200,84 L200,150 L0,150 Z" fill="#1e3a44"/>
+  <g>${[[8, 52, 34, 34, "#8a3a3a"], [46, 46, 30, 40, "#3f5f6b"], [82, 54, 28, 32, "#7a5a30"], [116, 44, 32, 42, "#4a6b4a"], [154, 52, 34, 34, "#8a4a2c"]].map(b =>
+   `<g><rect x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" fill="${b[4]}"/>
+   <path d="M${b[0] - 3},${b[1]} L${b[0] + b[2] / 2},${b[1] - 8} L${b[0] + b[2] + 3},${b[1]} Z" fill="#2b3a40"/>
+   <rect x="${b[0] + 5}" y="${b[1] + 8}" width="7" height="9" fill="#ffcf6a"/>
+   <rect x="${b[0] + b[2] - 12}" y="${b[1] + 8}" width="7" height="9" fill="#ffcf6a"/>
+   <rect x="${b[0] + b[2] / 2 - 4}" y="${b[1] + b[3] - 14}" width="9" height="14" fill="#2a1c12"/></g>`).join("")}</g>
+  <g fill="#c8412c"><rect x="60" y="66" width="14" height="5" rx="1"/></g>
+  <rect x="0" y="96" width="200" height="8" fill="#7a5836"/>
+  <g stroke="#5c4128" stroke-width=".9">${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => `<path d="M${i * 17},96 V104"/>`).join("")}</g>
+  <g fill="#5c4128">${[10, 40, 70, 100, 130, 160, 190].map(x => `<rect x="${x}" y="104" width="4" height="24"/>`).join("")}</g>
+  <g stroke="#8a6236" stroke-width="2" fill="none"><path d="M0,92 H200"/></g>
+  <g fill="#0d2530" opacity=".45"><rect x="0" y="126" width="200" height="24"/></g>
+  <g opacity=".3" fill="#ffcf6a">${[16, 52, 88, 124, 160].map(x => `<ellipse cx="${x}" cy="136" rx="4" ry="10"/>`).join("")}</g>`,
+
+totem: (u) => `
+  ${forestLine(96, 11, "#12281e", 7, 16, 30)}
+  <path d="M0,98 L200,94 L200,150 L0,150 Z" fill="#2f4a38"/>
+  <g transform="translate(100,0)">
+   <rect x="-16" y="18" width="32" height="106" fill="#7a4a2c"/>
+   <rect x="-16" y="18" width="9" height="106" fill="#96603a" opacity=".7"/>
+   <path d="M-24,20 L24,20 L16,10 L-16,10 Z" fill="#5f3520"/>
+   <g><rect x="-16" y="24" width="32" height="30" fill="#8a5330"/>
+    <circle cx="-7" cy="36" r="5" fill="#f2ede0"/><circle cx="7" cy="36" r="5" fill="#f2ede0"/>
+    <circle cx="-7" cy="36" r="2.2" fill="#1b1208"/><circle cx="7" cy="36" r="2.2" fill="#1b1208"/>
+    <path d="M-10,46 L10,46 L6,52 L-6,52 Z" fill="#b53a2c"/>
+    <path d="M-16,28 L-24,32 L-24,44 L-16,42 Z M16,28 L24,32 L24,44 L16,42 Z" fill="#2f6b57"/></g>
+   <g><rect x="-16" y="56" width="32" height="32" fill="#6b3f26"/>
+    <path d="M-12,66 C-8,60 -2,60 0,66 C2,60 8,60 12,66 Z" fill="#e8b23a"/>
+    <circle cx="-7" cy="74" r="4" fill="#f2ede0"/><circle cx="7" cy="74" r="4" fill="#f2ede0"/>
+    <circle cx="-7" cy="74" r="1.8" fill="#1b1208"/><circle cx="7" cy="74" r="1.8" fill="#1b1208"/>
+    <path d="M-8,82 L8,82 L4,86 L-4,86 Z" fill="#2f6b57"/></g>
+   <g><rect x="-16" y="90" width="32" height="34" fill="#8a5330"/>
+    <path d="M-13,100 L-3,100 L-3,108 L-13,108 Z M3,100 L13,100 L13,108 L3,108 Z" fill="#2f6b57"/>
+    <path d="M-11,114 L11,114 L7,120 L-7,120 Z" fill="#b53a2c"/></g></g>
+  <g fill="#1b2c20" opacity=".4"><ellipse cx="100" cy="126" rx="34" ry="6"/></g>`,
+
+salmonladder: (u) => `
+  ${forestLine(74, 10, "#12281e", 12, 12, 24)}
+  <path d="M0,76 L200,72 L200,150 L0,150 Z" fill="#2c4436"/>
+  <g fill="#54646a">${[[0, 88], [40, 100], [80, 112], [120, 124], [160, 136]].map(s => `<rect x="${s[0]}" y="${s[1]}" width="60" height="10" rx="2"/>`).join("")}</g>
+  <g fill="#3f7f96" opacity=".92">${[[0, 84], [40, 96], [80, 108], [120, 120], [160, 132]].map(s => `<rect x="${s[0]}" y="${s[1]}" width="62" height="10"/>`).join("")}</g>
+  <g fill="#cfe9f2" opacity=".8">${[30, 70, 110, 150].map((x, i) => `<path d="M${x},${92 + i * 12} C${x + 6},${86 + i * 12} ${x + 12},${88 + i * 12} ${x + 14},${94 + i * 12}" stroke="#eaf6fb" stroke-width="2" fill="none"/>`).join("")}</g>
+  ${[[46, 92, -28], [88, 104, -24], [130, 116, -30], [64, 120, 12]].map(f => `
+   <g transform="translate(${f[0]},${f[1]}) rotate(${f[2]})">
+    <path d="M-13,0 C-8,-6 8,-6 13,0 C8,6 -8,6 -13,0 Z" fill="#8a3a3a"/>
+    <path d="M-13,0 C-8,-6 8,-6 13,0 C8,2 -8,2 -13,0 Z" fill="#b04a45"/>
+    <path d="M13,0 L20,-5 L20,5 Z" fill="#6b2a2a"/>
+    <path d="M-2,-5 L2,-10 L6,-5 Z" fill="#6b2a2a"/>
+    <circle cx="-9" cy="-1.4" r="1.2" fill="#f2ede0"/></g>`).join("")}
+  <g fill="#ffffff" opacity=".55">${[0, 1, 2, 3, 4, 5, 6, 7].map(i => `<circle cx="${20 + rnd(i + u) * 160}" cy="${88 + rnd(i * 3.1) * 46}" r="${.8 + rnd(i * 7) * 1.6}"/>`).join("")}</g>`,
+
+soaked: (u) => `
+  <path d="M0,88 L200,84 L200,150 L0,150 Z" fill="#33454e"/>
+  <g>${[[12, 60, 28, 28, "#5f4a3a"], [48, 54, 26, 34, "#3f5560"], [140, 58, 30, 30, "#5a4030"], [174, 52, 26, 36, "#3d5660"]].map(b =>
+   `<g><rect x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" fill="${b[4]}"/><rect x="${b[0] + 5}" y="${b[1] + 7}" width="7" height="8" fill="#ffcf6a" opacity=".8"/></g>`).join("")}</g>
+  <rect x="0" y="96" width="200" height="54" fill="#4a5a60"/>
+  <g fill="#5c6d73" opacity=".8">${[0, 1, 2, 3, 4, 5].map(i => `<ellipse cx="${16 + i * 36}" cy="${118 + (i % 3) * 12}" rx="16" ry="4"/>`).join("")}</g>
+  <g transform="translate(100,96)">
+   <path d="M-13,0 L13,0 L11,-34 L-11,-34 Z" fill="#f2b134"/>
+   <path d="M-11,-34 L11,-34 L8,-40 L-8,-40 Z" fill="#f7c964"/>
+   <circle cx="0" cy="-46" r="8.4" fill="#e8c9a0"/>
+   <path d="M-8.4,-48 a8.4,8.4 0 0 1 16.8,0 L8.4,-44 L-8.4,-44 Z" fill="#f2b134"/>
+   <path d="M-3.4,-44 a3.4,3 0 0 0 6.8,0" stroke="#3b2a1c" stroke-width="1.2" fill="none"/>
+   <circle cx="-3" cy="-47" r="1" fill="#3b2a1c"/><circle cx="3" cy="-47" r="1" fill="#3b2a1c"/>
+   <path d="M-13,-24 L-19,-8 M13,-24 L19,-8" stroke="#f2b134" stroke-width="5" stroke-linecap="round"/>
+   <rect x="-10" y="0" width="8" height="16" fill="#5a3a1c"/><rect x="2" y="0" width="8" height="16" fill="#5a3a1c"/></g>
+  <g fill="#8fa2a8" opacity=".4"><ellipse cx="100" cy="114" rx="20" ry="4"/></g>
+  ${rainfall(u, 70, .5)}`,
+
+crab: (u) => `
+  <path d="M0,86 L200,82 L200,150 L0,150 Z" fill="#1b4353"/>
+  <g transform="translate(160,80) scale(.55)">
+   <path d="M-40,0 C-30,10 30,10 40,0 C30,-6 -30,-6 -40,0 Z" fill="#1e2e36"/>
+   <rect x="-40" y="-3" width="80" height="3" fill="#d8cba0"/>
+   <rect x="-14" y="-18" width="28" height="15" fill="#e8eef1"/></g>
+  <rect x="0" y="96" width="200" height="54" fill="#8a6236"/>
+  <g stroke="#5c4128" stroke-width="1.2">${[106, 118, 130, 142].map(y => `<path d="M0,${y} H200"/>`).join("")}</g>
+  <g transform="translate(94,116) scale(1.45)">
+   <path d="M-22,0 C-22,-11 -11,-17 0,-17 C11,-17 22,-11 22,0 C22,7 11,11 0,11 C-11,11 -22,7 -22,0 Z" fill="#b8442c"/>
+   <path d="M-19,-3 C-19,-11 -9,-15 0,-15 C9,-15 19,-11 19,-3 C19,1 9,4 0,4 C-9,4 -19,1 -19,-3 Z" fill="#d9633f"/>
+   <g fill="#8f2f1c"><circle cx="-6" cy="-9" r="1.8"/><circle cx="6" cy="-9" r="1.8"/><path d="M-8,-1 C-3,3 3,3 8,-1" stroke="#8f2f1c" stroke-width="1.2" fill="none"/></g>
+   <g fill="#b8442c">
+    <path d="M-22,-2 C-32,-8 -38,-2 -34,4 C-31,8 -25,6 -23,2 Z"/><path d="M-34,4 C-38,8 -32,12 -29,8 Z"/>
+    <path d="M22,-2 C32,-8 38,-2 34,4 C31,8 25,6 23,2 Z"/><path d="M34,4 C38,8 32,12 29,8 Z"/>
+    ${[0, 1, 2].map(i => `<path d="M${-16 + i * 3},7 C${-24 - i * 5},${12 + i * 3} ${-26 - i * 5},${16 + i * 3} ${-20 - i * 4},${18 + i * 3}" stroke="#b8442c" stroke-width="2.6" fill="none"/>
+     <path d="M${16 - i * 3},7 C${24 + i * 5},${12 + i * 3} ${26 + i * 5},${16 + i * 3} ${20 + i * 4},${18 + i * 3}" stroke="#b8442c" stroke-width="2.6" fill="none"/>`).join("")}</g></g>
+  <g fill="#f2d98a" opacity=".9"><ellipse cx="34" cy="118" rx="13" ry="5"/><ellipse cx="34" cy="115" rx="13" ry="5" fill="#f7edc8"/>
+   <circle cx="34" cy="114" r="6" fill="#e8b23a"/></g>`,
+
+tram: (u) => `
+  ${forestLine(80, 12, "#14301f", 2, 14, 30)}
+  <path d="M0,84 C40,76 70,92 110,84 C148,76 176,90 200,84 L200,150 L0,150 Z" fill="#2c4a38"/>
+  <path d="M0,110 L200,104 L200,150 L0,150 Z" fill="#1b3e4e"/>
+  <g stroke="#2b3a42" stroke-width="1.6" fill="none"><path d="M-6,38 L206,86"/><path d="M-6,44 L206,92"/></g>
+  <g transform="translate(96,68) rotate(13)">
+   <rect x="-20" y="-4" width="40" height="24" rx="4" fill="#c8412c"/>
+   <rect x="-16" y="0" width="32" height="10" fill="#cfe4ee"/>
+   <g stroke="#a02f20" stroke-width="1"><path d="M-6,0 V10 M6,0 V10"/></g>
+   <rect x="-20" y="18" width="40" height="4" fill="#8a2a1c"/>
+   <path d="M0,-4 L0,-12 M-8,-11 L8,-11" stroke="#3b4a52" stroke-width="2"/></g>
+  <g transform="translate(150,116) scale(.62)">
+   <path d="M-46,0 C-36,12 36,12 46,0 C36,-6 -36,-6 -46,0 Z" fill="#1b2a33"/>
+   <rect x="-46" y="-3" width="92" height="3" fill="#e0d4ae"/>
+   <rect x="-34" y="-16" width="68" height="13" fill="#eef3f5"/>
+   <rect x="-16" y="-27" width="34" height="11" fill="#e2e9ec"/>
+   <rect x="-4" y="-36" width="10" height="9" fill="#2b5f8a"/></g>
+  <g fill="#dff0ff" opacity=".35"><ellipse cx="150" cy="126" rx="30" ry="5"/></g>`,
+
+eaglesit: (u) => `
+  ${forestLine(112, 8, "#0f2a1e", 14, 20, 40)}
+  <g transform="translate(112,96)">
+   <path d="M-4,0 L-4,26 L4,26 L4,0 Z" fill="#2a1c12" opacity="0"/>
+   <path d="M-30,10 C-16,14 16,14 30,10" stroke="#1c3527" stroke-width="4" fill="none"/></g>
+  <g transform="translate(108,74) scale(1.5)">
+   <path d="M0,0 C-11,-2 -17,6 -14,16 C-11,25 -3,28 2,26 C10,23 13,12 9,4 C7,0 4,0 0,0 Z" fill="#3b2a1c"/>
+   <path d="M-2,2 C-10,2 -14,9 -12,17 C-10,23 -4,25 0,23 C6,20 8,10 5,5 Z" fill="#54402a"/>
+   <path d="M-12,10 C-18,8 -22,16 -16,22 C-12,26 -6,24 -6,20 Z" fill="#2a1e14"/>
+   <path d="M-1,-2 C-8,-2 -11,3 -8,7 C-4,10 3,9 5,5 C7,1 3,-2 -1,-2 Z" fill="#f5f2ea"/>
+   <circle cx="1" cy="2" r="1.4" fill="#171310"/>
+   <path d="M6,2 C12,1 13,6 7,7 Z" fill="#e8b23a"/>
+   <path d="M-6,24 L-6,29 M1,24 L1,29" stroke="#e8b23a" stroke-width="1.8"/>
+   <path d="M-4,25 C-1,28 4,28 6,25" stroke="#e8b23a" stroke-width="1.4" fill="none"/></g>
+  <path d="M0,120 L200,116 L200,150 L0,150 Z" fill="#12241a"/>`,
+
+cruiseship: (u) => `
+  <path d="M0,94 C40,90 70,98 110,94 C148,90 176,97 200,94 L200,150 L0,150 Z" fill="#1c4a5e"/>
+  <g transform="translate(104,90)">
+   <path d="M-70,0 C-58,17 58,17 70,0 C58,-7 -58,-7 -70,0 Z" fill="#151f26"/>
+   <path d="M-70,0 C-58,17 58,17 70,0 C58,9 -58,9 -70,0 Z" fill="#0c1319"/>
+   <rect x="-70" y="-4" width="140" height="4" fill="#c8412c"/>
+   <rect x="-64" y="-18" width="128" height="14" fill="#f2f5f6"/>
+   ${windows(-60, -15, 24, 3.4, 4.6, 1.6, "#3b5560")}
+   <rect x="-56" y="-30" width="112" height="12" fill="#eaeff1"/>
+   ${windows(-52, -27, 20, 3.4, 4.4, 1.8, "#3b5560")}
+   <rect x="-44" y="-40" width="88" height="10" fill="#e2e9ec"/>
+   ${windows(-40, -37.5, 16, 3.4, 4, 1.8, "#3b5560")}
+   <rect x="-24" y="-50" width="48" height="10" fill="#dde5e8"/>
+   <rect x="-6" y="-62" width="14" height="12" rx="2" fill="#2b5f8a"/>
+   <path d="M-30,-40 C-24,-46 -18,-46 -12,-40 Z" fill="#8fb6cc"/>
+   <rect x="30" y="-46" width="7" height="6" rx="2" fill="#c8412c"/></g>
+  <g fill="#ffffff" opacity=".6"><path d="M34,96 C56,88 152,88 174,96 C152,102 56,102 34,96 Z"/></g>
+  ${swells(118, 2, "#bcd8e4", .35, 2)}`,
+
+gangway: (u) => `
+  <path d="M0,92 L200,88 L200,150 L0,150 Z" fill="#1c4a5e"/>
+  <rect x="0" y="104" width="200" height="46" fill="#7a5836"/>
+  <g stroke="#5c4128" stroke-width="1.2">${[114, 126, 138].map(y => `<path d="M0,${y} H200"/>`).join("")}</g>
+  <g><rect x="118" y="14" width="88" height="92" fill="#eef3f5"/>
+   <rect x="118" y="96" width="88" height="12" fill="#151f26"/>
+   <rect x="118" y="92" width="88" height="4" fill="#c8412c"/>
+   ${windows(124, 22, 8, 5, 6, 4, "#3b5560")}${windows(124, 38, 8, 5, 6, 4, "#3b5560")}
+   ${windows(124, 54, 8, 5, 6, 4, "#3b5560")}${windows(124, 70, 8, 5, 6, 4, "#3b5560")}
+   <rect x="112" y="14" width="8" height="92" fill="#d7dfe3"/></g>
+  <path d="M60,104 L118,80 L124,88 L68,110 Z" fill="#b9c4c9"/>
+  <path d="M60,104 L118,80" stroke="#8b9aa3" stroke-width="2" fill="none"/>
+  <path d="M64,98 L120,74" stroke="#8b9aa3" stroke-width="1.4" fill="none"/>
+  <g transform="translate(84,92) scale(.9)">
+   <path d="M-5,0 L5,0 L4,-16 L-4,-16 Z" fill="#c8412c"/>
+   <circle cx="0" cy="-21" r="4.4" fill="#e8c9a0"/>
+   <path d="M-4.4,-22 a4.4,4.4 0 0 1 8.8,0 Z" fill="#3b2a1c"/>
+   <rect x="-4" y="0" width="3.4" height="9" fill="#2b3a4a"/><rect x="1" y="0" width="3.4" height="9" fill="#2b3a4a"/></g>
+  <g fill="#c8412c"><rect x="18" y="72" width="4" height="34"/><path d="M22,72 L44,78 L22,84 Z"/></g>`
+});
+
+function plane(x, y, s, rot) {
+  return `<g transform="translate(${x},${y}) scale(${s}) rotate(${rot || 0})">
+  <path d="M-30,0 C-20,-7 22,-8 34,-2 C36,0 34,3 30,4 L-24,5 C-30,5 -33,2 -30,0 Z" fill="#e8eef1"/>
+  <path d="M-30,0 C-20,-7 22,-8 34,-2 C22,-4 -20,-3 -30,0 Z" fill="#c8412c"/>
+  <path d="M-22,-6 L-14,-20 L-2,-20 L-4,-6 Z" fill="#dde5e8"/>
+  <path d="M-30,0 L-40,-14 L-34,-14 L-24,-3 Z" fill="#d7dfe3"/>
+  <g fill="#2b3d46">${windows(2, -5, 4, 3, 3, 2.4, "#2b3d46")}</g>
+  <path d="M-6,5 L-6,11 M10,5 L10,11" stroke="#8b9aa3" stroke-width="1.4"/>
+  <path d="M-16,11 C-4,14 16,14 26,11 C16,9 -4,9 -16,11 Z" fill="#b9c4c9"/>
+  <path d="M-16,11 L-22,9 M26,11 L32,9" stroke="#b9c4c9" stroke-width="1.4"/>
+  <circle cx="33" cy="-1" r="4" fill="#8b9aa3" opacity=".55"/></g>`;
+}
+
+/* ---------- per-card scene configuration ---------- */
+const ART = {
+  "storm-kayak":          { sky:"gale",  fg:"kayak",       hz:88, water:["#255f77","#08202e"], snow:1 },
+  "outhouse-inferno":     { sky:"fire",  fg:"outhouse",    ridges:"low", nowater:1 },
+  "generator-detonation": { sky:"night", fg:"genboom",     stars:1, nowater:1, ridges:"low" },
+  "boat-sinker":          { sky:"storm", fg:"sinking",     hz:92, water:["#20505f","#071a25"], snow:1 },
+  "boat-recoverer":       { sky:"day",   fg:"salvage",     hz:92, clouds:1, snow:1 },
+  "off-grid":             { sky:"bright",fg:"solarcabin",  nowater:1, clouds:1, snow:1, sunI:.9 },
+  "island-resident":      { sky:"dawn",  fg:"stilthouse",  hz:104, sunx:26, suny:46, sun:"#ffcf8a", sunI:.9 },
+  "icefield":             { sky:"ice",   fg:"glacier",     nowater:1, ridges:"far", snow:1 },
+  "northern-lights":      { sky:"night", fg:"aurorascene", aurora:1, stars:1, nowater:1, ridges:"low", sunI:0 },
+  "eagle-eater":          { sky:"day",   fg:"dockmeal",    nowater:1, clouds:1 },
+  "whale":                { sky:"bright",fg:"whale",       hz:86, snow:1, clouds:1 },
+  "wind-survivor":        { sky:"gale",  fg:"windtree",    nowater:1 },
+  "bear":                 { sky:"moss",  fg:"bear",        nowater:1 },
+  "tongass":              { sky:"storm", fg:"narrows",     hz:96, snow:1 },
+  "deer":                 { sky:"moss",  fg:"deer",        nowater:1 },
+  "sea-cuke":             { sky:"day",   fg:"seacuke",     nowater:1, ridges:"far" },
+  "halibut":              { sky:"day",   fg:"halibut",     hz:96, clouds:1, snow:1 },
+  "over-the-bow":         { sky:"gale",  fg:"bowwave",     nowater:1, ridges:"far" },
+  "breakup":              { sky:"rain",  fg:"engine",      nowater:1, ridges:"far", rain:1 },
+  "ferry":                { sky:"dusk",  fg:"ferry",       hz:98, sunx:76, suny:52, sun:"#ffb06a", sunI:.95 },
+  "rain":                 { sky:"rain",  fg:"raintown",    nowater:1, rain:0 },
+  "xtratuf":              { sky:"rain",  fg:"boots",       nowater:1, ridges:"far" },
+  "misty":                { sky:"day",   fg:"fjords",      nowater:1, ridges:"none" },
+  "floatplane":           { sky:"bright",fg:"floatplane",  nowater:1, clouds:1, snow:1 },
+  "eagle-theft":          { sky:"day",   fg:"eaglesteal",  nowater:1, clouds:1 },
+  "lumberjack":           { sky:"moss",  fg:"lumberjack",  nowater:1 },
+  "creek-street":         { sky:"rain",  fg:"boardwalk",   nowater:1, rain:1 },
+  "totem":                { sky:"moss",  fg:"totem",       nowater:1 },
+  "salmon-run":           { sky:"moss",  fg:"salmonladder",nowater:1, ridges:"far" },
+  "soaked":               { sky:"rain",  fg:"soaked",      nowater:1, ridges:"none" },
+  "crab":                 { sky:"day",   fg:"crab",        nowater:1, clouds:1, snow:1 },
+  "tram":                 { sky:"bright",fg:"tram",        nowater:1, snow:1, clouds:1 },
+  "first-eagle":          { sky:"day",   fg:"eaglesit",    nowater:1, clouds:1 },
+  "gangway":              { sky:"bright",fg:"gangway",     nowater:1, clouds:1, snow:1 }
+};
+
+/* card body tone — the painted panel colour, by mood */
+const TONE = {
+  "storm-kayak":"#101f2a", "outhouse-inferno":"#2a1206", "generator-detonation":"#141a12",
+  "boat-sinker":"#12222b", "boat-recoverer":"#152833", "off-grid":"#172c22",
+  "island-resident":"#22182c", "icefield":"#12303c", "northern-lights":"#0a1622",
+  "eagle-eater":"#2a1e12", "whale":"#0f2a35", "wind-survivor":"#16261d",
+  "bear":"#1a2417", "tongass":"#13242c", "deer":"#1e2416", "sea-cuke":"#14262c",
+  "halibut":"#16282c", "over-the-bow":"#101d26", "breakup":"#1a201f", "ferry":"#241a26",
+  "rain":"#182228", "xtratuf":"#241a12",
+  "misty":"#152430", "floatplane":"#14252f", "eagle-theft":"#241c14", "lumberjack":"#182618",
+  "creek-street":"#1d1a20", "totem":"#251a12", "salmon-run":"#1a2418", "soaked":"#1a2228",
+  "crab":"#2a1610", "tram":"#132430", "first-eagle":"#1b2418", "gangway":"#132330"
+};
+
+function artSVG(key, u) {
+  const a = ART[key] || ART.gangway;
+  const p = PAL[a.sky] || PAL.day;
+  const rc = RIDGEC[a.sky] || RIDGEC.day;
+  const wc = a.water || ["#2a5d78", "#0c2634"];
+  const hz = a.hz || 96;
+  const S = "s" + u, W = "w" + u, G = "g" + u, H = "h" + u;
+  let o = `<svg viewBox="0 0 200 150" preserveAspectRatio="none"><defs>` +
+    `<linearGradient id="${S}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset=".55" stop-color="${p[1]}"/><stop offset="1" stop-color="${p[2]}"/></linearGradient>` +
+    `<linearGradient id="${W}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${wc[0]}"/><stop offset="1" stop-color="${wc[1]}"/></linearGradient>` +
+    `<radialGradient id="${G}" cx="${a.sunx || 68}%" cy="${a.suny || 24}%" r="52%"><stop offset="0" stop-color="${a.sun || "#fff6d8"}" stop-opacity="${a.sunI == null ? .55 : a.sunI}"/><stop offset="1" stop-color="${a.sun || "#fff6d8"}" stop-opacity="0"/></radialGradient>` +
+    `<linearGradient id="${H}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p[2]}" stop-opacity="0"/><stop offset="1" stop-color="${p[2]}" stop-opacity=".9"/></linearGradient>` +
+    `</defs><rect width="200" height="150" fill="url(#${S})"/>`;
+
+  if (a.stars) o += stars(u);
+  if (a.aurora) o += aurora(u);
+  o += `<rect width="200" height="150" fill="url(#${G})"/>`;
+  if (a.clouds) o += clouds(u, a.cloudY || 24, "#ffffff", a.sky === "storm" || a.sky === "gale" ? .35 : .72);
+
+  const rmode = a.ridges || "all";
+  if (rmode !== "none") {
+    o += `<path d="${RIDGE.far}" fill="${rc[0]}"/>`;
+    if (a.snow) o += SNOW;
+    o += `<rect x="0" y="42" width="200" height="46" fill="url(#${H})" opacity=".55"/>`;
+    if (rmode === "all" || rmode === "low") {
+      o += `<path d="${RIDGE.mid}" fill="${rc[1]}"/>`;
+      o += `<rect x="0" y="62" width="200" height="40" fill="url(#${H})" opacity=".32"/>`;
+      o += `<path d="${RIDGE.near}" fill="${rc[2]}"/>`;
+      o += forestLine(hz + 2, 22, rc[2], u + 3, 8, 17);
+    }
+  }
+  if (!a.nowater) {
+    o += `<rect x="0" y="${hz}" width="200" height="${150 - hz}" fill="url(#${W})"/>`;
+    o += `<rect x="0" y="${hz}" width="200" height="7" fill="${p[2]}" opacity=".28"/>`;
+    o += swells(hz + 12, 3, "#dff0ff", .32, 2.6);
+  }
+  o += (FG[a.fg] || (() => ""))(u, a);
+  if (a.rain) o += rainfall(u, 46, .38);
+  return o + `</svg>`;
 }
 
 /* ============================================================
@@ -1191,12 +1957,13 @@ function cardHTML(c, opts) {
   const uid = ++uidc;
   const ser = serialOf(c.id);
   return `<div class="card-shell">
-    <div class="card ${c.ser === "visitor" ? "visitor" : ""} ${unlocked ? "" : "locked"}" data-r="${c.r}" data-id="${c.id}" tabindex="0">
+    <div class="card ${c.ser === "visitor" ? "visitor" : ""} ${unlocked ? "" : "locked"}" data-r="${c.r}" data-id="${c.id}" style="--tone:${TONE[c.id] || "#182228"}" tabindex="0">
       <div class="card-face">
         <div class="card-inner">
+          <i class="cnr tl"></i><i class="cnr tr"></i><i class="cnr bl"></i><i class="cnr br"></i>
           <div class="card-head"><div class="ttl">ALASKA CARD</div>
             <div class="sub">${c.ser === "visitor" ? "Visitor Series" : "Official Alaska Cred"}</div></div>
-          <div class="art">${sceneSVG(c.sc, uid)}<div class="vig"></div><div class="motif">${c.m}</div></div>
+          <div class="art">${artSVG(c.id, uid)}<div class="grain"></div><div class="vig"></div></div>
           <div class="card-body"><h3>${esc(c.n)}</h3><p>${esc(c.s)}</p></div>
           <div class="card-foot">
             <span class="rar-badge">${RARITY[c.r].label}</span>
