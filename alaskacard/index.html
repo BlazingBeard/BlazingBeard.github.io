@@ -1,0 +1,1554 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="referrer" content="no-referrer" />
+<title>ALASKA CARD — Official Alaska Cred | Ketchikan</title>
+<script>
+  (() => {
+    const param = new URLSearchParams(window.location.search).get("clawpilotTheme");
+    const theme =
+      param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
+<style>
+:root {
+  color-scheme: light;
+  --cp-bg: #f7f4ef;
+  --cp-bg-elevated: #fcfbf8;
+  --cp-surface: #ffffff;
+  --cp-surface-soft: #f5f5f5;
+  --cp-border: #dedede;
+  --cp-border-strong: #919191;
+  --cp-text: #242424;
+  --cp-text-muted: #5c5c5c;
+  --cp-text-soft: #6f6f6f;
+  --cp-accent: #b11f4b;
+  --cp-accent-hover: #9a1a41;
+  --cp-accent-soft: rgba(177, 31, 75, 0.08);
+  --cp-accent-fg: #ffffff;
+  --cp-success: #16a34a;
+  --cp-danger: #dc2626;
+  --cp-warning: #f59e0b;
+  --cp-link: #0078d4;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+  --cp-overlay: rgba(255, 255, 255, 0.8);
+  --cp-panel: rgba(255, 255, 255, 0.86);
+  --cp-panel-strong: rgba(255, 255, 255, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.55);
+  --cp-highlight: rgba(177, 31, 75, 0.12);
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --cp-bg: #3d3b3a;
+  --cp-bg-elevated: #343231;
+  --cp-surface: #292929;
+  --cp-surface-soft: #2e2e2e;
+  --cp-border: #474747;
+  --cp-border-strong: #5f5f5f;
+  --cp-text: #dedede;
+  --cp-text-muted: #919191;
+  --cp-text-soft: #b0b0b0;
+  --cp-accent: #fd8ea1;
+  --cp-accent-hover: #fb7b91;
+  --cp-accent-soft: rgba(253, 142, 161, 0.14);
+  --cp-accent-fg: #1a1a1a;
+  --cp-success: #4ade80;
+  --cp-danger: #f87171;
+  --cp-warning: #fbbf24;
+  --cp-link: #4da6ff;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+  --cp-overlay: rgba(41, 41, 41, 0.88);
+  --cp-panel: rgba(41, 41, 41, 0.72);
+  --cp-panel-strong: rgba(41, 41, 41, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.04);
+  --cp-highlight: rgba(253, 142, 161, 0.12);
+}
+
+/* ---- ALASKA CARD art tokens: the card faces are printed artwork, not UI chrome ---- */
+:root {
+  --ak-ink: #0d1a17;
+  --ak-parch: #efe3c2;
+  --ak-parch-2: #d9c89b;
+  --ak-parch-bg: #f0e6cd;
+  --ak-gold: #d9b45b;
+  --ak-gold-hi: #f7e4ab;
+  --ak-gold-lo: #8a6a26;
+  --ak-frame: #16241f;
+  --ak-common: #cfcfcf;
+  --ak-seasoned: #2f7d4f;
+  --ak-rare: #2f6ea8;
+  --ak-epic: #6c3fa0;
+  --ak-legendary: #c1631f;
+  --ak-mythic: #101014;
+  --ak-visitor: #0f7f8c;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--cp-bg);
+  color: var(--cp-text);
+  font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+.mono { font-family: Consolas, "Courier New", Courier, monospace; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 20px; }
+section { padding: 58px 0; }
+h1,h2,h3,h4,h5 { margin: 0 0 8px; line-height: 1.15; }
+p { line-height: 1.55; }
+.eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--cp-accent); font-weight: 700; margin-bottom: 10px; }
+.lede { color: var(--cp-text-muted); max-width: 74ch; font-size: 16px; }
+.alt { background: var(--cp-bg-elevated); border-top: 1px solid var(--cp-border); border-bottom: 1px solid var(--cp-border); }
+
+/* ============ TOP BAR ============ */
+.topbar { position: sticky; top: 0; z-index: 60; backdrop-filter: blur(14px); background: var(--cp-panel); border-bottom: 1px solid var(--cp-border); }
+.topbar-in { max-width: 1320px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .12em; font-size: 13px; }
+.seal { width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--ak-gold-hi), var(--ak-gold) 45%, var(--ak-gold-lo)); border: 1px solid var(--ak-gold-lo); display: grid; place-items: center; font-size: 13px; color: var(--ak-frame); box-shadow: 0 0 2px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.14); }
+.spacer { flex: 1; }
+.navlink { font-size: 13px; color: var(--cp-text-muted); text-decoration: none; padding: 6px 10px; border-radius: .625rem; white-space: nowrap; }
+.navlink:hover { color: var(--cp-text); background: var(--cp-surface-soft); }
+.btn { border: 1px solid var(--cp-border); background: var(--cp-surface); color: var(--cp-text); padding: 8px 14px; border-radius: .625rem; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: .15s; white-space: nowrap; text-decoration: none; display: inline-block; }
+.btn:hover { border-color: var(--cp-border-strong); }
+.btn.primary { background: var(--cp-accent); border-color: var(--cp-accent); color: var(--cp-accent-fg); }
+.btn.primary:hover { background: var(--cp-accent-hover); }
+.btn.ghost { background: transparent; }
+.btn.sm { padding: 5px 10px; font-size: 12px; }
+.btn:active { transform: translateY(1px); }
+
+/* ============ TICKER ============ */
+.ticker { background: var(--ak-frame); color: var(--ak-parch-2); overflow: hidden; white-space: nowrap; border-bottom: 1px solid var(--ak-gold-lo); }
+.ticker-in { display: inline-block; padding: 7px 0; animation: roll 44s linear infinite; font-size: 11.5px; letter-spacing: .17em; text-transform: uppercase; font-weight: 700; }
+.ticker-in span { padding: 0 26px; }
+.ticker-in b { color: var(--ak-gold-hi); }
+@keyframes roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ============ HERO ============ */
+.hero { position: relative; padding: 66px 0 34px; overflow: hidden; }
+.hero-aurora { position: absolute; inset: -30% -10% auto -10%; height: 540px; pointer-events: none;
+  background: radial-gradient(60% 60% at 20% 40%, var(--cp-highlight), transparent 70%), radial-gradient(50% 50% at 70% 30%, var(--cp-accent-soft), transparent 70%);
+  filter: blur(20px); animation: drift 18s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: translate3d(4%, 3%, 0) scale(1.08); } }
+.hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: center; position: relative; }
+@media (max-width: 960px) { .hero-grid { grid-template-columns: 1fr; } }
+.title { font-size: clamp(44px, 7.4vw, 88px); font-weight: 900; letter-spacing: -.02em; line-height: .93;
+  background: linear-gradient(100deg, var(--cp-text) 0%, var(--cp-accent) 38%, var(--cp-text) 55%, var(--cp-accent) 78%, var(--cp-text) 100%);
+  background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 7s linear infinite; }
+@keyframes shine { to { background-position: 300% 0; } }
+.subtitle { font-size: 18px; color: var(--cp-text-muted); max-width: 56ch; margin-top: 14px; }
+.hero-cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+.stat-row { display: flex; gap: 26px; margin-top: 28px; flex-wrap: wrap; }
+.stat b { display: block; font-size: 24px; }
+.stat span { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--cp-text-soft); }
+.hero-stage { display: grid; place-items: center; min-height: 470px; perspective: 1600px; }
+.fan { position: relative; width: 300px; height: 420px; }
+.fan .card-shell { position: absolute; inset: 0; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.fan .card-shell:nth-child(1) { transform: rotate(-16deg) translate(-96px, 16px) scale(.9); z-index: 1; }
+.fan .card-shell:nth-child(2) { transform: rotate(-7deg) translate(-46px, 4px) scale(.95); z-index: 2; }
+.fan .card-shell:nth-child(3) { transform: rotate(0deg) translate(0,-8px); z-index: 5; }
+.fan .card-shell:nth-child(4) { transform: rotate(7deg) translate(46px, 4px) scale(.95); z-index: 2; }
+.fan .card-shell:nth-child(5) { transform: rotate(16deg) translate(96px, 16px) scale(.9); z-index: 1; }
+.fan:hover .card-shell:nth-child(1) { transform: rotate(-22deg) translate(-140px, 22px) scale(.92); }
+.fan:hover .card-shell:nth-child(2) { transform: rotate(-10deg) translate(-70px, 2px) scale(.97); }
+.fan:hover .card-shell:nth-child(4) { transform: rotate(10deg) translate(70px, 2px) scale(.97); }
+.fan:hover .card-shell:nth-child(5) { transform: rotate(22deg) translate(140px, 22px) scale(.92); }
+
+/* ============ THE CARD ============ */
+.card-shell { width: 300px; perspective: 1200px; }
+.card { position: relative; width: 100%; aspect-ratio: 5 / 7; border-radius: 16px;
+  transform-style: preserve-3d; will-change: transform;
+  transform: rotateX(var(--rx, 0deg)) rotateY(calc(var(--ry, 0deg) + var(--flip, 0deg))) scale(var(--sc, 1));
+  transition: transform .55s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
+  box-shadow: 0 0 2px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.14);
+  cursor: pointer; isolation: isolate; background: transparent; }
+.card.live { transition: transform .06s linear; }
+.card:focus-visible { outline: 2px solid var(--cp-accent); outline-offset: 4px; }
+.card-face, .card-back { position: absolute; inset: 0; border-radius: 16px; overflow: hidden; backface-visibility: hidden; border: 1px solid var(--ak-gold-lo); }
+.card-face { background: linear-gradient(150deg, color-mix(in srgb, var(--rar) 30%, var(--ak-frame)) 0%, var(--ak-frame) 55%, color-mix(in srgb, var(--rar) 18%, var(--ak-frame)) 100%); padding: 9px; display: flex; flex-direction: column; }
+.card-inner { flex: 1; border: 2px solid var(--ak-gold); border-radius: 9px; background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.42)); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+.card-head { text-align: center; padding: 9px 8px 4px; }
+.card-head .ttl { font-size: 17px; font-weight: 900; letter-spacing: .10em; color: var(--ak-gold-hi); text-shadow: 0 1px 0 var(--ak-gold-lo), 0 0 12px rgba(217,180,91,.35); }
+.card-head .sub { display: inline-block; margin-top: 3px; font-size: 8px; letter-spacing: .2em; text-transform: uppercase; color: var(--ak-frame); background: linear-gradient(180deg, var(--ak-gold-hi), var(--ak-gold)); padding: 1px 12px; border-radius: 2px; font-weight: 800; clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%); }
+.art { margin: 6px 9px; border: 1px solid var(--ak-gold-lo); border-radius: 4px; overflow: hidden; aspect-ratio: 4 / 3; position: relative; background: var(--ak-ink); }
+.art svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.art .motif { position: absolute; inset: 0; display: grid; place-items: center; font-size: 60px; line-height: 1; filter: drop-shadow(0 6px 10px rgba(0,0,0,.6)) saturate(1.15); }
+.art .vig { position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 40%, transparent 45%, rgba(0,0,0,.55)); }
+.card-body { padding: 4px 12px 0; text-align: center; flex: 1; }
+.card-body h3 { font-size: 15px; font-weight: 900; letter-spacing: .07em; color: var(--ak-parch); text-transform: uppercase; margin: 2px 0 4px; }
+.card-body p { margin: 0; font-size: 10.5px; line-height: 1.35; color: var(--ak-parch-2); }
+.card-foot { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px 9px; gap: 6px; }
+.rar-badge { font-size: 8.5px; letter-spacing: .18em; font-weight: 800; text-transform: uppercase; padding: 3px 14px; border-radius: 2px; color: #fff; background: linear-gradient(180deg, color-mix(in srgb, var(--rar) 85%, #fff 15%), var(--rar)); border: 1px solid rgba(0,0,0,.35); clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 50%, 100% 100%, 0 100%, 6px 50%); }
+.pts { width: 40px; height: 40px; border-radius: 50%; flex: none; background: radial-gradient(circle at 34% 28%, var(--ak-gold-hi), var(--ak-gold) 48%, var(--ak-gold-lo)); border: 1px solid var(--ak-gold-lo); color: var(--ak-frame); display: grid; place-items: center; line-height: 1; text-align: center; }
+.pts b { font-size: 15px; font-weight: 900; }
+.pts i { font-style: normal; font-size: 5.5px; letter-spacing: .12em; display: block; margin-top: 1px; }
+.serial { position: absolute; bottom: 5px; left: 0; right: 0; text-align: center; font-size: 6.5px; letter-spacing: .22em; color: var(--ak-gold-lo); font-weight: 700; }
+
+/* ---- CARD BACK ---- */
+.card-back { transform: rotateY(180deg);
+  background: linear-gradient(160deg, var(--ak-parch-bg), var(--ak-parch-2));
+  padding: 12px 13px; display: flex; flex-direction: column; color: var(--ak-frame); }
+.back-top { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--ak-frame); padding-bottom: 5px; }
+.back-top .bt { font-size: 12px; font-weight: 900; letter-spacing: .18em; }
+.back-top .bn { font-size: 9px; font-weight: 800; letter-spacing: .1em; opacity: .7; }
+.back-body { flex: 1; padding-top: 8px; font-size: 9px; }
+.back-body .lbl { font-size: 6.5px; letter-spacing: .2em; text-transform: uppercase; opacity: .6; font-weight: 800; }
+.back-body .ach { font-size: 13px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; margin: 1px 0 5px; }
+.back-body .desc { font-size: 8.5px; line-height: 1.35; opacity: .82; margin: 0 0 8px; }
+.blank { border-bottom: 1px solid rgba(22,36,31,.45); min-height: 13px; font-family: "Segoe Script", "Bradley Hand", cursive; font-size: 10px; padding: 0 2px 1px; }
+.back-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+.back-qr { display: flex; gap: 9px; align-items: flex-end; margin-top: 8px; }
+.back-qr .qbox { width: 66px; height: 66px; flex: none; background: #fff; padding: 3px; border: 1px solid rgba(22,36,31,.4); }
+.back-qr .qbox svg { width: 100%; height: 100%; display: block; }
+.back-qr .qtx { font-size: 6.6px; line-height: 1.4; letter-spacing: .06em; text-transform: uppercase; font-weight: 700; opacity: .75; }
+.flip-btn { position: absolute; top: 9px; left: 9px; z-index: 8; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; background: rgba(0,0,0,.55); color: var(--ak-gold-hi); border: 1px solid var(--ak-gold-lo); border-radius: 999px; padding: 3px 9px; cursor: pointer; font-family: inherit; }
+
+/* -------- HOLO LAYERS -------- */
+.holo, .glare, .sparkle { position: absolute; inset: 0; border-radius: 16px; pointer-events: none; backface-visibility: hidden; }
+.holo { background: repeating-linear-gradient(115deg, rgba(255,0,132,.55) 0%, rgba(255,214,0,.5) 12%, rgba(0,255,170,.5) 24%, rgba(0,170,255,.55) 36%, rgba(180,0,255,.5) 48%, rgba(255,0,132,.55) 60%);
+  background-size: 260% 260%; background-position: calc(var(--mx, 50%) * 1.1) calc(var(--my, 50%) * 1.1);
+  mix-blend-mode: color-dodge; opacity: calc(var(--holo, 0) * .34); filter: brightness(1.1) contrast(1.5); transition: opacity .35s; }
+.holo::after { content: ""; position: absolute; inset: 0; border-radius: 16px;
+  background: repeating-linear-gradient(-58deg, rgba(255,255,255,0) 0 6px, rgba(255,255,255,.35) 7px, rgba(255,255,255,0) 12px);
+  mix-blend-mode: overlay; opacity: .55; background-position: calc(var(--mx, 50%) * -.6) 0; background-size: 220% 100%; }
+.glare { background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), var(--ak-gold-hi) 0%, rgba(255,255,255,.35) 12%, rgba(255,255,255,0) 42%); mix-blend-mode: overlay; opacity: calc(var(--holo, 0) * .85); transition: opacity .35s; }
+.sparkle { background-image:
+  radial-gradient(1.6px 1.6px at 12% 22%, #fff, transparent), radial-gradient(1.4px 1.4px at 78% 18%, #fff, transparent),
+  radial-gradient(1.8px 1.8px at 32% 68%, #fff, transparent), radial-gradient(1.2px 1.2px at 62% 82%, #fff, transparent),
+  radial-gradient(1.5px 1.5px at 88% 55%, #fff, transparent), radial-gradient(1.3px 1.3px at 46% 40%, #fff, transparent),
+  radial-gradient(1.6px 1.6px at 22% 88%, #fff, transparent), radial-gradient(1.4px 1.4px at 70% 35%, #fff, transparent);
+  mix-blend-mode: color-dodge; opacity: 0; transition: opacity .35s; }
+.card:hover .sparkle, .card.live .sparkle { opacity: calc(var(--spark, 0) * .9); }
+.card.flipped .holo, .card.flipped .glare, .card.flipped .sparkle { opacity: 0 !important; }
+
+.card[data-r="common"]    { --rar: var(--ak-common);    --holo:.12; --spark:0; }
+.card[data-r="seasoned"]  { --rar: var(--ak-seasoned);  --holo:.35; --spark:.15; }
+.card[data-r="rare"]      { --rar: var(--ak-rare);      --holo:.6;  --spark:.35; }
+.card[data-r="epic"]      { --rar: var(--ak-epic);      --holo:.85; --spark:.6; }
+.card[data-r="legendary"] { --rar: var(--ak-legendary); --holo:1;   --spark:.85; }
+.card[data-r="mythic"]    { --rar: var(--ak-mythic);    --holo:1;   --spark:1; }
+.card[data-r="mythic"] .holo {
+  background: radial-gradient(60% 60% at var(--mx,50%) var(--my,50%), rgba(255,255,255,.9), transparent 55%),
+    conic-gradient(from calc(var(--mx, 50) * 2deg), #ff0080, #ffea00, #00ffa3, #00b3ff, #a600ff, #ff0080);
+  background-size: 200% 200%, 200% 200%; mix-blend-mode: color-dodge; filter: contrast(1.7) brightness(1.15); }
+.card[data-r="legendary"]::after, .card[data-r="mythic"]::after { content: ""; position: absolute; inset: -3px; border-radius: 19px; z-index: -1;
+  background: conic-gradient(from 0deg, var(--ak-gold), #fff, var(--ak-gold-lo), #fff, var(--ak-gold)); filter: blur(9px); opacity: 0; transition: opacity .4s; }
+.card[data-r="legendary"]:hover::after, .card[data-r="mythic"]:hover::after, .card[data-r="legendary"].live::after, .card[data-r="mythic"].live::after { opacity: .75; }
+.card.visitor .card-head .sub { background: linear-gradient(180deg, #7fe3ec, var(--ak-visitor)); color: #06262a; }
+
+.locked .card-inner { filter: grayscale(1) brightness(.55); }
+.locked .holo, .locked .sparkle { opacity: .06 !important; }
+.lock-tag { position: absolute; top: 50%; left: 0; right: 0; text-align: center; transform: translateY(-50%); font-size: 10px; letter-spacing: .3em; font-weight: 800; color: var(--ak-parch); text-transform: uppercase; z-index: 4; pointer-events: none; text-shadow: 0 2px 8px rgba(0,0,0,.9); }
+.earned-stamp { position: absolute; top: 14px; right: 12px; z-index: 6; pointer-events: none; font-size: 8px; font-weight: 900; letter-spacing: .16em; color: var(--cp-success); border: 2px solid var(--cp-success); border-radius: 4px; padding: 2px 6px; transform: rotate(-12deg); background: rgba(0,0,0,.35); text-transform: uppercase; }
+
+/* ============ GENERIC UI ============ */
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 22px 0 26px; }
+.chip { border: 1px solid var(--cp-border); background: var(--cp-surface); color: var(--cp-text-muted); padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: .08em; text-transform: uppercase; font-family: inherit; transition: .15s; }
+.chip:hover { border-color: var(--cp-border-strong); color: var(--cp-text); }
+.chip.on { background: var(--cp-accent); border-color: var(--cp-accent); color: var(--cp-accent-fg); }
+.grid { display: grid; gap: 30px 26px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); justify-items: center; }
+.grid .card-shell { width: 100%; max-width: 300px; }
+.panel { background: var(--cp-surface); border: 1px solid var(--cp-border); border-radius: 16px; padding: 22px; box-shadow: 0 0 2px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.14); }
+.cols3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+.cols2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 18px; }
+.panel h4 { font-size: 15px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.panel .tag { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; font-weight: 800; color: var(--cp-accent); background: var(--cp-accent-soft); padding: 3px 9px; border-radius: 999px; }
+.panel ul { margin: 10px 0 0; padding-left: 18px; color: var(--cp-text-muted); font-size: 14px; line-height: 1.65; }
+.panel ul li::marker { color: var(--cp-accent); }
+.money { font-size: 26px; font-weight: 900; color: var(--cp-text); }
+.money small { font-size: 12px; color: var(--cp-text-soft); font-weight: 600; letter-spacing: .1em; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 9px 11px; border-bottom: 1px solid var(--cp-border); }
+th { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--cp-text-soft); }
+td.num { text-align: right; font-family: Consolas, "Courier New", Courier, monospace; }
+tr.total td { font-weight: 900; border-bottom: none; color: var(--cp-accent); font-size: 16px; }
+.warn { border: 1px solid var(--cp-warning); background: color-mix(in srgb, var(--cp-warning) 12%, transparent); border-radius: .625rem; padding: 12px 14px; font-size: 12.5px; color: var(--cp-text-muted); }
+.timeline { position: relative; padding-left: 26px; }
+.timeline::before { content:""; position:absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--cp-border); }
+.tl-item { position: relative; padding-bottom: 20px; }
+.tl-item::before { content:""; position:absolute; left: -24px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--cp-accent); border: 2px solid var(--cp-surface); box-shadow: 0 0 0 2px var(--cp-accent-soft); }
+.tl-item h5 { margin: 0 0 3px; font-size: 14px; }
+.tl-item p { margin: 0; font-size: 13px; color: var(--cp-text-muted); }
+.tl-item .yr { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--cp-accent); font-weight: 800; }
+footer { border-top: 1px solid var(--cp-border); padding: 30px 0 50px; color: var(--cp-text-soft); font-size: 12px; }
+
+/* ============ RANK ============ */
+.rank-panel { background: var(--cp-surface); border: 1px solid var(--cp-border); border-radius: 16px; padding: 20px 22px; box-shadow: 0 0 2px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.14); display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: center; }
+@media (max-width: 780px) { .rank-panel { grid-template-columns: 1fr; } }
+.rank-num { font-size: 40px; font-weight: 900; line-height: 1; color: var(--cp-accent); }
+.rank-num small { display: block; font-size: 10px; letter-spacing: .18em; color: var(--cp-text-soft); font-weight: 700; }
+.bar { height: 10px; background: var(--cp-surface-soft); border-radius: 999px; overflow: hidden; border: 1px solid var(--cp-border); }
+.bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cp-accent), var(--ak-gold)); transition: width .8s cubic-bezier(.2,.8,.2,1); }
+.rank-labels { display: flex; justify-content: space-between; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--cp-text-soft); margin-top: 7px; }
+
+/* ============ CRUISE / PORT BOARD ============ */
+.port-board { background: var(--ak-frame); border: 1px solid var(--ak-gold-lo); border-radius: 16px; padding: 20px 22px; color: var(--ak-parch); box-shadow: var(--cp-shadow); }
+.port-board h4 { color: var(--ak-gold-hi); letter-spacing: .16em; font-size: 12px; text-transform: uppercase; }
+.ship-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px dashed rgba(217,180,91,.28); font-size: 13.5px; }
+.ship-row:last-child { border-bottom: none; }
+.ship-row .nm { font-weight: 700; }
+.ship-row .ln { font-size: 10.5px; color: var(--ak-parch-2); letter-spacing: .1em; text-transform: uppercase; }
+.ship-row .pax, .ship-row .win, .ship-row .rev { font-family: Consolas, "Courier New", Courier, monospace; font-size: 13px; text-align: right; }
+.ship-row .rev { color: var(--ak-gold-hi); font-weight: 700; }
+.board-tot { display: flex; justify-content: space-between; align-items: baseline; padding-top: 14px; margin-top: 6px; border-top: 2px solid var(--ak-gold-lo); }
+.board-tot b { color: var(--ak-gold-hi); font-size: 30px; font-family: Consolas, "Courier New", Courier, monospace; }
+.sliders { display: grid; gap: 16px; }
+.slider label { display: flex; justify-content: space-between; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--cp-text-soft); font-weight: 700; margin-bottom: 6px; }
+.slider label b { color: var(--cp-accent); font-size: 14px; letter-spacing: 0; }
+input[type=range] { width: 100%; accent-color: var(--cp-accent); }
+.bigout { font-size: clamp(34px, 5vw, 54px); font-weight: 900; color: var(--cp-accent); line-height: 1; font-family: Consolas, "Courier New", Courier, monospace; }
+
+/* ============ QR ============ */
+.qr-card { background: var(--cp-surface); border: 1px solid var(--cp-border); border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 0 2px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.14); }
+.qr-holder { background: #fff; padding: 10px; border-radius: 10px; display: inline-block; border: 1px solid var(--cp-border); }
+.qr-holder svg { display: block; width: 168px; height: 168px; }
+.qr-card h5 { margin-top: 12px; font-size: 14px; }
+.qr-card p { font-size: 12.5px; color: var(--cp-text-muted); margin: 4px 0 0; }
+.qr-card .url { font-family: Consolas, "Courier New", Courier, monospace; font-size: 10.5px; color: var(--cp-text-soft); margin-top: 8px; word-break: break-all; }
+
+/* ============ KIOSK ============ */
+.kiosk { position: fixed; inset: 0; z-index: 140; display: none; background: linear-gradient(165deg, #0a1a16, #071013 55%, #1a1207); color: var(--ak-parch); overflow: auto; }
+.kiosk.on { display: block; }
+.kiosk-in { max-width: 1100px; margin: 0 auto; padding: 34px 24px 60px; text-align: center; }
+.kiosk h1 { font-size: clamp(38px, 7vw, 82px); font-weight: 900; letter-spacing: .04em; color: var(--ak-gold-hi); text-shadow: 0 0 32px rgba(217,180,91,.35); }
+.kiosk h2 { font-size: clamp(16px, 2.4vw, 24px); color: var(--ak-parch-2); font-weight: 600; letter-spacing: .04em; max-width: 40ch; margin: 10px auto 0; }
+.kiosk-qr { background: #fff; padding: 18px; border-radius: 16px; display: inline-block; margin: 26px 0 10px; box-shadow: 0 0 60px rgba(217,180,91,.35); }
+.kiosk-qr svg { width: min(300px, 62vw); height: min(300px, 62vw); display: block; }
+.kiosk-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-top: 28px; text-align: left; }
+.kiosk-step { border: 1px solid var(--ak-gold-lo); border-radius: 12px; padding: 14px 16px; background: rgba(0,0,0,.28); }
+.kiosk-step b { color: var(--ak-gold-hi); display: block; font-size: 12px; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 5px; }
+.kiosk-step span { font-size: 13.5px; color: var(--ak-parch-2); }
+.kiosk-close { position: fixed; top: 16px; right: 16px; z-index: 150; }
+
+/* ============ MODAL ============ */
+.modal { position: fixed; inset: 0; z-index: 100; display: none; place-items: center; background: var(--cp-overlay); backdrop-filter: blur(10px); padding: 20px; }
+.modal.on { display: grid; }
+.modal-in { background: var(--cp-surface); border: 1px solid var(--cp-border); border-radius: 16px; box-shadow: var(--cp-shadow); max-width: 980px; width: 100%; max-height: 92vh; overflow: auto; display: grid; grid-template-columns: 340px 1fr; }
+@media (max-width: 820px) { .modal-in { grid-template-columns: 1fr; } }
+.modal-left { padding: 26px; display: grid; place-items: center; gap: 12px; background: var(--cp-bg-elevated); border-right: 1px solid var(--cp-border); }
+.modal-right { padding: 26px 28px; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--cp-text-soft); font-weight: 700; margin-bottom: 5px; }
+.field input, .field textarea, select { width: 100%; padding: 9px 11px; border-radius: .625rem; border: 1px solid var(--cp-border); background: var(--cp-bg-elevated); color: var(--cp-text); font-family: inherit; font-size: 14px; }
+.field textarea { min-height: 72px; resize: vertical; }
+.field input:focus, .field textarea:focus, select:focus { outline: none; border-color: var(--cp-accent); box-shadow: 0 0 0 3px var(--cp-accent-soft); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ============ PACK ============ */
+.pack-stage { position: fixed; inset: 0; z-index: 120; display: none; place-items: center; background: rgba(6,10,9,.94); padding: 20px; text-align: center; }
+.pack-stage.on { display: grid; }
+.pack-shell { display: grid; place-items: center; gap: 20px; }
+.reveal-card { animation: pop .7s cubic-bezier(.2,1.3,.4,1) both; }
+@keyframes pop { 0% { transform: rotateY(180deg) scale(.5); opacity: 0; } 60% { transform: rotateY(0) scale(1.08); opacity: 1; } 100% { transform: rotateY(0) scale(1); } }
+.pack-hint { color: var(--ak-parch-2); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; }
+.pack-count { color: var(--ak-gold); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; font-weight: 800; }
+.burst { position: fixed; inset: 0; pointer-events: none; z-index: 119; opacity: 0; background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.85), transparent 45%); }
+.burst.go { animation: burst .6s ease-out; }
+@keyframes burst { 0% { opacity: .9; transform: scale(.3);} 100% { opacity: 0; transform: scale(1.6);} }
+.envelope { width: 260px; height: 360px; border-radius: 14px; cursor: pointer;
+  background: repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 10px, transparent 10px 20px), linear-gradient(160deg, #1d3a30, #0b1714 60%, #22160b);
+  border: 2px solid var(--ak-gold); display: grid; place-items: center; gap: 6px; box-shadow: 0 24px 60px rgba(0,0,0,.6); animation: bob 2.6s ease-in-out infinite alternate; position: relative; overflow: hidden; }
+@keyframes bob { to { transform: translateY(-12px) rotate(1.4deg); } }
+.envelope::before { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.35) 48%, transparent 62%); animation: sweep 3.2s linear infinite; }
+@keyframes sweep { 0% { transform: translateX(-120%);} 100% { transform: translateX(120%);} }
+.envelope h4 { color: var(--ak-gold-hi); letter-spacing: .3em; font-size: 15px; font-weight: 900; }
+.envelope p { color: var(--ak-parch-2); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; margin: 0; }
+
+/* ============ SHORE QUEST (BOARDING PASS) ============ */
+.pass { background: var(--ak-parch-bg); color: var(--ak-frame); border-radius: 14px; overflow: hidden; border: 1px solid var(--ak-gold-lo); display: grid; grid-template-columns: 1fr 190px; box-shadow: var(--cp-shadow); }
+@media (max-width: 640px) { .pass { grid-template-columns: 1fr; } }
+.pass-main { padding: 20px 22px; }
+.pass-stub { border-left: 2px dashed rgba(22,36,31,.35); padding: 20px 16px; text-align: center; background: rgba(217,180,91,.16); display: grid; place-items: center; gap: 8px; }
+.pass-stub .qbx { background: #fff; padding: 7px; border-radius: 6px; }
+.pass-stub .qbx svg { width: 120px; height: 120px; display: block; }
+.pass h4 { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; opacity: .65; }
+.pass h3 { font-size: 24px; font-weight: 900; letter-spacing: .02em; margin: 2px 0 12px; }
+.quest-list { display: grid; gap: 7px; }
+.quest-item { display: flex; gap: 10px; align-items: center; font-size: 13.5px; padding: 6px 9px; background: rgba(255,255,255,.45); border-radius: 8px; border: 1px solid rgba(22,36,31,.14); }
+.quest-item .bx { width: 15px; height: 15px; border: 2px solid var(--ak-frame); border-radius: 3px; flex: none; }
+.quest-item .pt { margin-left: auto; font-weight: 800; font-family: Consolas, "Courier New", Courier, monospace; font-size: 12px; }
+.pass-meta { display: flex; gap: 20px; margin-top: 14px; flex-wrap: wrap; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; opacity: .72; font-weight: 700; }
+
+.toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(160%); background: var(--cp-panel-strong); border: 1px solid var(--cp-border); color: var(--cp-text); padding: 11px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; z-index: 200; box-shadow: var(--cp-shadow); transition: transform .35s cubic-bezier(.2,.9,.2,1); }
+.toast.on { transform: translateX(-50%) translateY(0); }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="seal">★</span> ALASKA CARD</div>
+    <span class="spacer"></span>
+    <a class="navlink" href="#cruise">Cruise Engine</a>
+    <a class="navlink" href="#qr">QR System</a>
+    <a class="navlink" href="#collection">The Deck</a>
+    <a class="navlink" href="#billion">The Billion</a>
+    <button class="btn ghost" id="themeBtn" title="Toggle theme">◐</button>
+    <button class="btn" id="kioskBtn">Dock Kiosk</button>
+    <button class="btn primary" id="openPackBtn">Rip a Pack</button>
+  </div>
+</div>
+
+<div class="ticker"><div class="ticker-in" id="tick"></div></div>
+
+<div class="hero">
+  <div class="hero-aurora"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Ketchikan, Alaska · Berth 2 · Est. 2026</div>
+      <h1 class="title">ALASKA<br>CARD</h1>
+      <p class="subtitle">
+        1.6 million people step off a ship in Ketchikan every summer and buy a fridge magnet
+        they'll throw away. We sell them <b>proof</b> instead — a holographic card with their
+        name, their date, their witness, and a QR code that keeps the story alive forever.
+      </p>
+      <div class="hero-cta">
+        <button class="btn primary" id="heroPack">⚡ Rip a Pack</button>
+        <a class="btn" href="#cruise">See the Cruise Math</a>
+        <button class="btn ghost" id="heroKiosk">Open Dock Kiosk →</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><b id="sPax">1.6M</b><span>Ketchikan Cruisers / yr</span></div>
+        <div class="stat"><b id="sCards">0</b><span>Cards in Deck</span></div>
+        <div class="stat"><b id="sPts">0</b><span>Your Cred</span></div>
+        <div class="stat"><b id="sRank">Cheechako</b><span>Your Rank</span></div>
+      </div>
+    </div>
+    <div class="hero-stage"><div class="fan" id="fan"></div></div>
+  </div>
+</div>
+
+<!-- ============ THE HOOK ============ -->
+<section class="alt" style="padding:40px 0">
+  <div class="wrap cols3">
+    <div class="panel">
+      <h4><span class="tag">The Problem</span></h4>
+      <p style="font-size:14px;color:var(--cp-text-muted);margin:8px 0 0">
+        A cruise passenger has <b>6–8 hours</b> in Ketchikan and $180 of souvenir budget.
+        They spend it on a t-shirt made in Vietnam and a magnet they will not remember buying.
+        Nothing they carry home proves they were <i>here</i>.
+      </p>
+    </div>
+    <div class="panel">
+      <h4><span class="tag">The Product</span></h4>
+      <p style="font-size:14px;color:var(--cp-text-muted);margin:8px 0 0">
+        A foil trading card for something they <b>actually did today</b>. Rode the tram. Saw an eagle.
+        Got soaked and laughed. They fill in the back — date, witness, story — and scan the QR
+        to mint it to a digital shelf that follows them home.
+      </p>
+    </div>
+    <div class="panel">
+      <h4><span class="tag">The Multiplier</span></h4>
+      <p style="font-size:14px;color:var(--cp-text-muted);margin:8px 0 0">
+        Every scan is an email address, a photo, a shareable card, and a person who now has an
+        <b>incomplete set</b>. They come back to Alaska. They buy the Iceland deck. They tell
+        four friends on the ship tonight at dinner.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CRUISE ENGINE ============ -->
+<section id="cruise">
+  <div class="wrap">
+    <div class="eyebrow">The Ketchikan Machine</div>
+    <h2 style="font-size:34px">Five ships. One gangway. Eight hours.</h2>
+    <p class="lede">Ketchikan is the first Alaskan port most cruisers touch — roughly <b>1.6M passengers</b> across a ~150-day season, up to six ships and 16,000 people ashore on a peak day. They are pre-sold on Alaska before their feet hit the dock. All figures below are adjustable estimates — move the sliders.</p>
+
+    <div class="cols2" style="margin-top:24px;align-items:start">
+      <div class="port-board">
+        <h4>◈ Ships In Port Today — Ketchikan, AK</h4>
+        <div id="shipList" style="margin-top:10px"></div>
+        <div class="board-tot">
+          <div><div style="font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ak-parch-2)">Card revenue, today</div></div>
+          <b id="dayRev">$0</b>
+        </div>
+        <div style="font-size:10.5px;color:var(--ak-parch-2);margin-top:10px;letter-spacing:.06em">
+          Ship names/capacities are representative of vessels that call in Southeast Alaska.
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4>Season Funnel — pull the levers</h4>
+        <div class="sliders" style="margin-top:16px">
+          <div class="slider">
+            <label>Passengers per season <b id="vPax">1,600,000</b></label>
+            <input type="range" id="rPax" min="200000" max="2600000" step="50000" value="1600000">
+          </div>
+          <div class="slider">
+            <label>Attach rate — % who buy <b id="vAtt">14%</b></label>
+            <input type="range" id="rAtt" min="2" max="40" step="1" value="14">
+          </div>
+          <div class="slider">
+            <label>Average basket <b id="vBask">$28</b></label>
+            <input type="range" id="rBask" min="8" max="90" step="1" value="28">
+          </div>
+          <div class="slider">
+            <label>QR scan rate — % who claim digitally <b id="vScan">55%</b></label>
+            <input type="range" id="rScan" min="5" max="95" step="1" value="55">
+          </div>
+          <div class="slider">
+            <label>Subscribe after scan <b id="vSub">9%</b></label>
+            <input type="range" id="rSub" min="1" max="30" step="1" value="9">
+          </div>
+        </div>
+        <div style="margin-top:20px;display:grid;gap:6px">
+          <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cp-text-soft);font-weight:700">Ketchikan season revenue</div>
+          <div class="bigout" id="outRev">$6,272,000</div>
+          <table style="margin-top:8px">
+            <tbody>
+              <tr><td>Cards sold</td><td class="num" id="outUnits">224,000</td></tr>
+              <tr><td>QR claims captured (emails)</td><td class="num" id="outScans">123,200</td></tr>
+              <tr><td>Cred+ subscribers created</td><td class="num" id="outSubs">11,088</td></tr>
+              <tr><td>Recurring app ARR from this port</td><td class="num" id="outArr">$931,392</td></tr>
+              <tr class="total"><td>Year-one value, Ketchikan alone</td><td class="num" id="outTot">$7,203,392</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="cols3" style="margin-top:22px">
+      <div class="panel">
+        <h4><span class="tag">Where</span> Distribution</h4>
+        <ul>
+          <li><b>The gangway.</b> A-frame poster with a 3-foot QR: <i>"You have 7 hours. Earn one."</i></li>
+          <li><b>Every dock shop</b> on Front St. and Creek Street — counter spinner, 30 SKUs.</li>
+          <li><b>The excursion operators</b> hand you the card <i>as</i> the excursion ends. Included in the tour price.</li>
+          <li><b>Onboard.</b> Gift shop + in-cabin flyer with QR. Cruise line takes 35%, still 50%+ margin.</li>
+          <li><b>The airport + ferry terminal</b> for locals and independents.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h4><span class="tag">Why</span> They Buy</h4>
+        <ul>
+          <li><b>It's cheap.</b> $6 single, $24 pack — impulse territory next to a $45 hoodie.</li>
+          <li><b>It's personal.</b> Their handwriting is on it. Nobody throws away their own handwriting.</li>
+          <li><b>It's a set.</b> "There are 12 Ketchikan cards." That sentence sells the second one.</li>
+          <li><b>It's a gift.</b> Grandkids get cards. Cards fit in an envelope.</li>
+          <li><b>It fits in a pocket.</b> Zero luggage cost — the #1 souvenir objection, gone.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h4><span class="tag">Scale</span> Every Alaska Port</h4>
+        <table style="margin-top:6px">
+          <thead><tr><th>Port</th><th class="num">Cruisers</th><th class="num">Revenue</th></tr></thead>
+          <tbody id="portTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QR SYSTEM ============ -->
+<section id="qr" class="alt">
+  <div class="wrap">
+    <div class="eyebrow">The QR Layer</div>
+    <h2 style="font-size:34px">A paper card that phones home</h2>
+    <p class="lede">Every card carries a unique code. Scanning is free, instant, requires no app, and turns a $6 souvenir into a customer relationship. These QR codes below are <b>real and scannable</b> — generated in-browser, no internet required.</p>
+
+    <div class="cols3" style="margin-top:24px" id="qrRow"></div>
+
+    <div class="cols2" style="margin-top:22px">
+      <div class="panel">
+        <h4><span class="tag">Flow</span> What happens on scan</h4>
+        <ul>
+          <li><b>0s</b> — Camera opens the claim page. No app, no login wall.</li>
+          <li><b>4s</b> — Their card animates on screen in full holo, tilting with the phone gyro.</li>
+          <li><b>12s</b> — They type the story and tag a witness. That witness gets a text.</li>
+          <li><b>20s</b> — Photo upload. Now the card has their face on the back, forever.</li>
+          <li><b>25s</b> — "Save your shelf" → email captured. You now own the relationship, not the cruise line.</li>
+          <li><b>Day 3</b> — "You're 1 card from completing the Ketchikan set." Ship it home for $4.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h4><span class="tag">Data</span> What you now own</h4>
+        <ul>
+          <li>Verified <b>who / where / when</b> for millions of real-world moments.</li>
+          <li>A <b>witness graph</b> — the only social network built on things people actually did.</li>
+          <li>Attribution per operator: "Misty Fjords Air generated 4,100 claims this season." Now they'll pay you.</li>
+          <li>Live heatmap of what visitors actually love — worth real money to tourism boards.</li>
+          <li>Email + intent, at ~$0.19 CAC. Compare to $40 for a travel-brand email.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SHORE QUEST ============ -->
+<section id="quest">
+  <div class="wrap">
+    <div class="eyebrow">The Conversion Device</div>
+    <h2 style="font-size:34px">Your Shore Day Quest</h2>
+    <p class="lede">Handed out free at the gangway. It's a boarding pass for the town. It costs 4¢ to print and it turns a wandering tourist into a player with a checklist — and a shopping list.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin:20px 0 18px">
+      <div style="min-width:250px">
+        <label style="display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--cp-text-soft);font-weight:700;margin-bottom:5px">Your Ship</label>
+        <select id="shipSel"></select>
+      </div>
+      <button class="btn primary" id="genQuest">Generate My Quest →</button>
+    </div>
+    <div id="passHolder"></div>
+  </div>
+</section>
+
+<!-- ============ COLLECTION ============ -->
+<section id="collection" class="alt">
+  <div class="wrap">
+    <div class="eyebrow">The Deck</div>
+    <h2 style="font-size:34px">Two series. One obsession.</h2>
+    <p class="lede"><b>Visitor Series</b> — earnable in a single port day, sold at the dock. <b>Resident Series</b> — the real ones, earned over a lifetime in Southeast. Visitors see the Resident cards in the case and understand instantly that there is a deeper game. That's the ladder. <span style="color:var(--cp-text)">Click any card to flip it and see the printed back with its QR.</span></p>
+
+    <div class="rank-panel" style="margin-top:22px">
+      <div class="rank-num"><span id="rkPts">0</span><small>Total Cred</small></div>
+      <div>
+        <div class="bar"><i id="rkBar"></i></div>
+        <div class="rank-labels"><span>Cheechako</span><span>Deckhand</span><span>Sourdough</span><span>Salt</span><span>Old Timer</span><span>Legend</span></div>
+        <div style="margin-top:9px;font-size:13px;color:var(--cp-text-muted)">Rank: <b id="rkName" style="color:var(--cp-text)">Cheechako</b> · <span id="rkNext"></span></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="earnAll">Mark All Earned</button>
+        <button class="btn ghost" id="resetAll">Reset</button>
+      </div>
+    </div>
+
+    <div class="toolbar" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="howitworks">
+  <div class="wrap">
+    <div class="eyebrow">The Ritual</div>
+    <h2 style="font-size:30px">Earn experiences. Earn respect. Earn your Alaska Cards.</h2>
+    <div class="cols3" style="margin-top:22px">
+      <div class="panel"><h4><span class="tag">01</span> Live it</h4><ul><li>Do the thing. For real.</li><li>No stunts, no card-chasing.</li><li>The mountain doesn't care about your collection.</li></ul></div>
+      <div class="panel"><h4><span class="tag">02</span> Witness it</h4><ul><li>Get a name on the back.</li><li>Scan the QR, tag the witness.</li><li>Witnesses are the growth engine. Each one is a free customer.</li></ul></div>
+      <div class="panel"><h4><span class="tag">03</span> Claim it</h4><ul><li>The card is now yours specifically.</li><li>Story + date + location on your digital shelf.</li><li>Foil hits different when you earned it.</li></ul></div>
+    </div>
+    <div class="warn" style="margin-top:18px">⚠️ <b>Warning:</b> Alaska Cards are earned through real experiences — not attempted for the sake of collecting cards. Use common sense, follow laws and regulations, and prioritize safety over achievements.</div>
+  </div>
+</section>
+
+<!-- ============ BILLION ============ -->
+<section id="billion" class="alt">
+  <div class="wrap">
+    <div class="eyebrow">The Blueprint</div>
+    <h2 style="font-size:34px">How ALASKA CARD becomes a billion-dollar company</h2>
+    <p class="lede">Pokémon sells fantasy. Alaska Card sells <b>proof</b>. The card is a receipt for a life — and it franchises to every place on earth with an identity worth earning. The cruise dock is just the cheapest customer acquisition channel ever built, and someone else already paid to bring the customers.</p>
+
+    <h3 style="margin-top:34px;font-size:20px">1. Six revenue streams, one artifact</h3>
+    <div class="cols3" style="margin-top:14px">
+      <div class="panel"><h4><span class="tag">Core</span> Packs & Singles</h4><div class="money">$24<small>/ 8-card foil pack</small></div>
+        <ul><li>$6 single at the register, $24 pack, $60 collector tin.</li><li>Cold-foil, embossed, fill-in back. COGS ~$2.10. <b>~88% gross margin.</b></li><li>Mythic pull 1:288 packs. Scarcity is the entire game.</li></ul></div>
+      <div class="panel"><h4><span class="tag">Dock</span> Cruise Retail</h4><div class="money">$21M<small>/ season, Alaska ports</small></div>
+        <ul><li>5.4M port-calls a season across SE Alaska.</li><li>CAC ≈ $0 — the cruise line spent $2,000/passenger to deliver them to your counter.</li><li>Wholesale to 300+ existing gift shops. No stores to build.</li></ul></div>
+      <div class="panel"><h4><span class="tag">SaaS</span> Cred+ App</h4><div class="money">$7<small>/ month</small></div>
+        <ul><li>QR claim, digital shelf, gyro holo viewer, witness graph.</li><li>Leaderboards by town and by ship. Ships compete.</li><li>Retention: an incomplete set is psychologically unbearable.</li></ul></div>
+      <div class="panel"><h4><span class="tag">B2B</span> Operator Program</h4><div class="money">$4k<small>/ yr per operator</small></div>
+        <ul><li>Charters, flightseeing, lodges issue <i>official</i> cards with their name on the back.</li><li>The card is the souvenir <b>and</b> the review <b>and</b> the referral.</li><li>Tourism boards buy regional decks as marketing spend, not merch.</li></ul></div>
+      <div class="panel"><h4><span class="tag">Market</span> Graded Resale</h4><div class="money">12%<small>take rate</small></div>
+        <ul><li>Earned + witnessed cards get authenticated and graded (AK-GEM 10).</li><li>A signed <i>"BOAT SINKER — F/V Sadie, 2019"</i> is a one-of-one. Provenance is price.</li><li>PSA grades ~$300M/yr of cards nobody lived.</li></ul></div>
+      <div class="panel"><h4><span class="tag">IP</span> Franchise Decks</h4><div class="money">15%<small>royalty</small></div>
+        <ul><li>MONTANA. MAINE. ICELAND. PATAGONIA. NEW ZEALAND. SCOTLAND.</li><li>Same engine, local achievements, local pride, local docks.</li><li>Every cruise port on earth is a pre-built distribution network.</li></ul></div>
+    </div>
+
+    <h3 style="margin-top:38px;font-size:20px">2. The math to $1B</h3>
+    <div class="cols2" style="margin-top:14px">
+      <div class="panel">
+        <h4>Year 5 revenue model</h4>
+        <table>
+          <thead><tr><th>Stream</th><th>Volume</th><th class="num">Revenue</th></tr></thead>
+          <tbody>
+            <tr><td>Cruise-port retail (12 regions)</td><td>3.9M packs @ $24</td><td class="num">$94M</td></tr>
+            <tr><td>Non-cruise retail + DTC</td><td>1.1M packs</td><td class="num">$26M</td></tr>
+            <tr><td>Cred+ subscriptions</td><td>480k subs @ $84/yr</td><td class="num">$40M</td></tr>
+            <tr><td>Operator program</td><td>6,000 operators @ $4k</td><td class="num">$24M</td></tr>
+            <tr><td>Graded marketplace</td><td>$150M GMV @ 12%</td><td class="num">$18M</td></tr>
+            <tr><td>Franchise royalties</td><td>18 regions</td><td class="num">$21M</td></tr>
+            <tr class="total"><td>Total revenue</td><td></td><td class="num">$223M</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:13px;color:var(--cp-text-muted);margin-top:12px">Consumer-IP + marketplace hybrids trade at 5–8× revenue. <b>$223M × 5 = $1.1B.</b> Funko peaked near 4×; Pop Mart has traded above 20×. We sit between — physical-product margin with software retention and a data moat neither one has.</p>
+      </div>
+      <div class="panel">
+        <h4>Unit economics</h4>
+        <table><tbody>
+          <tr><td>Pack retail</td><td class="num">$24.00</td></tr>
+          <tr><td>COGS — foil, print, box</td><td class="num">−$2.10</td></tr>
+          <tr><td>Retail / wholesale split (45%)</td><td class="num">−$10.80</td></tr>
+          <tr><td>Fulfillment + ops</td><td class="num">−$1.40</td></tr>
+          <tr class="total"><td>Contribution per pack</td><td class="num">$9.70</td></tr>
+        </tbody></table>
+        <ul>
+          <li><b>CAC ≈ $0.19</b> — cost of the printed quest pass that converts them.</li>
+          <li><b>LTV</b> ≈ $180/yr for a converted collector (packs + subscription).</li>
+          <li><b>Inventory risk ≈ 0</b> — cards don't expire, don't have sizes, don't go out of style.</li>
+          <li><b>Seasonality hedge</b> — cruise season funds inventory; locals and gifting carry winter.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-top:38px;font-size:20px">3. Making it <i>epic</i> — visual spec</h3>
+    <div class="cols3" style="margin-top:14px">
+      <div class="panel"><h4>Print</h4><ul>
+        <li><b>Cold-foil holographic</b> base under CMYK — rainbow only where the art breathes: water, aurora, the crest.</li>
+        <li><b>Raised spot-UV</b> on the gold frame and the points medallion. Fingers must feel the rarity.</li>
+        <li><b>350gsm linen stock</b>; gold gilt edges on Legendary, black gilt on Mythic.</li>
+        <li><b>Letterpress fill-in back</b> so a ballpoint bites the surface. Handwriting is the moat.</li>
+        <li><b>Micro-printed serial</b> + QR. Every single card is uniquely numbered.</li>
+      </ul></div>
+      <div class="panel"><h4>Art direction</h4><ul>
+        <li>WPA park poster × 1890s nautical chart × modern TCG frame.</li>
+        <li>Palette: deep spruce, storm slate, oxidized brass, parchment.</li>
+        <li>Every scene is <b>weather-first</b>. The weather is the antagonist.</li>
+        <li>Mythics go <b>black core with conic prism foil</b> — oil on wet asphalt.</li>
+        <li>Visitor Series uses a <b>teal crest</b> so locals can tell at a glance. That distinction is a feature.</li>
+      </ul></div>
+      <div class="panel"><h4>Digital</h4><ul>
+        <li>Gyro-tilt holo viewer — the card on their phone reacts to their hand.</li>
+        <li>Pack-rip animation with haptics. The dopamine is the product.</li>
+        <li>AR: place your Mythic on the dinner table, three feet tall, aurora moving.</li>
+        <li>Auto-generated share card sized for Instagram Stories, with the ship's name on it.</li>
+        <li>Ship leaderboards: "Ovation of the Seas — 1,284 cards claimed today."</li>
+      </ul></div>
+    </div>
+
+    <h3 style="margin-top:38px;font-size:20px">4. Roadmap: dock to billion</h3>
+    <div class="panel" style="margin-top:14px"><div class="timeline">
+      <div class="tl-item"><div class="yr">Month 0–3 · Prove it</div><h5>The Ketchikan 12</h5><p>Print 500 decks — 12 Visitor cards, 12 Resident cards. Sell from one table on Front Street and one dock shop. Target: sell out in a single cruise season. Cost ~$18k. This is the whole validation.</p></div>
+      <div class="tl-item"><div class="yr">Month 3–9 · Systematize</div><h5>QR claim page + Shore Quest pass</h5><p>Ship the claim page (no app required). Print 50,000 quest passes for the gangway. Sign 10 excursion operators to include a card in their tour price.</p></div>
+      <div class="tl-item"><div class="yr">Year 1–2 · Own Alaska</div><h5>Every port, then the ships</h5><p>Juneau, Skagway, Sitka, Icy Strait, Whittier, Seward. Then negotiate onboard retail with one cruise line — that single contract puts you in front of 1M+ people with zero storefront.</p></div>
+      <div class="tl-item"><div class="yr">Year 2–3 · Franchise</div><h5>The Card Engine</h5><p>License the template. Iceland, Norway, New Zealand, Maine, Montana. Tourism boards pay <i>you</i> to make their identity collectible. Marginal design cost approaches zero.</p></div>
+      <div class="tl-item"><div class="yr">Year 3–5 · Compound</div><h5>Grading, marketplace, media</h5><p>AK-GEM authentication turns earned cards into assets. Card backs become a documentary series. The brand becomes the global standard for "proof of life lived."</p></div>
+    </div></div>
+
+    <h3 style="margin-top:38px;font-size:20px">5. The moat &amp; Monday</h3>
+    <div class="cols2" style="margin-top:14px">
+      <div class="panel"><h4>Why this can't be cloned</h4><ul>
+        <li><b>Authenticity is non-transferable.</b> A knockoff deck has no witnesses, no ledger, no legitimacy.</li>
+        <li><b>Shelf space is finite.</b> Lock the Front Street shops with exclusivity and the dock is closed to entrants.</li>
+        <li><b>The witness graph.</b> Millions of verified real-world claims — nobody else has that dataset.</li>
+        <li><b>Local legitimacy.</b> If Ketchikan captains vouch for it, no outside brand can enter.</li>
+        <li><b>Emotional switching cost.</b> A six-year collection doesn't migrate.</li>
+      </ul></div>
+      <div class="panel"><h4>Three things to do Monday</h4><ul>
+        <li>Lock <b>alaskacard.com</b> and @alaskacard everywhere. Today, before you finish reading this.</li>
+        <li>Print 100 prototype decks + 1,000 quest passes. Hand them to 20 captains and 5 shops. Watch what they do.</li>
+        <li>Film 10 vertical videos: one card, one true story, sixty seconds. <i>"I sank a boat. Here's the card."</i> That's the entire marketing plan for year one.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">
+  <b>ALASKA CARD</b> — Official Alaska Cred · Ketchikan, AK · Collect stories, not just cards.
+  <div style="margin-top:8px">Concept prototype. Tilt any card for the foil. Click to flip and see the printed back with a live, scannable QR code. All market figures are illustrative estimates.</div>
+</div></footer>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-in">
+    <div class="modal-left">
+      <div id="modalCard"></div>
+      <button class="btn sm" id="mFlip">⟲ Flip Card</button>
+    </div>
+    <div class="modal-right">
+      <div class="eyebrow" id="mRar">Rarity</div>
+      <h3 style="font-size:26px" id="mName">Card</h3>
+      <p style="color:var(--cp-text-muted);margin:0 0 6px" id="mDesc"></p>
+      <p style="font-size:13px;color:var(--cp-text-soft);margin:0 0 18px" id="mLore"></p>
+      <div class="two">
+        <div class="field"><label>Date Earned</label><input id="fDate" type="text" placeholder="July 14, 2021"></div>
+        <div class="field"><label>Location</label><input id="fLoc" type="text" placeholder="Tongass Narrows, AK"></div>
+      </div>
+      <div class="two">
+        <div class="field"><label>Witness</label><input id="fWit" type="text" placeholder="Everyone on board"></div>
+        <div class="field"><label>Ship / Vessel (optional)</label><input id="fShip" type="text" placeholder="Ovation of the Seas"></div>
+      </div>
+      <div class="field"><label>Story</label><textarea id="fStory" placeholder="White caps, 20 kt wind, worth it."></textarea></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="mEarn">✓ Mark Earned</button>
+        <button class="btn" id="mSave">Save Story</button>
+        <button class="btn ghost" id="mClose">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PACK -->
+<div class="burst" id="burst"></div>
+<div class="pack-stage" id="packStage">
+  <div class="pack-shell">
+    <div id="packSlot"></div>
+    <div class="pack-hint" id="packHint">Click to rip</div>
+    <div class="pack-count" id="packCount"></div>
+    <button class="btn ghost" id="packClose" style="color:var(--ak-parch-2);border-color:var(--ak-gold-lo)">Close</button>
+  </div>
+</div>
+
+<!-- KIOSK -->
+<div class="kiosk" id="kiosk">
+  <button class="btn kiosk-close" id="kioskClose">✕ Exit Kiosk</button>
+  <div class="kiosk-in">
+    <div style="font-size:12px;letter-spacing:.36em;text-transform:uppercase;color:var(--ak-gold);font-weight:800;margin-bottom:14px">Ketchikan · Berth 2 · Welcome Ashore</div>
+    <h1>YOU HAVE 7 HOURS.<br>EARN ONE.</h1>
+    <h2>Scan to get your free Shore Day Quest. Complete an achievement in town, claim your Alaska Card, and take home proof instead of a magnet.</h2>
+    <div class="kiosk-qr" id="kioskQr"></div>
+    <div style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ak-parch-2)">alaskacard.com/ketchikan</div>
+    <div class="kiosk-steps">
+      <div class="kiosk-step"><b>01 · Scan</b><span>No app. No signup. Your quest list loads in three seconds.</span></div>
+      <div class="kiosk-step"><b>02 · Do it</b><span>Ride the tram. Meet an eagle. Get rained on and like it.</span></div>
+      <div class="kiosk-step"><b>03 · Claim it</b><span>Grab your card at any shop on Front Street. $6. Fits in a pocket.</span></div>
+      <div class="kiosk-step"><b>04 · Sign it</b><span>Write the date, the witness, the story. It's yours now — nobody else has this one.</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+/* ============================================================
+   QR ENCODER — byte mode, ECC level L, versions 1..6
+   Self-contained. No libraries, no network.
+   ============================================================ */
+const QR = (function () {
+  const EXP = new Array(512), LOG = new Array(256);
+  (function () { let x = 1; for (let i = 0; i < 255; i++) { EXP[i] = x; LOG[x] = i; x <<= 1; if (x & 0x100) x ^= 0x11d; } for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255]; })();
+  const mul = (a, b) => (a === 0 || b === 0) ? 0 : EXP[LOG[a] + LOG[b]];
+  function rsGen(n) { let g = [1]; for (let i = 0; i < n; i++) { const ng = new Array(g.length + 1).fill(0); for (let j = 0; j < g.length; j++) { ng[j] ^= g[j]; ng[j + 1] ^= mul(g[j], EXP[i]); } g = ng; } return g; }
+  function rsEnc(data, ecLen) {
+    const g = rsGen(ecLen), res = new Array(ecLen).fill(0);
+    for (let k = 0; k < data.length; k++) {
+      const f = data[k] ^ res[0];
+      res.shift(); res.push(0);
+      if (f !== 0) for (let i = 0; i < ecLen; i++) res[i] ^= mul(g[i + 1], f);
+    }
+    return res;
+  }
+  // [version]: { ec: ecCodewordsPerBlock, blocks: [[count, dataCodewords], ...] }
+  const SPEC = {
+    1: { ec: 7,  blocks: [[1, 19]] },
+    2: { ec: 10, blocks: [[1, 34]] },
+    3: { ec: 15, blocks: [[1, 55]] },
+    4: { ec: 20, blocks: [[1, 80]] },
+    5: { ec: 26, blocks: [[1, 108]] },
+    6: { ec: 18, blocks: [[2, 68]] }
+  };
+  const CAP = { 1: 17, 2: 32, 3: 53, 4: 78, 5: 106, 6: 134 };
+  const MASKFN = [
+    (r, c) => (r + c) % 2 === 0,
+    (r, c) => r % 2 === 0,
+    (r, c) => c % 3 === 0,
+    (r, c) => (r + c) % 3 === 0,
+    (r, c) => ((Math.floor(r / 2) + Math.floor(c / 3)) % 2) === 0,
+    (r, c) => ((r * c) % 2) + ((r * c) % 3) === 0,
+    (r, c) => ((((r * c) % 2) + ((r * c) % 3)) % 2) === 0,
+    (r, c) => ((((r + c) % 2) + ((r * c) % 3)) % 2) === 0
+  ];
+  function utf8(str) { const out = []; const e = encodeURIComponent(str); for (let i = 0; i < e.length; i++) { if (e[i] === "%") { out.push(parseInt(e.substr(i + 1, 2), 16)); i += 2; } else out.push(e.charCodeAt(i)); } return out; }
+
+  function build(text) {
+    const bytes = utf8(text);
+    let ver = 0;
+    for (let v = 1; v <= 6; v++) { if (bytes.length <= CAP[v]) { ver = v; break; } }
+    if (!ver) throw new Error("QR payload too long");
+    const spec = SPEC[ver], size = 17 + 4 * ver;
+    let totalData = 0; spec.blocks.forEach(([n, d]) => totalData += n * d);
+
+    // --- bitstream ---
+    const bits = [];
+    const push = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+    push(4, 4); push(bytes.length, 8);
+    bytes.forEach(b => push(b, 8));
+    const cap = totalData * 8;
+    for (let i = 0; i < 4 && bits.length < cap; i++) bits.push(0);
+    while (bits.length % 8 !== 0) bits.push(0);
+    const dataCW = [];
+    for (let i = 0; i < bits.length; i += 8) { let b = 0; for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j]; dataCW.push(b); }
+    const PAD = [0xEC, 0x11]; let pi = 0;
+    while (dataCW.length < totalData) dataCW.push(PAD[pi++ % 2]);
+
+    // --- blocks + ecc ---
+    const dBlocks = [], eBlocks = []; let off = 0;
+    spec.blocks.forEach(([n, d]) => { for (let i = 0; i < n; i++) { const chunk = dataCW.slice(off, off + d); off += d; dBlocks.push(chunk); eBlocks.push(rsEnc(chunk, spec.ec)); } });
+    const final = [];
+    const maxD = Math.max(...dBlocks.map(b => b.length));
+    for (let i = 0; i < maxD; i++) dBlocks.forEach(b => { if (i < b.length) final.push(b[i]); });
+    for (let i = 0; i < spec.ec; i++) eBlocks.forEach(b => final.push(b[i]));
+
+    // --- matrix ---
+    const mk = () => { const m = []; for (let r = 0; r < size; r++) { m.push(new Array(size).fill(null)); } return m; };
+    function placeStatic(m) {
+      const finder = (r0, c0) => {
+        for (let r = -1; r <= 7; r++) for (let c = -1; c <= 7; c++) {
+          const rr = r0 + r, cc = c0 + c;
+          if (rr < 0 || cc < 0 || rr >= size || cc >= size) continue;
+          const on = (r >= 0 && r <= 6 && (c === 0 || c === 6)) || (c >= 0 && c <= 6 && (r === 0 || r === 6)) || (r >= 2 && r <= 4 && c >= 2 && c <= 4);
+          m[rr][cc] = on;
+        }
+      };
+      finder(0, 0); finder(0, size - 7); finder(size - 7, 0);
+      for (let i = 8; i < size - 8; i++) { m[6][i] = i % 2 === 0; m[i][6] = i % 2 === 0; }
+      if (ver >= 2) {
+        const C = size - 7;
+        for (let r = -2; r <= 2; r++) for (let c = -2; c <= 2; c++) {
+          m[C + r][C + c] = (Math.abs(r) === 2 || Math.abs(c) === 2 || (r === 0 && c === 0));
+        }
+      }
+      // reserve format areas
+      for (let i = 0; i < 9; i++) { if (m[8][i] === null) m[8][i] = false; if (m[i][8] === null) m[i][8] = false; }
+      for (let i = 0; i < 8; i++) { if (m[8][size - 1 - i] === null) m[8][size - 1 - i] = false; if (m[size - 1 - i][8] === null) m[size - 1 - i][8] = false; }
+      m[size - 8][8] = true;
+    }
+    function fmtBits(mask) {
+      const val = (0b01 << 3) | mask;
+      let d = val << 10;
+      for (let i = 14; i >= 10; i--) if ((d >>> i) & 1) d ^= 0x537 << (i - 10);
+      return ((val << 10) | d) ^ 0x5412;
+    }
+    function placeFormat(m, mask) {
+      const bitsF = fmtBits(mask);
+      for (let i = 0; i < 15; i++) {
+        const on = ((bitsF >>> i) & 1) === 1;
+        if (i < 6) m[i][8] = on; else if (i < 8) m[i + 1][8] = on; else m[size - 15 + i][8] = on;
+        if (i < 8) m[8][size - 1 - i] = on; else if (i < 9) m[8][15 - i - 1 + 1] = on; else m[8][15 - i - 1] = on;
+      }
+      m[size - 8][8] = true;
+    }
+    function placeData(m, mask) {
+      let inc = -1, row = size - 1, bitIdx = 7, byteIdx = 0;
+      for (let col = size - 1; col > 0; col -= 2) {
+        if (col === 6) col--;
+        for (;;) {
+          for (let c = 0; c < 2; c++) {
+            if (m[row][col - c] === null) {
+              let dark = false;
+              if (byteIdx < final.length) dark = ((final[byteIdx] >>> bitIdx) & 1) === 1;
+              if (MASKFN[mask](row, col - c)) dark = !dark;
+              m[row][col - c] = dark;
+              bitIdx--; if (bitIdx === -1) { byteIdx++; bitIdx = 7; }
+            }
+          }
+          row += inc;
+          if (row < 0 || row >= size) { row -= inc; inc = -inc; break; }
+        }
+      }
+    }
+    function penalty(m) {
+      // Faithful port of ISO/IEC 18004 7.8.3 mask scoring (N1..N4).
+      const PAT = [1, 0, 1, 1, 1, 0, 1];
+      function findPat(seq, from) {
+        for (let i = from; i + 7 <= size; i++) {
+          let hit = true;
+          for (let k = 0; k < 7; k++) if ((seq[i + k] ? 1 : 0) !== PAT[k]) { hit = false; break; }
+          if (hit) return i;
+        }
+        return -1;
+      }
+      function n3(seq) {
+        let count = 0, idx = findPat(seq, 0);
+        while (idx !== -1) {
+          let offset = idx + 7;
+          let anyBefore = false, anyAfter = false;
+          for (let i = Math.max(idx - 4, 0); i < Math.min(idx, size); i++) if (seq[i]) { anyBefore = true; break; }
+          for (let i = Math.max(offset, 0); i < Math.min(offset + 4, size); i++) if (seq[i]) { anyAfter = true; break; }
+          if (idx === 0 || idx === size - 7 || !anyBefore || !anyAfter) count += 40;
+          else offset = idx + 4;
+          idx = findPat(seq, offset);
+        }
+        return count;
+      }
+      let n1 = 0, n2 = 0, nn3 = 0, dark = 0, lastRow = null;
+      const col = new Array(size);
+      for (let i = 0; i < size; i++) {
+        const row = m[i];
+        let rp = -1, cp = -1, rc = 0, cc = 0;
+        for (let j = 0; j < size; j++) {
+          const rb = row[j] ? 1 : 0, cb = m[j][i] ? 1 : 0;
+          col[j] = cb; dark += rb;
+          if (rb === rp) rc++; else { if (rc >= 5) n1 += rc - 2; rc = 1; }
+          if (cb === cp) cc++; else { if (cc >= 5) n1 += cc - 2; cc = 1; }
+          if (lastRow && j && rb === rp && rb === (lastRow[j] ? 1 : 0) && rb === (lastRow[j - 1] ? 1 : 0)) n2 += 3;
+          rp = rb; cp = cb;
+        }
+        lastRow = row;
+        nn3 += n3(row) + n3(col.slice());
+        if (rc >= 5) n1 += rc - 2;
+        if (cc >= 5) n1 += cc - 2;
+      }
+      const n4 = 10 * Math.floor(Math.abs((dark / (size * size)) * 100 - 50) / 5);
+      return n1 + n2 + nn3 + n4;
+    }
+    let best = null, bestP = Infinity;
+    for (let mask = 0; mask < 8; mask++) {
+      const m = mk(); placeStatic(m); placeData(m, mask); placeFormat(m, mask);
+      const p = penalty(m);
+      if (p < bestP) { bestP = p; best = m; }
+    }
+    return best;
+  }
+
+  function svg(text, opts) {
+    opts = opts || {};
+    const m = build(text), n = m.length, q = opts.quiet == null ? 4 : opts.quiet;
+    const total = n + q * 2;
+    let path = "";
+    for (let r = 0; r < n; r++) {
+      let c = 0;
+      while (c < n) {
+        if (m[r][c]) { let len = 1; while (c + len < n && m[r][c + len]) len++; path += `M${c + q} ${r + q}h${len}v1h-${len}z`; c += len; }
+        else c++;
+      }
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${total}" shape-rendering="crispEdges">
+      <rect width="${total}" height="${total}" fill="#ffffff"/>
+      <path d="${path}" fill="${opts.fg || "#0d1a17"}"/></svg>`;
+  }
+  return { svg };
+})();
+
+/* ============================================================
+   DECK DATA
+   ============================================================ */
+const RARITY = {
+  common:    { label: "Common",    weight: 44, },
+  seasoned:  { label: "Seasoned",  weight: 27 },
+  rare:      { label: "Rare",      weight: 17 },
+  epic:      { label: "Epic",      weight: 8 },
+  legendary: { label: "Legendary", weight: 3.5 },
+  mythic:    { label: "Mythic",    weight: 0.5 }
+};
+
+// series: "resident" | "visitor"   scene: sea|wreck|storm|aurora|forest|cabin|sky|fire|ice|town
+const DECK = [
+  /* ---------- RESIDENT SERIES: the real ones ---------- */
+  { id:"storm-kayak", n:"Winter Storm Kayak", r:"mythic", p:130, ser:"resident", s:"Two-person sea kayak. Winter storm. For fun.",
+    l:"Nobody made you do this. That is the entire point. Southeast in February, whitecaps in the cockpit, both of you laughing like idiots.", sc:"storm", m:"🛶" },
+  { id:"outhouse-inferno", n:"Outhouse Inferno", r:"mythic", p:125, ser:"resident", s:"Survive an outhouse fire.",
+    l:"There is no dignified version of this story. There is only the version where you lived and the version where you didn't. You lived.", sc:"fire", m:"🔥" },
+  { id:"generator-detonation", n:"Generator Detonation", r:"legendary", p:110, ser:"resident", s:"Your generator explodes. You keep the lights on anyway.",
+    l:"Off-grid means the power company is you. Today you failed spectacularly — then fixed it by headlamp in the rain.", sc:"cabin", m:"💥" },
+  { id:"boat-sinker", n:"Boat Sinker", r:"legendary", p:100, ser:"resident", s:"Lose a boat to the sea.",
+    l:"Not recommended… but definitely memorable. The water always wins eventually. What matters is whether you swim.", sc:"wreck", m:"🚢" },
+  { id:"boat-recoverer", n:"Boat Recoverer", r:"legendary", p:100, ser:"resident", s:"Recover your sunken boat.",
+    l:"Redemption never felt so good. Cost more than the boat. Worth more than the boat.", sc:"wreck", m:"⚓" },
+  { id:"off-grid", n:"Off-Grid Master", r:"legendary", p:100, ser:"resident", s:"Generate all your own electricity for a full year.",
+    l:"Solar in summer, hydro in the rain, diesel when the sky quits. Twelve months, zero meters.", sc:"cabin", m:"🔋" },
+  { id:"island-resident", n:"Island Resident", r:"legendary", p:100, ser:"resident", s:"Own or permanently live on an island with no road access.",
+    l:"Groceries arrive by boat. So does everything else. So do you.", sc:"cabin", m:"🏝️" },
+  { id:"icefield", n:"Walked the Icefield", r:"epic", p:75, ser:"resident", s:"Set foot on a glacier under your own power.",
+    l:"Blue all the way down, and cold air pouring out of a crack in the world.", sc:"ice", m:"🧊" },
+  { id:"northern-lights", n:"Northern Lights", r:"epic", p:70, ser:"resident", s:"Witness the aurora from your own property.",
+    l:"You didn't drive to see it. You walked outside. That's the difference.", sc:"aurora", m:"🌌" },
+  { id:"eagle-eater", n:"Ate What the Eagle Wanted", r:"epic", p:65, ser:"resident", s:"Finish the meal an eagle tried to steal.",
+    l:"He watched from the piling. You ate every bite. You won that one, and he will remember.", sc:"sea", m:"🍗" },
+  { id:"whale", n:"Bubble Net", r:"epic", p:65, ser:"resident", s:"Witness humpbacks bubble-net feeding.",
+    l:"The water boils, then forty tons of whale come up through it with their mouths wide open.", sc:"sea", m:"🐋" },
+  { id:"wind-survivor", n:"Wind Survivor", r:"epic", p:60, ser:"resident", s:"Experience sustained winds over 60 mph.",
+    l:"The trees bend and the house talks. You learn which sounds are normal and which ones are not.", sc:"forest", m:"🌬️" },
+  { id:"bear", n:"Bear Encounter", r:"epic", p:60, ser:"resident", s:"Meet a bear on foot. Remain calm.",
+    l:"Do not run. Do not scream. Speak low, back away, and understand exactly where you rank.", sc:"forest", m:"🐻" },
+  { id:"tongass", n:"Tongass Narrows", r:"rare", p:50, ser:"resident", s:"Cross Tongass Narrows when reasonable people stayed at the dock.",
+    l:"Strong tides, swirling currents, unpredictable weather. If you made it across, you earned your respect for Southeast Alaska.", sc:"storm", m:"🌊" },
+  { id:"deer", n:"Sitka Blacktail", r:"rare", p:45, ser:"resident", s:"Pack a deer out of the muskeg alone.",
+    l:"Three miles of devil's club and rotten log. You'll taste that meat for a year.", sc:"forest", m:"🦌" },
+  { id:"sea-cuke", n:"Sea Cuke", r:"seasoned", p:45, ser:"resident", s:"Harvest, prepare, and eat sea cucumbers.",
+    l:"Looks like a nightmare. Tastes like the ocean decided to be generous.", sc:"sea", m:"🥒" },
+  { id:"halibut", n:"Barn Door Halibut", r:"rare", p:40, ser:"resident", s:"Land a halibut over 100 pounds.",
+    l:"It comes up like a sheet of plywood with opinions. Everyone on deck has a job now.", sc:"sea", m:"🐟" },
+  { id:"over-the-bow", n:"Took One Over the Bow", r:"rare", p:35, ser:"resident", s:"A wave came aboard. Everyone got wet.",
+    l:"The green water hits the windshield and for one long second nobody on board says anything at all.", sc:"storm", m:"💦" },
+  { id:"breakup", n:"Fixed It, Kept Going", r:"seasoned", p:30, ser:"resident", s:"Field-repair an engine and finish the trip.",
+    l:"Hose clamp, bailing wire, a screwdriver, and pure refusal.", sc:"cabin", m:"🔧" },
+  { id:"ferry", n:"Ferry Solarium Overnighter", r:"seasoned", p:20, ser:"resident", s:"Sleep on the solarium deck of the state ferry.",
+    l:"Duct tape, a tent, a heat lamp, and the whole Inside Passage sliding past at sixteen knots.", sc:"sea", m:"⛴️" },
+  { id:"rain", n:"162 Inches", r:"common", p:12, ser:"resident", s:"Live through a full Ketchikan year of rain.",
+    l:"Thirteen and a half feet of water fell on your head and you called it Tuesday.", sc:"town", m:"🌧️" },
+  { id:"xtratuf", n:"Xtratuf Formal", r:"common", p:8, ser:"resident", s:"Wear brown boots to a formal event.",
+    l:"They are the Southeast Sneaker. Wedding, funeral, courthouse — the boots come.", sc:"town", m:"🥾" },
+
+  /* ---------- VISITOR SERIES: earnable in one port day ---------- */
+  { id:"misty", n:"Misty Fjords", r:"legendary", p:90, ser:"visitor", s:"Fly into Misty Fjords and land on a wilderness lake.",
+    l:"Granite walls three thousand feet straight up, and then the floats touch water nobody has touched today.", sc:"sky", m:"🛩️" },
+  { id:"floatplane", n:"Floatplane Passenger", r:"rare", p:35, ser:"visitor", s:"Land on the water. The adventure begins the moment you board.",
+    l:"There is no runway. There is only the channel, and a pilot who knows exactly where the wind lives.", sc:"sky", m:"✈️" },
+  { id:"eagle-theft", n:"Eagle Theft", r:"seasoned", p:25, ser:"visitor", s:"Lose food to a bald eagle.",
+    l:"A national symbol robbed you in broad daylight and you have no legal recourse whatsoever.", sc:"sky", m:"🦅" },
+  { id:"lumberjack", n:"Lumberjack Show", r:"common", p:10, ser:"visitor", s:"Pick a side and scream for it.",
+    l:"You did not expect to care this much about log rolling. You were wrong.", sc:"forest", m:"🪓" },
+  { id:"creek-street", n:"Creek Street", r:"common", p:10, ser:"visitor", s:"Walk the boardwalk over the creek.",
+    l:"The only red-light district in America where both the fish and the men came upstream to spawn.", sc:"town", m:"🏘️" },
+  { id:"totem", n:"Totem Standing", r:"seasoned", p:20, ser:"visitor", s:"Stand at the base of a raised totem pole.",
+    l:"Ketchikan holds one of the world's great collections. Look up. Then read whose story it is.", sc:"forest", m:"🗿" },
+  { id:"salmon-run", n:"Salmon Ladder", r:"seasoned", p:18, ser:"visitor", s:"Watch salmon climb the ladder at the creek.",
+    l:"They are dying and they know it and they are going anyway. Nobody watches this and stays unmoved.", sc:"forest", m:"🐠" },
+  { id:"soaked", n:"Soaked and Smiling", r:"common", p:10, ser:"visitor", s:"Get rained on all day and refuse an umbrella.",
+    l:"Locals will clock you instantly. That is fine. You earned the look.", sc:"town", m:"☔" },
+  { id:"crab", n:"The Crab Feed", r:"seasoned", p:16, ser:"visitor", s:"Eat Dungeness crab within sight of the boat that caught it.",
+    l:"Butter to the elbow. This is not a meal, it is an event.", sc:"sea", m:"🦀" },
+  { id:"tram", n:"Rode the Tram", r:"common", p:8, ser:"visitor", s:"Ride up the hill and look back down at your ship.",
+    l:"From up there your floating hotel looks like a bathtub toy and the town looks like the point.", sc:"town", m:"🚡" },
+  { id:"first-eagle", n:"First Bald Eagle", r:"common", p:12, ser:"visitor", s:"See your first wild bald eagle.",
+    l:"You will point. Everyone points. In an hour you will stop pointing, and that is the moment Alaska got you.", sc:"sky", m:"🦅" },
+  { id:"gangway", n:"Stepped Ashore", r:"common", p:5, ser:"visitor", s:"Set foot in Alaska for the first time.",
+    l:"Every collection starts with this card. Card one of many, if the state does its job.", sc:"town", m:"⚓" }
+];
+
+/* ============================================================
+   CRUISE DATA
+   ============================================================ */
+const SHIPS = [
+  { n:"Ovation of the Seas", ln:"Royal Caribbean", pax:4905 },
+  { n:"Norwegian Bliss",     ln:"Norwegian",       pax:4004 },
+  { n:"Discovery Princess",  ln:"Princess",        pax:3660 },
+  { n:"Celebrity Edge",      ln:"Celebrity",       pax:2918 },
+  { n:"Koningsdam",          ln:"Holland America", pax:2650 },
+  { n:"Carnival Luminosa",   ln:"Carnival",        pax:2260 },
+  { n:"Nieuw Amsterdam",     ln:"Holland America", pax:2106 },
+  { n:"Quantum of the Seas", ln:"Royal Caribbean", pax:4180 }
+];
+const PORTS = [
+  { n:"Ketchikan",   pax:1600000 },
+  { n:"Juneau",      pax:1620000 },
+  { n:"Skagway",     pax:1180000 },
+  { n:"Sitka",       pax:620000 },
+  { n:"Icy Strait",  pax:480000 },
+  { n:"Seward/Whittier", pax:330000 }
+];
+
+/* ============================================================
+   SCENE ART
+   ============================================================ */
+const SCENES = {
+  sea:    { sky:["#7fb2d6","#cfe4ef"], sea:["#1c4a63","#0d2b3c"], mtn:"#2b4b58", wave:1 },
+  wreck:  { sky:["#3b4a58","#8d9aa5"], sea:["#20404f","#0a1c26"], mtn:"#1e3540", wave:2 },
+  storm:  { sky:["#5b6b78","#b9c6cf"], sea:["#1e4a5c","#0a2230"], mtn:"#26404c", wave:3 },
+  aurora: { sky:["#07131f","#123048"], sea:["#0b2233","#050e16"], mtn:"#0e2230", wave:0, aurora:1, star:1 },
+  forest: { sky:["#8fb0a3","#d6e2d6"], sea:["#20402f","#0d1f18"], mtn:"#1d3a2c", wave:0, trees:1 },
+  cabin:  { sky:["#22394a","#4d6a75"], sea:["#1a2c22","#0c1712"], mtn:"#1b3a30", wave:0, trees:1, star:1 },
+  sky:    { sky:["#7ab0da","#dfeef7"], sea:["#1f5470","#0d2c3e"], mtn:"#33566a", wave:1, cloud:1 },
+  fire:   { sky:["#2a1408","#7a3410"], sea:["#241209","#0d0603"], mtn:"#2c1a0e", wave:0, ember:1 },
+  ice:    { sky:["#9dc6de","#e6f2f7"], sea:["#4a86a4","#1c4a63"], mtn:"#7fb6cf", wave:0 },
+  town:   { sky:["#6b7f8c","#c3d1d8"], sea:["#25454f","#0f2229"], mtn:"#264049", wave:1, rain:1 }
+};
+function sceneSVG(key, uid) {
+  const c = SCENES[key] || SCENES.sea, g = "sky" + uid, w = "sea" + uid;
+  let extra = "";
+  if (c.aurora) extra += `<g opacity=".85">
+    <path d="M0,26 C40,6 80,44 120,20 C160,-2 190,30 200,18 L200,46 L0,46 Z" fill="#3ef2a0" opacity=".38"/>
+    <path d="M0,34 C36,16 76,52 116,28 C156,6 186,36 200,26 L200,52 L0,52 Z" fill="#41b7ff" opacity=".3"/>
+    <path d="M0,20 C44,2 74,36 118,14 C150,-2 184,22 200,12 L200,36 L0,36 Z" fill="#b46bff" opacity=".22"/></g>`;
+  if (c.star) for (let i = 0; i < 26; i++) extra += `<circle cx="${(i * 37) % 200}" cy="${(i * 23) % 58}" r=".7" fill="#fff" opacity="${.25 + ((i % 4) * .18)}"/>`;
+  if (c.cloud) extra += `<g fill="#ffffff" opacity=".8"><ellipse cx="46" cy="34" rx="26" ry="9"/><ellipse cx="66" cy="30" rx="18" ry="8"/><ellipse cx="146" cy="26" rx="24" ry="8"/></g>`;
+  if (c.ember) for (let i = 0; i < 24; i++) extra += `<circle cx="${(i * 53) % 200}" cy="${(i * 31) % 86}" r="${.6 + (i % 3) * .5}" fill="#ffb43d" opacity="${.35 + ((i % 3) * .2)}"/>`;
+  if (c.rain) for (let i = 0; i < 40; i++) extra += `<line x1="${(i * 29) % 205}" y1="${(i * 17) % 110}" x2="${((i * 29) % 205) - 4}" y2="${((i * 17) % 110) + 9}" stroke="#dff0ff" stroke-width=".7" opacity=".45"/>`;
+  let trees = "";
+  if (c.trees) for (let i = 0; i < 16; i++) { const x = 4 + i * 13 + ((i % 3) * 3), h = 26 + ((i * 7) % 16); trees += `<path d="M${x},96 L${x + 5},${96 - h} L${x + 10},96 Z" fill="#0b1c14" opacity=".92"/>`; }
+  let waves = "";
+  if (c.wave) for (let i = 0; i < c.wave + 1; i++) { const y = 92 + i * 8; waves += `<path d="M0,${y} C25,${y - 4} 45,${y + 4} 70,${y} C95,${y - 4} 120,${y + 4} 145,${y} C170,${y - 4} 190,${y + 3} 200,${y - 1}" stroke="#dff0ff" stroke-width="1.1" fill="none" opacity="${.5 - i * .1}"/>`; }
+  return `<svg viewBox="0 0 200 150" preserveAspectRatio="none"><defs>
+    <linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c.sky[0]}"/><stop offset="100%" stop-color="${c.sky[1]}"/></linearGradient>
+    <linearGradient id="${w}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c.sea[0]}"/><stop offset="100%" stop-color="${c.sea[1]}"/></linearGradient></defs>
+    <rect width="200" height="150" fill="url(#${g})"/>${extra}
+    <path d="M0,88 L26,58 L44,74 L68,44 L92,72 L114,52 L140,80 L164,60 L200,86 L200,100 L0,100 Z" fill="${c.mtn}"/>
+    <path d="M0,92 L200,92 L200,150 L0,150 Z" fill="url(#${w})"/>${trees}${waves}</svg>`;
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const KEY = "alaskacard.v2";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { state = {}; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const RANKS = [ {n:"Cheechako",at:0},{n:"Deckhand",at:80},{n:"Sourdough",at:250},{n:"Salt",at:500},{n:"Old Timer",at:850},{n:"Southeast Legend",at:1250} ];
+const serialOf = id => "AK-" + String(Math.abs([...id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) | 0, 7)) % 900 + 100);
+const qrUrlOf = id => "https://alaskacard.com/c/" + serialOf(id).toLowerCase();
+
+/* ============================================================
+   CARD RENDER
+   ============================================================ */
+let uidc = 0, qrCache = {};
+function qrSVG(text, fg) {
+  const k = text + "|" + (fg || "");
+  if (!qrCache[k]) { try { qrCache[k] = QR.svg(text, { fg: fg }); } catch (e) { qrCache[k] = ""; } }
+  return qrCache[k];
+}
+function cardHTML(c, opts) {
+  opts = opts || {};
+  const st = state[c.id] || {};
+  const earned = !!st.earned;
+  const unlocked = earned || opts.forceUnlocked;
+  const uid = ++uidc;
+  const ser = serialOf(c.id);
+  return `<div class="card-shell">
+    <div class="card ${c.ser === "visitor" ? "visitor" : ""} ${unlocked ? "" : "locked"}" data-r="${c.r}" data-id="${c.id}" tabindex="0">
+      <div class="card-face">
+        <div class="card-inner">
+          <div class="card-head"><div class="ttl">ALASKA CARD</div>
+            <div class="sub">${c.ser === "visitor" ? "Visitor Series" : "Official Alaska Cred"}</div></div>
+          <div class="art">${sceneSVG(c.sc, uid)}<div class="vig"></div><div class="motif">${c.m}</div></div>
+          <div class="card-body"><h3>${esc(c.n)}</h3><p>${esc(c.s)}</p></div>
+          <div class="card-foot">
+            <span class="rar-badge">${RARITY[c.r].label}</span>
+            <span class="pts"><b>${c.p}</b><i>POINTS</i></span>
+          </div>
+          <div class="serial">${ser} · KETCHIKAN, AK</div>
+          ${earned ? '<div class="earned-stamp">Earned</div>' : ""}
+        </div>
+      </div>
+      <div class="card-back">
+        <div class="back-top"><span class="bt">ALASKA CARD</span><span class="bn">${ser}</span></div>
+        <div class="back-body">
+          <div class="lbl">Achievement</div>
+          <div class="ach">${esc(c.n)}</div>
+          <p class="desc">${esc(c.l)}</p>
+          <div class="back-grid">
+            <div><div class="lbl">Date Earned</div><div class="blank">${esc(st.date || "")}</div></div>
+            <div><div class="lbl">Location</div><div class="blank">${esc(st.loc || "Ketchikan, AK")}</div></div>
+            <div><div class="lbl">Witness</div><div class="blank">${esc(st.wit || "")}</div></div>
+            <div><div class="lbl">Ship / Vessel</div><div class="blank">${esc(st.ship || "")}</div></div>
+          </div>
+          <div style="margin-top:5px"><div class="lbl">Story</div><div class="blank" style="min-height:16px">${esc(st.story || "")}</div></div>
+          <div class="back-qr">
+            <div class="qbox">${qrSVG(qrUrlOf(c.id))}</div>
+            <div class="qtx">Scan to claim<br>this card, add your<br>photo &amp; tag your<br>witness.<br><br>${RARITY[c.r].label} · ${c.p} pts</div>
+          </div>
+        </div>
+      </div>
+      <div class="holo"></div><div class="glare"></div><div class="sparkle"></div>
+      ${!unlocked ? '<div class="lock-tag">Not yet earned</div>' : ""}
+    </div></div>`;
+}
+
+/* ============================================================
+   TILT + FLIP
+   ============================================================ */
+function bindTilt(root, onClick) {
+  root.querySelectorAll(".card").forEach(card => {
+    if (card._tilted) return;
+    card._tilted = true;
+    card.addEventListener("pointermove", e => {
+      if (card.classList.contains("flipped")) return;
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+      card.classList.add("live");
+      card.style.setProperty("--mx", (px * 100).toFixed(1) + "%");
+      card.style.setProperty("--my", (py * 100).toFixed(1) + "%");
+      card.style.setProperty("--ry", ((px - .5) * 26).toFixed(2) + "deg");
+      card.style.setProperty("--rx", ((.5 - py) * 26).toFixed(2) + "deg");
+      card.style.setProperty("--sc", "1.05");
+    });
+    card.addEventListener("pointerleave", () => {
+      card.classList.remove("live");
+      ["--mx","--my"].forEach(p => card.style.setProperty(p, "50%"));
+      ["--ry","--rx"].forEach(p => card.style.setProperty(p, "0deg"));
+      card.style.setProperty("--sc", "1");
+    });
+    const act = () => onClick ? onClick(card) : flipCard(card);
+    card.addEventListener("click", act);
+    card.addEventListener("keydown", e => { if (e.key === "Enter") act(); });
+  });
+  if (window.DeviceOrientationEvent && !window._gyro) {
+    window._gyro = true;
+    window.addEventListener("deviceorientation", e => {
+      if (e.gamma == null) return;
+      const gx = Math.max(-1, Math.min(1, e.gamma / 40)), gy = Math.max(-1, Math.min(1, (e.beta - 45) / 40));
+      document.querySelectorAll(".card:not(.live):not(.flipped)").forEach(c => {
+        c.style.setProperty("--mx", (50 + gx * 50).toFixed(1) + "%");
+        c.style.setProperty("--my", (50 + gy * 50).toFixed(1) + "%");
+        c.style.setProperty("--ry", (gx * 12).toFixed(1) + "deg");
+        c.style.setProperty("--rx", (-gy * 12).toFixed(1) + "deg");
+      });
+    });
+  }
+}
+function flipCard(card) {
+  const on = card.classList.toggle("flipped");
+  card.style.setProperty("--flip", on ? "180deg" : "0deg");
+  if (on) { ["--ry","--rx"].forEach(p => card.style.setProperty(p, "0deg")); card.style.setProperty("--sc", "1"); }
+}
+
+/* ============================================================
+   TOTALS / RANK
+   ============================================================ */
+function totals() { let pts = 0, count = 0; DECK.forEach(c => { if (state[c.id] && state[c.id].earned) { pts += c.p; count++; } }); return { pts, count }; }
+function rankFor(pts) { let r = RANKS[0], next = null; RANKS.forEach((x, i) => { if (pts >= x.at) { r = x; next = RANKS[i + 1] || null; } }); return { r, next }; }
+function refreshStats() {
+  const { pts, count } = totals(), { r, next } = rankFor(pts);
+  document.getElementById("sCards").textContent = DECK.length;
+  document.getElementById("sPts").textContent = pts;
+  document.getElementById("sRank").textContent = r.n;
+  document.getElementById("rkPts").textContent = pts;
+  document.getElementById("rkName").textContent = r.n;
+  document.getElementById("rkBar").style.width = Math.min(100, (pts / 1250) * 100) + "%";
+  document.getElementById("rkNext").textContent = next
+    ? `${next.at - pts} cred to ${next.n} · ${count}/${DECK.length} cards`
+    : `Maxed. ${count}/${DECK.length} cards. You are the reason the warning label exists.`;
+}
+
+/* ============================================================
+   GRID
+   ============================================================ */
+let filter = "visitor";
+const grid = document.getElementById("grid"), filters = document.getElementById("filters");
+function renderFilters() {
+  const opts = [["visitor","Visitor Series"],["resident","Resident Series"],["all","All"]]
+    .concat(Object.keys(RARITY).map(k => [k, RARITY[k].label]), [["earned","Earned"]]);
+  filters.innerHTML = opts.map(([k, l]) => {
+    const n = k === "all" ? DECK.length : k === "earned" ? totals().count
+      : (k === "visitor" || k === "resident") ? DECK.filter(c => c.ser === k).length
+      : DECK.filter(c => c.r === k).length;
+    return `<button class="chip ${filter === k ? "on" : ""}" data-f="${k}">${l} · ${n}</button>`;
+  }).join("");
+  filters.querySelectorAll(".chip").forEach(b => b.onclick = () => { filter = b.dataset.f; renderFilters(); renderGrid(); });
+}
+function renderGrid() {
+  const list = DECK.filter(c =>
+    filter === "all" ? true
+    : filter === "earned" ? (state[c.id] && state[c.id].earned)
+    : (filter === "visitor" || filter === "resident") ? c.ser === filter
+    : c.r === filter).sort((a, b) => b.p - a.p);
+  grid.innerHTML = list.map(c => cardHTML(c)).join("");
+  bindTilt(grid, card => openModal(card.dataset.id));
+}
+function renderFan() {
+  const picks = ["storm-kayak","boat-sinker","outhouse-inferno","misty","eagle-theft"].map(id => DECK.find(c => c.id === id));
+  document.getElementById("fan").innerHTML = picks.map(c => cardHTML(c, { forceUnlocked: true })).join("");
+  bindTilt(document.getElementById("fan"));
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+const modal = document.getElementById("modal");
+let current = null;
+function openModal(id) {
+  const c = DECK.find(x => x.id === id); if (!c) return;
+  current = c;
+  const st = state[id] || {};
+  document.getElementById("modalCard").innerHTML = cardHTML(c, { forceUnlocked: true });
+  bindTilt(document.getElementById("modalCard"));
+  document.getElementById("mRar").textContent = `${RARITY[c.r].label} · ${c.p} points · ${c.ser === "visitor" ? "Visitor Series" : "Resident Series"} · ${serialOf(c.id)}`;
+  document.getElementById("mName").textContent = c.n;
+  document.getElementById("mDesc").textContent = c.s;
+  document.getElementById("mLore").textContent = c.l;
+  document.getElementById("fDate").value = st.date || "";
+  document.getElementById("fLoc").value = st.loc || "";
+  document.getElementById("fWit").value = st.wit || "";
+  document.getElementById("fShip").value = st.ship || "";
+  document.getElementById("fStory").value = st.story || "";
+  document.getElementById("mEarn").textContent = st.earned ? "✕ Un-earn" : "✓ Mark Earned";
+  modal.classList.add("on");
+}
+function collect() {
+  if (!current) return;
+  state[current.id] = Object.assign({}, state[current.id], {
+    date: document.getElementById("fDate").value, loc: document.getElementById("fLoc").value,
+    wit: document.getElementById("fWit").value, ship: document.getElementById("fShip").value,
+    story: document.getElementById("fStory").value
+  });
+  save();
+}
+document.getElementById("mFlip").onclick = () => { const c = document.querySelector("#modalCard .card"); if (c) flipCard(c); };
+document.getElementById("mSave").onclick = () => {
+  collect(); toast("Story saved to the back of the card.");
+  const holder = document.getElementById("modalCard");
+  holder.innerHTML = cardHTML(current, { forceUnlocked: true }); bindTilt(holder);
+  renderGrid();
+};
+document.getElementById("mEarn").onclick = () => {
+  collect();
+  const st = state[current.id] || (state[current.id] = {});
+  st.earned = !st.earned; save();
+  toast(st.earned ? `${current.n} earned — +${current.p} cred` : `${current.n} un-earned`);
+  modal.classList.remove("on"); refreshStats(); renderFilters(); renderGrid();
+};
+document.getElementById("mClose").onclick = () => modal.classList.remove("on");
+modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("on"); });
+
+/* ============================================================
+   PACK OPENING
+   ============================================================ */
+const packStage = document.getElementById("packStage"), packSlot = document.getElementById("packSlot");
+const packHint = document.getElementById("packHint"), packCount = document.getElementById("packCount");
+let pull = [], pullIdx = 0;
+function weightedPick() {
+  const total = Object.values(RARITY).reduce((a, r) => a + r.weight, 0);
+  let roll = Math.random() * total, chosen = "common";
+  for (const k of Object.keys(RARITY)) { roll -= RARITY[k].weight; if (roll <= 0) { chosen = k; break; } }
+  const pool = DECK.filter(c => c.r === chosen);
+  return pool.length ? pool[Math.floor(Math.random() * pool.length)] : DECK[Math.floor(Math.random() * DECK.length)];
+}
+function startPack() {
+  pull = []; const seen = new Set();
+  let guard = 0;
+  while (pull.length < 5 && guard++ < 300) { const c = weightedPick(); if (!seen.has(c.id)) { seen.add(c.id); pull.push(c); } }
+  pull.sort((a, b) => a.p - b.p);
+  pullIdx = -1;
+  packStage.classList.add("on");
+  packSlot.innerHTML = `<div class="envelope"><h4>ALASKA</h4><p>Sealed Foil Pack</p><h4 style="font-size:34px">✦</h4><p>5 Cards · 1 Guaranteed Holo</p></div>`;
+  packHint.textContent = "Click the pack to rip it";
+  packCount.textContent = "";
+  packSlot.querySelector(".envelope").onclick = nextCard;
+}
+function nextCard() {
+  pullIdx++;
+  if (pullIdx >= pull.length) { packStage.classList.remove("on"); refreshStats(); renderFilters(); renderGrid(); return; }
+  const c = pull[pullIdx], b = document.getElementById("burst");
+  b.classList.remove("go"); void b.offsetWidth;
+  if (["epic","legendary","mythic"].includes(c.r)) b.classList.add("go");
+  packSlot.innerHTML = `<div class="reveal-card">${cardHTML(c, { forceUnlocked: true })}</div>`;
+  bindTilt(packSlot, () => nextCard());
+  packHint.textContent = c.r === "mythic" ? "★★ MYTHIC PULL ★★" : c.r === "legendary" ? "★ LEGENDARY ★" : "Click for next card";
+  packCount.textContent = `${pullIdx + 1} / ${pull.length} · ${RARITY[c.r].label} · ${c.p} pts`;
+}
+packStage.onclick = ev => { if (ev.target === packStage) nextCard(); };
+document.getElementById("packClose").onclick = e => { e.stopPropagation(); packStage.classList.remove("on"); };
+document.getElementById("openPackBtn").onclick = startPack;
+document.getElementById("heroPack").onclick = startPack;
+
+/* ============================================================
+   CRUISE MATH
+   ============================================================ */
+const fmt = n => "$" + Math.round(n).toLocaleString();
+const num = n => Math.round(n).toLocaleString();
+function inputs() {
+  return {
+    pax: +document.getElementById("rPax").value,
+    att: +document.getElementById("rAtt").value / 100,
+    bask: +document.getElementById("rBask").value,
+    scan: +document.getElementById("rScan").value / 100,
+    sub: +document.getElementById("rSub").value / 100
+  };
+}
+function renderShips() {
+  const i = inputs();
+  let totalPax = 0, totalRev = 0, rows = "";
+  SHIPS.slice(0, 5).forEach(s => {
+    const ashore = Math.round(s.pax * 0.82);
+    const rev = ashore * i.att * i.bask;
+    totalPax += ashore; totalRev += rev;
+    rows += `<div class="ship-row"><div><div class="nm">${s.n}</div><div class="ln">${s.ln}</div></div>
+      <div class="pax">${num(ashore)}<div class="ln" style="text-align:right">ashore</div></div>
+      <div class="win">${num(ashore * i.att)}<div class="ln" style="text-align:right">buyers</div></div>
+      <div class="rev">${fmt(rev)}</div></div>`;
+  });
+  document.getElementById("shipList").innerHTML = rows;
+  document.getElementById("dayRev").textContent = fmt(totalRev);
+}
+function renderMath() {
+  const i = inputs();
+  document.getElementById("vPax").textContent = num(i.pax);
+  document.getElementById("vAtt").textContent = Math.round(i.att * 100) + "%";
+  document.getElementById("vBask").textContent = "$" + i.bask;
+  document.getElementById("vScan").textContent = Math.round(i.scan * 100) + "%";
+  document.getElementById("vSub").textContent = Math.round(i.sub * 100) + "%";
+  const buyers = i.pax * i.att, rev = buyers * i.bask, scans = buyers * i.scan, subs = scans * i.sub, arr = subs * 84;
+  document.getElementById("outRev").textContent = fmt(rev);
+  document.getElementById("outUnits").textContent = num(buyers);
+  document.getElementById("outScans").textContent = num(scans);
+  document.getElementById("outSubs").textContent = num(subs);
+  document.getElementById("outArr").textContent = fmt(arr);
+  document.getElementById("outTot").textContent = fmt(rev + arr);
+  let ptRows = "", ptTot = 0;
+  PORTS.forEach(p => { const r = p.pax * i.att * i.bask; ptTot += r; ptRows += `<tr><td>${p.n}</td><td class="num">${num(p.pax)}</td><td class="num">${fmt(r)}</td></tr>`; });
+  ptRows += `<tr class="total"><td>Alaska total</td><td class="num">${num(PORTS.reduce((a, p) => a + p.pax, 0))}</td><td class="num">${fmt(ptTot)}</td></tr>`;
+  document.getElementById("portTable").innerHTML = ptRows;
+  renderShips();
+}
+["rPax","rAtt","rBask","rScan","rSub"].forEach(id => document.getElementById(id).addEventListener("input", renderMath));
+
+/* ============================================================
+   QR SHOWCASE + KIOSK
+   ============================================================ */
+function renderQR() {
+  const items = [
+    { u:"https://alaskacard.com/ketchikan", t:"The Gangway Poster", d:"Three-foot QR on an A-frame where 16,000 people a day walk past. Loads the free Shore Day Quest — no app, no signup." },
+    { u:"https://alaskacard.com/c/ak-042", t:"On Every Card Back", d:"Unique serial per card. Scan to claim it, add a photo, tag a witness, and mint it to your digital shelf." },
+    { u:"https://alaskacard.com/s/ovation", t:"Ship Leaderboard", d:"Printed on the in-cabin flyer. Your ship competes against the other four in port. Cruisers are ruthlessly competitive." }
+  ];
+  document.getElementById("qrRow").innerHTML = items.map(x =>
+    `<div class="qr-card"><div class="qr-holder">${qrSVG(x.u)}</div><h5>${x.t}</h5><p>${x.d}</p><div class="url">${x.u}</div></div>`).join("");
+  document.getElementById("kioskQr").innerHTML = qrSVG("https://alaskacard.com/ketchikan");
+}
+const kiosk = document.getElementById("kiosk");
+const openKiosk = () => kiosk.classList.add("on");
+document.getElementById("kioskBtn").onclick = openKiosk;
+document.getElementById("heroKiosk").onclick = openKiosk;
+document.getElementById("kioskClose").onclick = () => kiosk.classList.remove("on");
+
+/* ============================================================
+   SHORE QUEST PASS
+   ============================================================ */
+const shipSel = document.getElementById("shipSel");
+shipSel.innerHTML = SHIPS.map(s => `<option value="${s.n}">${s.n} — ${s.ln} (${num(s.pax)} pax)</option>`).join("");
+function genQuest() {
+  const shipName = shipSel.value;
+  const ship = SHIPS.find(s => s.n === shipName) || SHIPS[0];
+  const pool = DECK.filter(c => c.ser === "visitor");
+  const picks = pool.slice().sort(() => Math.random() - .5).slice(0, 6).sort((a, b) => a.p - b.p);
+  const totalPts = picks.reduce((a, c) => a + c.p, 0);
+  const url = "https://alaskacard.com/q/" + shipName.toLowerCase().replace(/[^a-z]/g, "").slice(0, 12);
+  document.getElementById("passHolder").innerHTML = `<div class="pass">
+    <div class="pass-main">
+      <h4>Shore Day Quest · Ketchikan, Alaska</h4>
+      <h3>${esc(shipName)}</h3>
+      <div class="quest-list">${picks.map(c =>
+        `<div class="quest-item"><span class="bx"></span><span><b>${esc(c.n)}</b> — ${esc(c.s)}</span><span class="pt">${c.p}</span></div>`).join("")}</div>
+      <div class="pass-meta"><span>Ashore 07:00–15:30</span><span>${num(Math.round(ship.pax * .82))} guests ashore</span><span>Quest total ${totalPts} pts</span><span>Cards $6 · packs $24</span></div>
+      <p style="font-size:12.5px;color:rgba(22,36,31,.75);margin:14px 0 0">Complete any three and show this pass at any participating shop on Front Street for a free <b>Stepped Ashore</b> card. Cards are earned through real experiences — please be safe and follow all posted rules.</p>
+    </div>
+    <div class="pass-stub">
+      <div style="font-size:9px;letter-spacing:.24em;text-transform:uppercase;font-weight:800;opacity:.7">Scan to Play</div>
+      <div class="qbx">${qrSVG(url)}</div>
+      <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.75">${esc(ship.ln)}<br>Berth 2 · Ketchikan</div>
+    </div></div>`;
+}
+document.getElementById("genQuest").onclick = genQuest;
+
+/* ============================================================
+   MISC
+   ============================================================ */
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(t._x); t._x = setTimeout(() => t.classList.remove("on"), 2400);
+}
+document.getElementById("themeBtn").onclick = () => {
+  const cur = document.documentElement.getAttribute("data-theme");
+  document.documentElement.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+};
+document.getElementById("earnAll").onclick = () => {
+  DECK.forEach(c => { state[c.id] = Object.assign({}, state[c.id], { earned: true }); });
+  save(); refreshStats(); renderFilters(); renderGrid(); toast("Every card earned. Bold claim.");
+};
+document.getElementById("resetAll").onclick = () => { state = {}; save(); refreshStats(); renderFilters(); renderGrid(); toast("Collection reset."); };
+document.addEventListener("keydown", e => { if (e.key === "Escape") { modal.classList.remove("on"); packStage.classList.remove("on"); kiosk.classList.remove("on"); } });
+
+const TICK = [
+  "◆ 5 ships in port today", "◆ 16,240 guests ashore", "◆ 1.6M cruise visitors per season",
+  "◆ 8 hours to earn one", "◆ Cards $6 · packs $24", "◆ 34 achievements live",
+  "◆ Scan · Sign · Take it home", "◆ Front Street · Creek Street · Berth 2",
+  "◆ Collect stories, not just cards", "◆ Mythic pull rate 1:288"
+];
+document.getElementById("tick").innerHTML = (TICK.join("") ? TICK.concat(TICK).map(t => `<span>${t}</span>`).join("") : "");
+
+renderFan(); renderFilters(); renderGrid(); refreshStats(); renderMath(); renderQR(); genQuest();
+
+if (!Object.keys(state).length) {
+  ["gangway","tram","first-eagle","eagle-theft","soaked","rain"].forEach(id => state[id] = { earned: true, loc: "Ketchikan, AK" });
+  save(); refreshStats(); renderFilters(); renderGrid();
+}
+</script>
+</body>
+</html>
