@@ -406,6 +406,28 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
 .pass-meta { display: flex; gap: 20px; margin-top: 14px; flex-wrap: wrap; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; opacity: .72; font-weight: 700; }
 
 .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(160%); background: var(--cp-panel-strong); border: 1px solid var(--cp-border); color: var(--cp-text); padding: 11px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; z-index: 200; box-shadow: var(--cp-shadow); transition: transform .35s cubic-bezier(.2,.9,.2,1); }
+
+/* ---- SCAN-TO-CLAIM OVERLAY ---- */
+.claim { position: fixed; inset: 0; z-index: 300; display: none; place-items: center; padding: 24px 18px; overflow-y: auto;
+  background: radial-gradient(70% 60% at 50% 30%, rgba(217,180,91,.22), transparent 70%), var(--cp-overlay);
+  backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); }
+.claim.on { display: grid; }
+.claim-in { text-align: center; max-width: 460px; width: 100%; }
+.claim .kick { font-size: 11px; letter-spacing: .34em; text-transform: uppercase; font-weight: 900; color: var(--cp-accent); margin-bottom: 10px; }
+.claim h2 { font-size: clamp(30px, 8vw, 46px); font-weight: 900; letter-spacing: -.02em; margin: 0 0 8px; line-height: 1.05; }
+.claim .sub { color: var(--cp-text-muted); font-size: 15px; margin: 0 0 22px; line-height: 1.5; }
+.claim .holder { display: grid; place-items: center; margin-bottom: 24px; perspective: 1200px; }
+.claim .holder .card-shell { width: 250px; }
+.claim .card { animation: claimPop .85s cubic-bezier(.2,.9,.25,1.05) both; }
+@keyframes claimPop {
+  0%   { transform: scale(.55) rotateY(-135deg); opacity: 0; }
+  60%  { transform: scale(1.06) rotateY(12deg); opacity: 1; }
+  100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+}
+.claim .acts { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+.claim .acts .btn { width: 100%; text-align: center; padding: 15px 20px; font-size: 15px; font-weight: 800; }
+.claim .ptbump { display: inline-flex; align-items: center; gap: 8px; font-weight: 900; font-size: 14px; color: var(--ak-gold-lo); background: var(--cp-surface); border: 1px solid var(--ak-gold); padding: 7px 16px; border-radius: 999px; margin-bottom: 18px; }
+@media (prefers-reduced-motion: reduce) { .claim .card { animation: none; } }
 .toast.on { transform: translateX(-50%) translateY(0); }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
 
@@ -863,7 +885,7 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
     <h1>YOU HAVE 7 HOURS.<br>EARN ONE.</h1>
     <h2>Scan to get your free Shore Day Quest. Complete an achievement in town, claim your Alaska Card, and take home proof instead of a magnet.</h2>
     <div class="kiosk-qr" id="kioskQr"></div>
-    <div style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ak-parch-2)">alaskacard.com/ketchikan</div>
+    <div style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ak-parch-2)" id="kioskUrl"></div>
     <div class="kiosk-steps">
       <div class="kiosk-step"><b>01 · Scan</b><span>No app. No signup. Your quest list loads in three seconds.</span></div>
       <div class="kiosk-step"><b>02 · Do it</b><span>Ride the tram. Meet an eagle. Get rained on and like it.</span></div>
@@ -873,6 +895,19 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
   </div>
 </div>
 
+<div class="claim" id="claim">
+  <div class="claim-in">
+    <div class="kick" id="clKick">Card Claimed</div>
+    <h2 id="clTitle"></h2>
+    <p class="sub" id="clSub"></p>
+    <div class="ptbump" id="clPts"></div>
+    <div class="holder" id="clCard"></div>
+    <div class="acts">
+      <button class="btn primary" id="clStory">Sign the back &amp; add the story</button>
+      <button class="btn ghost" id="clDone">See my deck</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 <script>
 /* ============================================================
@@ -1973,7 +2008,10 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&am
 
 const RANKS = [ {n:"Cheechako",at:0},{n:"Deckhand",at:80},{n:"Sourdough",at:250},{n:"Salt",at:500},{n:"Old Timer",at:850},{n:"Southeast Legend",at:1250} ];
 const serialOf = id => "AK-" + String(Math.abs([...id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) | 0, 7)) % 900 + 100);
-const qrUrlOf = id => "https://alaskacard.com/c/" + serialOf(id).toLowerCase();
+/* Live claim endpoint. Swap BASE to "https://alaskacard.com/" once the domain is pointed here
+   and every printed QR keeps working — the ?c= contract stays the same. */
+const BASE = "https://blazingbeard.github.io/alaskacard/";
+const qrUrlOf = id => BASE + "?c=" + id;
 
 /* ============================================================
    CARD RENDER
@@ -2303,13 +2341,14 @@ function renderMath() {
    ============================================================ */
 function renderQR() {
   const items = [
-    { u:"https://alaskacard.com/ketchikan", t:"The Gangway Poster", d:"Three-foot QR on an A-frame where 16,000 people a day walk past. Loads the free Shore Day Quest — no app, no signup." },
-    { u:"https://alaskacard.com/c/ak-042", t:"On Every Card Back", d:"Unique serial per card. Scan to claim it, add a photo, tag a witness, and mint it to your digital shelf." },
-    { u:"https://alaskacard.com/s/ovation", t:"Ship Leaderboard", d:"Printed on the in-cabin flyer. Your ship competes against the other four in port. Cruisers are ruthlessly competitive." }
+    { u: BASE, t:"The Gangway Poster", d:"Three-foot QR on an A-frame where 16,000 people a day walk past. Loads the free Shore Day Quest — no app, no signup." },
+    { u: qrUrlOf("eagle-theft"), t:"On Every Card Back", d:"Scan to claim it on the spot. The card unlocks, the date stamps in, and it lands on your shelf." },
+    { u: BASE + "?ship=ovation", t:"Ship Leaderboard", d:"Printed on the in-cabin flyer. Your ship competes against the other four in port. Cruisers are ruthlessly competitive." }
   ];
   document.getElementById("qrRow").innerHTML = items.map(x =>
     `<div class="qr-card"><div class="qr-holder">${qrSVG(x.u)}</div><h5>${x.t}</h5><p>${x.d}</p><div class="url">${x.u}</div></div>`).join("");
-  document.getElementById("kioskQr").innerHTML = qrSVG("https://alaskacard.com/ketchikan");
+  document.getElementById("kioskQr").innerHTML = qrSVG(BASE);
+  document.getElementById("kioskUrl").textContent = BASE.replace(/^https?:\/\//, "").replace(/\/$/, "");
 }
 const kiosk = document.getElementById("kiosk");
 const openKiosk = () => kiosk.classList.add("on");
@@ -2328,7 +2367,7 @@ function genQuest() {
   const pool = DECK.filter(c => c.ser === "visitor");
   const picks = pool.slice().sort(() => Math.random() - .5).slice(0, 6).sort((a, b) => a.p - b.p);
   const totalPts = picks.reduce((a, c) => a + c.p, 0);
-  const url = "https://alaskacard.com/q/" + shipName.toLowerCase().replace(/[^a-z]/g, "").slice(0, 12);
+  const url = BASE + "?ship=" + shipName.toLowerCase().replace(/[^a-z]/g, "").slice(0, 12);
   document.getElementById("passHolder").innerHTML = `<div class="pass">
     <div class="pass-main">
       <h4>Shore Day Quest · Ketchikan, Alaska</h4>
@@ -2363,7 +2402,7 @@ document.getElementById("earnAll").onclick = () => {
   save(); refreshStats(); renderFilters(); renderGrid(); toast("Every card earned. Bold claim.");
 };
 document.getElementById("resetAll").onclick = () => { state = {}; save(); refreshStats(); renderFilters(); renderGrid(); toast("Collection reset."); };
-document.addEventListener("keydown", e => { if (e.key === "Escape") { modal.classList.remove("on"); packStage.classList.remove("on"); kiosk.classList.remove("on"); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { modal.classList.remove("on"); packStage.classList.remove("on"); kiosk.classList.remove("on"); document.getElementById("claim").classList.remove("on"); } });
 
 const TICK = [
   "◆ 5 ships in port today", "◆ 16,240 guests ashore", "◆ 1.6M cruise visitors per season",
@@ -2374,6 +2413,81 @@ const TICK = [
 document.getElementById("tick").innerHTML = (TICK.join("") ? TICK.concat(TICK).map(t => `<span>${t}</span>`).join("") : "");
 
 renderFan(); renderFilters(); renderGrid(); refreshStats(); renderMath(); renderQR(); genQuest();
+
+/* ============================================================
+   SCAN TO CLAIM  —  ?c=<card-id> unlocks that card on arrival.
+   This is the contract every printed QR depends on: keep ?c= stable
+   even if the domain changes.
+   ============================================================ */
+const claimEl = document.getElementById("claim");
+function closeClaim() { claimEl.classList.remove("on"); }
+document.getElementById("clDone").onclick = () => {
+  closeClaim();
+  const sec = document.getElementById("grid");
+  if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+document.getElementById("clStory").onclick = () => {
+  const id = claimEl.dataset.card;
+  closeClaim();
+  if (id) openModal(id);
+};
+claimEl.addEventListener("click", e => { if (e.target === claimEl) closeClaim(); });
+
+function showClaim(card, wasNew) {
+  claimEl.dataset.card = card.id;
+  document.getElementById("clKick").textContent = wasNew ? "Card Claimed" : "Already In Your Deck";
+  document.getElementById("clTitle").textContent = card.n;
+  document.getElementById("clSub").textContent = wasNew
+    ? "Signed, sealed, and stamped with today's date. It's yours."
+    : "You've already claimed this one. Nice try.";
+  const pts = document.getElementById("clPts");
+  pts.textContent = wasNew ? `+${card.p} CRED · ${RARITY[card.r].label}` : `${card.p} CRED · ${RARITY[card.r].label}`;
+  const holder = document.getElementById("clCard");
+  holder.innerHTML = cardHTML(card, { forceUnlocked: true });
+  bindTilt(holder);
+  claimEl.classList.add("on");
+}
+
+function handleScan() {
+  const q = new URLSearchParams(location.search);
+  const cid = q.get("c");
+  const ship = q.get("ship");
+  let touched = false;
+
+  if (cid) {
+    const card = DECK.find(c => c.id === cid);
+    if (card) {
+      const st = state[card.id] || (state[card.id] = {});
+      const wasNew = !st.earned;
+      if (wasNew) {
+        st.earned = true;
+        if (!st.date) st.date = new Date().toISOString().slice(0, 10);
+        if (!st.loc) st.loc = "Ketchikan, AK";
+        save(); refreshStats(); renderFilters(); renderGrid();
+      }
+      showClaim(card, wasNew);
+      touched = true;
+    } else {
+      toast("That card isn't in the deck yet.");
+      touched = true;
+    }
+  }
+
+  if (ship) {
+    const match = SHIPS.find(s => s.n.toLowerCase().replace(/[^a-z]/g, "").slice(0, 12) === ship);
+    if (match) { shipSel.value = match.n; genQuest(); }
+    if (!cid) {
+      const p = document.getElementById("passHolder");
+      if (p) p.scrollIntoView({ behavior: "smooth", block: "center" });
+      toast(match ? `Shore Day Quest — ${match.n}` : "Shore Day Quest loaded.");
+    }
+    touched = true;
+  }
+
+  // Strip the params so a refresh doesn't replay the claim.
+  if (touched) history.replaceState({}, "", location.pathname);
+}
+handleScan();
 
 /* iOS 13+ gates motion sensors behind a user gesture; everyone else starts immediately. */
 if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
