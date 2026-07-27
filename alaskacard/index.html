@@ -407,6 +407,15 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
 
 .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(160%); background: var(--cp-panel-strong); border: 1px solid var(--cp-border); color: var(--cp-text); padding: 11px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; z-index: 200; box-shadow: var(--cp-shadow); transition: transform .35s cubic-bezier(.2,.9,.2,1); }
 
+/* ---- MODAL CLAIM STRIP ---- */
+.claim-strip { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; margin: 16px 0 18px; padding: 14px; border: 1px solid var(--cp-border); border-radius: 12px; background: var(--cp-surface-soft); }
+.claim-strip .cs-qr { width: 96px; height: 96px; background: #fff; padding: 6px; border-radius: 8px; border: 1px solid var(--cp-border); }
+.claim-strip .cs-qr svg { width: 100%; height: 100%; display: block; }
+.claim-strip .cs-tx b { display: block; font-size: 14px; margin-bottom: 4px; }
+.claim-strip .cs-tx p { margin: 0 0 7px; font-size: 12.5px; line-height: 1.45; color: var(--cp-text-muted); }
+.claim-strip .cs-tx code { font-family: Consolas, "Courier New", Courier, monospace; font-size: 10.5px; color: var(--cp-text-soft); word-break: break-all; }
+@media (max-width: 520px) { .claim-strip { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
+
 /* ---- SCAN-TO-CLAIM OVERLAY ---- */
 .claim { position: fixed; inset: 0; z-index: 300; display: none; place-items: center; padding: 24px 18px; overflow-y: auto;
   background: radial-gradient(70% 60% at 50% 30%, rgba(217,180,91,.22), transparent 70%), var(--cp-overlay);
@@ -468,10 +477,9 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
   <div class="topbar-in">
     <div class="brand"><span class="seal">★</span> ALASKA CARD</div>
     <span class="spacer"></span>
-    <a class="navlink" href="#cruise">Cruise Engine</a>
-    <a class="navlink" href="#qr">QR System</a>
-    <a class="navlink" href="#collection">The Deck</a>
-    <a class="navlink" href="#billion">The Billion</a>
+    <a class="navlink" href="#claim-sec">Claim a Card</a>
+    <a class="navlink" href="#collection">My Deck</a>
+    <a class="navlink" href="#quest">Shore Quest</a>
     <button class="btn ghost" id="themeBtn" title="Toggle theme">◐</button>
     <button class="btn" id="kioskBtn">Dock Kiosk</button>
     <button class="btn primary" id="openPackBtn">Rip a Pack</button>
@@ -484,20 +492,21 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
   <div class="hero-aurora"></div>
   <div class="wrap hero-grid">
     <div>
-      <div class="eyebrow">Ketchikan, Alaska · Berth 2 · Est. 2026</div>
+      <div class="eyebrow">Ketchikan, Alaska · Southeast · Official Alaska Cred</div>
       <h1 class="title">ALASKA<br>CARD</h1>
       <p class="subtitle">
-        1.6 million people step off a ship in Ketchikan every summer and buy a fridge magnet
-        they'll throw away. We sell them <b>proof</b> instead — a holographic card with their
-        name, their date, their witness, and a QR code that keeps the story alive forever.
+        Some souvenirs you buy. <b>This one you earn.</b>
+        Thirty-four achievements from Southeast Alaska — ride the tram, lose your lunch to an eagle,
+        paddle out in a winter gale on purpose. Do the thing, scan the card, sign the back.
+        Your deck lives right here on this phone.
       </p>
       <div class="hero-cta">
-        <button class="btn primary" id="heroPack">⚡ Rip a Pack</button>
-        <a class="btn" href="#cruise">See the Cruise Math</a>
-        <button class="btn ghost" id="heroKiosk">Open Dock Kiosk →</button>
+        <a class="btn primary" href="#claim-sec">◱ Claim a Card</a>
+        <a class="btn" href="#collection">See My Deck</a>
+        <button class="btn ghost" id="heroPack">⚡ Rip a Pack</button>
       </div>
       <div class="stat-row">
-        <div class="stat"><b id="sPax">1.6M</b><span>Ketchikan Cruisers / yr</span></div>
+        <div class="stat"><b id="sOwned">0</b><span>Cards Earned</span></div>
         <div class="stat"><b id="sCards">0</b><span>Cards in Deck</span></div>
         <div class="stat"><b id="sPts">0</b><span>Your Cred</span></div>
         <div class="stat"><b id="sRank">Cheechako</b><span>Your Rank</span></div>
@@ -507,158 +516,26 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
   </div>
 </div>
 
-<!-- ============ THE HOOK ============ -->
-<section class="alt" style="padding:40px 0">
-  <div class="wrap cols3">
-    <div class="panel">
-      <h4><span class="tag">The Problem</span></h4>
-      <p style="font-size:14px;color:var(--cp-text-muted);margin:8px 0 0">
-        A cruise passenger has <b>6–8 hours</b> in Ketchikan and $180 of souvenir budget.
-        They spend it on a t-shirt made in Vietnam and a magnet they will not remember buying.
-        Nothing they carry home proves they were <i>here</i>.
-      </p>
-    </div>
-    <div class="panel">
-      <h4><span class="tag">The Product</span></h4>
-      <p style="font-size:14px;color:var(--cp-text-muted);margin:8px 0 0">
-        A foil trading card for something they <b>actually did today</b>. Rode the tram. Saw an eagle.
-        Got soaked and laughed. They fill in the back — date, witness, story — and scan the QR
-        to mint it to a digital shelf that follows them home.
-      </p>
-    </div>
-    <div class="panel">
-      <h4><span class="tag">The Multiplier</span></h4>
-      <p style="font-size:14px;color:var(--cp-text-muted);margin:8px 0 0">
-        Every scan is an email address, a photo, a shareable card, and a person who now has an
-        <b>incomplete set</b>. They come back to Alaska. They buy the Iceland deck. They tell
-        four friends on the ship tonight at dinner.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CRUISE ENGINE ============ -->
-<section id="cruise">
+<!-- ============ CLAIM A CARD ============ -->
+<section id="claim-sec" class="alt">
   <div class="wrap">
-    <div class="eyebrow">The Ketchikan Machine</div>
-    <h2 style="font-size:34px">Five ships. One gangway. Eight hours.</h2>
-    <p class="lede">Ketchikan is the first Alaskan port most cruisers touch — roughly <b>1.6M passengers</b> across a ~150-day season, up to six ships and 16,000 people ashore on a peak day. They are pre-sold on Alaska before their feet hit the dock. All figures below are adjustable estimates — move the sliders.</p>
-
-    <div class="cols2" style="margin-top:24px;align-items:start">
-      <div class="port-board">
-        <h4>◈ Ships In Port Today — Ketchikan, AK</h4>
-        <div id="shipList" style="margin-top:10px"></div>
-        <div class="board-tot">
-          <div><div style="font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ak-parch-2)">Card revenue, today</div></div>
-          <b id="dayRev">$0</b>
-        </div>
-        <div style="font-size:10.5px;color:var(--ak-parch-2);margin-top:10px;letter-spacing:.06em">
-          Ship names/capacities are representative of vessels that call in Southeast Alaska.
-        </div>
-      </div>
-
-      <div class="panel">
-        <h4>Season Funnel — pull the levers</h4>
-        <div class="sliders" style="margin-top:16px">
-          <div class="slider">
-            <label>Passengers per season <b id="vPax">1,600,000</b></label>
-            <input type="range" id="rPax" min="200000" max="2600000" step="50000" value="1600000">
-          </div>
-          <div class="slider">
-            <label>Attach rate — % who buy <b id="vAtt">14%</b></label>
-            <input type="range" id="rAtt" min="2" max="40" step="1" value="14">
-          </div>
-          <div class="slider">
-            <label>Average basket <b id="vBask">$28</b></label>
-            <input type="range" id="rBask" min="8" max="90" step="1" value="28">
-          </div>
-          <div class="slider">
-            <label>QR scan rate — % who claim digitally <b id="vScan">55%</b></label>
-            <input type="range" id="rScan" min="5" max="95" step="1" value="55">
-          </div>
-          <div class="slider">
-            <label>Subscribe after scan <b id="vSub">9%</b></label>
-            <input type="range" id="rSub" min="1" max="30" step="1" value="9">
-          </div>
-        </div>
-        <div style="margin-top:20px;display:grid;gap:6px">
-          <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cp-text-soft);font-weight:700">Ketchikan season revenue</div>
-          <div class="bigout" id="outRev">$6,272,000</div>
-          <table style="margin-top:8px">
-            <tbody>
-              <tr><td>Cards sold</td><td class="num" id="outUnits">224,000</td></tr>
-              <tr><td>QR claims captured (emails)</td><td class="num" id="outScans">123,200</td></tr>
-              <tr><td>Cred+ subscribers created</td><td class="num" id="outSubs">11,088</td></tr>
-              <tr><td>Recurring app ARR from this port</td><td class="num" id="outArr">$931,392</td></tr>
-              <tr class="total"><td>Year-one value, Ketchikan alone</td><td class="num" id="outTot">$7,203,392</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="cols3" style="margin-top:22px">
-      <div class="panel">
-        <h4><span class="tag">Where</span> Distribution</h4>
-        <ul>
-          <li><b>The gangway.</b> A-frame poster with a 3-foot QR: <i>"You have 7 hours. Earn one."</i></li>
-          <li><b>Every dock shop</b> on Front St. and Creek Street — counter spinner, 30 SKUs.</li>
-          <li><b>The excursion operators</b> hand you the card <i>as</i> the excursion ends. Included in the tour price.</li>
-          <li><b>Onboard.</b> Gift shop + in-cabin flyer with QR. Cruise line takes 35%, still 50%+ margin.</li>
-          <li><b>The airport + ferry terminal</b> for locals and independents.</li>
-        </ul>
-      </div>
-      <div class="panel">
-        <h4><span class="tag">Why</span> They Buy</h4>
-        <ul>
-          <li><b>It's cheap.</b> $6 single, $24 pack — impulse territory next to a $45 hoodie.</li>
-          <li><b>It's personal.</b> Their handwriting is on it. Nobody throws away their own handwriting.</li>
-          <li><b>It's a set.</b> "There are 12 Ketchikan cards." That sentence sells the second one.</li>
-          <li><b>It's a gift.</b> Grandkids get cards. Cards fit in an envelope.</li>
-          <li><b>It fits in a pocket.</b> Zero luggage cost — the #1 souvenir objection, gone.</li>
-        </ul>
-      </div>
-      <div class="panel">
-        <h4><span class="tag">Scale</span> Every Alaska Port</h4>
-        <table style="margin-top:6px">
-          <thead><tr><th>Port</th><th class="num">Cruisers</th><th class="num">Revenue</th></tr></thead>
-          <tbody id="portTable"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ QR SYSTEM ============ -->
-<section id="qr" class="alt">
-  <div class="wrap">
-    <div class="eyebrow">The QR Layer</div>
-    <h2 style="font-size:34px">A paper card that phones home</h2>
-    <p class="lede">Every card carries a unique code. Scanning is free, instant, requires no app, and turns a $6 souvenir into a customer relationship. These QR codes below are <b>real and scannable</b> — generated in-browser, no internet required.</p>
+    <div class="eyebrow">Scan to Claim</div>
+    <h2 style="font-size:34px">Point your phone at the card.</h2>
+    <p class="lede">Every Alaska Card has its own code on the back. Scan it and the card unlocks right here — the foil wakes up, today's date stamps in, and it's yours. No app. No signup. <b>These codes are real</b> — they're generated in your browser and they actually work. Try one with your phone camera.</p>
 
     <div class="cols3" style="margin-top:24px" id="qrRow"></div>
 
-    <div class="cols2" style="margin-top:22px">
-      <div class="panel">
-        <h4><span class="tag">Flow</span> What happens on scan</h4>
-        <ul>
-          <li><b>0s</b> — Camera opens the claim page. No app, no login wall.</li>
-          <li><b>4s</b> — Their card animates on screen in full holo, tilting with the phone gyro.</li>
-          <li><b>12s</b> — They type the story and tag a witness. That witness gets a text.</li>
-          <li><b>20s</b> — Photo upload. Now the card has their face on the back, forever.</li>
-          <li><b>25s</b> — "Save your shelf" → email captured. You now own the relationship, not the cruise line.</li>
-          <li><b>Day 3</b> — "You're 1 card from completing the Ketchikan set." Ship it home for $4.</li>
-        </ul>
-      </div>
-      <div class="panel">
-        <h4><span class="tag">Data</span> What you now own</h4>
-        <ul>
-          <li>Verified <b>who / where / when</b> for millions of real-world moments.</li>
-          <li>A <b>witness graph</b> — the only social network built on things people actually did.</li>
-          <li>Attribution per operator: "Misty Fjords Air generated 4,100 claims this season." Now they'll pay you.</li>
-          <li>Live heatmap of what visitors actually love — worth real money to tourism boards.</li>
-          <li>Email + intent, at ~$0.19 CAC. Compare to $40 for a travel-brand email.</li>
-        </ul>
+    <div class="panel" style="margin-top:22px">
+      <h4><span class="tag">No card in hand?</span> Claim one right now</h4>
+      <p style="font-size:14px;color:var(--cp-text-muted);margin:8px 0 14px">
+        Pick any achievement you've actually done and claim it straight from here. Same result as scanning the printed card.
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div style="min-width:260px;flex:1">
+          <label style="display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--cp-text-soft);font-weight:700;margin-bottom:5px">Choose your achievement</label>
+          <select id="claimSel"></select>
+        </div>
+        <button class="btn primary" id="claimBtn">✓ Claim It</button>
       </div>
     </div>
   </div>
@@ -667,9 +544,9 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
 <!-- ============ SHORE QUEST ============ -->
 <section id="quest">
   <div class="wrap">
-    <div class="eyebrow">The Conversion Device</div>
+    <div class="eyebrow">Eight Hours Ashore</div>
     <h2 style="font-size:34px">Your Shore Day Quest</h2>
-    <p class="lede">Handed out free at the gangway. It's a boarding pass for the town. It costs 4¢ to print and it turns a wandering tourist into a player with a checklist — and a shopping list.</p>
+    <p class="lede">Pick your ship. Get a printable checklist of everything you can actually earn between the gangway and last call — timed to your port hours. Free. No signup.</p>
     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin:20px 0 18px">
       <div style="min-width:250px">
         <label style="display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--cp-text-soft);font-weight:700;margin-bottom:5px">Your Ship</label>
@@ -686,7 +563,7 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
   <div class="wrap">
     <div class="eyebrow">The Deck</div>
     <h2 style="font-size:34px">Two series. One obsession.</h2>
-    <p class="lede"><b>Visitor Series</b> — earnable in a single port day, sold at the dock. <b>Resident Series</b> — the real ones, earned over a lifetime in Southeast. Visitors see the Resident cards in the case and understand instantly that there is a deeper game. That's the ladder. <span style="color:var(--cp-text)">Click any card to flip it and see the printed back with its QR.</span></p>
+    <p class="lede"><b>Visitor Series</b> — twelve cards you can earn in a single day ashore. <b>Resident Series</b> — the deep cuts, earned over a lifetime in Southeast. Most people start with a visitor card and then spot a Resident card in the case and realize how far this goes. <span style="color:var(--cp-text)">Click any card to open it and get its claim QR.</span></p>
 
     <div class="rank-panel" style="margin-top:22px">
       <div class="rank-num"><span id="rkPts">0</span><small>Total Cred</small></div>
@@ -713,127 +590,16 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
     <h2 style="font-size:30px">Earn experiences. Earn respect. Earn your Alaska Cards.</h2>
     <div class="cols3" style="margin-top:22px">
       <div class="panel"><h4><span class="tag">01</span> Live it</h4><ul><li>Do the thing. For real.</li><li>No stunts, no card-chasing.</li><li>The mountain doesn't care about your collection.</li></ul></div>
-      <div class="panel"><h4><span class="tag">02</span> Witness it</h4><ul><li>Get a name on the back.</li><li>Scan the QR, tag the witness.</li><li>Witnesses are the growth engine. Each one is a free customer.</li></ul></div>
+      <div class="panel"><h4><span class="tag">02</span> Witness it</h4><ul><li>Get a name on the back.</li><li>Scan the QR, tag the witness.</li><li>A card with a name on the back is worth more than one without.</li></ul></div>
       <div class="panel"><h4><span class="tag">03</span> Claim it</h4><ul><li>The card is now yours specifically.</li><li>Story + date + location on your digital shelf.</li><li>Foil hits different when you earned it.</li></ul></div>
     </div>
     <div class="warn" style="margin-top:18px">⚠️ <b>Warning:</b> Alaska Cards are earned through real experiences — not attempted for the sake of collecting cards. Use common sense, follow laws and regulations, and prioritize safety over achievements.</div>
   </div>
 </section>
 
-<!-- ============ BILLION ============ -->
-<section id="billion" class="alt">
-  <div class="wrap">
-    <div class="eyebrow">The Blueprint</div>
-    <h2 style="font-size:34px">How ALASKA CARD becomes a billion-dollar company</h2>
-    <p class="lede">Pokémon sells fantasy. Alaska Card sells <b>proof</b>. The card is a receipt for a life — and it franchises to every place on earth with an identity worth earning. The cruise dock is just the cheapest customer acquisition channel ever built, and someone else already paid to bring the customers.</p>
-
-    <h3 style="margin-top:34px;font-size:20px">1. Six revenue streams, one artifact</h3>
-    <div class="cols3" style="margin-top:14px">
-      <div class="panel"><h4><span class="tag">Core</span> Packs & Singles</h4><div class="money">$24<small>/ 8-card foil pack</small></div>
-        <ul><li>$6 single at the register, $24 pack, $60 collector tin.</li><li>Cold-foil, embossed, fill-in back. COGS ~$2.10. <b>~88% gross margin.</b></li><li>Mythic pull 1:288 packs. Scarcity is the entire game.</li></ul></div>
-      <div class="panel"><h4><span class="tag">Dock</span> Cruise Retail</h4><div class="money">$21M<small>/ season, Alaska ports</small></div>
-        <ul><li>5.4M port-calls a season across SE Alaska.</li><li>CAC ≈ $0 — the cruise line spent $2,000/passenger to deliver them to your counter.</li><li>Wholesale to 300+ existing gift shops. No stores to build.</li></ul></div>
-      <div class="panel"><h4><span class="tag">SaaS</span> Cred+ App</h4><div class="money">$7<small>/ month</small></div>
-        <ul><li>QR claim, digital shelf, gyro holo viewer, witness graph.</li><li>Leaderboards by town and by ship. Ships compete.</li><li>Retention: an incomplete set is psychologically unbearable.</li></ul></div>
-      <div class="panel"><h4><span class="tag">B2B</span> Operator Program</h4><div class="money">$4k<small>/ yr per operator</small></div>
-        <ul><li>Charters, flightseeing, lodges issue <i>official</i> cards with their name on the back.</li><li>The card is the souvenir <b>and</b> the review <b>and</b> the referral.</li><li>Tourism boards buy regional decks as marketing spend, not merch.</li></ul></div>
-      <div class="panel"><h4><span class="tag">Market</span> Graded Resale</h4><div class="money">12%<small>take rate</small></div>
-        <ul><li>Earned + witnessed cards get authenticated and graded (AK-GEM 10).</li><li>A signed <i>"BOAT SINKER — F/V Sadie, 2019"</i> is a one-of-one. Provenance is price.</li><li>PSA grades ~$300M/yr of cards nobody lived.</li></ul></div>
-      <div class="panel"><h4><span class="tag">IP</span> Franchise Decks</h4><div class="money">15%<small>royalty</small></div>
-        <ul><li>MONTANA. MAINE. ICELAND. PATAGONIA. NEW ZEALAND. SCOTLAND.</li><li>Same engine, local achievements, local pride, local docks.</li><li>Every cruise port on earth is a pre-built distribution network.</li></ul></div>
-    </div>
-
-    <h3 style="margin-top:38px;font-size:20px">2. The math to $1B</h3>
-    <div class="cols2" style="margin-top:14px">
-      <div class="panel">
-        <h4>Year 5 revenue model</h4>
-        <table>
-          <thead><tr><th>Stream</th><th>Volume</th><th class="num">Revenue</th></tr></thead>
-          <tbody>
-            <tr><td>Cruise-port retail (12 regions)</td><td>3.9M packs @ $24</td><td class="num">$94M</td></tr>
-            <tr><td>Non-cruise retail + DTC</td><td>1.1M packs</td><td class="num">$26M</td></tr>
-            <tr><td>Cred+ subscriptions</td><td>480k subs @ $84/yr</td><td class="num">$40M</td></tr>
-            <tr><td>Operator program</td><td>6,000 operators @ $4k</td><td class="num">$24M</td></tr>
-            <tr><td>Graded marketplace</td><td>$150M GMV @ 12%</td><td class="num">$18M</td></tr>
-            <tr><td>Franchise royalties</td><td>18 regions</td><td class="num">$21M</td></tr>
-            <tr class="total"><td>Total revenue</td><td></td><td class="num">$223M</td></tr>
-          </tbody>
-        </table>
-        <p style="font-size:13px;color:var(--cp-text-muted);margin-top:12px">Consumer-IP + marketplace hybrids trade at 5–8× revenue. <b>$223M × 5 = $1.1B.</b> Funko peaked near 4×; Pop Mart has traded above 20×. We sit between — physical-product margin with software retention and a data moat neither one has.</p>
-      </div>
-      <div class="panel">
-        <h4>Unit economics</h4>
-        <table><tbody>
-          <tr><td>Pack retail</td><td class="num">$24.00</td></tr>
-          <tr><td>COGS — foil, print, box</td><td class="num">−$2.10</td></tr>
-          <tr><td>Retail / wholesale split (45%)</td><td class="num">−$10.80</td></tr>
-          <tr><td>Fulfillment + ops</td><td class="num">−$1.40</td></tr>
-          <tr class="total"><td>Contribution per pack</td><td class="num">$9.70</td></tr>
-        </tbody></table>
-        <ul>
-          <li><b>CAC ≈ $0.19</b> — cost of the printed quest pass that converts them.</li>
-          <li><b>LTV</b> ≈ $180/yr for a converted collector (packs + subscription).</li>
-          <li><b>Inventory risk ≈ 0</b> — cards don't expire, don't have sizes, don't go out of style.</li>
-          <li><b>Seasonality hedge</b> — cruise season funds inventory; locals and gifting carry winter.</li>
-        </ul>
-      </div>
-    </div>
-
-    <h3 style="margin-top:38px;font-size:20px">3. Making it <i>epic</i> — visual spec</h3>
-    <div class="cols3" style="margin-top:14px">
-      <div class="panel"><h4>Print</h4><ul>
-        <li><b>Cold-foil holographic</b> base under CMYK — rainbow only where the art breathes: water, aurora, the crest.</li>
-        <li><b>Raised spot-UV</b> on the gold frame and the points medallion. Fingers must feel the rarity.</li>
-        <li><b>350gsm linen stock</b>; gold gilt edges on Legendary, black gilt on Mythic.</li>
-        <li><b>Letterpress fill-in back</b> so a ballpoint bites the surface. Handwriting is the moat.</li>
-        <li><b>Micro-printed serial</b> + QR. Every single card is uniquely numbered.</li>
-      </ul></div>
-      <div class="panel"><h4>Art direction</h4><ul>
-        <li>WPA park poster × 1890s nautical chart × modern TCG frame.</li>
-        <li>Palette: deep spruce, storm slate, oxidized brass, parchment.</li>
-        <li>Every scene is <b>weather-first</b>. The weather is the antagonist.</li>
-        <li>Mythics go <b>black core with conic prism foil</b> — oil on wet asphalt.</li>
-        <li>Visitor Series uses a <b>teal crest</b> so locals can tell at a glance. That distinction is a feature.</li>
-      </ul></div>
-      <div class="panel"><h4>Digital</h4><ul>
-        <li>Gyro-tilt holo viewer — the card on their phone reacts to their hand.</li>
-        <li>Pack-rip animation with haptics. The dopamine is the product.</li>
-        <li>AR: place your Mythic on the dinner table, three feet tall, aurora moving.</li>
-        <li>Auto-generated share card sized for Instagram Stories, with the ship's name on it.</li>
-        <li>Ship leaderboards: "Ovation of the Seas — 1,284 cards claimed today."</li>
-      </ul></div>
-    </div>
-
-    <h3 style="margin-top:38px;font-size:20px">4. Roadmap: dock to billion</h3>
-    <div class="panel" style="margin-top:14px"><div class="timeline">
-      <div class="tl-item"><div class="yr">Month 0–3 · Prove it</div><h5>The Ketchikan 12</h5><p>Print 500 decks — 12 Visitor cards, 12 Resident cards. Sell from one table on Front Street and one dock shop. Target: sell out in a single cruise season. Cost ~$18k. This is the whole validation.</p></div>
-      <div class="tl-item"><div class="yr">Month 3–9 · Systematize</div><h5>QR claim page + Shore Quest pass</h5><p>Ship the claim page (no app required). Print 50,000 quest passes for the gangway. Sign 10 excursion operators to include a card in their tour price.</p></div>
-      <div class="tl-item"><div class="yr">Year 1–2 · Own Alaska</div><h5>Every port, then the ships</h5><p>Juneau, Skagway, Sitka, Icy Strait, Whittier, Seward. Then negotiate onboard retail with one cruise line — that single contract puts you in front of 1M+ people with zero storefront.</p></div>
-      <div class="tl-item"><div class="yr">Year 2–3 · Franchise</div><h5>The Card Engine</h5><p>License the template. Iceland, Norway, New Zealand, Maine, Montana. Tourism boards pay <i>you</i> to make their identity collectible. Marginal design cost approaches zero.</p></div>
-      <div class="tl-item"><div class="yr">Year 3–5 · Compound</div><h5>Grading, marketplace, media</h5><p>AK-GEM authentication turns earned cards into assets. Card backs become a documentary series. The brand becomes the global standard for "proof of life lived."</p></div>
-    </div></div>
-
-    <h3 style="margin-top:38px;font-size:20px">5. The moat &amp; Monday</h3>
-    <div class="cols2" style="margin-top:14px">
-      <div class="panel"><h4>Why this can't be cloned</h4><ul>
-        <li><b>Authenticity is non-transferable.</b> A knockoff deck has no witnesses, no ledger, no legitimacy.</li>
-        <li><b>Shelf space is finite.</b> Lock the Front Street shops with exclusivity and the dock is closed to entrants.</li>
-        <li><b>The witness graph.</b> Millions of verified real-world claims — nobody else has that dataset.</li>
-        <li><b>Local legitimacy.</b> If Ketchikan captains vouch for it, no outside brand can enter.</li>
-        <li><b>Emotional switching cost.</b> A six-year collection doesn't migrate.</li>
-      </ul></div>
-      <div class="panel"><h4>Three things to do Monday</h4><ul>
-        <li>Lock <b>alaskacard.com</b> and @alaskacard everywhere. Today, before you finish reading this.</li>
-        <li>Print 100 prototype decks + 1,000 quest passes. Hand them to 20 captains and 5 shops. Watch what they do.</li>
-        <li>Film 10 vertical videos: one card, one true story, sixty seconds. <i>"I sank a boat. Here's the card."</i> That's the entire marketing plan for year one.</li>
-      </ul></div>
-    </div>
-  </div>
-</section>
-
 <footer><div class="wrap">
   <b>ALASKA CARD</b> — Official Alaska Cred · Ketchikan, AK · Collect stories, not just cards.
-  <div style="margin-top:8px">Concept prototype. Tilt any card for the foil. Click to flip and see the printed back with a live, scannable QR code. All market figures are illustrative estimates.</div>
+  <div style="margin-top:8px">Tilt any card for the foil. Click to open it, flip it, and see the printed back with a live, scannable QR code. Your deck saves to this device.</div>
 </div></footer>
 
 <!-- MODAL -->
@@ -857,6 +623,14 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
         <div class="field"><label>Ship / Vessel (optional)</label><input id="fShip" type="text" placeholder="Ovation of the Seas"></div>
       </div>
       <div class="field"><label>Story</label><textarea id="fStory" placeholder="White caps, 20 kt wind, worth it."></textarea></div>
+      <div class="claim-strip">
+        <div class="cs-qr" id="mQr"></div>
+        <div class="cs-tx">
+          <b id="mQrTitle">Scan to claim this card</b>
+          <p>This is the code printed on the back of the card. Point a phone camera at it and this card unlocks on that phone.</p>
+          <code id="mQrUrl"></code>
+        </div>
+      </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn primary" id="mEarn">✓ Mark Earned</button>
         <button class="btn" id="mSave">Save Story</button>
@@ -889,7 +663,7 @@ input[type=range] { width: 100%; accent-color: var(--cp-accent); }
     <div class="kiosk-steps">
       <div class="kiosk-step"><b>01 · Scan</b><span>No app. No signup. Your quest list loads in three seconds.</span></div>
       <div class="kiosk-step"><b>02 · Do it</b><span>Ride the tram. Meet an eagle. Get rained on and like it.</span></div>
-      <div class="kiosk-step"><b>03 · Claim it</b><span>Grab your card at any shop on Front Street. $6. Fits in a pocket.</span></div>
+      <div class="kiosk-step"><b>03 · Claim it</b><span>Scan the code on the back and the card lands in your deck, stamped with today's date.</span></div>
       <div class="kiosk-step"><b>04 · Sign it</b><span>Write the date, the witness, the story. It's yours now — nobody else has this one.</span></div>
     </div>
   </div>
@@ -2153,6 +1927,8 @@ function rankFor(pts) { let r = RANKS[0], next = null; RANKS.forEach((x, i) => {
 function refreshStats() {
   const { pts, count } = totals(), { r, next } = rankFor(pts);
   document.getElementById("sCards").textContent = DECK.length;
+  const owned = document.getElementById("sOwned");
+  if (owned) owned.textContent = count;
   document.getElementById("sPts").textContent = pts;
   document.getElementById("sRank").textContent = r.n;
   document.getElementById("rkPts").textContent = pts;
@@ -2216,6 +1992,10 @@ function openModal(id) {
   document.getElementById("fShip").value = st.ship || "";
   document.getElementById("fStory").value = st.story || "";
   document.getElementById("mEarn").textContent = st.earned ? "✕ Un-earn" : "✓ Mark Earned";
+  const url = qrUrlOf(c.id);
+  document.getElementById("mQr").innerHTML = qrSVG(url);
+  document.getElementById("mQrTitle").textContent = st.earned ? "This card's claim code" : "Scan to claim this card";
+  document.getElementById("mQrUrl").textContent = url;
   modal.classList.add("on");
 }
 function collect() {
@@ -2286,64 +2066,13 @@ document.getElementById("openPackBtn").onclick = startPack;
 document.getElementById("heroPack").onclick = startPack;
 
 /* ============================================================
-   CRUISE MATH
-   ============================================================ */
-const fmt = n => "$" + Math.round(n).toLocaleString();
-const num = n => Math.round(n).toLocaleString();
-function inputs() {
-  return {
-    pax: +document.getElementById("rPax").value,
-    att: +document.getElementById("rAtt").value / 100,
-    bask: +document.getElementById("rBask").value,
-    scan: +document.getElementById("rScan").value / 100,
-    sub: +document.getElementById("rSub").value / 100
-  };
-}
-function renderShips() {
-  const i = inputs();
-  let totalPax = 0, totalRev = 0, rows = "";
-  SHIPS.slice(0, 5).forEach(s => {
-    const ashore = Math.round(s.pax * 0.82);
-    const rev = ashore * i.att * i.bask;
-    totalPax += ashore; totalRev += rev;
-    rows += `<div class="ship-row"><div><div class="nm">${s.n}</div><div class="ln">${s.ln}</div></div>
-      <div class="pax">${num(ashore)}<div class="ln" style="text-align:right">ashore</div></div>
-      <div class="win">${num(ashore * i.att)}<div class="ln" style="text-align:right">buyers</div></div>
-      <div class="rev">${fmt(rev)}</div></div>`;
-  });
-  document.getElementById("shipList").innerHTML = rows;
-  document.getElementById("dayRev").textContent = fmt(totalRev);
-}
-function renderMath() {
-  const i = inputs();
-  document.getElementById("vPax").textContent = num(i.pax);
-  document.getElementById("vAtt").textContent = Math.round(i.att * 100) + "%";
-  document.getElementById("vBask").textContent = "$" + i.bask;
-  document.getElementById("vScan").textContent = Math.round(i.scan * 100) + "%";
-  document.getElementById("vSub").textContent = Math.round(i.sub * 100) + "%";
-  const buyers = i.pax * i.att, rev = buyers * i.bask, scans = buyers * i.scan, subs = scans * i.sub, arr = subs * 84;
-  document.getElementById("outRev").textContent = fmt(rev);
-  document.getElementById("outUnits").textContent = num(buyers);
-  document.getElementById("outScans").textContent = num(scans);
-  document.getElementById("outSubs").textContent = num(subs);
-  document.getElementById("outArr").textContent = fmt(arr);
-  document.getElementById("outTot").textContent = fmt(rev + arr);
-  let ptRows = "", ptTot = 0;
-  PORTS.forEach(p => { const r = p.pax * i.att * i.bask; ptTot += r; ptRows += `<tr><td>${p.n}</td><td class="num">${num(p.pax)}</td><td class="num">${fmt(r)}</td></tr>`; });
-  ptRows += `<tr class="total"><td>Alaska total</td><td class="num">${num(PORTS.reduce((a, p) => a + p.pax, 0))}</td><td class="num">${fmt(ptTot)}</td></tr>`;
-  document.getElementById("portTable").innerHTML = ptRows;
-  renderShips();
-}
-["rPax","rAtt","rBask","rScan","rSub"].forEach(id => document.getElementById(id).addEventListener("input", renderMath));
-
-/* ============================================================
    QR SHOWCASE + KIOSK
    ============================================================ */
 function renderQR() {
   const items = [
-    { u: BASE, t:"The Gangway Poster", d:"Three-foot QR on an A-frame where 16,000 people a day walk past. Loads the free Shore Day Quest — no app, no signup." },
-    { u: qrUrlOf("eagle-theft"), t:"On Every Card Back", d:"Scan to claim it on the spot. The card unlocks, the date stamps in, and it lands on your shelf." },
-    { u: BASE + "?ship=ovation", t:"Ship Leaderboard", d:"Printed on the in-cabin flyer. Your ship competes against the other four in port. Cruisers are ruthlessly competitive." }
+    { u: qrUrlOf("eagle-theft"), t:"1. Find the code", d:"Every card has one printed on the back. Same code every time — it never expires and it never changes." },
+    { u: qrUrlOf("storm-kayak"), t:"2. Point your camera", d:"No app. No signup. Your phone camera opens this page and the card unlocks right there." },
+    { u: BASE, t:"3. Keep your deck", d:"Your deck lives on your phone. Bookmark this and every card you've earned is waiting for you at home." }
   ];
   document.getElementById("qrRow").innerHTML = items.map(x =>
     `<div class="qr-card"><div class="qr-holder">${qrSVG(x.u)}</div><h5>${x.t}</h5><p>${x.d}</p><div class="url">${x.u}</div></div>`).join("");
@@ -2353,12 +2082,12 @@ function renderQR() {
 const kiosk = document.getElementById("kiosk");
 const openKiosk = () => kiosk.classList.add("on");
 document.getElementById("kioskBtn").onclick = openKiosk;
-document.getElementById("heroKiosk").onclick = openKiosk;
 document.getElementById("kioskClose").onclick = () => kiosk.classList.remove("on");
 
 /* ============================================================
    SHORE QUEST PASS
    ============================================================ */
+const num = n => Math.round(n).toLocaleString();
 const shipSel = document.getElementById("shipSel");
 shipSel.innerHTML = SHIPS.map(s => `<option value="${s.n}">${s.n} — ${s.ln} (${num(s.pax)} pax)</option>`).join("");
 function genQuest() {
@@ -2374,7 +2103,7 @@ function genQuest() {
       <h3>${esc(shipName)}</h3>
       <div class="quest-list">${picks.map(c =>
         `<div class="quest-item"><span class="bx"></span><span><b>${esc(c.n)}</b> — ${esc(c.s)}</span><span class="pt">${c.p}</span></div>`).join("")}</div>
-      <div class="pass-meta"><span>Ashore 07:00–15:30</span><span>${num(Math.round(ship.pax * .82))} guests ashore</span><span>Quest total ${totalPts} pts</span><span>Cards $6 · packs $24</span></div>
+      <div class="pass-meta"><span>Ashore 07:00–15:30</span><span>${num(Math.round(ship.pax * .82))} guests ashore</span><span>Quest total ${totalPts} pts</span><span>Scan any card to claim</span></div>
       <p style="font-size:12.5px;color:rgba(22,36,31,.75);margin:14px 0 0">Complete any three and show this pass at any participating shop on Front Street for a free <b>Stepped Ashore</b> card. Cards are earned through real experiences — please be safe and follow all posted rules.</p>
     </div>
     <div class="pass-stub">
@@ -2405,14 +2134,14 @@ document.getElementById("resetAll").onclick = () => { state = {}; save(); refres
 document.addEventListener("keydown", e => { if (e.key === "Escape") { modal.classList.remove("on"); packStage.classList.remove("on"); kiosk.classList.remove("on"); document.getElementById("claim").classList.remove("on"); } });
 
 const TICK = [
-  "◆ 5 ships in port today", "◆ 16,240 guests ashore", "◆ 1.6M cruise visitors per season",
-  "◆ 8 hours to earn one", "◆ Cards $6 · packs $24", "◆ 34 achievements live",
-  "◆ Scan · Sign · Take it home", "◆ Front Street · Creek Street · Berth 2",
-  "◆ Collect stories, not just cards", "◆ Mythic pull rate 1:288"
+  "◆ 34 achievements live", "◆ 12 earnable in one day ashore", "◆ 22 that take a lifetime",
+  "◆ 8 hours to earn one", "◆ Scan · Sign · Take it home", "◆ No app · No signup",
+  "◆ Front Street · Creek Street · Berth 2", "◆ Collect stories, not just cards",
+  "◆ Mythic pull rate 1:288", "◆ Ketchikan, Alaska"
 ];
 document.getElementById("tick").innerHTML = (TICK.join("") ? TICK.concat(TICK).map(t => `<span>${t}</span>`).join("") : "");
 
-renderFan(); renderFilters(); renderGrid(); refreshStats(); renderMath(); renderQR(); genQuest();
+renderFan(); renderFilters(); renderGrid(); refreshStats(); renderQR(); genQuest();
 
 /* ============================================================
    SCAN TO CLAIM  —  ?c=<card-id> unlocks that card on arrival.
@@ -2448,30 +2177,29 @@ function showClaim(card, wasNew) {
   claimEl.classList.add("on");
 }
 
+/* Single claim path — used by QR scans, the picker, and anything else. */
+function claimCard(cid) {
+  const card = DECK.find(c => c.id === cid);
+  if (!card) { toast("That card isn't in the deck yet."); return false; }
+  const st = state[card.id] || (state[card.id] = {});
+  const wasNew = !st.earned;
+  if (wasNew) {
+    st.earned = true;
+    if (!st.date) st.date = new Date().toISOString().slice(0, 10);
+    if (!st.loc) st.loc = "Ketchikan, AK";
+    save(); refreshStats(); renderFilters(); renderGrid();
+  }
+  showClaim(card, wasNew);
+  return wasNew;
+}
+
 function handleScan() {
   const q = new URLSearchParams(location.search);
   const cid = q.get("c");
   const ship = q.get("ship");
   let touched = false;
 
-  if (cid) {
-    const card = DECK.find(c => c.id === cid);
-    if (card) {
-      const st = state[card.id] || (state[card.id] = {});
-      const wasNew = !st.earned;
-      if (wasNew) {
-        st.earned = true;
-        if (!st.date) st.date = new Date().toISOString().slice(0, 10);
-        if (!st.loc) st.loc = "Ketchikan, AK";
-        save(); refreshStats(); renderFilters(); renderGrid();
-      }
-      showClaim(card, wasNew);
-      touched = true;
-    } else {
-      toast("That card isn't in the deck yet.");
-      touched = true;
-    }
-  }
+  if (cid) { claimCard(cid); touched = true; }
 
   if (ship) {
     const match = SHIPS.find(s => s.n.toLowerCase().replace(/[^a-z]/g, "").slice(0, 12) === ship);
@@ -2488,6 +2216,15 @@ function handleScan() {
   if (touched) history.replaceState({}, "", location.pathname);
 }
 handleScan();
+
+/* ---- claim picker (no physical card in hand) ---- */
+const claimSel = document.getElementById("claimSel");
+claimSel.innerHTML = DECK.slice().sort((a, b) => a.p - b.p)
+  .map(c => `<option value="${c.id}">${esc(c.n)} — ${RARITY[c.r].label} · ${c.p} pts</option>`).join("");
+document.getElementById("claimBtn").onclick = () => {
+  const wasNew = claimCard(claimSel.value);
+  if (wasNew === false) return;
+};
 
 /* iOS 13+ gates motion sensors behind a user gesture; everyone else starts immediately. */
 if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
