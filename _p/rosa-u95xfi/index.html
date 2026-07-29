@@ -277,14 +277,46 @@ a { color: var(--cp-link); }
   <!-- ===== GEOMETRY ===== -->
   <section class="card span5">
     <h2>Bent Schedule</h2>
-    <p class="hint">Every post height for a bent every 25 ft. Note how short they all are — that is the point of this design.</p>
+    <p class="hint">Post heights at your calculated bent spacing, plus the dry-rock working window at each one.</p>
     <div class="stats" id="geoStats" style="margin-bottom:14px"></div>
     <div style="max-height:250px; overflow:auto">
       <table id="pileTable">
-        <thead><tr><th>Sta</th><th class="num">Seabed</th><th class="num">Deck</th><th class="num">Post</th><th>Lands at tide</th></tr></thead>
+        <thead><tr><th>Sta</th><th class="num">Seabed</th><th class="num">Deck</th><th class="num">Post</th><th class="num">Dry hrs</th><th>Anchor</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
+  </section>
+
+  <!-- ===== FRAMING & ANCHORS ===== -->
+  <section class="card">
+    <h2>Bent Spacing, Framing &amp; Rock Anchors</h2>
+    <p class="hint">Bent spacing is set by how far your stringers can span. Pick the biggest timber two people can actually carry, and that fixes everything else.</p>
+    <div class="row" style="margin-bottom:16px; align-items:flex-end">
+      <label class="fld">Stringer size (rough sawn)
+        <select id="stringer">
+          <option value="4,8">4x8</option>
+          <option value="4,10">4x10</option>
+          <option value="4,12" selected>4x12</option>
+          <option value="6,8">6x8</option>
+          <option value="6,10">6x10</option>
+          <option value="6,12">6x12</option>
+          <option value="8,12">8x12</option>
+        </select>
+      </label>
+      <label class="fld">Species / grade
+        <select id="species">
+          <option value="700,1.1">Sitka spruce No.2</option>
+          <option value="775,1.3">W. hemlock No.2</option>
+          <option value="875,1.4">Douglas fir No.2</option>
+          <option value="1000,1.6">Doug fir No.1 / treated</option>
+        </select>
+      </label>
+      <label class="fld">Deck width (ft)<input type="number" id="deckW" value="5" min="3" max="10" step="0.5" /></label>
+      <label class="fld">Live load (psf)<input type="number" id="liveLoad" value="40" min="20" max="100" step="5" /></label>
+      <label class="fld">Wave uplift (psf)<input type="number" id="uplift" value="50" min="0" max="200" step="10" /></label>
+    </div>
+    <div class="stats" id="framingStats"></div>
+    <div id="framingBody"></div>
   </section>
 
   <!-- ===== HOW TO BUILD ===== -->
@@ -376,7 +408,8 @@ function interpolate(ex, stepMin) {
 const inputs = () => ({
   pierLen: +$("pierLen").value, bed300: +$("bed300").value, slopeOut: +$("slopeOut").value,
   rockEl: +$("rockEl").value, freeb: +$("freeb").value, draft: +$("draft").value,
-  gunw: +$("gunw").value, showTide: +$("showTide").value
+  gunw: +$("gunw").value, showTide: +$("showTide").value,
+  deckW: +$("deckW").value, liveLoad: +$("liveLoad").value, uplift: +$("uplift").value
 });
 
 function bedAt(sta, p) {
@@ -600,24 +633,140 @@ function renderGeometry() {
     const x = (i / 60) * L; return deckAt(x, p) - bedAt(x, p);
   }));
   const grade = ((deckAt(0, p) - deckAt(L, p)) / L) * 100;
-  const bents = Math.floor(L / 25) + 1;
+  const fr = framing(p);
+  const sp = fr.spacing;
+  const bents = Math.floor(L / sp) + 1;
 
   $("geoStats").innerHTML = [
     ["Tallest post", maxPost.toFixed(1), "ft above seabed", maxPost <= 6 ? "good" : "warn"],
     ["Deck grade", grade.toFixed(1) + "%", grade <= 8 ? "walkable" : "stairs needed", grade <= 8 ? "good" : "warn"],
-    ["Bents @ 25 ft", String(bents), "post pairs", ""],
-    ["Deck area", (L * 5).toLocaleString(), "sq ft @ 5 ft wide", ""]
+    ["Bents @ " + sp + " ft", String(bents), "post pairs", ""],
+    ["Deck area", (L * p.deckW).toLocaleString(), "sq ft", ""]
   ].map(([k, v, u, c]) => `<div class="stat"><div class="k">${k}</div><div class="v ${c}">${v}</div><div class="u">${u}</div></div>`).join("");
 
   let rows = "";
-  for (let sta = 0; sta <= L; sta += 25) {
+  for (let sta = 0; sta <= L; sta += sp) {
     const b = bedAt(sta, p), dkv = deckAt(sta, p), post = Math.max(0, dkv - b);
-    const tideHere = b + p.draft;
-    rows += `<tr${sta === ROCK_STA ? ' class="hl"' : ""}><td>${sta}'</td><td class="num">${b.toFixed(1)}</td>` +
-      `<td class="num">${dkv.toFixed(1)}</td><td class="num">${post.toFixed(1)}</td>` +
-      `<td class="num">${tideHere > 19 ? "&mdash;" : tideHere.toFixed(1) + " ft"}</td></tr>`;
+    const dry = dryHours(b);
+    const anchor = dry.hrs >= 150 ? '<span class="pill go">dry epoxy</span>'
+      : dry.hrs >= 30 ? '<span class="pill">tight window</span>'
+      : '<span class="pill no">underwater</span>';
+    rows += `<tr${Math.abs(sta - ROCK_STA) < sp / 2 ? ' class="hl"' : ""}><td>${sta}'</td>` +
+      `<td class="num">${b.toFixed(1)}</td><td class="num">${dkv.toFixed(1)}</td>` +
+      `<td class="num">${post.toFixed(1)}</td><td class="num">${dry.hrs.toFixed(0)}</td><td>${anchor}</td></tr>`;
   }
   $("pileTable").querySelector("tbody").innerHTML = rows;
+}
+
+/* ---------- framing / anchors ---------- */
+const Fb_WET = 0.85, E_WET = 0.9;   // wet-service adjustment factors
+
+function framing(p) {
+  const [b, d] = $("stringer").value.split(",").map(Number);
+  const [fb0, e0] = $("species").value.split(",").map(Number);
+  const Fb = fb0 * Fb_WET, E = e0 * 1e6 * E_WET;
+  const trib = p.deckW / 2;
+  const wTot = (p.liveLoad + 12) * trib;          // plf, both stringers at edges
+  const wLL = (p.liveLoad * trib) / 12;           // lb/in
+  const S = (b * d * d) / 6, I = (b * d * d * d) / 12;
+  const M = (Fb * S) / 12;                        // ft-lb
+  const Lb = Math.sqrt((8 * M) / wTot);           // bending
+  const Ld = Math.cbrt((384 * E * I) / (1200 * wLL)) / 12;  // L/240 deflection
+  const Lmax = Math.min(Lb, Ld);
+  const spacing = Math.max(8, Math.min(20, Math.floor(Lmax / 2) * 2));  // even ft, capped for handling
+  const wt = (b / 12) * (d / 12) * spacing * 30;  // green timber, lb
+  const bay = spacing * p.deckW;
+  const timberVol = bay * (2 / 12) + 2 * spacing * (b / 12) * (d / 12);
+  const buoy = timberVol * 64 - timberVol * 30;
+  const upl = (p.uplift * bay + buoy) / 4;        // lb per post (2 posts, 2 bents share each bay)
+  return { b, d, Fb, E, S, I, Lb, Ld, Lmax, spacing, wt, bay, upl, gov: Lb < Ld ? "bending" : "deflection" };
+}
+
+// Hours per Apr-Oct season that a given seabed elevation is exposed dry.
+function dryHours(bed) {
+  if (!seasonSeries.length) {
+    const approx = Math.max(0, Math.min(100, (bed + 4) / 23 * 100));
+    return { hrs: (approx / 100) * 5100, longest: 6 };
+  }
+  const dry = seasonSeries.filter((q) => q.v < bed);
+  let max = 0, cur = 0;
+  for (const q of seasonSeries) {
+    const day = q.t.getHours() >= 7 && q.t.getHours() < 21;
+    if (q.v < bed && day) { cur += 10; if (cur > max) max = cur; } else cur = 0;
+  }
+  return { hrs: dry.length / 6, longest: max / 60 };
+}
+
+function renderFraming() {
+  const p = inputs(), f = framing(p);
+  const headBed = bedAt(p.pierLen, p);
+  const dryHead = dryHours(headBed);
+  const cls = (v, g, w) => (v >= g ? "good" : v >= w ? "warn" : "bad");
+
+  $("framingStats").innerHTML = [
+    ["Max clear span", f.Lmax.toFixed(1), "ft (" + f.gov + " governs)", ""],
+    ["Use bent spacing", f.spacing + " ft", "center to center", ""],
+    ["Stringer weight", f.wt.toFixed(0), "lb each, green", f.wt <= 200 ? "good" : f.wt <= 320 ? "warn" : "bad"],
+    ["Bents needed", String(Math.floor(p.pierLen / f.spacing) + 1), "for " + p.pierLen + " ft", ""],
+    ["Uplift per post", f.upl.toFixed(0), "lb design tension", ""],
+    ["Dry hrs at head", dryHead.hrs.toFixed(0), "hr/season to work", cls(dryHead.hrs, 150, 30)]
+  ].map(([k, v, u, c]) => `<div class="stat"><div class="k">${k}</div><div class="v ${c}">${v}</div><div class="u">${u}</div></div>`).join("");
+
+  const rod = f.upl <= 1200 ? ["5/8", 0.75, 8, 4712] : f.upl <= 2500 ? ["3/4", 0.875, 10, 6872] : ["1", 1.125, 12, 10600];
+
+  $("framingBody").innerHTML = `
+  <div class="callout ok" style="margin-top:16px">
+    <strong>Answer: set your bents ${f.spacing} ft apart.</strong>
+    That is what a ${f.b}x${f.d} ${$("species").selectedOptions[0].text} stringer will carry at ${p.liveLoad} psf
+    (${f.gov} governs, true limit ${f.Lmax.toFixed(1)} ft — rounded down for a margin).
+    Each stringer weighs about <strong>${f.wt.toFixed(0)} lb</strong> green, which is the real limit on going longer:
+    past roughly 16 ft you cannot carry them without equipment. For a ${p.pierLen} ft pier that is
+    <strong>${Math.floor(p.pierLen / f.spacing) + 1} bents</strong>.
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3 class="sec">Yes — drill, pin, and grout. Skip the cribs.</h3>
+      <ul class="tight">
+        <li>You are building on a <em>reef</em>. If there is sound rock under you, a drilled-and-grouted dowel beats cribwork by every measure: less material, far less labor, and a stronger connection.</li>
+        <li>Cribbing every bent on this pier means moving roughly <strong>85&ndash;140 tons of rock by hand</strong>. Pinning means drilling ${(Math.floor(p.pierLen / f.spacing) + 1) * 2} holes. That is the whole argument.</li>
+        <li><strong>Two pins per post, not one.</strong> A single center pin lets the post spin and works itself loose. Two pins 4&ndash;6 in. apart, or one pin plus a bolted saddle, fixes it.</li>
+        <li>Use cribs <em>only</em> where you hit sand, mud, or shattered rock and cannot get a sound hole.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="sec">Anchor sizing for your numbers</h3>
+      <ul class="tight">
+        <li>Design uplift works out to about <strong>${f.upl.toFixed(0)} lb per post</strong> (wave uplift at ${p.uplift} psf plus timber buoyancy). Gravity load is trivial — the rock carries it in bearing. <strong>Uplift is what you design for.</strong></li>
+        <li><strong>${rod[0]}" rod in a ${rod[1]}" hole, ${rod[2]}" deep</strong> develops roughly ${rod[3].toLocaleString()} lb allowable in sound rock at a 4x safety factor. That is ${(rod[3] / f.upl).toFixed(0)}x your demand — deliberately generous, because you cannot inspect these later.</li>
+        <li><strong>316 stainless, or fiberglass (GFRP) rebar.</strong> Not plain rebar. Not epoxy-coated. Seawater will eat mild steel and the rust will split the rock around the hole. Hot-dip galvanized is a distant third choice.</li>
+        <li>Leave 8&ndash;10 in. of rod proud to pass through the post, with a stainless washer and nut on top. Drill the post, do not just set it over a stub.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="sec">The grout is where this goes wrong</h3>
+      <ul class="tight">
+        <li><strong>Do not use bagged concrete or mortar in the tidal zone.</strong> Portland cement needs days to cure. The next flood tide will wash it out of the hole and you will never know until the post pulls.</li>
+        <li>Use a <strong>two-part epoxy anchoring adhesive rated for damp or water-filled holes</strong> (the injection-cartridge kind). It cures chemically, not by drying, and sets in hours — inside one tide cycle.</li>
+        <li><strong>Hole cleaning is the failure mode.</strong> Rock dust is a bond breaker. Blow the hole out, wire-brush it, blow it again — twice. Underwater, flush with a hand pump until it runs clear. Skipping this cuts capacity by more than half.</li>
+        <li>Overdrill the hole ${'\u215B'}&ndash;${'\u00BC'}" larger than the rod so adhesive fully surrounds it. Inject from the bottom up so no air is trapped.</li>
+        <li>Bring <strong>far more cartridges than you think</strong>, and keep them warm — epoxy thickens badly below 50&deg;F and you are working on wet rock in Alaska.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="sec">Tide dictates your build order</h3>
+      <ul class="tight">
+        <li>Epoxy wants a dry or at least controlled hole, so <strong>each bent can only be built when its rock is exposed</strong>. That window shrinks fast as you go out — see the Dry hrs column in the bent schedule.</li>
+        <li>At the pier head (seabed ${headBed.toFixed(1)} ft) you get about <strong>${dryHead.hrs.toFixed(0)} dry hours per season</strong>, longest daylight stretch ${dryHead.longest.toFixed(1)} hr. ${dryHead.hrs < 100 ? "That is not much — pre-fab those bents on the beach and set them in one tide." : "That is workable — plenty of time to drill, clean, and set."}</li>
+        <li>Below about 0 ft MLLW you are into <strong>minus tides only</strong>, which happen a handful of times a season and mostly around dawn. Plan those dates from the tide table months ahead.</li>
+        <li><strong>Drilling power:</strong> a gas rock drill (Pionjar / Cobra type) is the traditional Alaska answer and needs no generator. A modern 60V battery rotary hammer works if you bring 6+ batteries and a way to charge them.</li>
+        <li>Work outward, one bent per good tide. Set the pins, let the epoxy cure through a tide cycle, come back and frame on top.</li>
+      </ul>
+    </div>
+  </div>`;
 }
 
 /* ---------- narrative ---------- */
@@ -675,13 +824,13 @@ function renderBuild() {
     </div>
 
     <div>
-      <h3 class="sec">Foundations — rock-filled log cribs</h3>
+      <h3 class="sec">Foundations — pin to the rock</h3>
       <ul class="tight">
-        <li>Forget driven piles. Build <strong>log cribs</strong>: notched square pens of local spruce or cedar, 4&ndash;6 ft on a side, stacked 3&ndash;4 courses and filled with beach cobble. Gravity holds them. This is how Southeast Alaska built docks for a century.</li>
-        <li>Build them <strong>at low water on the dry beach</strong> — you get roughly ${st.lockout.toFixed(0)} hours of working tide on the outer end each cycle. Set one crib per tide and you are done in a season.</li>
-        <li><strong>At the rock (station 150):</strong> do not crib. Drill it and set galvanized or stainless dowels in epoxy, then bolt a timber sill down. That rock is your best foundation on the whole run — use it as the anchor point.</li>
-        <li>Space cribs 12&ndash;16 ft apart with stringers spanning between. Wider spacing means fewer cribs but bigger timber — trade off with what you can actually lift.</li>
-        <li>Notch and drift-pin with rebar. Bolts where you can get them, ${'\u00BE'}" galvanized.</li>
+        <li>Forget driven piles <em>and</em> forget cribbing every bent. On rock, <strong>drill a hole, epoxy in a stainless dowel, and bolt the post down.</strong> Two pins per post. See the anchor card above for sizes.</li>
+        <li>Cribbing all ${Math.floor(L / 14) + 1} bents would mean moving <strong>roughly 100 tons of beach rock by hand</strong>. Pinning means drilling about ${(Math.floor(L / 14) + 1) * 2} holes. There is no contest.</li>
+        <li><strong>Log cribs are the fallback</strong>, not the plan — use them only where you hit sand, mud, or rotten shattered rock and cannot get a sound hole. A 4x4x4 crib filled with cobble is enough for one bent of this pier; you do not need 5x5x5.</li>
+        <li><strong>At the rock at station 150:</strong> that outcrop is the best foundation on the whole run. Pin it heavily and treat it as the fixed point the rest of the pier braces back to.</li>
+        <li>Cross-brace each bent and run a diagonal every third bay. A row of unbraced posts will walk sideways in the first winter storm.</li>
       </ul>
     </div>
 
@@ -708,11 +857,13 @@ function renderBuild() {
   </div>
 
   <div class="callout" style="margin-top:18px">
-    <strong>Do this:</strong> take a lead line out at a minus tide and sound the bottom every 25 ft from your landing.
-    Enter the real numbers above. Then build a bull-railed timber trestle on rock-filled cribs, deck held
+    <strong>Do this:</strong> take a lead line out at a minus tide and sound the bottom every 25 ft from your landing,
+    and note where you have sound rock. Enter the real numbers above. Then build a bull-railed timber trestle on
+    <strong>epoxied stainless dowels drilled into the rock</strong>, bents ${framing(p).spacing} ft apart, deck held
     ${p.freeb.toFixed(1)} ft above the bottom the whole way, running as far out as your soundings say you need to reach
     2&ndash;3 ft of water at MLLW. That gets you from a ${statsFor(11).hrday.toFixed(1)}-hour daily window to about
-    <strong>${st.hrday.toFixed(1)} hours a day</strong>, with no aluminum, no float, no barge, and no post taller than ${maxPost.toFixed(0)} ft.
+    <strong>${st.hrday.toFixed(1)} hours a day</strong>, with no aluminum, no float, no barge, no pile driver,
+    and no post taller than ${maxPost.toFixed(0)} ft.
   </div>`;
 }
 
@@ -746,7 +897,7 @@ function renderWindows() {
 
 /* ---------- orchestration ---------- */
 function redrawAll() {
-  drawChart(); drawProfile(); renderUsability(); renderGeometry();
+  drawChart(); drawProfile(); renderUsability(); renderGeometry(); renderFraming();
   renderProblem(); renderBuild(); renderWindows(); renderHilo();
 }
 
@@ -797,6 +948,9 @@ function wire() {
     el.addEventListener("input", () => { out.textContent = show(id, el.value); redrawAll(); });
   });
   $("reload").addEventListener("click", loadRange);
+  ["stringer", "species", "deckW", "liveLoad", "uplift"].forEach((id) =>
+    $(id).addEventListener("input", redrawAll));
+  ["stringer", "species"].forEach((id) => $(id).addEventListener("change", redrawAll));
   $("todayBtn").addEventListener("click", () => {
     const d = new Date();
     $("startDate").value = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
