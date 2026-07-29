@@ -1,0 +1,20 @@
+User-agent: *
+Disallow: /_p/
+
+User-agent: GPTBot
+Disallow: /_p/
+
+User-agent: CCBot
+Disallow: /_p/
+
+User-agent: Google-Extended
+Disallow: /_p/
+
+User-agent: anthropic-ai
+Disallow: /_p/
+
+User-agent: ClaudeBot
+Disallow: /_p/
+
+User-agent: PerplexityBot
+Disallow: /_p/
