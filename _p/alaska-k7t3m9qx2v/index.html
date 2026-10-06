@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alaska Card · Ketchikan Monopoly</title>
+<style>
+:root{--ink:#0d1a22;--panel:#13242e;--panel2:#1a2f3b;--line:#294352;--text:#e6f0f2;--muted:#8fa7b0;--gold:#f2b632;--teal:#3fd0a8;--violet:#7b6cf6}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--ink);color:var(--text);font:14px/1.45 "Segoe UI",system-ui,Arial,sans-serif;overflow:hidden}
+button{font:inherit;cursor:pointer;color:inherit}
+.app{display:grid;grid-template-rows:56px 34px 1fr;height:100vh}
+/* top bar */
+.top{display:flex;align-items:center;gap:12px;padding:0 14px;background:#0e1116;border-bottom:1px solid var(--line)}
+.logo{width:34px;height:34px;border-radius:9px;background:conic-gradient(from 210deg,#19b39a,#58b7e0,#7b6cf6,#d6538f,#f0881d,#e9b821,#19b39a);display:grid;place-items:center;font-weight:900;color:#0e1116;box-shadow:0 0 18px rgba(25,179,154,.35)}
+.brand b{display:block;font-size:15px;letter-spacing:.3px}.brand span{font-size:11px;color:var(--muted)}
+.spacer{flex:1}
+.seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;padding:5px 10px;border-radius:7px;font-size:12px;color:var(--muted)}
+.seg button.on{background:#2f3747;color:#fff}
+.chip{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:5px 12px;font-size:12px}
+.timer{font:700 20px/1 Consolas,monospace;letter-spacing:1px}
+.timer.warn{color:#ff8a65}
+.cashchip b{font:700 16px Consolas,monospace;color:var(--gold)}
+.cashchip.flash{animation:flash .6s}
+@keyframes flash{50%{box-shadow:0 0 0 3px var(--gold)}}
+.ibtn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);display:grid;place-items:center;font-size:16px}
+.ibtn:hover{background:#2c3442}
+/* ticker */
+.ticker{display:flex;align-items:center;gap:12px;padding:0 14px;background:#151922;border-bottom:1px solid var(--line);font-size:12.5px;white-space:nowrap;overflow:hidden}
+.live{background:#19b39a;color:#04110e;font-weight:800;border-radius:4px;padding:1px 8px;font-size:11px;display:flex;gap:6px;align-items:center}
+.live i{width:7px;height:7px;border-radius:50%;background:#04110e;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.2}}
+.tick-items{display:flex;gap:28px;overflow:hidden;color:#cfd5df}
+.tick-items span:first-child{color:#fff;font-weight:600}
+/* main */
+.main{display:grid;grid-template-columns:1fr 400px;min-height:0}
+.stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,#cfe3ea 0%,#a9c7cf 40%,#6f95a0 100%);perspective:2200px;perspective-origin:50% 30%}
+.stage-chips{position:absolute;left:14px;top:12px;display:flex;gap:8px;z-index:5}
+.stage-chips .chip{background:rgba(255,255,255,.85);color:#1d2330;border-color:#cfd6df;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.zoombox{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:5}
+.zoombox button{width:38px;height:38px;border-radius:10px;border:1px solid #cfd6df;background:#fff;color:#1d2330;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.toasts{position:absolute;left:50%;top:14px;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;z-index:30;pointer-events:none;align-items:center}
+.toast{background:#141821;color:#fff;border:1px solid #39424f;padding:8px 14px;border-radius:999px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:tin .3s}
+@keyframes tin{from{transform:translateY(-10px);opacity:0}}
+/* board */
+.board{position:absolute;left:50%;top:50%;width:var(--bw);height:var(--bw);display:grid;gap:2px;padding:2px;background:#4f6b5c;
+  grid-template-columns:1.55fr repeat(9,1fr) 1.55fr;grid-template-rows:1.55fr repeat(9,1fr) 1.55fr;
+  transform:translate(-50%,-50%) translateY(var(--ty)) scale(var(--zoom)) rotateX(var(--rx)) rotateZ(var(--rz));
+  transform-style:preserve-3d;transition:transform .9s cubic-bezier(.3,.7,.2,1);box-shadow:0 30px 60px rgba(40,50,70,.25);border-radius:4px}
+.slab{position:absolute;background:linear-gradient(#7a5532,#5a3c22)}
+.slab.s{left:0;top:100%;width:100%;height:calc(var(--cell)*.3);transform-origin:top;transform:rotateX(-90deg)}
+.slab.n{left:0;bottom:100%;width:100%;height:calc(var(--cell)*.3);transform-origin:bottom;transform:rotateX(90deg)}
+.slab.e{left:100%;top:0;height:100%;width:calc(var(--cell)*.3);transform-origin:left;transform:rotateY(90deg);background:linear-gradient(90deg,#6a4a2b,#4d331d)}
+.slab.w{right:100%;top:0;height:100%;width:calc(var(--cell)*.3);transform-origin:right;transform:rotateY(-90deg);background:linear-gradient(90deg,#4d331d,#6a4a2b)}
+.tile{position:relative;background:#fbf7ec;transform-style:preserve-3d;cursor:pointer;color:#1f2430;transition:background .2s}
+.tile:hover{background:#fff}
+.tile.here{box-shadow:inset 0 0 0 3px var(--pc,#19b39a)}
+.band{position:absolute}
+.side-b .band{left:0;right:0;top:0;height:var(--band)}
+.side-t .band{left:0;right:0;bottom:0;height:var(--band)}
+.side-l .band{top:0;bottom:0;right:0;width:var(--band)}
+.side-r .band{top:0;bottom:0;left:0;width:var(--band)}
+.tcontent{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2px;gap:1px;pointer-events:none}
+.side-b .tcontent{top:var(--band)}.side-t .tcontent{bottom:var(--band)}.side-l .tcontent{right:var(--band)}.side-r .tcontent{left:var(--band)}
+.tico{font-size:calc(var(--cell)*.3);line-height:1}
+.tname{font-size:calc(var(--cell)*.145);font-weight:700;line-height:1.1}
+.tprice{font-size:calc(var(--cell)*.13);color:#6a6253;font-family:Consolas,monospace}
+.corner .tico{font-size:calc(var(--cell)*.6)}
+.corner .tname{font-size:calc(var(--cell)*.18)}
+.corner .tprice{font-size:calc(var(--cell)*.13);max-width:90%}
+.ostrip{position:absolute;background:var(--oc);display:none}
+.owned .ostrip{display:block}
+.side-b .ostrip{left:0;right:0;bottom:0;height:4px}.side-t .ostrip{left:0;right:0;top:0;height:4px}
+.side-l .ostrip{left:0;top:0;bottom:0;width:4px}.side-r .ostrip{right:0;top:0;bottom:0;width:4px}
+.obadge{position:absolute;right:2px;bottom:2px;font-size:calc(var(--cell)*.17);display:none;line-height:1}
+.owned .obadge{display:block}
+.tile.mort .tcontent{opacity:.35}
+.tile.mort::after{content:"MORTGAGED";position:absolute;left:50%;top:55%;transform:translate(-50%,-50%) rotate(-18deg);font:800 calc(var(--cell)*.15) Consolas,monospace;color:#7b6cf6;border:2px solid #7b6cf6;padding:0 4px;border-radius:4px;background:rgba(255,255,255,.7)}
+/* 3D buildings */
+.bld{position:absolute;width:var(--bs);height:var(--bs);transform-style:preserve-3d;pointer-events:none;display:none;--h:4px}
+.bld.on{display:block}
+.side-b .bld{left:calc(50% - var(--bs)/2);top:calc(var(--band)/2 - var(--bs)/2)}
+.side-t .bld{left:calc(50% - var(--bs)/2);bottom:calc(var(--band)/2 - var(--bs)/2)}
+.side-l .bld{top:calc(50% - var(--bs)/2);right:calc(var(--band)/2 - var(--bs)/2)}
+.side-r .bld{top:calc(50% - var(--bs)/2);left:calc(var(--band)/2 - var(--bs)/2)}
+.bld .f{position:absolute;transition:all .5s}
+.bld .top{inset:0;transform:translateZ(var(--h));background:var(--oc);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.bld .n,.bld .s{left:0;width:100%;height:var(--h);transform-origin:top;transform:rotateX(90deg)}
+.bld .n{top:0;background:var(--c);filter:brightness(1.15)}
+.bld .s{top:100%;background:var(--c);filter:brightness(.8)}
+.bld .w,.bld .e{top:0;height:100%;width:var(--h);transform-origin:left;transform:rotateY(-90deg);background:var(--c)}
+.bld .w{left:0;filter:brightness(.95)}.bld .e{left:100%;filter:brightness(.7)}
+.bld.win .n,.bld.win .s,.bld.win .e,.bld.win .w{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.4) 0 2px,transparent 2px 6px),repeating-linear-gradient(90deg,transparent 0 3px,rgba(0,0,0,.15) 3px 4px)}
+.bld.cockpit .top{background:radial-gradient(circle,#fff6c9,var(--oc));box-shadow:0 0 18px 6px rgba(255,220,120,.85)}
+/* center */
+.center{grid-area:2/2/11/11;position:relative;transform-style:preserve-3d;background:linear-gradient(180deg,#bfe0e6 0%,#d7ebe2 38%,#9cc7b0 62%,#5f9a7e 100%);overflow:visible}
+.ctitle{position:absolute;left:50%;top:9%;transform:translateX(-50%);text-align:center;color:#1f2a24;width:80%}
+.ctitle small{display:block;font-size:calc(var(--cell)*.2);letter-spacing:4px;font-weight:700;color:#1b4d6b}
+.ctitle b{display:block;font-size:calc(var(--cell)*.6);font-weight:900;letter-spacing:1px;line-height:1;background:linear-gradient(90deg,#1b4d6b,#2e9e6a,#7b6cf6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ctitle span{font-size:calc(var(--cell)*.17);color:#4a5a50;font-style:italic}
+.deck{position:absolute;width:calc(var(--cell)*2.1);height:calc(var(--cell)*1.3);border-radius:8px;display:grid;place-items:center;text-align:center;color:#fff;font-weight:800;font-size:calc(var(--cell)*.17);box-shadow:3px 3px 0 #fff,6px 6px 0 rgba(0,0,0,.18);transform:rotate(-14deg)}
+.deck.chance{left:12%;top:36%;background:linear-gradient(135deg,#2a7fb8,#2e9e6a)}
+.deck.chest{right:12%;bottom:16%;background:linear-gradient(135deg,#1b4d6b,#7b6cf6)}
+.deck div{font-size:calc(var(--cell)*.42)}
+.tray{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);display:flex;gap:calc(var(--cell)*.5);transform-style:preserve-3d;--ds:calc(var(--cell)*.62)}
+.die{width:var(--ds);height:var(--ds);position:relative;transform-style:preserve-3d;transform:translateZ(calc(var(--ds)/2));transition:transform 1s cubic-bezier(.2,.75,.25,1)}
+.face{position:absolute;inset:0;background:#fffdf7;border-radius:18%;box-shadow:inset 0 0 0 1px #d8cfb8;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:14%}
+.face i{width:70%;height:70%;margin:auto;border-radius:50%;background:transparent}
+.face i.p{background:#1f2430}
+.f1{transform:translateZ(calc(var(--ds)/2))}.f6{transform:rotateY(180deg) translateZ(calc(var(--ds)/2))}
+.f2{transform:rotateY(90deg) translateZ(calc(var(--ds)/2))}.f5{transform:rotateY(-90deg) translateZ(calc(var(--ds)/2))}
+.f3{transform:rotateX(90deg) translateZ(calc(var(--ds)/2))}.f4{transform:rotateX(-90deg) translateZ(calc(var(--ds)/2))}
+.pot{position:absolute;left:50%;top:72%;transform:translateX(-50%);background:rgba(255,255,255,.85);border:1px solid #c6d3b8;border-radius:999px;padding:3px 12px;font-size:calc(var(--cell)*.17);color:#1f2a24;white-space:nowrap}
+.bb{position:absolute;transform-origin:50% 100%;transform:translateZ(1px) rotateZ(calc(var(--rz)*-1)) rotateX(calc(var(--rx)*-1));pointer-events:none;line-height:1}
+.hq{position:absolute;--bs:calc(var(--cell)*.9);transform-style:preserve-3d}
+.hq .bld{display:block;left:0;top:0}
+/* tokens */
+.tokens{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
+.token{position:absolute;width:0;height:0;transform-style:preserve-3d;transition:left .15s linear,top .15s linear}
+.tshadow{position:absolute;width:calc(var(--cell)*.4);height:calc(var(--cell)*.2);border-radius:50%;background:rgba(0,0,0,.3);transform:translate(-50%,-50%)}
+.pawn{position:absolute;left:calc(var(--cell)*-.28);top:calc(var(--cell)*-.82);width:calc(var(--cell)*.56);height:calc(var(--cell)*.82);transform-origin:50% 100%;transform:translateZ(2px) rotateZ(calc(var(--rz)*-1)) rotateX(calc(var(--rx)*-1))}
+.pawn-in{width:100%;height:100%;position:relative}
+.pawn-in .head{position:absolute;left:0;top:0;width:calc(var(--cell)*.56);height:calc(var(--cell)*.56);border-radius:50%;background:#fff;border:3px solid var(--pc);display:grid;place-items:center;font-size:calc(var(--cell)*.3);box-shadow:0 4px 10px rgba(0,0,0,.3)}
+.pawn-in::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);border-left:calc(var(--cell)*.12) solid transparent;border-right:calc(var(--cell)*.12) solid transparent;border-top:calc(var(--cell)*.3) solid var(--pc)}
+.token.active .head{animation:pulse 1.2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--pc) 35%,transparent),0 4px 10px rgba(0,0,0,.3)}}
+.hop{animation:hop .15s}
+@keyframes hop{50%{transform:translateY(-35%)}}
+/* sidebar */
+.side{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px}
+.h{font-size:11px;font-weight:800;letter-spacing:1.4px;color:var(--muted);text-transform:uppercase;margin:0 0 10px;display:flex;justify-content:space-between}
+.tp-head{display:flex;gap:12px;align-items:center}
+.av{width:44px;height:44px;border-radius:50%;background:#fff;border:3px solid var(--pc);display:grid;place-items:center;font-size:22px;flex:none}
+.tp-name{font-weight:700;font-size:16px}
+.tp-sub{color:var(--muted);font-size:12.5px}
+.tp-cash{margin-left:auto;font:700 20px Consolas,monospace;color:var(--gold)}
+.botchip{font-size:10px;background:#3a4252;border-radius:4px;padding:1px 5px;vertical-align:middle;color:#cfd5df}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{border:1px solid var(--line);background:#2b3241;border-radius:10px;padding:9px 14px;font-weight:600}
+.btn:hover{background:#353e50}
+.btn.pri{background:linear-gradient(135deg,#19b39a,#0f8f7b);border-color:#19b39a;color:#04110e;font-weight:800;flex:1;font-size:15px}
+.btn.pri:hover{filter:brightness(1.1)}
+.btn.warn{background:#4a2a2f;border-color:#7a3b44}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.dicetxt{margin-top:10px;font-size:13px;color:#cfd5df}
+.buybox{margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.buybox .bh{padding:10px 12px;color:#fff;font-weight:800}
+.buybox .bb2{padding:10px 12px;background:#1d222c;font-size:13px}
+.reasons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.rbtn{text-align:left;border:1px solid var(--line);background:#2b3241;border-radius:10px;padding:8px 10px;font-size:12.5px;line-height:1.25}
+.rbtn:hover{border-color:#19b39a;background:#24353a}
+.rbtn b{display:block;font-size:16px}
+.because{font-style:italic;color:var(--muted);font-size:12.5px;margin-top:10px}
+.rbtn small{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.quiz{margin-top:10px;border:1px dashed #7b6cf6;background:rgba(123,108,246,.1);border-radius:10px;padding:9px 11px}
+.quiz .qh{font-weight:800;color:#b9b0ff;font-size:13px;letter-spacing:.2px}
+.quiz .qq{margin-top:4px;font-size:12.5px}
+.quiz .qs{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:11.5px;color:var(--muted)}
+.quiz .qrec{margin-top:6px;font-size:11.5px;color:var(--gold)}
+.lesson{margin-top:12px;border-radius:10px;padding:10px 12px;font-size:12.5px;border:1px solid;line-height:1.45}
+.lesson>b:first-child{display:block;font-size:13.5px;margin-bottom:3px}
+.lesson.ok{border-color:#19b39a;background:rgba(25,179,154,.12)}
+.lesson.miss,.lesson.pass{border-color:#7b6cf6;background:rgba(123,108,246,.12)}
+.lesson .lwhy{margin-top:5px;color:var(--muted);font-style:italic}
+.pl{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.pl:last-child{border:0}
+.pl .av{width:36px;height:36px;font-size:18px;border-width:2px}
+.pl .nm{font-weight:700}
+.pl .meta{font-size:11.5px;color:var(--muted)}
+.pl .worth{text-align:right;font:700 14px Consolas,monospace}
+.pl .worth small{display:block;font:11px "Segoe UI";color:var(--muted)}
+.pl.out{opacity:.4}
+.pl.cur{background:linear-gradient(90deg,rgba(25,179,154,.12),transparent);border-radius:8px}
+.bar{grid-column:1/-1;height:5px;border-radius:3px;background:#2d3442;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pc)}
+.badges{display:flex;gap:3px;margin-top:2px;flex-wrap:wrap}
+.badges u{width:10px;height:10px;border-radius:3px;display:inline-block;text-decoration:none}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rg{background:#1d222c;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12.5px;font-weight:600}
+.rg small{display:block;color:var(--muted);font-weight:400}
+.thesis{font-size:12.5px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.thesis:last-child{border:0}
+.thesis q{color:#cfe9e2}
+.thesis .ok{color:#19b39a;font-weight:700}
+.log{font-size:12px;color:#c3c9d4;max-height:220px;overflow:auto}
+.log div{padding:3px 0;border-bottom:1px solid #262c38}
+svg text{font-family:"Segoe UI",sans-serif}
+/* modals */
+.modal{position:fixed;inset:0;background:rgba(8,10,14,.7);display:none;place-items:center;z-index:50;backdrop-filter:blur(3px)}
+.modal.on{display:grid}
+.mbox{background:var(--panel);border:1px solid var(--line);border-radius:18px;width:min(560px,94vw);max-height:90vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.mhead{padding:18px 20px;color:#fff;position:relative}
+.mhead h2{margin:0;font-size:22px}
+.mhead small{opacity:.85;font-weight:600;letter-spacing:1px;text-transform:uppercase;font-size:11px}
+.mbody{padding:16px 20px 20px}
+.x{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(0,0,0,.25);color:#fff}
+table.rent{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+table.rent td{padding:5px 4px;border-bottom:1px solid var(--line)}
+table.rent td:last-child{text-align:right;font-family:Consolas,monospace}
+table.rent tr.now td{color:var(--gold);font-weight:700}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:13px;margin-top:10px}
+.kv b{color:var(--muted);font-weight:600}
+.prow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.prow .sw{width:12px;height:28px;border-radius:3px;flex:none}
+.prow .pn{flex:1}
+.prow .pn small{display:block;color:var(--muted)}
+.prow .btn{padding:5px 9px;font-size:12px}
+.setrow{display:grid;grid-template-columns:28px 46px 1fr 110px;gap:8px;align-items:center;margin-bottom:8px}
+.setrow input[type=text]{background:#12161d;border:1px solid var(--line);color:#fff;border-radius:8px;padding:8px}
+.setrow select,.mbody select,.mbody input[type=number]{background:#12161d;border:1px solid var(--line);color:#fff;border-radius:8px;padding:8px}
+.emo{width:46px;height:40px;border-radius:10px;border:2px solid var(--pc);background:#fff;font-size:20px}
+.cardflip{perspective:1000px;width:min(420px,90vw)}
+.cardin{border-radius:18px;padding:28px 26px;color:#fff;text-align:center;animation:flip .6s cubic-bezier(.3,.7,.2,1);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+@keyframes flip{from{transform:rotateY(90deg) scale(.8);opacity:0}}
+.cardin .ci{font-size:44px}
+.cardin h3{margin:6px 0 4px;font-size:13px;letter-spacing:3px;text-transform:uppercase;opacity:.9}
+.cardin p{font-size:20px;font-weight:700;margin:12px 0 6px;line-height:1.3}
+.cardin .sub{font-size:15px;opacity:.95;background:rgba(0,0,0,.18);border-radius:10px;padding:8px 10px;margin-top:10px}
+.cardin .btn{margin-top:16px;background:#fff;color:#1f2430;border:0}
+.banner{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);z-index:60;text-align:center;color:#fff;padding:26px 40px;border-radius:22px;display:none;min-width:min(560px,92vw);box-shadow:0 30px 90px rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.5)}
+.banner.on{display:block;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.5);opacity:0}}
+.banner small{letter-spacing:5px;font-weight:800;font-size:12px}
+.banner h2{margin:6px 0;font-size:30px}
+.banner p{margin:4px 0;font-size:15px;opacity:.95}
+canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:70}
+.podium{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.pod{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.pod .rk{font:900 22px Consolas,monospace;width:30px;color:var(--gold)}
+.foot{font-size:11px;color:var(--muted);text-align:center;margin-top:14px}
+.rules li{margin:5px 0}
+@media (max-width:1000px){body{overflow:auto}.app{height:auto;grid-template-rows:auto 34px auto}.top{flex-wrap:wrap;padding:8px}.main{grid-template-columns:1fr}.stage{height:78vh}.side{border:0}}
+</style>
+<style>.netpill{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:60;background:#222834;border:1px solid #313848;border-radius:999px;padding:6px 14px;font-size:12px;color:#e8ebf1;box-shadow:0 4px 16px rgba(0,0,0,.35)}.netpill.ok{border-color:#19b39a}.seatcard{display:flex;gap:14px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px;background:var(--panel2)}.seatcard canvas{background:#fff;border-radius:8px;flex:none}.seatcard input{width:100%;font-size:11px}</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="logo">🏔️</div>
+    <div class="brand"><b>Alaska Card · Ketchikan Monopoly</b><span>Answer real Alaska questions · earn your collection</span></div>
+    <div class="spacer"></div>
+    <div class="seg" id="viewSeg">
+      <button data-act="view" data-arg="flat">Flat</button>
+      <button data-act="view" data-arg="tilt">Tilt</button>
+      <button data-act="view" data-arg="iso">Isometric</button>
+    </div>
+    <div class="chip" title="Market close"><span>⏱</span><span class="timer" id="timer">--:--</span></div>
+    <div class="chip cashchip" id="cashchip"><span id="cashAv">🦙</span><div><b id="cashTop">$10,000</b><div style="font-size:10px;color:var(--muted)">cash on hand</div></div></div>
+    <button class="ibtn" data-act="invite" id="netBtn" title="Remote players" style="display:none">🌐</button>
+    <button class="ibtn" data-act="sound" id="soundBtn" title="Sound">🔊</button>
+    <button class="ibtn" data-act="rules" title="How to play">❔</button>
+    <button class="ibtn" data-act="setup" title="New game">⚙️</button>
+  </header>
+  <div class="ticker"><span class="live"><i></i>LIVE</span><div class="tick-items" id="ticker"></div></div>
+  <div class="main">
+    <section class="stage" id="stage">
+      <div class="stage-chips">
+        <div class="chip" id="chipRound">Round 1</div>
+        <div class="chip" id="chipInv">0 investments</div>
+        <div class="chip" id="chipExec">4 adventurers</div>
+      </div>
+      <div class="zoombox">
+        <button data-act="zoom" data-arg="1.1" title="Zoom in">+</button>
+        <button data-act="zoom" data-arg="0.9" title="Zoom out">−</button>
+        <button data-act="zoom" data-arg="reset" title="Reset">⤢</button>
+      </div>
+      <div class="toasts" id="toasts"></div>
+      <div class="board" id="board"></div>
+    </section>
+    <aside class="side" id="side">
+      <div class="card" id="turn"></div>
+      <div class="card"><div class="h"><span>Adventurers</span><span id="mkt"></span></div><div id="players"></div></div>
+      <div class="card"><div class="h"><span>Collection value by round</span></div><div id="chart"></div></div>
+      <div class="card"><div class="h"><span>🎓 Alaska knowledge</span></div><div class="rgrid" id="reasons"></div></div>
+      <div class="card"><div class="h"><span>🏔️ Facts learned this game</span></div><div id="theses"></div></div>
+      <div class="card"><div class="h"><span>Market log</span></div><div class="log" id="log"></div></div>
+    </aside>
+  </div>
+</div>
+<div class="modal" id="modal"><div id="mcontent"></div></div>
+<div class="banner" id="banner"></div>
+<canvas id="fx"></canvas>
+<script>
+// Alaska Card · Ketchikan Monopoly — board data. Every ownable space carries an Alaska quiz + fact.
+const K = v => Math.round(v * 20 / 3 / 10) * 10; // classic Monopoly $ scaled ×6⅔ (start $10,000)
+const fmt = k => (k < 0 ? '−' : '') + '$' + Math.abs(Math.round(k)).toLocaleString('en-US');
+const START = K(1500), GO_PAY = K(200), FINE = K(50), BONUS = K(15);
+
+const LEVELS = ['Common', 'Seasoned', 'Rare', 'Epic', 'Legendary', 'Mythic'];
+const LEVEL_SHORT = LEVELS;
+
+// intent = field note shown on deeds, edge = where in Alaska, cockpit = title for a Mythic card
+const GROUPS = {
+  dock: { name: 'Dockside Ketchikan', short: 'Dockside', color: '#8b5e3c', house: 50, cockpit: 'Harbor Legend',
+    intent: 'Ketchikan is on Revillagigedo Island, the first big Alaska port that northbound ships reach.', edge: 'Downtown Ketchikan' },
+  rain: { name: 'Rain Country', short: 'Rain Country', color: '#58b7e0', house: 50, cockpit: 'Rain God',
+    intent: 'Southeast Alaska is temperate rainforest. It’s mild, green and very, very wet.', edge: 'Tongass National Forest' },
+  town: { name: 'Town & Culture', short: 'Town & Culture', color: '#d6538f', house: 100, cockpit: 'Town Elder',
+    intent: 'Tlingit, Haida and Tsimshian peoples have lived here for thousands of years. Logging and fishing built the modern town.', edge: 'Saxman · Totem Bight · Ketchikan' },
+  wild: { name: 'Eagles & Salmon', short: 'Eagles & Salmon', color: '#f0881d', house: 100, cockpit: 'Salmon King',
+    intent: 'Ketchikan calls itself the “Salmon Capital of the World”, and the eagles agree.', edge: 'Ketchikan Creek' },
+  sea: { name: 'On the Water', short: 'On the Water', color: '#c2414b', house: 150, cockpit: 'Old Salt',
+    intent: 'Most Southeast towns have no road out. The sea is the highway.', edge: 'Tongass Narrows · Clarence Strait' },
+  bush: { name: 'Into the Wild', short: 'Into the Wild', color: '#e2b11c', house: 150, cockpit: 'Bush Legend',
+    intent: 'Bears, deer and whales outnumber people across most of Southeast.', edge: 'Muskeg & open water' },
+  ice: { name: 'Sky & Ice', short: 'Sky & Ice', color: '#2e9e6a', house: 200, cockpit: 'Aurora Chaser',
+    intent: 'Alaska has an estimated 100,000 glaciers, and skies that light up green.', edge: 'Juneau Icefield · the night sky' },
+  legend: { name: 'Last Frontier', short: 'Last Frontier', color: '#2f3f9e', house: 200, cockpit: 'Last Frontier Legend',
+    intent: 'Places you can only reach by boat or plane, and stories nobody believes.', edge: 'Misty Fjords · island life' }
+};
+
+// q = question, o = options, a = correct index, f = the fact you learn
+const P = (g, name, price, rent, ico, blurb, q, o, a, f) => ({ t: 'prop', g, name, price, rent, ico, blurb, q, o, a, f });
+const T = (t, name, ico, blurb, q, o, a, f) => ({ t, name, ico, price: t === 'rail' ? 200 : 150, blurb, q, o, a, f });
+const SP = [
+  { t: 'go', name: 'Stepped Ashore', ico: '⚓', sub: 'Pass to collect your PFD' },
+  P('dock', 'Creek Street', 60, [2, 10, 30, 90, 160, 250], '🏘️', 'Walk the boardwalk over the creek.',
+    'Creek Street’s boardwalk sits on pilings over Ketchikan Creek. What was it known for until 1954?',
+    ['Ketchikan’s red-light district', 'The town’s first salmon cannery', 'A Russian fur-trading post'], 0,
+    'Creek Street was Ketchikan’s red-light district until 1954. Dolly’s House, home of madam Dolly Arthur, is now a museum. The path up the hill is still called Married Man’s Trail.'),
+  { t: 'chest', name: 'Shore Story', ico: '🃏' },
+  P('dock', 'Rode the Tram', 60, [4, 20, 60, 180, 320, 450], '🚡', 'Ride up the hill and look back down at your ship.',
+    'Ketchikan’s nickname is Alaska’s “First City”. Why?',
+    ['It was Alaska’s first capital', 'It’s the first major Alaska port northbound ships reach', 'Russians founded it first'], 1,
+    'Ships heading north up the Inside Passage reach Ketchikan first. Alaska’s first capital was actually Sitka, the old Russian capital. Juneau took over in 1906.'),
+  { t: 'tax', name: 'Fuel Surcharge', ico: '⛽', amt: 200, sub: 'Everything arrives by barge' },
+  T('rail', 'Alaska Marine Highway', '⛴️', 'The state ferry: the Inside Passage is the road.',
+    'On Alaska’s state ferries, what do many passengers do instead of booking a cabin?',
+    ['Sleep in their cars on the car deck', 'Camp on deck: some duct-tape tents down', 'Nothing. Overnight trips aren’t allowed'], 1,
+    'The Alaska Marine Highway has run since 1963. Passengers camp on deck or under the heat lamps in the solarium, and some duct-tape their tents to the deck. The car deck is closed while the ship is sailing.'),
+  P('rain', 'Soaked and Smiling', 100, [6, 30, 90, 270, 400, 550], '☔', 'Get rained on all day and refuse an umbrella.',
+    'Roughly how much rain does Ketchikan get in a typical year?',
+    ['About 15 inches', 'About 50 inches', 'Around 150 inches'], 2,
+    'Ketchikan gets around 150 inches of rain a year, more than 12 feet. It’s one of the wettest towns in the US. Locals wear rain gear and mostly skip the umbrella.'),
+  { t: 'chance', name: 'Weather Report', ico: '🌦️' },
+  P('rain', 'Xtratuf Formal', 100, [6, 30, 90, 270, 400, 550], '🥾', 'Wear brown boots to a formal event.',
+    'Brown Xtratuf rubber boots are so common in Southeast that locals call them…',
+    ['Mukluks', 'Bunny boots', 'Ketchikan sneakers'], 2,
+    'Xtratufs are “Ketchikan sneakers” (or “Sitka sneakers”, since every town claims them). Mukluks are traditional soft boots made of sealskin or caribou. Bunny boots are white military boots built for deep Interior cold.'),
+  P('rain', 'Rainforest Year', 120, [8, 40, 100, 300, 450, 600], '🌲', 'Live through a full Ketchikan year of rain.',
+    'Ketchikan sits inside “the Tongass”. What is it?',
+    ['The largest national forest in the US', 'The glacier that feeds the town’s water', 'Alaska’s oldest Native village'], 0,
+    'The Tongass National Forest covers about 17 million acres of Southeast Alaska. It’s the largest national forest in the US and one of the largest intact temperate rainforests on Earth.'),
+  { t: 'jail', name: 'Weathered In', ico: '🌫️', sub: 'Just visiting the fog' },
+  P('town', 'Lumberjack Show', 140, [10, 50, 150, 450, 625, 750], '🪓', 'Pick a side and scream for it.',
+    'Logging helped build Ketchikan. What is Alaska’s state tree?',
+    ['Sitka spruce', 'Douglas fir', 'Paper birch'], 0,
+    'The Sitka spruce is Alaska’s state tree. Southeast forests are mostly Sitka spruce, western hemlock and cedar. Ketchikan’s pulp mill at Ward Cove ran from 1954 to 1997.'),
+  T('util', 'Hydro Power', '💧', 'All that rain turns turbines.',
+    'Where does most of Ketchikan’s electricity come from?',
+    ['Diesel generators', 'Hydroelectric dams on rain-fed lakes', 'A small nuclear plant'], 1,
+    'All that rain pays off. Ketchikan runs mostly on hydropower from lakes such as Swan Lake and Lake Tyee. Many remote Alaska villages still rely on expensive diesel.'),
+  P('town', 'Totem Standing', 140, [10, 50, 150, 450, 625, 750], '🗿', 'Stand at the base of a raised totem pole.',
+    'Ketchikan has one of the world’s largest collections of standing totem poles. What are totem poles?',
+    ['Idols that people worshipped', 'Carvings that record clan histories, stories and people', 'Boundary markers for fishing claims'], 1,
+    'Totem poles were never worshipped. Tlingit, Haida and Tsimshian carvers raise them to tell clan stories, honor people and mark events, usually carving them from western red cedar. You can see them at Saxman, Totem Bight and the Totem Heritage Center.'),
+  P('town', 'The Crab Feed', 160, [12, 60, 180, 500, 700, 900], '🦀', 'Eat Dungeness crab within sight of the boat that caught it.',
+    'How does Alaska’s coastline compare with the rest of the US?',
+    ['About the same as California’s', 'Longer than all the other states combined', 'Shorter than Florida’s'], 1,
+    'Alaska has more coastline than all the other US states combined. Counting the islands, that’s tens of thousands of miles of shoreline. No wonder crab and seafood are part of daily life.'),
+  T('rail', 'Inside Passage', '🛳️', 'The sheltered sea route up the coast.',
+    'What is the Inside Passage?',
+    ['A tunnel under Juneau', 'A sheltered sea route through the coastal islands', 'A mountain pass into Canada'], 1,
+    'The Inside Passage winds between the islands of British Columbia and Southeast Alaska, sheltered from the open Pacific. Cruise ships and ferries use it, and it’s effectively Southeast’s highway.'),
+  P('wild', 'First Bald Eagle', 180, [14, 70, 200, 550, 750, 950], '🦅', 'See your first wild bald eagle.',
+    'Which state has the most bald eagles?',
+    ['Florida', 'Alaska', 'Minnesota'], 1,
+    'Alaska has the largest bald eagle population in the US, an estimated 30,000 birds. Young eagles are brown and don’t get their white heads until they’re about 5.'),
+  { t: 'chest', name: 'Shore Story', ico: '🃏' },
+  P('wild', 'Eagle Theft', 180, [14, 70, 200, 550, 750, 950], '🍗', 'Lose food to a bald eagle.',
+    'Why do so many eagles hang around Southeast towns and rivers?',
+    ['The city feeds them', 'Salmon: rivers full of fish and fish scraps', 'They only fly in for cruise season'], 1,
+    'Eagles go where the salmon are. Spawning runs and scraps from fish processing make Southeast a buffet, which is why they’ll snatch a sandwich right out of your hand.'),
+  P('wild', 'Salmon Ladder', 200, [16, 80, 220, 600, 800, 1000], '🐟', 'Watch salmon climb the ladder at the creek.',
+    'What happens to Pacific salmon after they swim upstream and spawn?',
+    ['They swim back out to sea', 'They die', 'They live in the creek for years'], 1,
+    'Pacific salmon spawn once and then die, and their bodies feed the forest, bears and eagles. The five species are king (chinook), coho (silver), sockeye (red), pink (humpy) and chum (dog).'),
+  { t: 'parking', name: 'Salmon Bake', ico: '🔥', sub: 'Collect the Salmon Bake pot' },
+  P('sea', 'Sea Cuke', 220, [18, 90, 250, 700, 875, 1050], '🥒', 'Harvest, prepare and eat sea cucumbers.',
+    'How are sea cucumbers commercially harvested in Southeast Alaska?',
+    ['By divers, by hand', 'With bottom trawlers', 'Picked off beaches at low tide'], 0,
+    'Southeast’s sea cucumber fishery is a dive fishery: divers pick them off the seafloor by hand. Much of the catch is exported to Asian markets.'),
+  { t: 'chance', name: 'Weather Report', ico: '🌦️' },
+  P('sea', 'Over the Bow', 220, [18, 90, 250, 700, 875, 1050], '🌊', 'A wave came aboard. Everyone got wet.',
+    'How much can the tide rise and fall in a day in Southeast Alaska?',
+    ['A few inches', 'Around 20 feet or more', 'There is no tide in the Inside Passage'], 1,
+    'Southeast tides can swing 20 feet or more between low and high water. Boaters plan around them because the currents rip through narrow channels.'),
+  P('sea', 'Barn Door Halibut', 240, [20, 100, 300, 750, 925, 1100], '🎣', 'Land a halibut over 100 pounds.',
+    'What’s strange about an adult Pacific halibut?',
+    ['Both eyes are on the same side of its head', 'It can breathe air', 'It changes color like an octopus'], 0,
+    'Halibut are flatfish. They start life swimming upright, then one eye migrates so both end up on the top side. The biggest, almost always females, can weigh over 400 pounds.'),
+  T('rail', 'Floatplane Base', '✈️', 'There is no runway. There is only the channel.',
+    'Which state has the most pilots per person?',
+    ['Texas', 'Alaska', 'Florida'], 1,
+    'Alaska has far more pilots per person than any other state. Most communities aren’t on the road system, so small planes on floats, skis or wheels carry people, mail and groceries.'),
+  P('bush', 'Sitka Blacktail', 260, [22, 110, 330, 800, 975, 1150], '🦌', 'Pack a deer out of the muskeg.',
+    'What is “muskeg”?',
+    ['A type of moose', 'A spongy peat bog', 'A strip of smoked salmon'], 1,
+    'Muskeg is boggy peatland of moss and stunted trees, common across Southeast. Deer hunters haul meat through muskeg and devil’s club, a spiny plant that Tlingit healers also use as medicine.'),
+  P('bush', 'Bear Encounter', 260, [22, 110, 330, 800, 975, 1150], '🐻', 'Meet a bear on foot. Remain calm.',
+    'You meet a bear on a trail. What should you never do?',
+    ['Talk calmly so it knows you’re human', 'Run', 'Back away slowly'], 1,
+    'Never run. Bears can sprint over 30 mph, and running can trigger a chase. Stand your ground, speak calmly, look big and back away slowly. Southeast has both black bears and brown (grizzly) bears.'),
+  T('util', 'Midnight Sun', '☀️', 'Solar power, Alaska-style: feast or famine.',
+    'In Utqiaġvik, Alaska’s northernmost town, what does the sun do in midsummer?',
+    ['It sets around 10pm', 'It doesn’t set at all, for over two months', 'It never fully rises'], 1,
+    'Utqiaġvik (formerly Barrow) has about 80 days of non-stop sun in summer, and about two months without a sunrise in winter.'),
+  P('bush', 'Bubble Net', 280, [24, 120, 360, 850, 1025, 1200], '🐋', 'Witness humpbacks bubble-net feeding.',
+    'Where do most of Southeast Alaska’s humpback whales spend the winter?',
+    ['Under the Arctic ice', 'Hawaii', 'They stay in Alaska year-round'], 1,
+    'Most of Southeast’s humpbacks migrate about 3,000 miles to Hawaii to breed, then return to feed. In summer some hunt as a team, blowing rings of bubbles that trap herring before the whales lunge up through the middle.'),
+  { t: 'gotojail', name: 'Storm Warning', ico: '⛈️', sub: 'Go to Weathered In' },
+  P('ice', 'Tongass Narrows', 300, [26, 130, 390, 900, 1100, 1275], '⛵', 'Cross the Narrows when sensible people stayed at the dock.',
+    'How do travellers get from downtown Ketchikan to its airport?',
+    ['Over a bridge across Tongass Narrows', 'On a short ferry across Tongass Narrows', 'On a 40-mile road'], 1,
+    'Ketchikan’s airport is on Gravina Island, across Tongass Narrows. There’s no bridge (the planned “Bridge to Nowhere” was cancelled), so travellers take a short ferry.'),
+  P('ice', 'Walked the Icefield', 300, [26, 130, 390, 900, 1100, 1275], '🧊', 'Set foot on a glacier under your own power.',
+    'Why does glacier ice look blue?',
+    ['It reflects the sky', 'Dense ice absorbs red light, leaving the blue', 'Minerals from the rock underneath'], 1,
+    'Glacier ice is so dense that it absorbs the red end of the spectrum, so the light left over looks blue. Near Juneau, the Mendenhall Glacier flows off the roughly 1,500-square-mile Juneau Icefield.'),
+  { t: 'chest', name: 'Shore Story', ico: '🃏' },
+  P('ice', 'Northern Lights', 320, [28, 150, 450, 1000, 1200, 1400], '🌌', 'Witness the aurora from your own property.',
+    'What causes the northern lights?',
+    ['Moonlight reflecting off sea ice', 'Charged particles from the sun hitting the upper atmosphere', 'Gas from volcanoes'], 1,
+    'The aurora happens when particles from the sun collide with oxygen and nitrogen high in the atmosphere. The common green glow comes from oxygen. Interior Alaska, around Fairbanks, is the best place to see it. In rainy Ketchikan a clear aurora night is rare.'),
+  T('rail', 'Alaska Railroad', '🚂', 'Seward to Fairbanks, past Denali.',
+    'Where does the Alaska Railroad run?',
+    ['From Ketchikan to Juneau', 'From Seward through Anchorage to Fairbanks', 'Across the Bering Strait'], 1,
+    'The Alaska Railroad runs about 470 miles from Seward through Anchorage and Denali to Fairbanks. No railroad reaches Southeast, where boats and planes do the job.'),
+  { t: 'chance', name: 'Weather Report', ico: '🌦️' },
+  P('legend', 'Island Resident', 350, [35, 175, 500, 1100, 1300, 1500], '🏝️', 'Live on an island with no road access.',
+    'Alaska’s capital, Juneau, is unusual because…',
+    ['It’s Alaska’s biggest city', 'No road connects it to the rest of North America', 'It’s above the Arctic Circle'], 1,
+    'You can’t drive to Juneau. You arrive by plane or boat. Anchorage is Alaska’s biggest city.'),
+  { t: 'tax', name: 'Rain Gear Bill', ico: '🧥', amt: 100, sub: 'Your Grundéns wore out' },
+  P('legend', 'Misty Fjords', 400, [50, 200, 600, 1400, 1700, 2000], '🛩️', 'Fly into Misty Fjords and land on a wilderness lake.',
+    'How do most visitors reach Misty Fjords National Monument?',
+    ['By road from Ketchikan', 'By floatplane or boat', 'On the Alaska Railroad'], 1,
+    'Misty Fjords is about 2.3 million acres of granite cliffs, waterfalls and lakes east of Ketchikan, with no roads in. Most people fly in by floatplane and land on a wilderness lake, or go by boat.')
+];
+SP.forEach(s => {
+  if (s.price) s.price = K(s.price);
+  if (s.rent) s.rent = s.rent.map(K);
+  if (s.amt) s.amt = K(s.amt);
+});
+const GIDX = {};
+SP.forEach((s, i) => { if (s.g) (GIDX[s.g] = GIDX[s.g] || []).push(i); });
+const houseCost = g => K(GROUPS[g].house);
+const OWNABLE = t => t === 'prop' || t === 'rail' || t === 'util';
+
+// Chance = Weather Report, Chest = Shore Story (Alaska Card stories + Alaska history)
+const CHANCE = [
+  { txt: 'A rare bluebird day in Ketchikan. The whole town goes outside.', sub: `Collect ${fmt(K(150))}`, fx: ['gain', K(150)] },
+  { txt: 'Ship’s horn! All aboard.', sub: 'Advance to Stepped Ashore', fx: ['to', 0] },
+  { txt: 'Herring are running, and the humpbacks follow.', sub: 'Advance to Bubble Net', fx: ['to', 29] },
+  { txt: 'Clear skies and a solar storm overnight.', sub: 'Advance to Northern Lights', fx: ['to', 34] },
+  { txt: 'The fog lifts and everything moves at once.', sub: 'Advance to the nearest route and pay the owner double', fx: ['near', 'rail'] },
+  { txt: 'Power flicker across the island.', sub: 'Advance to the nearest power source. If it’s owned, pay 10× the dice', fx: ['near', 'util'] },
+  { txt: 'Headwind on the Narrows.', sub: 'Go back 3 spaces', fx: ['back', 3] },
+  { txt: 'Small craft advisory: 60 mph winds forecast.', sub: 'Go directly to Weathered In', fx: ['jail'] },
+  { txt: 'Winter storm. The trees bend and the house talks.', sub: `Pay ${fmt(K(25))} per foil level, ${fmt(K(100))} per Mythic`, fx: ['repairs', K(25), K(100)] },
+  { txt: 'A floatplane pilot owes you a favor.', sub: 'Get out of Weathered In free. Keep this card', fx: ['card'] },
+  { txt: 'You sold your extra smoked salmon at the dock.', sub: `Collect ${fmt(K(50))}`, fx: ['gain', K(50)] },
+  { txt: 'Your rain gear ripped on a salmonberry bush.', sub: `Pay ${fmt(K(15))} into the Salmon Bake pot`, fx: ['pot', K(15)] },
+  { txt: 'Clear rails north: take the train past Denali, North America’s tallest peak at 20,310 ft.', sub: 'Advance to Alaska Railroad', fx: ['to', 35] },
+  { txt: 'Winter Storm Kayak: two people, February, for fun. Your crew needs dry bags.', sub: `Pay each player ${fmt(K(50))}`, fx: ['payEach', K(50)] },
+  { txt: 'A barn-door halibut sells at the dock.', sub: `Collect ${fmt(K(150))}`, fx: ['gain', K(150)] },
+  { txt: 'A floatplane seat opens up.', sub: 'Advance to Misty Fjords', fx: ['to', 39] }
+];
+const CHEST = [
+  { txt: 'PFD day! Alaska’s Permanent Fund, built from oil money, has paid residents a yearly dividend since 1982.', sub: 'Advance to Stepped Ashore', fx: ['to', 0] },
+  { txt: '1867: the US buys Alaska from Russia for $7.2 million, about 2¢ an acre. Critics called it “Seward’s Folly”.', sub: `Collect ${fmt(K(200))}`, fx: ['gain', K(200)] },
+  { txt: 'Generator Detonation. Off-grid, the power company is you.', sub: `Pay ${fmt(K(50))} into the Salmon Bake pot`, fx: ['pot', K(50)] },
+  { txt: 'Boat Sinker: everyone at the bar wants to hear the story.', sub: `Every player pays you ${fmt(K(10))}`, fx: ['collectEach', K(10)] },
+  { txt: 'Fixed It, Kept Going: a hose clamp, bailing wire and pure refusal.', sub: 'Get out of Weathered In free. Keep this card', fx: ['card'] },
+  { txt: 'Outhouse Inferno. Nobody’s going anywhere for a while.', sub: 'Go directly to Weathered In', fx: ['jail'] },
+  { txt: 'Statehood Day: Alaska became the 49th state on January 3, 1959.', sub: `Collect ${fmt(K(100))}`, fx: ['gain', K(100)] },
+  { txt: 'Boat Sinker. The water always wins eventually.', sub: `Pay ${fmt(K(100))} into the Salmon Bake pot`, fx: ['pot', K(100)] },
+  { txt: 'Ferry Solarium Overnighter: you slept under the heat lamps for free.', sub: `Collect ${fmt(K(25))}`, fx: ['gain', K(25)] },
+  { txt: 'Fuel barge delayed. Everything costs more in rural Alaska.', sub: `Pay ${fmt(K(50))} into the Salmon Bake pot`, fx: ['pot', K(50)] },
+  { txt: 'Alaska’s flag, the Big Dipper and North Star, was designed in 1927 by 13-year-old Benny Benson. Your kid wins the art contest.', sub: `Collect ${fmt(K(100))}`, fx: ['gain', K(100)] },
+  { txt: 'Dog mushing is Alaska’s state sport. You volunteer at the Iditarod, which honors the 1925 serum run to Nome.', sub: `Collect ${fmt(K(20))}`, fx: ['gain', K(20)] },
+  { txt: 'Wind Survivor: gusts over 60 mph. Time for roof repairs.', sub: `Pay ${fmt(K(40))} per foil level, ${fmt(K(115))} per Mythic`, fx: ['repairs', K(40), K(115)] },
+  { txt: 'Boat Recoverer: you raised your sunken boat. It cost more than the boat, and it was worth more than the boat.', sub: `Collect ${fmt(K(100))}`, fx: ['gain', K(100)] },
+  { txt: 'The 1964 Good Friday earthquake, magnitude 9.2, was the strongest in US history. Your cabin passes its quake inspection.', sub: `Collect ${fmt(K(50))}`, fx: ['gain', K(50)] },
+  { txt: 'Xtratufs at a wedding. Nobody blinks.', sub: `Collect ${fmt(K(10))}`, fx: ['gain', K(10)] }
+];
+
+const EMOJIS = ['🛶', '🐋', '🐻', '🦅', '🦌', '🐟', '🦀', '🧊', '🌲', '⚓'];
+const PCOLORS = ['#19b39a', '#f2b632', '#7b6cf6', '#ef6c4a'];
+const DEFAULT_PLAYERS = [
+  { on: true, name: 'You', emoji: '🛶', bot: false },
+  { on: true, name: 'Skipper Sam', emoji: '🐋', bot: true },
+  { on: true, name: 'Ranger Rae', emoji: '🐻', bot: true },
+  { on: true, name: 'Pilot Pete', emoji: '🦅', bot: true }
+];
+
+</script>
+<script>
+// Alaska Card · Ketchikan Monopoly — game engine
+let st = null;
+const R = {}; // pending promise resolvers (not saved)
+// Remote play: role is null (local), 'host' (runs the engine) or 'client' (renders host state). actor = remote seat currently acting on host.
+const NETX = { role: null, seat: null, actor: null };
+const isLocal = p => !p.bot && (NETX.role === 'client' ? p.id === NETX.seat : !p.remote);
+let SPEED = 1;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const dl = ms => sleep(ms * SPEED);
+const r6 = () => 1 + Math.floor(Math.random() * 6);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+function newGame(cfg) {
+  SPEED = cfg.speed === 'fast' ? 0.45 : 1;
+  st = {
+    players: cfg.players.map((p, i) => ({ id: i, name: p.name, emoji: p.emoji, color: PCOLORS[i], bot: p.bot, remote: !!p.remote, cash: START, pos: 0,
+      jail: false, jailTurns: 0, cards: 0, out: false, hist: [START], ach: [], aligned: 0 })),
+    own: {}, turn: 0, phase: 'roll', dice: [1, 1], dbl: 0, canRollAgain: false, pot: 0, round: 1,
+    log: [], theses: [], reasons: { right: 0, wrong: 0 },
+    chance: shuffle(CHANCE.map((_, i) => i)), chest: shuffle(CHEST.map((_, i) => i)),
+    minutes: cfg.minutes, endAt: cfg.minutes ? Date.now() + cfg.minutes * 60000 : null, timeUp: false, over: false, speed: cfg.speed, lastSum: 7
+  };
+}
+function save() {
+  if (NETX.role === 'client') return;
+  if (!st || st.over) { localStorage.removeItem('ak-save'); return; }
+  const copy = { ...st, remaining: st.endAt ? Math.max(0, st.endAt - Date.now()) : null };
+  localStorage.setItem('ak-save', JSON.stringify(copy));
+}
+function loadSave() {
+  try { const s = JSON.parse(localStorage.getItem('ak-save')); if (!s || s.over) return null; return s; } catch { return null; }
+}
+function resumeGame(s) {
+  st = s; SPEED = st.speed === 'fast' ? 0.45 : 1;
+  st.endAt = st.remaining != null ? Date.now() + st.remaining : null;
+}
+
+const cur = () => st.players[st.turn];
+const own = i => st.own[i];
+const owned = pid => Object.keys(st.own).map(Number).filter(i => st.own[i].o === pid);
+const hasMono = (pid, g) => GIDX[g].every(j => st.own[j] && st.own[j].o === pid);
+const completeGroups = pid => Object.keys(GROUPS).filter(g => hasMono(pid, g));
+const countType = (pid, t) => owned(pid).filter(i => SP[i].t === t).length;
+const groupHasBuildings = g => GIDX[g].some(j => st.own[j] && st.own[j].lvl > 0);
+const unmortCost = i => Math.round(SP[i].price / 2 * 1.1 / 10) * 10;
+function netWorth(p) {
+  let w = p.cash;
+  owned(p.id).forEach(i => { const s = SP[i], o = st.own[i]; w += o.m ? s.price / 2 : s.price; if (s.t === 'prop') w += o.lvl * houseCost(s.g); });
+  return w;
+}
+function log(msg) { st.log.unshift(msg); st.log = st.log.slice(0, 120); UI.ticker(); }
+
+function rentFor(i) {
+  const s = SP[i], o = st.own[i]; if (!o || o.m) return 0;
+  let r = 0;
+  if (s.t === 'prop') r = o.lvl > 0 ? s.rent[o.lvl] : s.rent[0] * (hasMono(o.o, s.g) ? 2 : 1);
+  else if (s.t === 'rail') r = K(25) * 2 ** (countType(o.o, 'rail') - 1);
+  else if (s.t === 'util') r = st.lastSum * (st.utilMult ? K(st.utilMult) : countType(o.o, 'util') === 2 ? K(10) : K(4));
+  if (st.rentMult) r *= st.rentMult;
+  const cg = completeGroups(o.o).length;
+  if (cg >= 2) r = Math.round(r * (1 + 0.1 * (cg - 1)) / 10) * 10; // network effects compound
+  return r;
+}
+
+// ---------- money ----------
+function gain(p, a) { p.cash += a; UI.flashCash(p); Sfx.cash(); }
+function payTo(p, q, a) { p.cash -= a; if (q) q.cash += a; st.creditor = q ? q.id : null; Sfx.pay(); }
+function payPot(p, a) { p.cash -= a; st.pot += a; st.creditor = null; Sfx.pay(); }
+
+async function resolveDebt(p) {
+  if (p.cash >= 0 || p.out) return;
+  if (p.bot) { liquidate(p); if (p.cash < 0) bankrupt(p); UI.render(); return; }
+  st.phase = 'debt'; UI.render(); UI.toast(`⚠️ ${p.name}: raise ${fmt(-p.cash)} — sell upgrades or mortgage cards`);
+  await new Promise(r => (R.debt = r));
+}
+function checkDebt() { const p = cur(); if (st.phase === 'debt' && p.cash >= 0 && R.debt) { st.phase = 'busy'; const r = R.debt; R.debt = null; r(); } }
+
+function liquidate(p) {
+  let guard = 200;
+  while (p.cash < 0 && guard--) {
+    const sell = owned(p.id).filter(i => canSell(p.id, i)).sort((a, b) => st.own[b].lvl - st.own[a].lvl || SP[a].price - SP[b].price);
+    if (sell.length) { sellStage(sell[0], true); continue; }
+    const mort = owned(p.id).filter(i => canMortgage(p.id, i)).sort((a, b) => SP[a].price - SP[b].price);
+    if (mort.length) { mortgage(mort[0], true); continue; }
+    break;
+  }
+}
+function bankrupt(p) {
+  const cred = st.creditor != null ? st.players[st.creditor] : null;
+  owned(p.id).forEach(i => {
+    if (cred && !cred.out) { st.own[i].o = cred.id; st.own[i].lvl = 0; }
+    else delete st.own[i];
+  });
+  if (cred && !cred.out) { cred.cards += p.cards; Object.keys(GROUPS).forEach(g => checkMoonshot(cred, g)); }
+  p.out = true; p.cash = 0; p.cards = 0; p.jail = false;
+  log(`💥 ${p.emoji} ${p.name} heads south for good${cred ? ` — assets pass to ${cred.name}` : ''}`);
+  UI.toast(`💥 ${p.name} is out of capital`); Sfx.jail();
+  if (R.debt && p === cur()) { const r = R.debt; R.debt = null; r(); }
+}
+
+// ---------- portfolio actions ----------
+function canBuild(pid, i) {
+  const s = SP[i], o = st.own[i];
+  if (s.t !== 'prop' || !o || o.o !== pid || !hasMono(pid, s.g) || o.lvl >= 5) return false;
+  if (GIDX[s.g].some(j => st.own[j].m)) return false;
+  return o.lvl === Math.min(...GIDX[s.g].map(j => st.own[j].lvl));
+}
+function canSell(pid, i) {
+  const s = SP[i], o = st.own[i];
+  return s.t === 'prop' && o && o.o === pid && o.lvl > 0 && o.lvl === Math.max(...GIDX[s.g].map(j => st.own[j].lvl));
+}
+function canMortgage(pid, i) { const o = st.own[i]; return o && o.o === pid && !o.m && !(SP[i].g && groupHasBuildings(SP[i].g)); }
+function build(i) {
+  const s = SP[i], o = st.own[i], p = st.players[o.o], c = houseCost(s.g);
+  if (!canBuild(p.id, i) || p.cash < c) return false;
+  p.cash -= c; o.lvl++; Sfx.build();
+  log(`🏗️ ${p.emoji} ${p.name} upgraded ${s.name} to ${LEVELS[o.lvl]} foil`);
+  if (o.lvl === 5) {
+    award(p, 'cockpit', '✨', 'Mythic card');
+    UI.banner(GROUPS[s.g].color, 'MYTHIC CARD', `${s.name}`, `${p.emoji} ${p.name} earned the title ${GROUPS[s.g].cockpit}`, 'Rent now at Mythic levels.');
+    Fx.confetti();
+  }
+  return true;
+}
+function sellStage(i, quiet) { const o = st.own[i], p = st.players[o.o]; o.lvl--; p.cash += houseCost(SP[i].g) / 2; if (!quiet) Sfx.pay(); log(`↩️ ${p.emoji} ${p.name} downgraded ${SP[i].name} to ${LEVELS[o.lvl]}`); }
+function mortgage(i) { const o = st.own[i], p = st.players[o.o]; o.m = true; p.cash += SP[i].price / 2; log(`⏸️ ${p.emoji} ${p.name} mortgaged ${SP[i].name} (+${fmt(SP[i].price / 2)})`); }
+function unmortgage(i) { const o = st.own[i], p = st.players[o.o], c = unmortCost(i); if (p.cash < c) return false; p.cash -= c; o.m = false; log(`▶️ ${p.emoji} ${p.name} resumed ${SP[i].name}`); return true; }
+
+function award(p, key, ico, title) {
+  if (p.ach.some(a => a.key === key)) return;
+  p.ach.push({ key, ico, title });
+  log(`🏅 ${p.emoji} ${p.name} earned “${title}”`);
+  UI.toast(`🏅 ${p.name}: ${title}`);
+}
+function checkMoonshot(p, g) {
+  if (!g || !hasMono(p.id, g) || p.ach.some(a => a.key === 'ms-' + g)) return;
+  const G = GROUPS[g];
+  award(p, 'ms-' + g, '🗺️', `Set complete: ${G.short}`);
+  UI.banner(G.color, 'SET COMPLETE', G.name, `${p.emoji} ${p.name} holds the whole set — rent doubles`, `“${G.intent}”`);
+  Fx.confetti(); Sfx.fanfare();
+  if (completeGroups(p.id).length >= 2) award(p, 'compound', '♾️', 'Collector: two full sets (+10% rent per extra set)');
+}
+
+function buy(p, i, reason) {
+  const s = SP[i]; if (p.cash < s.price || st.own[i]) return false;
+  p.cash -= s.price; st.own[i] = { o: p.id, lvl: 0, m: false };
+  const ans = +reason, aligned = ans === s.a;
+  st.reasons[aligned ? 'right' : 'wrong']++;
+  st.theses.unshift({ pid: p.id, i, ans, aligned });
+  st.theses = st.theses.slice(0, 30);
+  p.picks = (p.picks || 0) + 1;
+  st.lesson = { pid: p.id, i, ans, aligned };
+  log(`${p.emoji} ${p.name} claimed ${s.name} for ${fmt(s.price)} — ${aligned ? '✅ knew it' : '📘 learned it'}`);
+  Sfx.cash();
+  if (aligned) {
+    p.cash += BONUS; p.aligned++;
+    UI.toast(`✅ ${p.name} knows Alaska: +${fmt(BONUS)} local-knowledge bonus`);
+    if (p.aligned >= 3) award(p, 'whisper', '🧭', 'Sourdough — 3 Alaska facts right');
+    if (p.aligned >= 8) award(p, 'oldtimer', '🏔️', 'Old Timer — 8 Alaska facts right');
+  }
+  award(p, 'first', '🃏', 'First card pulled');
+  if (s.t === 'rail' && countType(p.id, 'rail') === 4) award(p, 'rails', '🔗', 'Master of transport: ferry, ship, floatplane and train');
+  checkMoonshot(p, s.g);
+  return true;
+}
+function doTrade(buyer, seller, i, amt) {
+  buyer.cash -= amt; seller.cash += amt; st.own[i].o = buyer.id;
+  log(`🤝 ${buyer.emoji} ${buyer.name} bought ${SP[i].name} from ${seller.name} for ${fmt(amt)}`);
+  Sfx.cash(); checkMoonshot(buyer, SP[i].g);
+}
+function botAccepts(b, i, offer, buyerId) {
+  const s = SP[i]; let val = s.price * 1.5, why = '';
+  if (s.t === 'prop') {
+    const ids = GIDX[s.g];
+    const buyerHas = ids.filter(j => j !== i && st.own[j] && st.own[j].o === buyerId).length;
+    const iHave = ids.filter(j => j !== i && st.own[j] && st.own[j].o === b.id).length;
+    if (buyerHas === ids.length - 1) { val = s.price * 2.4; why = 'That would finish your set. It’ll cost you.'; }
+    if (iHave > 0) { val *= 1.7; why = 'I’m collecting that set myself.'; }
+  } else val = s.price * 1.8;
+  if (b.cash < 800) val *= 0.75;
+  if (st.own[i].m) val *= 0.8;
+  const ok = offer >= val;
+  return { ok, why: ok ? 'Deal — the numbers work.' : (why || 'Not enough conviction at that price.'), ask: Math.ceil(val / 50) * 50 };
+}
+
+// ---------- movement ----------
+async function moveSteps(p, n, back) {
+  for (let k = 0; k < n; k++) {
+    p.pos = back ? (p.pos + 39) % 40 : (p.pos + 1) % 40;
+    if (!back && p.pos === 0) { gain(p, GO_PAY); log(`🏁 ${p.emoji} ${p.name} stepped ashore: +${fmt(GO_PAY)} PFD check`); }
+    UI.tokens(true); Sfx.step();
+    await sleep(160);
+  }
+  UI.render();
+}
+async function goJail(p) {
+  p.pos = 10; p.jail = true; p.jailTurns = 0; st.canRollAgain = false; st.dbl = 0;
+  log(`📜 ${p.emoji} ${p.name} is locked in Weathered In — fogged in, nothing’s flying`);
+  Sfx.jail(); UI.tokens(); UI.render(); await dl(400);
+}
+async function land(p) {
+  const i = p.pos, s = SP[i]; UI.render();
+  if (OWNABLE(s.t)) {
+    const o = st.own[i];
+    if (!o) {
+      if (p.bot) await botConsiderBuy(p, i);
+      else { st.phase = 'buy'; st.buyIdx = i; UI.render(); await new Promise(r => (R.buy = r)); }
+    } else if (o.o !== p.id) {
+      const owner = st.players[o.o];
+      if (o.m) log(`${p.emoji} ${p.name} landed on ${s.name} — mortgaged, no rent`);
+      else {
+        const r = rentFor(i);
+        payTo(p, owner, r);
+        log(`💸 ${p.emoji} ${p.name} paid ${fmt(r)} to ${owner.emoji} ${owner.name} for ${s.name}`);
+        UI.toast(`💸 ${p.name} → ${owner.name}: ${fmt(r)}`);
+        UI.flashCash(owner);
+        await resolveDebt(p);
+      }
+    }
+  } else if (s.t === 'tax') {
+    payPot(p, s.amt); log(`${s.ico} ${p.emoji} ${p.name} paid the ${s.name}: ${fmt(s.amt)} → Salmon Bake pot`);
+    await resolveDebt(p);
+  } else if (s.t === 'chance' || s.t === 'chest') await drawCard(p, s.t);
+  else if (s.t === 'gotojail') await goJail(p);
+  else if (s.t === 'parking' && st.pot > 0) {
+    const a = st.pot; st.pot = 0; gain(p, a);
+    log(`🏆 ${p.emoji} ${p.name} won the Salmon Bake: ${fmt(a)}`); UI.toast(`🏆 ${p.name} wins the Salmon Bake: ${fmt(a)}`);
+    if (a >= K(150)) award(p, 'lounge', '🏆', 'Lifted a big Salmon Bake');
+  }
+  st.rentMult = null; st.utilMult = null;
+}
+async function drawCard(p, deck) {
+  const arr = deck === 'chance' ? st.chance : st.chest;
+  const idx = arr.shift(); arr.push(idx);
+  const card = (deck === 'chance' ? CHANCE : CHEST)[idx];
+  Sfx.card();
+  log(`${deck === 'chance' ? '📡' : '🗳️'} ${p.emoji} ${p.name}: ${card.txt} ${card.sub}`);
+  await UI.showCard(deck, card, p);
+  const [f, a, b] = card.fx;
+  if (f === 'gain') gain(p, a);
+  else if (f === 'pot') { payPot(p, a); await resolveDebt(p); }
+  else if (f === 'to') { await moveSteps(p, (a - p.pos + 40) % 40); await land(p); }
+  else if (f === 'back') { await moveSteps(p, a, true); await land(p); }
+  else if (f === 'jail') await goJail(p);
+  else if (f === 'card') p.cards++;
+  else if (f === 'near') {
+    let j = p.pos; do { j = (j + 1) % 40; } while (SP[j].t !== a);
+    await moveSteps(p, (j - p.pos + 40) % 40);
+    if (a === 'rail') st.rentMult = 2; else st.utilMult = 10;
+    await land(p);
+  } else if (f === 'repairs') {
+    let t = 0; owned(p.id).forEach(i => { const l = st.own[i].lvl; t += l === 5 ? b : l * a; });
+    if (t) { payPot(p, t); log(`🔧 ${p.name} paid ${fmt(t)}`); await resolveDebt(p); } else log(`🔧 ${p.name} has nothing built — no cost`);
+  } else if (f === 'payEach') {
+    st.players.filter(q => !q.out && q !== p).forEach(q => payTo(p, q, a)); st.creditor = null; await resolveDebt(p);
+  } else if (f === 'collectEach') {
+    st.players.filter(q => !q.out && q !== p).forEach(q => { const x = Math.min(a, Math.max(0, q.cash)); q.cash -= x; p.cash += x; }); Sfx.cash();
+  }
+  UI.render();
+}
+
+// ---------- turn flow ----------
+async function doRoll() {
+  const p = cur(); if (st.over || p.out) return;
+  st.phase = 'busy'; UI.render();
+  const d = [r6(), r6()]; st.dice = d; await UI.rollDice(d);
+  const sum = d[0] + d[1], dbl = d[0] === d[1]; st.lastSum = sum;
+  log(`🎲 ${p.emoji} ${p.name} rolled ${d[0]} + ${d[1]}${dbl ? ' — doubles!' : ''}`);
+  if (p.jail) {
+    st.canRollAgain = false;
+    if (dbl) { p.jail = false; award(p, 'escape', '🔓', 'Escaped Weathered In'); log(`🔓 ${p.name} rolled doubles and broke out of Weathered In`); await moveSteps(p, sum); await land(p); }
+    else if (++p.jailTurns >= 3) {
+      payPot(p, FINE); p.jail = false; log(`${p.name} pays ${fmt(FINE)} to exit Weathered In`);
+      await resolveDebt(p); if (!p.out) { await moveSteps(p, sum); await land(p); }
+    } else log(`${p.name} stays in Weathered In (${p.jailTurns}/3)`);
+  } else {
+    if (dbl && ++st.dbl >= 3) { log('Three doubles in a row — the weather has turned!'); await goJail(p); }
+    else { await moveSteps(p, sum); await land(p); st.canRollAgain = dbl && !p.jail && !p.out; }
+  }
+  if (p.out) return;
+  st.phase = st.canRollAgain ? 'roll' : 'end';
+  UI.render(); save();
+}
+function startTurn() {
+  if (st.over) return;
+  const p = cur(); st.dbl = 0; st.canRollAgain = false; st.phase = 'roll'; st.lesson = null;
+  UI.render(); UI.tokens(); save();
+  if (p.bot) botTurn();
+  else if (st.players.filter(q => !q.bot && !q.out).length > 1) UI.toast(`${p.emoji} ${p.name}, you’re up`);
+}
+function nextTurn() {
+  if (st.over) return;
+  const alive = st.players.filter(p => !p.out);
+  if (alive.length <= 1) return endGame('last');
+  if (st.timeUp) return endGame('time');
+  let i = st.turn, wrapped = false;
+  do { i++; if (i >= st.players.length) { i = 0; wrapped = true; } } while (st.players[i].out);
+  if (wrapped || i <= st.turn) {
+    st.round++;
+    st.players.forEach(p => { p.hist.push(p.out ? 0 : netWorth(p)); if (!p.out && netWorth(p) >= START * 2) award(p, 'double', '📈', 'Compounder — doubled your capital'); });
+  }
+  st.turn = i; startTurn();
+}
+function endGame(reason) {
+  st.over = true; st.phase = 'over';
+  st.players.forEach(p => { if (!p.out) p.hist.push(netWorth(p)); });
+  log(reason === 'time' ? '🔔 Last ferry out: final card values are in' : '🏆 Only one adventurer remains');
+  localStorage.removeItem('ak-save');
+  UI.render(); UI.endModal(); Fx.confetti(); Sfx.fanfare();
+}
+
+// ---------- bots ----------
+async function botConsiderBuy(p, i) {
+  const s = SP[i];
+  const completes = s.t === 'prop' && GIDX[s.g].every(j => j === i || (st.own[j] && st.own[j].o === p.id));
+  const reserve = st.round < 4 ? 600 : 1300;
+  if (p.cash >= s.price && (p.cash - s.price >= reserve || completes)) {
+    await dl(450);
+    const reason = Math.random() < 0.6 ? s.a : Math.floor(Math.random() * s.o.length);
+    buy(p, i, reason);
+  } else log(`${p.emoji} ${p.name} passed on ${s.name}`);
+}
+async function botManage(p) {
+  if (p.out) return;
+  let built = 0, guard = 60;
+  const groups = completeGroups(p.id).sort((a, b) => GROUPS[b].house - GROUPS[a].house);
+  while (guard--) {
+    let did = false;
+    for (const g of groups) {
+      const c = GIDX[g].find(i => canBuild(p.id, i));
+      if (c != null && p.cash - houseCost(g) >= 1200) { build(c); did = true; built++; break; }
+    }
+    if (!did) break;
+  }
+  owned(p.id).forEach(i => { if (st.own[i].m && p.cash - unmortCost(i) > 3000) unmortgage(i); });
+  if (built) { UI.render(); await dl(500); }
+}
+async function botSeekDeal(p) {
+  if (p.out || Math.random() > 0.35) return;
+  for (const g of shuffle(Object.keys(GROUPS))) {
+    const ids = GIDX[g];
+    const mine = ids.filter(j => st.own[j] && st.own[j].o === p.id);
+    const missing = ids.filter(j => !(st.own[j] && st.own[j].o === p.id));
+    if (missing.length !== 1 || !mine.length) continue;
+    const j = missing[0], o = st.own[j];
+    if (!o || groupHasBuildings(g)) continue;
+    const seller = st.players[o.o]; if (seller.out) continue;
+    const offer = Math.round(SP[j].price * (2 + Math.random() * 0.6) / 10) * 10;
+    if (p.cash - offer < 800) continue;
+    let ok;
+    if (seller.bot) ok = botAccepts(seller, j, offer, p.id).ok;
+    else ok = await UI.askOffer(p, seller, j, offer);
+    if (ok) doTrade(p, seller, j, offer);
+    else log(`🙅 ${seller.name} declined ${p.name}’s ${fmt(offer)} bid for ${SP[j].name}`);
+    UI.render(); await dl(500);
+    return;
+  }
+}
+async function botTurn() {
+  const p = cur(), gid = st;
+  await dl(700); if (st !== gid || st.over) return;
+  if (p.jail) {
+    if (p.cards > 0) { p.cards--; p.jail = false; log(`🎫 ${p.name} used a get-out card`); }
+    else if (p.cash > FINE + 2500 && Object.keys(st.own).length < 22) { payPot(p, FINE); p.jail = false; log(`${p.name} paid ${fmt(FINE)} to leave Weathered In`); }
+  }
+  await botSeekDeal(p);
+  await botManage(p);
+  let guard = 0;
+  do {
+    if (st !== gid || st.over) return;
+    await doRoll();
+    if (p.out || st.over) break;
+    await botManage(p);
+    if (st.phase === 'roll') await dl(400);
+  } while (st.phase === 'roll' && guard++ < 4);
+  await dl(450);
+  if (st === gid) nextTurn();
+}
+
+// ---------- human actions ----------
+const human = () => {
+  if (!st || st.over) return null;
+  const p = cur();
+  return !p.bot && (isLocal(p) || (NETX.role === 'host' && NETX.actor === p.id && p.remote)) ? p : null;
+};
+const ACT = {
+  async roll() { const p = human(); if (!p || st.phase !== 'roll') return; await doRoll(); if (p.out) nextTurn(); },
+  payfine() { const p = human(); if (!p || !p.jail || st.phase !== 'roll') return; if (p.cash < FINE) return UI.toast('Not enough cash'); payPot(p, FINE); p.jail = false; log(`${p.name} paid ${fmt(FINE)} to leave Weathered In`); UI.render(); },
+  usecard() { const p = human(); if (!p || !p.jail || !p.cards) return; p.cards--; p.jail = false; log(`🎫 ${p.name} used a get-out card`); UI.render(); },
+  buy(reason) { const p = human(); if (!p || st.phase !== 'buy') return; if (!buy(p, st.buyIdx, reason)) return UI.toast('Not enough cash. Mortgage or sell first'); st.phase = 'busy'; const r = R.buy; R.buy = null; r && r(); },
+  pass() { const p = human(); if (!p || st.phase !== 'buy') return; log(`${p.emoji} ${p.name} passed on ${SP[st.buyIdx].name}`); st.lesson = { pid: p.id, i: st.buyIdx, passed: true }; st.phase = 'busy'; const r = R.buy; R.buy = null; r && r(); },
+  end() { if (!human() || st.phase !== 'end') return; nextTurn(); },
+  bankrupt() { const p = human(); if (!p || st.phase !== 'debt') return; if (NETX.actor == null && !confirm('Declare bankruptcy and leave Alaska?')) return; bankrupt(p); UI.closeModal(); },
+  pbuild(i) { const p = human(); if (!p || st.phase === 'busy') return; i = +i; if (!canBuild(p.id, i) || p.cash < houseCost(SP[i].g)) return UI.toast('Cannot build there yet'); build(i); afterPortfolio(); },
+  psell(i) { const p = human(); if (!p || st.phase === 'busy') return; i = +i; if (!canSell(p.id, i)) return; sellStage(i); afterPortfolio(); },
+  pmort(i) { const p = human(); if (!p || st.phase === 'busy') return; i = +i; if (!canMortgage(p.id, i)) return; mortgage(i); Sfx.cash(); afterPortfolio(); },
+  punmort(i) { const p = human(); if (!p || st.phase === 'busy') return; i = +i; if (!unmortgage(i)) return UI.toast('Not enough cash'); afterPortfolio(); },
+  async tradeSend(arg) {
+    const p = human(); if (!p) return;
+    const fromNet = arg && typeof arg === 'object';
+    const i = fromNet ? +arg.i : +document.getElementById('trProp').value;
+    const amt = Math.round((fromNet ? +arg.amt : +document.getElementById('trAmt').value) / 10) * 10;
+    if (!st.own[i] || st.own[i].o === p.id || amt <= 0) return;
+    if (amt > p.cash) return UI.toast('You don’t have that much cash');
+    const seller = st.players[st.own[i].o];
+    let res;
+    if (seller.bot) res = botAccepts(seller, i, amt, p.id);
+    else { UI.tradeMsg(p, `⏳ Waiting for ${seller.emoji} <b>${seller.name}</b> to answer…`); res = { ok: await UI.askOffer(p, seller, i, amt), why: '' }; }
+    if (res.ok && st.own[i] && st.own[i].o === seller.id && p.cash >= amt) { doTrade(p, seller, i, amt); UI.render(); UI.tradeDone(p); UI.toast(`🤝 ${seller.name}: “${res.why || 'Accepted.'}”`); save(); }
+    else { UI.tradeMsg(p, `${seller.emoji} <b>${seller.name}</b>: “${res.why || 'No deal.'}”${res.ask ? ` <span style="color:var(--muted)">(hint: think ${fmt(res.ask)})</span>` : ''}`); log(`🙅 ${seller.name} declined ${p.name}’s ${fmt(amt)} bid for ${SP[i].name}`); UI.render(); }
+  }
+};
+function afterPortfolio() { UI.render(); UI.refreshModal(); checkDebt(); save(); }
+
+</script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof Promise&&Promise.prototype&&Promise.prototype.then},n=[0,26,44,70,100,134,172,196,242,292,346,404,466,532,581,655,733,815,901,991,1085,1156,1258,1364,1474,1588,1706,1828,1921,2051,2185,2323,2465,2611,2761,2876,3034,3196,3362,3532,3706],o=function(t){if(!t)throw new Error('"version" cannot be null or undefined');if(t<1||t>40)throw new Error('"version" should be in range from 1 to 40');return 4*t+17},a=function(t){return n[t]},i=function(t){for(var r=0;0!==t;)r++,t>>>=1;return r},u=function(t){if("function"!=typeof t)throw new Error('"toSJISFunc" is not a valid function.');r=t},s=function(){return void 0!==r},f=function(t){return r(t)};function h(t,r){return t(r={exports:{}},r.exports),r.exports}var c=h((function(t,r){r.L={bit:1},r.M={bit:0},r.Q={bit:3},r.H={bit:2},r.isValid=function(t){return t&&void 0!==t.bit&&t.bit>=0&&t.bit<4},r.from=function(t,e){if(r.isValid(t))return t;try{return function(t){if("string"!=typeof t)throw new Error("Param is not a string");switch(t.toLowerCase()){case"l":case"low":return r.L;case"m":case"medium":return r.M;case"q":case"quartile":return r.Q;case"h":case"high":return r.H;default:throw new Error("Unknown EC Level: "+t)}}(t)}catch(t){return e}}}));function g(){this.buffer=[],this.length=0}c.L,c.M,c.Q,c.H,c.isValid,g.prototype={get:function(t){var r=Math.floor(t/8);return 1==(this.buffer[r]>>>7-t%8&1)},put:function(t,r){for(var e=0;e<r;e++)this.putBit(1==(t>>>r-e-1&1))},getLengthInBits:function(){return this.length},putBit:function(t){var r=Math.floor(this.length/8);this.buffer.length<=r&&this.buffer.push(0),t&&(this.buffer[r]|=128>>>this.length%8),this.length++}};var d=g;function l(t){if(!t||t<1)throw new Error("BitMatrix size must be defined and greater than 0");this.size=t,this.data=new Uint8Array(t*t),this.reservedBit=new Uint8Array(t*t)}l.prototype.set=function(t,r,e,n){var o=t*this.size+r;this.data[o]=e,n&&(this.reservedBit[o]=!0)},l.prototype.get=function(t,r){return this.data[t*this.size+r]},l.prototype.xor=function(t,r,e){this.data[t*this.size+r]^=e},l.prototype.isReserved=function(t,r){return this.reservedBit[t*this.size+r]};var v=l,p=h((function(t,r){var e=o;r.getRowColCoords=function(t){if(1===t)return[];for(var r=Math.floor(t/7)+2,n=e(t),o=145===n?26:2*Math.ceil((n-13)/(2*r-2)),a=[n-7],i=1;i<r-1;i++)a[i]=a[i-1]-o;return a.push(6),a.reverse()},r.getPositions=function(t){for(var e=[],n=r.getRowColCoords(t),o=n.length,a=0;a<o;a++)for(var i=0;i<o;i++)0===a&&0===i||0===a&&i===o-1||a===o-1&&0===i||e.push([n[a],n[i]]);return e}}));p.getRowColCoords,p.getPositions;var w=o,m=function(t){var r=w(t);return[[0,0],[r-7,0],[0,r-7]]},E=h((function(t,r){r.Patterns={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7};var e=3,n=3,o=40,a=10;function i(t,e,n){switch(t){case r.Patterns.PATTERN000:return(e+n)%2==0;case r.Patterns.PATTERN001:return e%2==0;case r.Patterns.PATTERN010:return n%3==0;case r.Patterns.PATTERN011:return(e+n)%3==0;case r.Patterns.PATTERN100:return(Math.floor(e/2)+Math.floor(n/3))%2==0;case r.Patterns.PATTERN101:return e*n%2+e*n%3==0;case r.Patterns.PATTERN110:return(e*n%2+e*n%3)%2==0;case r.Patterns.PATTERN111:return(e*n%3+(e+n)%2)%2==0;default:throw new Error("bad maskPattern:"+t)}}r.isValid=function(t){return null!=t&&""!==t&&!isNaN(t)&&t>=0&&t<=7},r.from=function(t){return r.isValid(t)?parseInt(t,10):void 0},r.getPenaltyN1=function(t){for(var r=t.size,n=0,o=0,a=0,i=null,u=null,s=0;s<r;s++){o=a=0,i=u=null;for(var f=0;f<r;f++){var h=t.get(s,f);h===i?o++:(o>=5&&(n+=e+(o-5)),i=h,o=1),(h=t.get(f,s))===u?a++:(a>=5&&(n+=e+(a-5)),u=h,a=1)}o>=5&&(n+=e+(o-5)),a>=5&&(n+=e+(a-5))}return n},r.getPenaltyN2=function(t){for(var r=t.size,e=0,o=0;o<r-1;o++)for(var a=0;a<r-1;a++){var i=t.get(o,a)+t.get(o,a+1)+t.get(o+1,a)+t.get(o+1,a+1);4!==i&&0!==i||e++}return e*n},r.getPenaltyN3=function(t){for(var r=t.size,e=0,n=0,a=0,i=0;i<r;i++){n=a=0;for(var u=0;u<r;u++)n=n<<1&2047|t.get(i,u),u>=10&&(1488===n||93===n)&&e++,a=a<<1&2047|t.get(u,i),u>=10&&(1488===a||93===a)&&e++}return e*o},r.getPenaltyN4=function(t){for(var r=0,e=t.data.length,n=0;n<e;n++)r+=t.data[n];return Math.abs(Math.ceil(100*r/e/5)-10)*a},r.applyMask=function(t,r){for(var e=r.size,n=0;n<e;n++)for(var o=0;o<e;o++)r.isReserved(o,n)||r.xor(o,n,i(t,o,n))},r.getBestMask=function(t,e){for(var n=Object.keys(r.Patterns).length,o=0,a=1/0,i=0;i<n;i++){e(i),r.applyMask(i,t);var u=r.getPenaltyN1(t)+r.getPenaltyN2(t)+r.getPenaltyN3(t)+r.getPenaltyN4(t);r.applyMask(i,t),u<a&&(a=u,o=i)}return o}}));E.Patterns,E.isValid,E.getPenaltyN1,E.getPenaltyN2,E.getPenaltyN3,E.getPenaltyN4,E.applyMask,E.getBestMask;var y=[1,1,1,1,1,1,1,1,1,1,2,2,1,2,2,4,1,2,4,4,2,4,4,4,2,4,6,5,2,4,6,6,2,5,8,8,4,5,8,8,4,5,8,11,4,8,10,11,4,9,12,16,4,9,16,16,6,10,12,18,6,10,17,16,6,11,16,19,6,13,18,21,7,14,21,25,8,16,20,25,8,17,23,25,9,17,23,34,9,18,25,30,10,20,27,32,12,21,29,35,12,23,34,37,12,25,34,40,13,26,35,42,14,28,38,45,15,29,40,48,16,31,43,51,17,33,45,54,18,35,48,57,19,37,51,60,19,38,53,63,20,40,56,66,21,43,59,70,22,45,62,74,24,47,65,77,25,49,68,81],A=[7,10,13,17,10,16,22,28,15,26,36,44,20,36,52,64,26,48,72,88,36,64,96,112,40,72,108,130,48,88,132,156,60,110,160,192,72,130,192,224,80,150,224,264,96,176,260,308,104,198,288,352,120,216,320,384,132,240,360,432,144,280,408,480,168,308,448,532,180,338,504,588,196,364,546,650,224,416,600,700,224,442,644,750,252,476,690,816,270,504,750,900,300,560,810,960,312,588,870,1050,336,644,952,1110,360,700,1020,1200,390,728,1050,1260,420,784,1140,1350,450,812,1200,1440,480,868,1290,1530,510,924,1350,1620,540,980,1440,1710,570,1036,1530,1800,570,1064,1590,1890,600,1120,1680,1980,630,1204,1770,2100,660,1260,1860,2220,720,1316,1950,2310,750,1372,2040,2430],I=function(t,r){switch(r){case c.L:return y[4*(t-1)+0];case c.M:return y[4*(t-1)+1];case c.Q:return y[4*(t-1)+2];case c.H:return y[4*(t-1)+3];default:return}},M=function(t,r){switch(r){case c.L:return A[4*(t-1)+0];case c.M:return A[4*(t-1)+1];case c.Q:return A[4*(t-1)+2];case c.H:return A[4*(t-1)+3];default:return}},N=new Uint8Array(512),B=new Uint8Array(256);!function(){for(var t=1,r=0;r<255;r++)N[r]=t,B[t]=r,256&(t<<=1)&&(t^=285);for(var e=255;e<512;e++)N[e]=N[e-255]}();var C=function(t){return N[t]},P=function(t,r){return 0===t||0===r?0:N[B[t]+B[r]]},R=h((function(t,r){r.mul=function(t,r){for(var e=new Uint8Array(t.length+r.length-1),n=0;n<t.length;n++)for(var o=0;o<r.length;o++)e[n+o]^=P(t[n],r[o]);return e},r.mod=function(t,r){for(var e=new Uint8Array(t);e.length-r.length>=0;){for(var n=e[0],o=0;o<r.length;o++)e[o]^=P(r[o],n);for(var a=0;a<e.length&&0===e[a];)a++;e=e.slice(a)}return e},r.generateECPolynomial=function(t){for(var e=new Uint8Array([1]),n=0;n<t;n++)e=r.mul(e,new Uint8Array([1,C(n)]));return e}}));function T(t){this.genPoly=void 0,this.degree=t,this.degree&&this.initialize(this.degree)}R.mul,R.mod,R.generateECPolynomial,T.prototype.initialize=function(t){this.degree=t,this.genPoly=R.generateECPolynomial(this.degree)},T.prototype.encode=function(t){if(!this.genPoly)throw new Error("Encoder not initialized");var r=new Uint8Array(t.length+this.degree);r.set(t);var e=R.mod(r,this.genPoly),n=this.degree-e.length;if(n>0){var o=new Uint8Array(this.degree);return o.set(e,n),o}return e};var L=T,b=function(t){return!isNaN(t)&&t>=1&&t<=40},U="(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+",x="(?:(?![A-Z0-9 $%*+\\-./:]|"+(U=U.replace(/u/g,"\\u"))+")(?:.|[\r\n]))+",k=new RegExp(U,"g"),F=new RegExp("[^A-Z0-9 $%*+\\-./:]+","g"),S=new RegExp(x,"g"),D=new RegExp("[0-9]+","g"),Y=new RegExp("[A-Z $%*+\\-./:]+","g"),_=new RegExp("^"+U+"$"),z=new RegExp("^[0-9]+$"),H=new RegExp("^[A-Z0-9 $%*+\\-./:]+$"),J={KANJI:k,BYTE_KANJI:F,BYTE:S,NUMERIC:D,ALPHANUMERIC:Y,testKanji:function(t){return _.test(t)},testNumeric:function(t){return z.test(t)},testAlphanumeric:function(t){return H.test(t)}},K=h((function(t,r){r.NUMERIC={id:"Numeric",bit:1,ccBits:[10,12,14]},r.ALPHANUMERIC={id:"Alphanumeric",bit:2,ccBits:[9,11,13]},r.BYTE={id:"Byte",bit:4,ccBits:[8,16,16]},r.KANJI={id:"Kanji",bit:8,ccBits:[8,10,12]},r.MIXED={bit:-1},r.getCharCountIndicator=function(t,r){if(!t.ccBits)throw new Error("Invalid mode: "+t);if(!b(r))throw new Error("Invalid version: "+r);return r>=1&&r<10?t.ccBits[0]:r<27?t.ccBits[1]:t.ccBits[2]},r.getBestModeForData=function(t){return J.testNumeric(t)?r.NUMERIC:J.testAlphanumeric(t)?r.ALPHANUMERIC:J.testKanji(t)?r.KANJI:r.BYTE},r.toString=function(t){if(t&&t.id)return t.id;throw new Error("Invalid mode")},r.isValid=function(t){return t&&t.bit&&t.ccBits},r.from=function(t,e){if(r.isValid(t))return t;try{return function(t){if("string"!=typeof t)throw new Error("Param is not a string");switch(t.toLowerCase()){case"numeric":return r.NUMERIC;case"alphanumeric":return r.ALPHANUMERIC;case"kanji":return r.KANJI;case"byte":return r.BYTE;default:throw new Error("Unknown mode: "+t)}}(t)}catch(t){return e}}}));K.NUMERIC,K.ALPHANUMERIC,K.BYTE,K.KANJI,K.MIXED,K.getCharCountIndicator,K.getBestModeForData,K.isValid;var O=h((function(t,r){var e=i(7973);function n(t,r){return K.getCharCountIndicator(t,r)+4}function o(t,r){var e=0;return t.forEach((function(t){var o=n(t.mode,r);e+=o+t.getBitsLength()})),e}r.from=function(t,r){return b(t)?parseInt(t,10):r},r.getCapacity=function(t,r,e){if(!b(t))throw new Error("Invalid QR Code version");void 0===e&&(e=K.BYTE);var o=8*(a(t)-M(t,r));if(e===K.MIXED)return o;var i=o-n(e,t);switch(e){case K.NUMERIC:return Math.floor(i/10*3);case K.ALPHANUMERIC:return Math.floor(i/11*2);case K.KANJI:return Math.floor(i/13);case K.BYTE:default:return Math.floor(i/8)}},r.getBestVersionForData=function(t,e){var n,a=c.from(e,c.M);if(Array.isArray(t)){if(t.length>1)return function(t,e){for(var n=1;n<=40;n++){if(o(t,n)<=r.getCapacity(n,e,K.MIXED))return n}}(t,a);if(0===t.length)return 1;n=t[0]}else n=t;return function(t,e,n){for(var o=1;o<=40;o++)if(e<=r.getCapacity(o,n,t))return o}(n.mode,n.getLength(),a)},r.getEncodedBits=function(t){if(!b(t)||t<7)throw new Error("Invalid QR Code version");for(var r=t<<12;i(r)-e>=0;)r^=7973<<i(r)-e;return t<<12|r}}));O.getCapacity,O.getBestVersionForData,O.getEncodedBits;var Q=i(1335),V=function(t,r){for(var e=t.bit<<3|r,n=e<<10;i(n)-Q>=0;)n^=1335<<i(n)-Q;return 21522^(e<<10|n)};function q(t){this.mode=K.NUMERIC,this.data=t.toString()}q.getBitsLength=function(t){return 10*Math.floor(t/3)+(t%3?t%3*3+1:0)},q.prototype.getLength=function(){return this.data.length},q.prototype.getBitsLength=function(){return q.getBitsLength(this.data.length)},q.prototype.write=function(t){var r,e,n;for(r=0;r+3<=this.data.length;r+=3)e=this.data.substr(r,3),n=parseInt(e,10),t.put(n,10);var o=this.data.length-r;o>0&&(e=this.data.substr(r),n=parseInt(e,10),t.put(n,3*o+1))};var j=q,$=["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"," ","$","%","*","+","-",".","/",":"];function X(t){this.mode=K.ALPHANUMERIC,this.data=t}X.getBitsLength=function(t){return 11*Math.floor(t/2)+t%2*6},X.prototype.getLength=function(){return this.data.length},X.prototype.getBitsLength=function(){return X.getBitsLength(this.data.length)},X.prototype.write=function(t){var r;for(r=0;r+2<=this.data.length;r+=2){var e=45*$.indexOf(this.data[r]);e+=$.indexOf(this.data[r+1]),t.put(e,11)}this.data.length%2&&t.put($.indexOf(this.data[r]),6)};var Z=X;function W(t){this.mode=K.BYTE,"string"==typeof t&&(t=function(t){for(var r=[],e=t.length,n=0;n<e;n++){var o=t.charCodeAt(n);if(o>=55296&&o<=56319&&e>n+1){var a=t.charCodeAt(n+1);a>=56320&&a<=57343&&(o=1024*(o-55296)+a-56320+65536,n+=1)}o<128?r.push(o):o<2048?(r.push(o>>6|192),r.push(63&o|128)):o<55296||o>=57344&&o<65536?(r.push(o>>12|224),r.push(o>>6&63|128),r.push(63&o|128)):o>=65536&&o<=1114111?(r.push(o>>18|240),r.push(o>>12&63|128),r.push(o>>6&63|128),r.push(63&o|128)):r.push(239,191,189)}return new Uint8Array(r).buffer}(t)),this.data=new Uint8Array(t)}W.getBitsLength=function(t){return 8*t},W.prototype.getLength=function(){return this.data.length},W.prototype.getBitsLength=function(){return W.getBitsLength(this.data.length)},W.prototype.write=function(t){for(var r=0,e=this.data.length;r<e;r++)t.put(this.data[r],8)};var G=W;function tt(t){this.mode=K.KANJI,this.data=t}tt.getBitsLength=function(t){return 13*t},tt.prototype.getLength=function(){return this.data.length},tt.prototype.getBitsLength=function(){return tt.getBitsLength(this.data.length)},tt.prototype.write=function(t){var r;for(r=0;r<this.data.length;r++){var e=f(this.data[r]);if(e>=33088&&e<=40956)e-=33088;else{if(!(e>=57408&&e<=60351))throw new Error("Invalid SJIS character: "+this.data[r]+"\nMake sure your charset is UTF-8");e-=49472}e=192*(e>>>8&255)+(255&e),t.put(e,13)}};var rt=tt,et=h((function(t){var r={single_source_shortest_paths:function(t,e,n){var o={},a={};a[e]=0;var i,u,s,f,h,c,g,d=r.PriorityQueue.make();for(d.push(e,0);!d.empty();)for(s in u=(i=d.pop()).value,f=i.cost,h=t[u]||{})h.hasOwnProperty(s)&&(c=f+h[s],g=a[s],(void 0===a[s]||g>c)&&(a[s]=c,d.push(s,c),o[s]=u));if(void 0!==n&&void 0===a[n]){var l=["Could not find a path from ",e," to ",n,"."].join("");throw new Error(l)}return o},extract_shortest_path_from_predecessor_list:function(t,r){for(var e=[],n=r;n;)e.push(n),n=t[n];return e.reverse(),e},find_path:function(t,e,n){var o=r.single_source_shortest_paths(t,e,n);return r.extract_shortest_path_from_predecessor_list(o,n)},PriorityQueue:{make:function(t){var e,n=r.PriorityQueue,o={};for(e in t=t||{},n)n.hasOwnProperty(e)&&(o[e]=n[e]);return o.queue=[],o.sorter=t.sorter||n.default_sorter,o},default_sorter:function(t,r){return t.cost-r.cost},push:function(t,r){var e={value:t,cost:r};this.queue.push(e),this.queue.sort(this.sorter)},pop:function(){return this.queue.shift()},empty:function(){return 0===this.queue.length}}};t.exports=r})),nt=h((function(t,r){function e(t){return unescape(encodeURIComponent(t)).length}function n(t,r,e){for(var n,o=[];null!==(n=t.exec(e));)o.push({data:n[0],index:n.index,mode:r,length:n[0].length});return o}function o(t){var r,e,o=n(J.NUMERIC,K.NUMERIC,t),a=n(J.ALPHANUMERIC,K.ALPHANUMERIC,t);return s()?(r=n(J.BYTE,K.BYTE,t),e=n(J.KANJI,K.KANJI,t)):(r=n(J.BYTE_KANJI,K.BYTE,t),e=[]),o.concat(a,r,e).sort((function(t,r){return t.index-r.index})).map((function(t){return{data:t.data,mode:t.mode,length:t.length}}))}function a(t,r){switch(r){case K.NUMERIC:return j.getBitsLength(t);case K.ALPHANUMERIC:return Z.getBitsLength(t);case K.KANJI:return rt.getBitsLength(t);case K.BYTE:return G.getBitsLength(t)}}function i(t,r){var e,n=K.getBestModeForData(t);if((e=K.from(r,n))!==K.BYTE&&e.bit<n.bit)throw new Error('"'+t+'" cannot be encoded with mode '+K.toString(e)+".\n Suggested mode is: "+K.toString(n));switch(e!==K.KANJI||s()||(e=K.BYTE),e){case K.NUMERIC:return new j(t);case K.ALPHANUMERIC:return new Z(t);case K.KANJI:return new rt(t);case K.BYTE:return new G(t)}}r.fromArray=function(t){return t.reduce((function(t,r){return"string"==typeof r?t.push(i(r,null)):r.data&&t.push(i(r.data,r.mode)),t}),[])},r.fromString=function(t,n){for(var i=function(t,r){for(var e={},n={start:{}},o=["start"],i=0;i<t.length;i++){for(var u=t[i],s=[],f=0;f<u.length;f++){var h=u[f],c=""+i+f;s.push(c),e[c]={node:h,lastCount:0},n[c]={};for(var g=0;g<o.length;g++){var d=o[g];e[d]&&e[d].node.mode===h.mode?(n[d][c]=a(e[d].lastCount+h.length,h.mode)-a(e[d].lastCount,h.mode),e[d].lastCount+=h.length):(e[d]&&(e[d].lastCount=h.length),n[d][c]=a(h.length,h.mode)+4+K.getCharCountIndicator(h.mode,r))}}o=s}for(var l=0;l<o.length;l++)n[o[l]].end=0;return{map:n,table:e}}(function(t){for(var r=[],n=0;n<t.length;n++){var o=t[n];switch(o.mode){case K.NUMERIC:r.push([o,{data:o.data,mode:K.ALPHANUMERIC,length:o.length},{data:o.data,mode:K.BYTE,length:o.length}]);break;case K.ALPHANUMERIC:r.push([o,{data:o.data,mode:K.BYTE,length:o.length}]);break;case K.KANJI:r.push([o,{data:o.data,mode:K.BYTE,length:e(o.data)}]);break;case K.BYTE:r.push([{data:o.data,mode:K.BYTE,length:e(o.data)}])}}return r}(o(t)),n),u=et.find_path(i.map,"start","end"),s=[],f=1;f<u.length-1;f++)s.push(i.table[u[f]].node);return r.fromArray(function(t){return t.reduce((function(t,r){var e=t.length-1>=0?t[t.length-1]:null;return e&&e.mode===r.mode?(t[t.length-1].data+=r.data,t):(t.push(r),t)}),[])}(s))},r.rawSplit=function(t){return r.fromArray(o(t))}}));function ot(t,r,e){var n,o,a=t.size,i=V(r,e);for(n=0;n<15;n++)o=1==(i>>n&1),n<6?t.set(n,8,o,!0):n<8?t.set(n+1,8,o,!0):t.set(a-15+n,8,o,!0),n<8?t.set(8,a-n-1,o,!0):n<9?t.set(8,15-n-1+1,o,!0):t.set(8,15-n-1,o,!0);t.set(a-8,8,1,!0)}function at(t,r,e){var n=new d;e.forEach((function(r){n.put(r.mode.bit,4),n.put(r.getLength(),K.getCharCountIndicator(r.mode,t)),r.write(n)}));var o=8*(a(t)-M(t,r));for(n.getLengthInBits()+4<=o&&n.put(0,4);n.getLengthInBits()%8!=0;)n.putBit(0);for(var i=(o-n.getLengthInBits())/8,u=0;u<i;u++)n.put(u%2?17:236,8);return function(t,r,e){for(var n=a(r),o=M(r,e),i=n-o,u=I(r,e),s=u-n%u,f=Math.floor(n/u),h=Math.floor(i/u),c=h+1,g=f-h,d=new L(g),l=0,v=new Array(u),p=new Array(u),w=0,m=new Uint8Array(t.buffer),E=0;E<u;E++){var y=E<s?h:c;v[E]=m.slice(l,l+y),p[E]=d.encode(v[E]),l+=y,w=Math.max(w,y)}var A,N,B=new Uint8Array(n),C=0;for(A=0;A<w;A++)for(N=0;N<u;N++)A<v[N].length&&(B[C++]=v[N][A]);for(A=0;A<g;A++)for(N=0;N<u;N++)B[C++]=p[N][A];return B}(n,t,r)}function it(t,r,e,n){var a;if(Array.isArray(t))a=nt.fromArray(t);else{if("string"!=typeof t)throw new Error("Invalid data");var i=r;if(!i){var u=nt.rawSplit(t);i=O.getBestVersionForData(u,e)}a=nt.fromString(t,i||40)}var s=O.getBestVersionForData(a,e);if(!s)throw new Error("The amount of data is too big to be stored in a QR Code");if(r){if(r<s)throw new Error("\nThe chosen QR Code version cannot contain this amount of data.\nMinimum version required to store current data is: "+s+".\n")}else r=s;var f=at(r,e,a),h=o(r),c=new v(h);return function(t,r){for(var e=t.size,n=m(r),o=0;o<n.length;o++)for(var a=n[o][0],i=n[o][1],u=-1;u<=7;u++)if(!(a+u<=-1||e<=a+u))for(var s=-1;s<=7;s++)i+s<=-1||e<=i+s||(u>=0&&u<=6&&(0===s||6===s)||s>=0&&s<=6&&(0===u||6===u)||u>=2&&u<=4&&s>=2&&s<=4?t.set(a+u,i+s,!0,!0):t.set(a+u,i+s,!1,!0))}(c,r),function(t){for(var r=t.size,e=8;e<r-8;e++){var n=e%2==0;t.set(e,6,n,!0),t.set(6,e,n,!0)}}(c),function(t,r){for(var e=p.getPositions(r),n=0;n<e.length;n++)for(var o=e[n][0],a=e[n][1],i=-2;i<=2;i++)for(var u=-2;u<=2;u++)-2===i||2===i||-2===u||2===u||0===i&&0===u?t.set(o+i,a+u,!0,!0):t.set(o+i,a+u,!1,!0)}(c,r),ot(c,e,0),r>=7&&function(t,r){for(var e,n,o,a=t.size,i=O.getEncodedBits(r),u=0;u<18;u++)e=Math.floor(u/3),n=u%3+a-8-3,o=1==(i>>u&1),t.set(e,n,o,!0),t.set(n,e,o,!0)}(c,r),function(t,r){for(var e=t.size,n=-1,o=e-1,a=7,i=0,u=e-1;u>0;u-=2)for(6===u&&u--;;){for(var s=0;s<2;s++)if(!t.isReserved(o,u-s)){var f=!1;i<r.length&&(f=1==(r[i]>>>a&1)),t.set(o,u-s,f),-1===--a&&(i++,a=7)}if((o+=n)<0||e<=o){o-=n,n=-n;break}}}(c,f),isNaN(n)&&(n=E.getBestMask(c,ot.bind(null,c,e))),E.applyMask(n,c),ot(c,e,n),{modules:c,version:r,errorCorrectionLevel:e,maskPattern:n,segments:a}}nt.fromArray,nt.fromString,nt.rawSplit;var ut=function(t,r){if(void 0===t||""===t)throw new Error("No input text");var e,n,o=c.M;return void 0!==r&&(o=c.from(r.errorCorrectionLevel,c.M),e=O.from(r.version),n=E.from(r.maskPattern),r.toSJISFunc&&u(r.toSJISFunc)),it(t,e,o,n)},st=h((function(t,r){function e(t){if("number"==typeof t&&(t=t.toString()),"string"!=typeof t)throw new Error("Color should be defined as hex string");var r=t.slice().replace("#","").split("");if(r.length<3||5===r.length||r.length>8)throw new Error("Invalid hex color: "+t);3!==r.length&&4!==r.length||(r=Array.prototype.concat.apply([],r.map((function(t){return[t,t]})))),6===r.length&&r.push("F","F");var e=parseInt(r.join(""),16);return{r:e>>24&255,g:e>>16&255,b:e>>8&255,a:255&e,hex:"#"+r.slice(0,6).join("")}}r.getOptions=function(t){t||(t={}),t.color||(t.color={});var r=void 0===t.margin||null===t.margin||t.margin<0?4:t.margin,n=t.width&&t.width>=21?t.width:void 0,o=t.scale||4;return{width:n,scale:n?4:o,margin:r,color:{dark:e(t.color.dark||"#000000ff"),light:e(t.color.light||"#ffffffff")},type:t.type,rendererOpts:t.rendererOpts||{}}},r.getScale=function(t,r){return r.width&&r.width>=t+2*r.margin?r.width/(t+2*r.margin):r.scale},r.getImageWidth=function(t,e){var n=r.getScale(t,e);return Math.floor((t+2*e.margin)*n)},r.qrToImageData=function(t,e,n){for(var o=e.modules.size,a=e.modules.data,i=r.getScale(o,n),u=Math.floor((o+2*n.margin)*i),s=n.margin*i,f=[n.color.light,n.color.dark],h=0;h<u;h++)for(var c=0;c<u;c++){var g=4*(h*u+c),d=n.color.light;if(h>=s&&c>=s&&h<u-s&&c<u-s)d=f[a[Math.floor((h-s)/i)*o+Math.floor((c-s)/i)]?1:0];t[g++]=d.r,t[g++]=d.g,t[g++]=d.b,t[g]=d.a}}}));st.getOptions,st.getScale,st.getImageWidth,st.qrToImageData;var ft=h((function(t,r){r.render=function(t,r,e){var n=e,o=r;void 0!==n||r&&r.getContext||(n=r,r=void 0),r||(o=function(){try{return document.createElement("canvas")}catch(t){throw new Error("You need to specify a canvas element")}}()),n=st.getOptions(n);var a=st.getImageWidth(t.modules.size,n),i=o.getContext("2d"),u=i.createImageData(a,a);return st.qrToImageData(u.data,t,n),function(t,r,e){t.clearRect(0,0,r.width,r.height),r.style||(r.style={}),r.height=e,r.width=e,r.style.height=e+"px",r.style.width=e+"px"}(i,o,a),i.putImageData(u,0,0),o},r.renderToDataURL=function(t,e,n){var o=n;void 0!==o||e&&e.getContext||(o=e,e=void 0),o||(o={});var a=r.render(t,e,o),i=o.type||"image/png",u=o.rendererOpts||{};return a.toDataURL(i,u.quality)}}));function ht(t,r){var e=t.a/255,n=r+'="'+t.hex+'"';return e<1?n+" "+r+'-opacity="'+e.toFixed(2).slice(1)+'"':n}function ct(t,r,e){var n=t+r;return void 0!==e&&(n+=" "+e),n}ft.render,ft.renderToDataURL;var gt=function(t,r,e){var n=st.getOptions(r),o=t.modules.size,a=t.modules.data,i=o+2*n.margin,u=n.color.light.a?"<path "+ht(n.color.light,"fill")+' d="M0 0h'+i+"v"+i+'H0z"/>':"",s="<path "+ht(n.color.dark,"stroke")+' d="'+function(t,r,e){for(var n="",o=0,a=!1,i=0,u=0;u<t.length;u++){var s=Math.floor(u%r),f=Math.floor(u/r);s||a||(a=!0),t[u]?(i++,u>0&&s>0&&t[u-1]||(n+=a?ct("M",s+e,.5+f+e):ct("m",o,0),o=0,a=!1),s+1<r&&t[u+1]||(n+=ct("h",i),i=0)):o++}return n}(a,o,n.margin)+'"/>',f='viewBox="0 0 '+i+" "+i+'"',h='<svg xmlns="http://www.w3.org/2000/svg" '+(n.width?'width="'+n.width+'" height="'+n.width+'" ':"")+f+' shape-rendering="crispEdges">'+u+s+"</svg>\n";return"function"==typeof e&&e(null,h),h};function dt(t,r,n,o,a){var i=[].slice.call(arguments,1),u=i.length,s="function"==typeof i[u-1];if(!s&&!e())throw new Error("Callback required as last argument");if(!s){if(u<1)throw new Error("Too few arguments provided");return 1===u?(n=r,r=o=void 0):2!==u||r.getContext||(o=n,n=r,r=void 0),new Promise((function(e,a){try{var i=ut(n,o);e(t(i,r,o))}catch(t){a(t)}}))}if(u<2)throw new Error("Too few arguments provided");2===u?(a=n,n=r,r=o=void 0):3===u&&(r.getContext&&void 0===a?(a=o,o=void 0):(a=o,o=n,n=r,r=void 0));try{var f=ut(n,o);a(null,t(f,r,o))}catch(t){a(t)}}var lt=ut,vt=dt.bind(null,ft.render),pt=dt.bind(null,ft.renderToDataURL),wt=dt.bind(null,(function(t,r,e){return gt(t,e)})),mt={create:lt,toCanvas:vt,toDataURL:pt,toString:wt};return t.create=lt,t.default=mt,t.toCanvas=vt,t.toDataURL=pt,t.toString=wt,Object.defineProperty(t,"__esModule",{value:!0}),t}({});
+
+</script>
+<script>
+// Alaska Card · Ketchikan Monopoly — remote play.
+// Birdnode pattern: PeerJS WebRTC data channel (broker = signalling only), AES-256-GCM sealed envelopes,
+// pairing secret lives only in the URL fragment (never sent to any server). The host runs the engine;
+// remote clients render the host's state and send back actions for their own seat.
+const NET = (() => {
+  const PROTOCOL = 'ak-ketchikan/1';
+  const SALT = new TextEncoder().encode(PROTOCOL);
+  const ITERS = 210000;
+  const DEFAULT_BROKER = '0.peerjs.com';
+  // Unlisted hosted copy — local/file:// hosts point remote players here.
+  const DEFAULT_PUBLIC_URL = 'https://blazingbeard.github.io/_p/alaska-k7t3m9qx2v/';
+  const b64 = {
+    enc(buf) { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); return btoa(s); },
+    dec(str) { const s = atob(str); const b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b; }
+  };
+  const b64url = buf => b64.enc(buf).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const rnd = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), x => x.toString(16).padStart(2, '0')).join('');
+
+  let KEY = null, peer = null, status = 'offline', broker = DEFAULT_BROKER;
+  let lastSeq = 0;
+  const nextSeq = () => (lastSeq = Math.max(lastSeq + 1, Date.now() * 1000)); // monotonic across reloads
+  const recvSeq = new Map();
+  const orig = {};
+
+  // ---------- sealed channel ----------
+  async function deriveKey(secret) {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: SALT, iterations: ITERS, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  }
+  const aad = h => new TextEncoder().encode(JSON.stringify({ v: h.v, dir: h.dir, node: h.node, seq: h.seq, kind: h.kind }));
+  async function seal(hdr, payload) {
+    const nonce = crypto.getRandomValues(new Uint8Array(12));
+    const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: nonce, additionalData: aad(hdr) }, KEY, new TextEncoder().encode(JSON.stringify(payload)));
+    return JSON.stringify({ ...hdr, nonce: b64.enc(nonce), ct: b64.enc(ct) });
+  }
+  async function unseal(wire, expectDir) {
+    const env = JSON.parse(wire);
+    if (env.v !== PROTOCOL) throw new Error('bad protocol');
+    if (env.dir !== expectDir) throw new Error('bad direction');
+    const last = recvSeq.get(env.node) ?? -1;
+    if (typeof env.seq !== 'number' || env.seq <= last) throw new Error('replay/old seq');
+    const hdr = { v: env.v, dir: env.dir, node: env.node, seq: env.seq, kind: env.kind };
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64.dec(env.nonce), additionalData: aad(hdr) }, KEY, b64.dec(env.ct));
+    recvSeq.set(env.node, env.seq);
+    return { node: env.node, payload: JSON.parse(new TextDecoder().decode(pt)) };
+  }
+
+  // ---------- host ----------
+  const seats = new Map(); // seat -> { conn }
+  let chain = Promise.resolve(), lastStateJson = '', pendingOffer = null, lastCard = null, hostStarted = false;
+  const isHost = () => NETX.role === 'host';
+
+  function queueSend(conns, payload) {
+    chain = chain.then(async () => {
+      const open = conns().filter(c => c && c.open);
+      if (!open.length || !KEY) return;
+      const wire = await seal({ v: PROTOCOL, dir: 'h2n', node: 'host', seq: nextSeq(), kind: payload.k }, payload);
+      open.forEach(c => { try { c.send(wire); } catch { } });
+    }).catch(e => console.warn('net send', e));
+  }
+  const broadcast = payload => { if (isHost() && seats.size) queueSend(() => [...seats.values()].map(s => s.conn), payload); };
+  const sendTo = (seat, payload) => { if (isHost()) queueSend(() => [seats.get(seat)?.conn], { ...payload, to: seat }); };
+  const sendConn = (conn, payload) => queueSend(() => [conn], payload);
+
+  function stateMsg() {
+    const copy = { ...st, log: st.log.slice(0, 60) };
+    delete copy.net; delete copy.remaining;
+    const json = JSON.stringify(copy);
+    return { json, msg: { k: 'st', st: json, rem: st.endAt ? Math.max(0, st.endAt - Date.now()) : null } };
+  }
+  function syncState(hop) {
+    if (!isHost() || !st || !seats.size) return;
+    const { json, msg } = stateMsg();
+    if (json === lastStateJson && !hop) return;
+    lastStateJson = json; msg.hop = !!hop;
+    broadcast(msg);
+  }
+  function setLive(seat, on) {
+    st.netLive = st.netLive || {};
+    if (!!st.netLive[seat] === on) return;
+    st.netLive[seat] = on;
+    const p = st.players[seat];
+    UI.toast(`🌐 ${p.emoji} ${p.name} ${on ? 'joined the market' : 'disconnected'}`);
+    UI.render(); if (UI.modalKind === 'invite') showInvite();
+  }
+
+  function wireHostConn(conn) {
+    let rx = Promise.resolve(), seatOf = null;
+    conn.on('data', wire => {
+      rx = rx.then(async () => {
+        let m; try { m = await unseal(wire, 'n2h'); } catch (e) { console.warn('net drop:', e.message); return; }
+        const pl = m.payload, seat = pl.seat;
+        if (!st) return;
+        if (pl.k === 'hello') {
+          const p = st.players[seat];
+          if (!p || !p.remote || m.node.split('-')[0] !== 's' + seat) return sendConn(conn, { k: 'deny', why: 'That seat is not open for a remote player in this game.' });
+          const old = seats.get(seat);
+          if (old && old.conn !== conn) { try { old.conn.close(); } catch { } }
+          seats.set(seat, { conn }); seatOf = seat;
+          sendConn(conn, { k: 'welcome', seat });
+          sendConn(conn, stateMsg().msg);
+          if (lastCard) sendConn(conn, { k: 'card', ...lastCard });
+          if (pendingOffer && pendingOffer.seat === seat) sendConn(conn, pendingOffer.msg);
+          setLive(seat, true);
+          return;
+        }
+        if (seatOf == null || seat !== seatOf) return;
+        onRemoteAct(seat, pl);
+      });
+    });
+    conn.on('close', () => { if (seatOf != null && seats.get(seatOf)?.conn === conn) { seats.delete(seatOf); setLive(seatOf, false); } });
+    conn.on('error', e => console.warn('conn error', e));
+  }
+  function onRemoteAct(seat, m) {
+    if (m.k !== 'act' || st.over) return;
+    const p = st.players[seat]; if (!p || !p.remote) return;
+    if (m.a === 'offerAns') { if (pendingOffer && pendingOffer.seat === seat) pendingOffer.done(m.arg === '1'); return; }
+    if (m.a === 'cardOk') { if (R.card && cur().id === seat && lastCard && lastCard.pid === seat) R.card(); return; }
+    if (!Object.prototype.hasOwnProperty.call(ACT, m.a) || cur().id !== seat) return;
+    if (m.a === 'tradeSend' ? !(m.arg && typeof m.arg === 'object') : (m.arg != null && typeof m.arg !== 'string')) return;
+    NETX.actor = seat;
+    try { const r = ACT[m.a](m.arg); if (r && r.catch) r.catch(e => console.error(e)); }
+    finally { NETX.actor = null; }
+  }
+
+  async function startHostPeer() {
+    if (typeof Peer === 'undefined') { status = 'PeerJS failed to load (offline?)'; return refreshStatus(); }
+    status = 'starting…'; refreshStatus();
+    KEY = KEY || await deriveKey(st.net.k);
+    peer = new Peer(st.net.id, { host: st.net.b || DEFAULT_BROKER, secure: true, port: 443 });
+    peer.on('open', () => { status = 'online'; refreshStatus(); });
+    peer.on('connection', wireHostConn);
+    peer.on('disconnected', () => { status = 'reconnecting…'; refreshStatus(); try { peer.reconnect(); } catch { } });
+    peer.on('error', e => {
+      console.warn('peer error', e.type, e);
+      if (['unavailable-id', 'network', 'server-error', 'socket-error', 'socket-closed'].includes(e.type)) {
+        status = e.type === 'unavailable-id' ? 'reclaiming table id…' : 'broker unreachable — retrying…'; refreshStatus();
+        try { peer.destroy(); } catch { }
+        setTimeout(startHostPeer, 4000);
+      }
+    });
+  }
+  function refreshStatus() {
+    const el = $('#netStatus'); if (el) el.innerHTML = statusHtml();
+    const b = $('#netBtn'); if (b) b.title = 'Remote players · ' + status;
+  }
+  const statusHtml = () => `<span style="color:${status === 'online' ? 'var(--teal)' : '#ffb74d'}">●</span> Table ${status}${st && st.net ? ` · <code style="font-size:11px">${esc(st.net.id)}</code>` : ''}`;
+
+  function pubUrl() {
+    const saved = localStorage.getItem('ak-puburl');
+    if (saved) return saved;
+    return /^https?:$/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname) ? location.href.split('#')[0] : DEFAULT_PUBLIC_URL;
+  }
+  function joinURL(seat) {
+    const base = pubUrl(); if (!base || !st.net) return '';
+    return `${base.split('#')[0]}#h=${encodeURIComponent(st.net.id)}&k=${encodeURIComponent(st.net.k)}&s=${seat}&b=${encodeURIComponent(st.net.b || DEFAULT_BROKER)}`;
+  }
+  function showInvite() {
+    if (!st || !st.net) return UI.toast('No remote seats in this game — choose “🌐 Remote player” in ⚙️ setup');
+    const seatsList = st.players.filter(p => p.remote || p.wasRemote);
+    const base = pubUrl(), live = st.netLive || {};
+    const cards = seatsList.map(p => {
+      const url = joinURL(p.id);
+      return `<div class="seatcard"><canvas id="qr${p.id}" width="132" height="132"></canvas>
+        <div style="flex:1;min-width:0"><div style="font-weight:700">${p.emoji} ${esc(p.name)} <span class="botchip">${p.bot ? '🤖 AI took over' : live[p.id] ? '🟢 connected' : '⚪ waiting'}</span></div>
+        <input readonly id="lk${p.id}" value="${esc(url || 'Set the public page URL below first')}" style="margin:6px 0">
+        <div class="acts" style="margin-top:0">${url ? `<button class="btn" data-act="copyLink" data-arg="${p.id}">📋 Copy join link</button>` : ''}${p.remote ? `<button class="btn" data-act="takeover" data-arg="${p.id}" title="If they can’t make it">🤖 AI takes seat</button>` : ''}</div></div></div>`;
+    }).join('');
+    openModal('invite', `<div class="mbox" style="width:min(640px,94vw)"><div class="mhead" style="background:linear-gradient(135deg,#7b6cf6,#0f9a7f)"><button class="x" data-act="closeModal">✕</button><small>Remote executives</small><h2>🌐 Invite players to your table</h2><div style="font-size:12.5px;opacity:.9" id="netStatus">${statusHtml()}</div></div>
+      <div class="mbody"><p style="margin-top:0;color:var(--muted);font-size:12.5px">Each player scans their QR or opens their link. The game is peer-to-peer and end-to-end encrypted (AES-256-GCM); the key travels only in the link’s <code>#fragment</code>. Keep this tab open — it is the table.</p>
+      ${cards}
+      <label style="font-size:12px;color:var(--muted)">Public page URL (where players open this game — must be HTTPS)</label>
+      <div style="display:flex;gap:8px;margin-top:4px"><input id="pubUrl" value="${esc(base)}" placeholder="https://…/Alaska-Card-Monopoly.html" style="flex:1"><button class="btn" data-act="pubUrl">Save</button></div>
+      ${!/^https?:$/.test(location.protocol) ? '<p style="color:var(--muted);font-size:12px">You’re hosting from a local file; remote players join through the hosted copy above. Both run the same game.</p>' : ''}
+      </div></div>`);
+    seatsList.forEach(p => {
+      const url = joinURL(p.id), c = $('#qr' + p.id); if (!c) return;
+      const x = c.getContext('2d');
+      if (!url || typeof QRCode === 'undefined') { x.fillStyle = '#6b7385'; x.font = '12px sans-serif'; x.textAlign = 'center'; x.fillText(url ? 'QR unavailable' : 'No URL yet', 66, 70); return; }
+      QRCode.toCanvas(c, url, { width: 132, margin: 1 }, e => e && console.warn('QR', e));
+    });
+  }
+  function copyLink(seat) {
+    const url = joinURL(seat); if (!url) return;
+    const done = () => orig.toast('📋 Join link copied — send it to ' + st.players[seat].name);
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(done, () => { $('#lk' + seat).select(); document.execCommand('copy'); done(); });
+    else { $('#lk' + seat).select(); document.execCommand('copy'); done(); }
+  }
+  function setPubUrl() {
+    const v = ($('#pubUrl').value || '').trim();
+    if (v && !/^https?:\/\//i.test(v)) return orig.toast('Enter a full https:// address');
+    if (v) localStorage.setItem('ak-puburl', v); else localStorage.removeItem('ak-puburl');
+    showInvite();
+  }
+  async function aiContinue(p) {
+    for (let n = 0; n < 1200; n++) {
+      if (st.over || cur() !== p || p.out) return;
+      if (R.card) R.card();
+      if (st.phase === 'buy' && R.buy) { const r = R.buy; R.buy = null; st.phase = 'busy'; await botConsiderBuy(p, st.buyIdx); r(); }
+      else if (st.phase === 'debt' && R.debt) { liquidate(p); if (p.cash < 0) { bankrupt(p); return; } checkDebt(); }
+      else if (st.phase === 'roll') return botTurn();
+      else if (st.phase === 'end') { await sleep(400); return nextTurn(); }
+      await sleep(100);
+    }
+  }
+  function takeover(seat) {
+    const p = st.players[seat]; if (!p || !p.remote) return;
+    if (!confirm(`Hand ${p.name}’s seat to an AI local for the rest of the game?`)) return;
+    p.remote = false; p.bot = true; p.wasRemote = true;
+    if (pendingOffer && pendingOffer.seat === seat) pendingOffer.done(false);
+    sendTo(seat, { k: 'toast', msg: '🤖 The host handed your seat to an AI local' });
+    log(`🤖 ${p.emoji} ${p.name}’s seat is now run by an AI local`);
+    UI.render(); save(); showInvite();
+    if (cur() === p && !st.over) aiContinue(p);
+  }
+
+  function maybeHost(isNew) {
+    if (!st || !st.players.some(p => p.remote || p.wasRemote)) return;
+    NETX.role = 'host'; st.netLive = {};
+    if (!st.net) {
+      let ss = null; try { ss = JSON.parse(sessionStorage.getItem('ak-net')); } catch { }
+      st.net = ss && ss.id && ss.k ? ss : { id: 'akmono-' + rnd(8), k: b64url(crypto.getRandomValues(new Uint8Array(32))), b: DEFAULT_BROKER };
+    }
+    sessionStorage.setItem('ak-net', JSON.stringify(st.net));
+    $('#netBtn').style.display = '';
+    if (!hostStarted) { hostStarted = true; startHostPeer(); }
+    save();
+    if (isNew && st.players.some(p => p.remote)) showInvite();
+  }
+
+  // ---------- client ----------
+  let conn = null, nodeId = '', hostId = '', dialTimer = null, cchain = Promise.resolve(), pill = null, welcomed = false;
+  function setPill(txt, ok) { if (!pill) return; pill.textContent = txt; pill.classList.toggle('ok', !!ok); }
+  function csend(payload) {
+    cchain = cchain.then(async () => {
+      if (!conn || !conn.open || !KEY) return orig.toast('🌐 Not connected to the host yet');
+      conn.send(await seal({ v: PROTOCOL, dir: 'n2h', node: nodeId, seq: nextSeq(), kind: payload.k }, { ...payload, seat: NETX.seat }));
+    }).catch(e => console.warn('net send', e));
+  }
+  function scheduleDial(ms) { clearTimeout(dialTimer); dialTimer = setTimeout(dial, ms); }
+  function dial() {
+    if (!peer || peer.destroyed) return;
+    if (peer.disconnected) { try { peer.reconnect(); } catch { } return scheduleDial(2500); }
+    if (conn && conn.open) return;
+    setPill('🌐 Connecting to the host’s table…');
+    const c = peer.connect(hostId, { reliable: true }); conn = c;
+    let rx = Promise.resolve();
+    c.on('open', () => { welcomed = false; csend({ k: 'hello' }); setPill('🌐 Connected — waiting for the table…'); });
+    c.on('data', wire => { rx = rx.then(async () => { try { const m = await unseal(wire, 'h2n'); onClientMsg(m.payload); } catch (e) { console.warn('net drop:', e.message); } }); });
+    c.on('close', () => { if (conn === c) { setPill('🌐 Lost the host — reconnecting…'); scheduleDial(2500); } });
+    c.on('error', () => { if (conn === c) scheduleDial(3000); });
+    setTimeout(() => { if (conn === c && !c.open) { try { c.close(); } catch { } scheduleDial(500); } }, 9000);
+  }
+  async function connectClient(secret) {
+    if (typeof Peer === 'undefined') return connMsg('Could not load the peer-to-peer library. Check your internet connection and reload.');
+    connMsg('Deriving the table key…');
+    KEY = await deriveKey(secret);
+    connMsg('Reaching the matchmaking broker…');
+    peer = new Peer(undefined, { host: broker, secure: true, port: 443 });
+    peer.on('open', () => { connMsg('Knocking on the host’s table…'); dial(); });
+    peer.on('disconnected', () => { setPill('🌐 Reconnecting…'); try { peer.reconnect(); } catch { } });
+    peer.on('error', e => {
+      if (e.type === 'peer-unavailable') { connMsg('The host’s table isn’t open right now — retrying every few seconds…'); setPill('🌐 Host offline — retrying…'); scheduleDial(4000); }
+      else if (['network', 'server-error', 'socket-error', 'socket-closed'].includes(e.type)) { setPill('🌐 Network trouble — retrying…'); scheduleDial(4000); }
+      else console.warn('peer error', e.type, e);
+    });
+  }
+  function connMsg(t) { const el = $('#connMsg'); if (el) el.textContent = t; }
+  function onClientMsg(m) {
+    if (m.to != null && m.to !== NETX.seat) return;
+    switch (m.k) {
+      case 'welcome': welcomed = true; break;
+      case 'deny': connMsg('⛔ ' + m.why); setPill('⛔ ' + m.why); try { conn.close(); } catch { } conn = null; clearTimeout(dialTimer); dialTimer = null; peer.destroy(); break;
+      case 'st': {
+        const first = !st;
+        st = JSON.parse(m.st); st.endAt = m.rem != null ? Date.now() + m.rem : null; SPEED = st.speed === 'fast' ? 0.45 : 1;
+        if (first || UI.modalKind === 'connect') { if (UI.modalKind === 'connect') UI.closeModal(); boot(); }
+        else { UI.render(); UI.tokens(!!m.hop); UI.refreshModal(); }
+        const me = st.players[NETX.seat];
+        if (me) { setPill(`🌐 Live at the host’s table · you are ${me.emoji} ${me.name}`, true); document.title = `${me.emoji} ${me.name} · Alaska Monopoly`; }
+        break;
+      }
+      case 'toast': orig.toast(m.msg); break;
+      case 'banner': orig.banner(...m.a); break;
+      case 'dice': orig.rollDice(m.d); break;
+      case 'fx': orig.confetti(); break;
+      case 'sfx': if (Sfx[m.n]) orig.sfx[m.n](); break;
+      case 'card': if (st) orig.showCard(m.deck, m.card, st.players[m.pid]); break;
+      case 'close':
+        if (m.kind === 'card') { R.card = null; if (UI.modalKind === 'card') UI.closeModal(); }
+        else if (m.kind === 'offer') { R.offer = null; if (UI.modalKind === 'offer') UI.closeModal(); }
+        else if (UI.modalKind === m.kind) UI.closeModal();
+        break;
+      case 'offer': if (st) orig.askOffer(st.players[m.b], st.players[m.s], m.i, m.amt); break;
+      case 'trMsg': orig.tradeMsg(null, m.html); break;
+      case 'end': orig.endModal(); break;
+    }
+  }
+  function joinFromHash() {
+    const h = new URLSearchParams(location.hash.slice(1));
+    if (!h.get('h') || !h.get('k')) return false;
+    NETX.role = 'client'; NETX.seat = +h.get('s') || 0;
+    hostId = h.get('h'); broker = h.get('b') || DEFAULT_BROKER;
+    nodeId = `s${NETX.seat}-${rnd(6)}`;
+    pill = document.createElement('div'); pill.className = 'netpill'; document.body.appendChild(pill);
+    setPill('🌐 Connecting…');
+    buildBoard();
+    openModal('connect', `<div class="mbox" style="width:min(460px,92vw)"><div class="mhead" style="background:linear-gradient(135deg,#7b6cf6,#0f9a7f)"><small>Alaska Card · Ketchikan Monopoly</small><h2>🌐 Joining a remote table</h2></div>
+      <div class="mbody"><p id="connMsg" style="margin-top:0">Preparing…</p><p style="color:var(--muted);font-size:12.5px">Peer-to-peer and end-to-end encrypted. The host runs the market; you play seat ${NETX.seat + 1}. Keep this tab open.</p></div></div>`, true);
+    connectClient(h.get('k'));
+    return true;
+  }
+  function clientAct(a, arg) {
+    if (a === 'setup' || a === 'resume' || a === 'startgame' || a === 'invite') { orig.toast('🌐 The host runs this market'); return true; }
+    if (a === 'cardOk') { csend({ k: 'act', a }); if (R.card) R.card(); return true; }
+    if (a === 'offerAns') { csend({ k: 'act', a, arg }); return false; } // UACT closes the local modal
+    if (!Object.prototype.hasOwnProperty.call(ACT, a)) return false;
+    if (a === 'bankrupt' && !confirm('Declare bankruptcy and exit the market?')) return true;
+    if (a === 'tradeSend') {
+      arg = { i: +$('#trProp').value, amt: +$('#trAmt').value };
+      const m = $('#trMsg'); if (m) m.innerHTML = '📨 Offer sent to the table…';
+    }
+    csend({ k: 'act', a, arg });
+    return true;
+  }
+
+  // ---------- wrap UI so the host mirrors effects to every client ----------
+  function install() {
+    ['render', 'tokens', 'toast', 'banner', 'rollDice', 'showCard', 'askOffer', 'endModal', 'tradeMsg', 'tradeDone'].forEach(k => (orig[k] = UI[k].bind(UI)));
+    orig.confetti = Fx.confetti.bind(Fx);
+    orig.sfx = {}; Object.keys(Sfx).forEach(n => { orig.sfx[n] = Sfx[n].bind(Sfx); Sfx[n] = () => { orig.sfx[n](); broadcast({ k: 'sfx', n }); }; });
+    UI.render = () => { orig.render(); syncState(false); };
+    UI.tokens = hop => { orig.tokens(hop); syncState(!!hop); };
+    UI.toast = msg => { orig.toast(msg); broadcast({ k: 'toast', msg }); };
+    UI.banner = (...a) => { orig.banner(...a); broadcast({ k: 'banner', a }); };
+    UI.rollDice = d => { broadcast({ k: 'dice', d }); return orig.rollDice(d); };
+    UI.showCard = (deck, card, p) => {
+      if (!isHost()) return orig.showCard(deck, card, p);
+      lastCard = { deck, card, pid: p.id };
+      broadcast({ k: 'card', ...lastCard });
+      return orig.showCard(deck, card, p).then(() => { lastCard = null; broadcast({ k: 'close', kind: 'card' }); });
+    };
+    UI.askOffer = (buyer, seller, i, amt) => {
+      if (!isHost() || !seller.remote) return orig.askOffer(buyer, seller, i, amt);
+      return new Promise(res => {
+        const po = { seat: seller.id, msg: { k: 'offer', to: seller.id, b: buyer.id, s: seller.id, i, amt } };
+        po.done = v => { if (pendingOffer !== po) return; pendingOffer = null; clearTimeout(po.t); sendTo(seller.id, { k: 'close', kind: 'offer' }); res(v); };
+        po.t = setTimeout(() => po.done(false), 90000);
+        pendingOffer = po; sendTo(seller.id, po.msg);
+        orig.toast(`⏳ Waiting for ${seller.name} to answer ${buyer.name}’s offer…`);
+      });
+    };
+    UI.endModal = () => { orig.endModal(); broadcast({ k: 'end' }); };
+    UI.tradeMsg = (p, html) => { if (isHost() && p && p.remote) sendTo(p.id, { k: 'trMsg', html }); else orig.tradeMsg(p, html); };
+    UI.tradeDone = p => { if (isHost() && p && p.remote) sendTo(p.id, { k: 'close', kind: 'trade' }); else orig.tradeDone(p); };
+    Fx.confetti = () => { orig.confetti(); broadcast({ k: 'fx' }); };
+  }
+
+  return { install, maybeHost, joinFromHash, clientAct, showInvite, copyLink, setPubUrl, takeover, get status() { return status; } };
+})();
+
+</script>
+<script>
+// Alaska Card · Ketchikan Monopoly — rendering, modals, sound and effects
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const U = [1.55, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.55], TOT = 12.1;
+const STARTS = U.reduce((a, u, k) => (a.push(k ? a[k - 1] + U[k - 1] : 0), a), []);
+const ctr = k => (STARTS[k] + U[k] / 2) / TOT * 100;
+const rc = i => i <= 10 ? [10, 10 - i] : i <= 20 ? [10 - (i - 10), 0] : i <= 30 ? [0, i - 20] : [i - 30, 10];
+const sideOf = i => i % 10 === 0 ? 'c' : i < 10 ? 'b' : i < 20 ? 'l' : i < 30 ? 't' : 'r';
+const VIEWS = { flat: { rx: 0, rz: 0, ty: 0, fit: 0.94 }, tilt: { rx: 40, rz: 0, ty: -5, fit: 0.84 }, iso: { rx: 56, rz: 45, ty: -4, fit: 0.86 } };
+let view = localStorage.getItem('ak-view') || 'tilt', zoom = 1, muted = localStorage.getItem('ak-muted') === '1';
+const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+const DIE_ROT = { 1: [0, 0], 2: [0, -90], 3: [-90, 0], 4: [90, 0], 5: [0, 90], 6: [0, 180] };
+const spins = [0, 0];
+
+// ---------- sound ----------
+let AC = null;
+function tone(f, d = 0.08, type = 'sine', v = 0.05, delay = 0) {
+  if (muted) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    const t = AC.currentTime + delay, o = AC.createOscillator(), g = AC.createGain();
+    o.type = type; o.frequency.value = f; g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g).connect(AC.destination); o.start(t); o.stop(t + d + 0.02);
+  } catch { }
+}
+const Sfx = {
+  dice() { for (let i = 0; i < 7; i++) tone(180 + Math.random() * 500, 0.03, 'square', 0.025, i * 0.06); },
+  step() { tone(620, 0.04, 'triangle', 0.025); },
+  cash() { tone(880, 0.08, 'sine', 0.05); tone(1320, 0.12, 'sine', 0.045, 0.08); },
+  pay() { tone(330, 0.1, 'sawtooth', 0.025); tone(220, 0.14, 'sawtooth', 0.025, 0.1); },
+  jail() { tone(196, 0.35, 'square', 0.035); tone(147, 0.4, 'square', 0.035, 0.2); },
+  build() { tone(440, 0.06, 'square', 0.03); tone(660, 0.08, 'square', 0.03, 0.07); },
+  card() { tone(740, 0.05, 'triangle', 0.04); tone(990, 0.08, 'triangle', 0.04, 0.06); },
+  fanfare() { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.22, 'triangle', 0.05, i * 0.11)); }
+};
+
+// ---------- confetti ----------
+const Fx = {
+  confetti() {
+    const c = $('#fx'), x = c.getContext('2d'); c.width = innerWidth; c.height = innerHeight;
+    const cols = ['#19b39a', '#f2b632', '#7b6cf6', '#d6538f', '#58b7e0', '#f0881d', '#fff'];
+    const ps = Array.from({ length: 160 }, () => ({ x: innerWidth / 2 + (Math.random() - 0.5) * 300, y: innerHeight * 0.4, vx: (Math.random() - 0.5) * 14, vy: -Math.random() * 14 - 4, r: Math.random() * 6 + 3, c: pick(cols), a: Math.random() * 6, va: (Math.random() - 0.5) * 0.4 }));
+    let f = 0;
+    (function tick() {
+      x.clearRect(0, 0, c.width, c.height);
+      ps.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += 0.35; p.vx *= 0.99; p.a += p.va; x.save(); x.translate(p.x, p.y); x.rotate(p.a); x.fillStyle = p.c; x.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); x.restore(); });
+      if (++f < 150) requestAnimationFrame(tick); else x.clearRect(0, 0, c.width, c.height);
+    })();
+  }
+};
+
+// ---------- board ----------
+function buildBoard() {
+  const b = $('#board'); b.innerHTML = '<div class="slab s"></div><div class="slab n"></div><div class="slab e"></div><div class="slab w"></div>';
+  SP.forEach((s, i) => {
+    const [r, c] = rc(i), side = sideOf(i), el = document.createElement('div');
+    el.className = `tile side-${side}${side === 'c' ? ' corner' : ''}`;
+    el.id = 't' + i; el.dataset.act = 'deed'; el.dataset.arg = i;
+    el.style.gridRow = r + 1; el.style.gridColumn = c + 1;
+    const col = s.g ? GROUPS[s.g].color : null;
+    const price = s.price ? fmt(s.price) : s.amt ? 'Pay ' + fmt(s.amt) : (s.sub || '');
+    el.innerHTML = `${col ? `<div class="band" style="background:${col}"></div>` : ''}
+      <div class="tcontent"><div class="tico">${s.ico || ''}</div><div class="tname">${esc(s.name)}</div><div class="tprice">${price}</div></div>
+      <div class="ostrip"></div><div class="obadge"></div>
+      ${OWNABLE(s.t) ? `<div class="bld" style="--c:${col || '#8a8f99'}"><div class="f n"></div><div class="f s"></div><div class="f w"></div><div class="f e"></div><div class="f top"></div></div>` : ''}`;
+    b.appendChild(el);
+  });
+  const dieHTML = k => `<div class="die" id="die${k}">${[1, 2, 3, 4, 5, 6].map(v => `<div class="face f${v}">${Array.from({ length: 9 }, (_, j) => `<i class="${PIPS[v].includes(j) ? 'p' : ''}"></i>`).join('')}</div>`).join('')}</div>`;
+  const trees = [[6, 8], [10, 18], [88, 10], [92, 22], [7, 86], [16, 93], [84, 62], [90, 52], [30, 90], [68, 92], [40, 44], [62, 46]];
+  const center = document.createElement('div'); center.className = 'center';
+  center.innerHTML = `
+    <div class="ctitle"><small>ALASKA CARD · KETCHIKAN</small><b>LAST FRONTIER MONOPOLY</b><span>Some souvenirs you buy. This one you earn. Answer to claim.</span></div>
+    <div class="deck chance"><div>🌦️</div>WEATHER REPORT</div>
+    <div class="deck chest"><div>🃏</div>SHORE STORY</div>
+    <div class="hq" style="left:20%;top:66%"><div class="bld on win cockpit" style="--c:#2b3550;--oc:#19b39a;--h:calc(var(--cell)*1.6)"><div class="f n"></div><div class="f s"></div><div class="f w"></div><div class="f e"></div><div class="f top"></div></div></div>
+    <div class="hq" style="left:73%;top:30%;--bs:calc(var(--cell)*.6)"><div class="bld on win" style="--c:#4b5876;--oc:#f2b632;--h:calc(var(--cell)*1.05)"><div class="f n"></div><div class="f s"></div><div class="f w"></div><div class="f e"></div><div class="f top"></div></div></div>
+    <div class="tray">${dieHTML(0)}${dieHTML(1)}</div>
+    <div class="pot" id="pot">🔥 Salmon Bake $0</div>
+    ${trees.map(([x, y], k) => `<div class="bb" style="left:${x}%;top:${y}%;font-size:calc(var(--cell)*${k % 3 ? 0.42 : 0.55});margin:calc(var(--cell)*-.5) 0 0 calc(var(--cell)*-.2)">${k % 6 === 1 ? '🐋' : k % 6 === 4 ? '🦅' : '🌲'}</div>`).join('')}`;
+  b.appendChild(center);
+  const tk = document.createElement('div'); tk.className = 'tokens'; tk.id = 'tokens'; b.appendChild(tk);
+  applyView();
+}
+function applyView() {
+  const v = VIEWS[view], stage = $('#stage'), b = $('#board');
+  const w = stage.clientWidth, h = stage.clientHeight;
+  let bw = Math.min(w * 0.9, h * (view === 'flat' ? 0.94 : view === 'tilt' ? 1.18 : 1.25)) * v.fit;
+  if (view === 'iso') bw = Math.min(bw, w * 0.66);
+  b.style.setProperty('--bw', bw + 'px');
+  b.style.setProperty('--cell', bw / TOT + 'px');
+  b.style.setProperty('--band', bw / TOT * 0.32 + 'px');
+  b.style.setProperty('--bs', bw / TOT * 0.36 + 'px');
+  b.style.setProperty('--rx', v.rx + 'deg');
+  b.style.setProperty('--rz', v.rz + 'deg');
+  b.style.setProperty('--ty', v.ty + '%');
+  b.style.setProperty('--zoom', zoom);
+  document.querySelectorAll('#viewSeg button').forEach(x => x.classList.toggle('on', x.dataset.arg === view));
+}
+function updateBoard() {
+  SP.forEach((s, i) => {
+    if (!OWNABLE(s.t)) return;
+    const el = $('#t' + i), o = st.own[i], bld = el.querySelector('.bld');
+    el.classList.toggle('owned', !!o); el.classList.toggle('mort', !!(o && o.m));
+    if (o) {
+      const p = st.players[o.o];
+      el.style.setProperty('--oc', p.color); el.querySelector('.obadge').textContent = p.emoji;
+      const H = [0.08, 0.3, 0.52, 0.78, 1.05, 1.5][o.lvl];
+      bld.classList.add('on'); bld.classList.toggle('win', o.lvl >= 2); bld.classList.toggle('cockpit', o.lvl === 5);
+      bld.style.setProperty('--oc', p.color);
+      bld.style.setProperty('--h', `calc(var(--cell) * ${H})`);
+    } else bld.classList.remove('on');
+  });
+  document.querySelectorAll('.tile.here').forEach(t => t.classList.remove('here'));
+  const p = cur(); if (!p.out) { const t = $('#t' + p.pos); t.classList.add('here'); t.style.setProperty('--pc', p.color); }
+  $('#pot').textContent = `🔥 Salmon Bake ${fmt(st.pot)}`;
+}
+
+// ---------- UI object ----------
+const UI = {
+  modalKind: null,
+  tokens(hop) {
+    const layer = $('#tokens'); if (!layer) return;
+    const offs = [[-1.3, -1.1], [1.3, -1.1], [-1.3, 1.3], [1.3, 1.3]];
+    const groups = {};
+    st.players.forEach(p => { if (!p.out) (groups[p.pos] = groups[p.pos] || []).push(p.id); });
+    st.players.forEach((p, k) => {
+      let el = $('#tok' + k);
+      if (!el) {
+        el = document.createElement('div'); el.id = 'tok' + k; el.className = 'token';
+        el.innerHTML = `<div class="tshadow"></div><div class="pawn"><div class="pawn-in" style="--pc:${p.color}"><div class="head">${p.emoji}</div></div></div>`;
+        layer.appendChild(el);
+      }
+      el.style.display = p.out ? 'none' : '';
+      const [r, c] = rc(p.pos), arr = groups[p.pos] || [p.id], n = arr.indexOf(p.id);
+      let [dx, dy] = arr.length > 1 ? offs[n % 4] : [0, 0];
+      if (p.pos === 10) { if (p.jail) { dx += 1.2; dy -= 1.2; } else { dx -= 1.6; dy += 1.6; } }
+      el.style.left = (ctr(c) + dx) + '%'; el.style.top = (ctr(r) + dy) + '%';
+      el.classList.toggle('active', k === st.turn && !st.over);
+      if (hop && k === st.turn) { const pi = el.querySelector('.pawn-in'); pi.classList.remove('hop'); void pi.offsetWidth; pi.classList.add('hop'); }
+    });
+  },
+  async rollDice(d) {
+    Sfx.dice();
+    d.forEach((v, k) => {
+      spins[k] += 2 + Math.floor(Math.random() * 2);
+      const [x, y] = DIE_ROT[v];
+      $('#die' + k).style.transform = `translateZ(calc(var(--ds)/2)) rotateX(${x + spins[k] * 360}deg) rotateY(${y + spins[k] * 360}deg)`;
+    });
+    await sleep(1000);
+  },
+  toast(msg) {
+    const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; $('#toasts').appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+    const all = $('#toasts').children; if (all.length > 4) all[0].remove();
+  },
+  flashCash(p) { if (p === cur()) { const c = $('#cashchip'); c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); } },
+  ticker() {
+    if (!st) return;
+    $('#ticker').innerHTML = st.log.slice(0, 4).map(l => `<span>${esc(l)}</span>`).join('');
+  },
+  banner(color, kicker, title, line, quote) {
+    const b = $('#banner');
+    b.style.background = `linear-gradient(135deg, ${color}, #12151b)`;
+    b.innerHTML = `<small>${kicker}</small><h2>${esc(title)}</h2><p>${esc(line)}</p><p style="font-style:italic;opacity:.85">${esc(quote)}</p>`;
+    b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
+    clearTimeout(UI._bt); UI._bt = setTimeout(() => b.classList.remove('on'), 3600);
+  },
+  showCard(deck, card, p) {
+    const bg = deck === 'chance' ? 'linear-gradient(135deg,#2a7fb8,#2e9e6a)' : 'linear-gradient(135deg,#1b4d6b,#7b6cf6)';
+    openModal('card', `<div class="cardflip"><div class="cardin" style="background:${bg}">
+      <div class="ci">${deck === 'chance' ? '🌦️' : '🃏'}</div><h3>${deck === 'chance' ? 'Weather Report' : 'Shore Story'}</h3>
+      <div style="font-size:12px;opacity:.85">${p.emoji} ${esc(p.name)}</div>
+      <p>${esc(card.txt)}</p><div class="sub">${esc(card.sub)}</div>
+      ${isLocal(p) ? '<button class="btn" data-act="cardOk">Apply ➜</button>' : `<div style="margin-top:14px;font-size:12px;opacity:.85">${p.bot ? '' : '⏳ waiting for ' + esc(p.name) + '…'}</div>`}</div></div>`, true);
+    return new Promise(r => {
+      R.card = () => { R.card = null; UI.closeModal(); r(); };
+      if (p.bot) setTimeout(() => R.card && R.card(), 2300 * SPEED);
+    });
+  },
+  askOffer(buyer, seller, i, amt) {
+    const s = SP[i], col = s.g ? GROUPS[s.g].color : '#4b5876';
+    openModal('offer', `<div class="mbox"><div class="mhead" style="background:${col}"><small>Negotiation</small><h2>${buyer.emoji} ${esc(buyer.name)} wants ${esc(s.name)}</h2></div>
+      <div class="mbody"><p>${esc(seller.name)}, ${esc(buyer.name)} offers <b style="color:var(--gold)">${fmt(amt)}</b> (you paid ${fmt(s.price)}).</p>
+      ${s.g && GIDX[s.g].filter(j => j !== i).every(j => st.own[j] && st.own[j].o === buyer.id) ? `<p style="color:#ff9e80">⚠️ Accepting unlocks their <b>${esc(GROUPS[s.g].name)}</b> set. Rents double.</p>` : ''}
+      <div class="acts"><button class="btn pri" data-act="offerAns" data-arg="1">Accept deal</button><button class="btn" data-act="offerAns" data-arg="0">Decline</button></div></div></div>`, true);
+    return new Promise(r => { R.offer = v => { R.offer = null; UI.closeModal(); r(v); }; });
+  },
+  closeModal() { $('#modal').classList.remove('on'); UI.modalKind = null; },
+  tradeMsg(p, html) { const m = $('#trMsg'); if (m && UI.modalKind === 'trade') m.innerHTML = html; else if (!html.startsWith('⏳')) UI.toast(html.replace(/<[^>]+>/g, '')); },
+  tradeDone(p) { if (UI.modalKind === 'trade') UI.closeModal(); },
+  refreshModal() { if (UI.modalKind === 'portfolio') showPortfolio(); else if (UI.modalKind === 'deed') showDeed(UI.deedIdx); },
+  endModal() {
+    const ranked = st.players.slice().sort((a, b) => (b.out ? -1 : netWorth(b)) - (a.out ? -1 : netWorth(a)));
+    openModal('end', `<div class="mbox"><div class="mhead" style="background:linear-gradient(135deg,#0f9a7f,#2f3f9e)"><small>Last ferry out · Round ${st.round}</small><h2>🏆 ${ranked[0].emoji} ${esc(ranked[0].name)} is the Legend of Ketchikan</h2></div>
+      <div class="mbody"><div class="podium">${ranked.map((p, k) => `<div class="pod"><div class="rk">${k + 1}</div><div class="av" style="--pc:${p.color};width:40px;height:40px">${p.emoji}</div>
+        <div style="flex:1"><b>${esc(p.name)}</b><div style="font-size:12px;color:var(--muted)">${p.out ? 'Headed south' : `${owned(p.id).length} cards · ${completeGroups(p.id).length} full sets · ${owned(p.id).filter(i => st.own[i].lvl === 5).length} mythic · 🧭 ${p.aligned || 0}/${p.picks || 0} facts right`}</div>
+        <div style="font-size:15px">${p.ach.map(a => `<span title="${esc(a.title)}">${a.ico}</span>`).join(' ')}</div></div>
+        <div style="font:700 18px Consolas,monospace;color:var(--gold)">${p.out ? '—' : fmt(netWorth(p))}</div></div>`).join('')}</div>
+        <p style="color:var(--muted);font-size:13px;margin-top:14px">The table answered <b style="color:#fff">${st.reasons.right} of ${st.reasons.right + st.reasons.wrong}</b> Alaska questions right. Every card claimed taught a real fact about the Last Frontier.<br>“Some souvenirs you buy. This one you earn.”</p>
+        <div class="acts"><button class="btn pri" data-act="setup">Play again</button><button class="btn" data-act="closeModal">View board</button></div></div></div>`);
+  },
+  render() {
+    if (!st) return;
+    updateBoard(); renderTurn(); renderPlayers(); renderChart(); renderReasons(); renderTheses(); renderLog(); UI.ticker();
+    const p = cur();
+    $('#cashTop').textContent = fmt(p.cash); $('#cashAv').textContent = p.emoji;
+    $('#chipRound').textContent = `Round ${st.round} · ${p.emoji} ${p.name}`;
+    $('#chipInv').textContent = `${Object.keys(st.own).length} / 28 cards claimed`;
+    $('#chipExec').textContent = `${st.players.filter(q => !q.out).length} adventurers`;
+    $('#mkt').textContent = `${fmt(st.players.reduce((a, q) => a + (q.out ? 0 : netWorth(q)), 0))} on the table`;
+  }
+};
+
+function phaseText() {
+  const p = cur();
+  if (st.over) return 'Last ferry has sailed';
+  if (p.jail) return `Weathered In (${p.jailTurns}/3) — roll doubles, pay ${fmt(FINE)} or use a card`;
+  return { roll: st.dbl ? 'Doubles! Roll again' : 'Roll to move', busy: 'Moving…', buy: `Landed on ${SP[st.buyIdx]?.name}`, debt: `Owes ${fmt(-p.cash)}. Raise cash`, end: 'Manage your collection or end turn' }[st.phase] || '';
+}
+function renderTurn() {
+  const p = cur();
+  let h = `<div class="tp-head"><div class="av" style="--pc:${p.color}">${p.emoji}</div><div><div class="tp-name">${esc(p.name)} ${p.bot ? '<span class="botchip">AI LOCAL</span>' : p.remote ? '<span class="botchip">🌐 REMOTE</span>' : ''}</div><div class="tp-sub">${phaseText()}</div></div><div class="tp-cash">${fmt(p.cash)}</div></div>
+    <div class="dicetxt">🎲 Last roll: <b>${st.dice[0]} + ${st.dice[1]} = ${st.dice[0] + st.dice[1]}</b> · on <b>${esc(SP[p.pos].name)}</b>${p.cards ? ` · 🎫×${p.cards}` : ''}</div>`;
+  const side = `<button class="btn" data-act="portfolio">🗂️ Collection</button><button class="btn" data-act="trade">🤝 Negotiate</button>`;
+  if (st.over) h += `<div class="acts"><button class="btn pri" data-act="setup">Play again</button></div>`;
+  else if (p.bot) h += `<div class="dicetxt" style="color:var(--teal)">🤖 ${esc(p.name)} is thinking it over…</div>`;
+  else if (!isLocal(p)) h += `<div class="dicetxt" style="color:var(--teal)">${NETX.role === 'client' ? '⏳' : '🌐'} ${esc(p.name)} is playing${NETX.role === 'client' ? '' : ' remotely'}${p.remote && st.netLive && !st.netLive[p.id] ? ' — <b style="color:#ff9e80">not connected yet</b>' : '…'}</div><div class="acts">${NETX.role === 'host' ? '<button class="btn" data-act="invite">🌐 Invite / seats</button>' : ''}<button class="btn" data-act="portfolio">🗂️ Collection</button></div>`;
+  else if (st.phase === 'roll') {
+    if (st.dbl) h += lessonHtml(p);
+    h += p.jail
+      ? `<div class="acts"><button class="btn pri" data-act="roll">🎲 Roll for doubles</button><button class="btn" data-act="payfine" ${p.cash < FINE ? 'disabled' : ''}>Pay ${fmt(FINE)}</button>${p.cards ? '<button class="btn" data-act="usecard">🎫 Use card</button>' : ''}</div><div class="acts">${side}</div>`
+      : `<div class="acts"><button class="btn pri" data-act="roll">🎲 ${st.dbl ? 'Roll again — doubles!' : 'Roll the dice'}</button></div><div class="acts">${side}</div>`;
+  } else if (st.phase === 'buy') {
+    const s = SP[st.buyIdx], col = s.g ? GROUPS[s.g].color : '#4b5876', afford = p.cash >= s.price;
+    h += `<div class="buybox"><div class="bh" style="background:${col}">${s.ico || ''} ${esc(s.name)} <span style="float:right">${fmt(s.price)}</span></div>
+      <div class="bb2">${esc(s.blurb || '')}<div style="color:var(--muted);margin-top:4px">${s.g ? esc(GROUPS[s.g].name) : s.t === 'rail' ? 'Transport route' : 'Power source'} · base rent ${fmt(s.rent ? s.rent[0] : s.t === 'rail' ? K(25) : K(4))}${s.t === 'util' ? '×dice' : ''}</div>
+      <div class="quiz"><div class="qh">🎓 Alaska question: answer to claim this card</div>
+        <div class="qq">${esc(s.q)}</div>
+        <div class="qs"><span>✅ Right → <b>+${fmt(BONUS)}</b> local-knowledge bonus</span><span>📘 Wrong → you still claim it, and learn the real answer</span></div>
+        <div class="qrec">Your record: <b>${p.aligned || 0} / ${p.picks || 0}</b> right${(p.aligned || 0) < 3 ? ` · ${3 - (p.aligned || 0)} more to rank up to 🧭 Sourdough` : (p.aligned || 0) < 8 ? ` · ${8 - (p.aligned || 0)} more for 🏔️ Old Timer` : ' · 🏔️ Old Timer'}</div></div>
+      <div class="because">Pick your answer and pay ${fmt(s.price)}:</div>
+      <div class="reasons answers">${s.o.map((o, k) => `<button class="rbtn" data-act="buy" data-arg="${k}" ${afford ? '' : 'disabled'}><b>${'ABCD'[k]}</b>${esc(o)}</button>`).join('')}</div>
+      ${afford ? '' : '<div style="color:#ff9e80;margin-top:8px">Not enough cash. Mortgage or sell cards via Collection.</div>'}
+      <div class="acts"><button class="btn" data-act="pass">Pass (see answer)</button><button class="btn" data-act="portfolio">🗂️ Collection</button><button class="btn" data-act="deed" data-arg="${st.buyIdx}">Details</button></div></div></div>`;
+  } else if (st.phase === 'debt') {
+    h += `<div class="acts"><button class="btn pri" data-act="portfolio">📁 Raise ${fmt(-p.cash)}</button><button class="btn warn" data-act="bankrupt">Declare bankruptcy</button></div>`;
+  } else if (st.phase === 'end') {
+    h += lessonHtml(p) + `<div class="acts"><button class="btn pri" data-act="end">End turn ➜</button></div><div class="acts">${side}</div>`;
+  }
+  $('#turn').innerHTML = h;
+}
+function lessonHtml(p) {
+  const L = st.lesson; if (!L || L.pid !== p.id || p.bot) return '';
+  const s = SP[L.i], right = `<b>${'ABCD'[s.a]}. ${esc(s.o[s.a])}</b>`, why = `<div class="lwhy">🏔️ ${esc(s.f)}</div>`;
+  if (L.passed) return `<div class="lesson pass"><b>📘 You passed on ${esc(s.name)}</b>${esc(s.q)}<br>Answer: ${right}${why}</div>`;
+  return L.aligned
+    ? `<div class="lesson ok"><b>✅ Correct! +${fmt(BONUS)}</b>${right}${why}</div>`
+    : `<div class="lesson miss"><b>📘 Not quite. You learned something</b>You said <i>${esc(s.o[L.ans])}</i>. The answer is ${right}.${why}</div>`;
+}
+function renderPlayers() {
+  const max = Math.max(...st.players.map(q => q.out ? 0 : netWorth(q)), 1);
+  const ranks = st.players.slice().sort((a, b) => netWorth(b) - netWorth(a)).map(q => q.id);
+  $('#players').innerHTML = st.players.map(p => {
+    const nw = p.out ? 0 : netWorth(p), dep = nw ? Math.round((nw - p.cash) / nw * 100) : 0;
+    return `<div class="pl ${p.out ? 'out' : ''} ${p.id === st.turn ? 'cur' : ''}"><div class="av" style="--pc:${p.color}">${p.emoji}</div>
+      <div><div class="nm">#${ranks.indexOf(p.id) + 1} ${esc(p.name)} ${p.bot ? '<span class="botchip">AI</span>' : ''}${p.remote ? `<span class="botchip" title="${st.netLive && st.netLive[p.id] ? 'connected' : 'not connected'}">${st.netLive && st.netLive[p.id] ? '🟢' : '⚪'} REMOTE</span>` : ''}${NETX.role === 'client' && p.id === NETX.seat ? ' <span class="botchip" style="background:var(--teal);color:#04110e">YOU</span>' : ''} ${p.jail ? '🧪' : ''}</div>
+      <div class="meta">${p.out ? 'Headed south' : `Cash ${fmt(p.cash)} · ${owned(p.id).length} cards · 🧭 ${p.aligned || 0}/${p.picks || 0} facts`}</div>
+      <div class="badges">${completeGroups(p.id).map(g => `<u style="background:${GROUPS[g].color}" title="${esc(GROUPS[g].name)}"></u>`).join('')} ${p.ach.filter(a => !a.key.startsWith('ms-')).map(a => `<span title="${esc(a.title)}" style="font-size:12px">${a.ico}</span>`).join('')}</div></div>
+      <div class="worth">${fmt(nw)}<small>net worth</small></div>
+      <div class="bar"><i style="--pc:${p.color};width:${nw / max * 100}%"></i></div></div>`;
+  }).join('');
+}
+function renderChart() {
+  const W = 360, H = 150, pl = 34, pr = 8, pt = 10, pb = 22;
+  const len = Math.max(...st.players.map(p => p.hist.length));
+  const all = st.players.flatMap(p => p.hist).concat([START * 1.3]);
+  const max = Math.max(...all), min = Math.min(0, ...all);
+  const X = k => pl + (len > 1 ? k / (len - 1) : 0) * (W - pl - pr);
+  const Y = v => pt + (1 - (v - min) / (max - min)) * (H - pt - pb);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%">`;
+  const zones = [['Cheechako', 0], ['Sourdough', 0.33], ['Old Timer', 0.66]];
+  zones.forEach(([t, f], k) => { s += `<rect x="${pl + f * (W - pl - pr)}" y="${pt}" width="${(W - pl - pr) / 3}" height="${H - pt - pb}" fill="${['#1a2a38', '#1c3036', '#1d3a2c'][k]}" opacity=".6"/><text x="${pl + f * (W - pl - pr) + 4}" y="${H - 8}" font-size="9" fill="#8c95a6">${t}</text>`; });
+  s += `<line x1="${pl}" x2="${W - pr}" y1="${Y(START)}" y2="${Y(START)}" stroke="#6b7385" stroke-dasharray="4 3"/><text x="2" y="${Y(START) + 3}" font-size="9" fill="#8c95a6">${fmt(START)}</text>`;
+  s += `<text x="2" y="${pt + 8}" font-size="9" fill="#8c95a6">${fmt(max)}</text>`;
+  st.players.forEach(p => {
+    if (p.hist.length < 1) return;
+    const pts = p.hist.map((v, k) => `${X(k)},${Y(v)}`).join(' ');
+    s += `<polyline points="${pts}" fill="none" stroke="${p.color}" stroke-width="${p.bot ? 1.6 : 2.6}" stroke-linejoin="round" opacity="${p.out ? 0.35 : 1}"/>`;
+    const last = p.hist.length - 1; s += `<text x="${X(last) - 6}" y="${Y(p.hist[last]) - 4}" font-size="11">${p.emoji}</text>`;
+  });
+  s += '</svg><div style="font-size:11.5px;color:var(--muted)">Complete sets, upgrade to Mythic, and watch your collection’s value climb.</div>';
+  $('#chart').innerHTML = s;
+}
+function renderReasons() {
+  const tot = st.reasons.right + st.reasons.wrong;
+  $('#reasons').innerHTML = `<div class="rg">✅ Answered right<small>${st.reasons.right} card${st.reasons.right === 1 ? '' : 's'}</small></div><div class="rg">📘 Learned the hard way<small>${st.reasons.wrong} card${st.reasons.wrong === 1 ? '' : 's'}</small></div>`
+    + st.players.map(p => `<div class="rg">${p.emoji} ${esc(p.name)}<small>${p.aligned || 0}/${p.picks || 0} right${(p.aligned || 0) >= 8 ? ' · Old Timer' : (p.aligned || 0) >= 3 ? ' · Sourdough' : ' · Cheechako'}</small></div>`).join('')
+    + `<div class="rg">🧠 Table score<small>${tot ? Math.round(st.reasons.right / tot * 100) : 0}% of ${tot}</small></div>`;
+}
+function renderTheses() {
+  $('#theses').innerHTML = st.theses.length ? st.theses.slice(0, 8).map(t => {
+    const p = st.players[t.pid], s = SP[t.i];
+    return `<div class="thesis">${p.emoji} <b>${esc(p.name)}</b> → <b style="color:${s.g ? GROUPS[s.g].color : '#9aa3b2'}">${esc(s.name)}</b>${t.aligned ? ' <span class="ok">✓ knew it</span>' : ' <span style="color:#7fb8ff">📘 learned</span>'}<br><q>${esc(s.f.length > 170 ? s.f.slice(0, s.f.lastIndexOf(' ', 165)) + '…' : s.f)}</q></div>`;
+  }).join('') : '<div style="color:var(--muted);font-size:12.5px">No cards claimed yet. Every card teaches an Alaska fact.</div>';
+}
+function renderLog() { $('#log').innerHTML = st.log.slice(0, 60).map(l => `<div>${esc(l)}</div>`).join(''); }
+
+// ---------- modals ----------
+function openModal(kind, html, noBackdropClose) {
+  UI.modalKind = kind; $('#mcontent').innerHTML = html; const m = $('#modal'); m.classList.add('on'); m.dataset.lock = noBackdropClose ? '1' : '';
+}
+function showDeed(i) {
+  i = +i; UI.deedIdx = i;
+  const s = SP[i], o = st && st.own[i], col = s.g ? GROUPS[s.g].color : '#4b5876', G = s.g && GROUPS[s.g];
+  let body = '';
+  if (s.t === 'prop') {
+    const rows = [['Common · base rent', s.rent[0]], ['Full set (all owned)', s.rent[0] * 2], ...LEVELS.slice(1).map((l, k) => [l, s.rent[k + 1]])];
+    const nowRow = o ? (o.lvl > 0 ? o.lvl + 1 : hasMono(o.o, s.g) ? 1 : 0) : -1;
+    body += `<table class="rent">${rows.map((r, k) => `<tr class="${k === nowRow ? 'now' : ''}"><td>${r[0]}</td><td>${fmt(r[1])}</td></tr>`).join('')}</table>
+      <div class="kv"><b>Upgrade cost</b><span>${fmt(houseCost(s.g))} per foil level</span><b>Mortgage value</b><span>${fmt(s.price / 2)}</span></div>`;
+  } else if (s.t === 'rail') body += `<table class="rent">${[1, 2, 3, 4].map(n => `<tr><td>${n} route${n > 1 ? 's' : ''} owned</td><td>${fmt(K(25) * 2 ** (n - 1))}</td></tr>`).join('')}</table>`;
+  else if (s.t === 'util') body += `<table class="rent"><tr><td>One power source</td><td>${fmt(K(4))} × dice</td></tr><tr><td>Both power sources</td><td>${fmt(K(10))} × dice</td></tr></table>`;
+  else if (s.t === 'jail') body += '<p>Fog, wind and rain have shut down the floatplanes. Roll doubles, pay the fine or use a “favor” card to get out.</p>';
+  else if (s.t === 'gotojail') body += '<p>Small craft advisory! Land here and go straight to Weathered In.</p>';
+  else if (s.t === 'parking') body += `<p>Every fee and fine goes into the Salmon Bake pot. Land here and you eat it all. Current pot: <b>${st ? fmt(st.pot) : '$0'}</b>.</p>`;
+  else if (s.t === 'go') body += `<p>Pass to collect the ${fmt(GO_PAY)} PFD check. Alaska’s Permanent Fund Dividend, paid from oil wealth.</p>`;
+  else if (s.t === 'tax') body += `<p>Pay ${fmt(s.amt)} into the Salmon Bake pot.</p>`;
+  else body += `<p>Draw a ${s.name} card.</p>`;
+  if (G) body += `<div class="kv"><b>Field note</b><span>${esc(G.intent)}</span><b>Where</b><span>${esc(G.edge)}</span><b>Mythic title</b><span>${esc(G.cockpit)}</span></div>`;
+  if (s.f && o) body += `<div class="lesson ok" style="margin-top:10px"><b>🏔️ Alaska fact</b>${esc(s.f)}</div>`;
+  if (o && st) {
+    const p = st.players[o.o];
+    body += `<div class="kv"><b>Owner</b><span>${p.emoji} ${esc(p.name)}${o.m ? ' · mortgaged' : ''}</span>${s.t === 'prop' ? `<b>Foil</b><span>${LEVELS[o.lvl]}</span>` : ''}<b>Rent now</b><span>${fmt(rentFor(i))}${s.t === 'util' ? ' (at last roll)' : ''}</span></div>`;
+    const h = human();
+    if (h && h.id === o.o && st.phase !== 'busy') body += `<div class="acts">${actionBtns(i)}</div>`;
+  }
+  openModal('deed', `<div class="mbox"><div class="mhead" style="background:${col}"><button class="x" data-act="closeModal">✕</button><small>${G ? esc(G.name) : s.t === 'rail' ? 'Transport route' : s.t === 'util' ? 'Power source' : 'Ketchikan'}</small><h2>${s.ico || ''} ${esc(s.name)}</h2>${s.price ? `<div style="font:700 18px Consolas,monospace">${fmt(s.price)}</div>` : ''}</div>
+    <div class="mbody">${s.blurb ? `<p style="margin-top:0">${esc(s.blurb)}</p>` : ''}${body}</div></div>`);
+}
+function actionBtns(i) {
+  const p = human(), s = SP[i], o = st.own[i]; let b = '';
+  if (s.t === 'prop' && canBuild(p.id, i)) b += `<button class="btn" data-act="pbuild" data-arg="${i}" ${p.cash < houseCost(s.g) ? 'disabled' : ''}>🏗️ ${LEVEL_SHORT[o.lvl + 1]} −${fmt(houseCost(s.g))}</button>`;
+  if (canSell(p.id, i)) b += `<button class="btn" data-act="psell" data-arg="${i}">↩️ Sell +${fmt(houseCost(s.g) / 2)}</button>`;
+  if (canMortgage(p.id, i)) b += `<button class="btn" data-act="pmort" data-arg="${i}">⏸️ Mortgage +${fmt(s.price / 2)}</button>`;
+  if (o.m) b += `<button class="btn" data-act="punmort" data-arg="${i}">▶️ Resume −${fmt(unmortCost(i))}</button>`;
+  return b;
+}
+function showPortfolio() {
+  const p = human() || st.players.find(q => isLocal(q) && !q.out);
+  if (!p) return;
+  const mine = owned(p.id).sort((a, b) => a - b), canAct = human() === p && st.phase !== 'busy';
+  const rows = mine.map(i => {
+    const s = SP[i], o = st.own[i], col = s.g ? GROUPS[s.g].color : '#5b6475';
+    return `<div class="prow"><div class="sw" style="background:${col}"></div><div class="pn"><b data-act="deed" data-arg="${i}" style="cursor:pointer">${s.ico || ''} ${esc(s.name)}</b><small>${s.t === 'prop' ? LEVELS[o.lvl] : s.t === 'rail' ? 'Transport route' : 'Power source'}${o.m ? ' · ⏸️ mortgaged' : ''} · rent ${fmt(rentFor(i))}</small></div>${canAct ? actionBtns(i) : ''}</div>`;
+  }).join('');
+  openModal('portfolio', `<div class="mbox"><div class="mhead" style="background:linear-gradient(135deg,${p.color},#232833)"><button class="x" data-act="closeModal">✕</button><small>Collection · ${p.emoji} ${esc(p.name)}</small><h2>${fmt(p.cash)} cash · ${fmt(netWorth(p))} net worth</h2></div>
+    <div class="mbody">${st.phase === 'debt' && human() === p ? `<p style="color:#ff9e80">You owe ${fmt(-p.cash)}. Sell upgrades or mortgage cards until your cash is positive.</p>` : ''}
+    <p style="color:var(--muted);font-size:12.5px;margin-top:0">Own every card in a color set to complete it, then upgrade evenly: Seasoned → Rare → Epic → Legendary → Mythic.</p>
+    ${rows || '<p style="color:var(--muted)">No cards yet.</p>'}</div></div>`);
+}
+function showTrade() {
+  const p = human(); if (!p) return UI.toast('Wait for your turn to negotiate');
+  if (st.phase === 'busy' || st.phase === 'debt') return;
+  const opts = Object.keys(st.own).map(Number).filter(i => { const o = st.own[i]; return o.o !== p.id && !st.players[o.o].out && !(SP[i].g && groupHasBuildings(SP[i].g)); })
+    .sort((a, b) => a - b).map(i => { const s = SP[i], o = st.players[st.own[i].o]; return `<option value="${i}">${o.emoji} ${esc(o.name)} — ${esc(s.name)} (${fmt(s.price)})${s.g && GIDX[s.g].filter(j => j !== i).every(j => st.own[j] && st.own[j].o === p.id) ? ' ★ completes your set' : ''}</option>`; }).join('');
+  openModal('trade', `<div class="mbox"><div class="mhead" style="background:linear-gradient(135deg,#7b6cf6,#2f3f9e)"><button class="x" data-act="closeModal">✕</button><small>Dockside trading</small><h2>Make an offer</h2></div>
+    <div class="mbody">${opts ? `<label style="font-size:12px;color:var(--muted)">Card</label><select id="trProp" style="width:100%;margin:4px 0 12px">${opts}</select>
+      <label style="font-size:12px;color:var(--muted)">Your cash offer ($). You have ${fmt(p.cash)}</label><input id="trAmt" type="number" min="10" step="50" value="1000" style="width:100%;margin-top:4px">
+      <div id="trMsg" style="margin-top:12px;font-size:13px"></div><div class="acts"><button class="btn pri" data-act="tradeSend">Send offer</button></div>
+      <p style="color:var(--muted);font-size:12px">AI locals know what a card is worth to you. Finishing a set costs more.</p>` : '<p>No other player owns a tradable card yet. (Sets with upgrades can’t be traded.)</p>'}</div></div>`);
+}
+function showRules() {
+  openModal('rules', `<div class="mbox"><div class="mhead" style="background:linear-gradient(135deg,#0f9a7f,#2f3f9e)"><button class="x" data-act="closeModal">✕</button><small>How to play</small><h2>Earn your Alaska card collection</h2></div>
+    <div class="mbody rules"><ul>
+      <li>Everyone starts with <b>${fmt(START)}</b>. Most valuable collection at the last ferry wins, or be the last adventurer standing.</li>
+      <li>🎓 <b>Every card is a question.</b> Land on an unclaimed place and answer a real Alaska question to claim it. Right: <b>+${fmt(BONUS)}</b> local-knowledge bonus. Wrong: you still claim it, and you learn the true answer. Pass, and you still see the answer.</li>
+      <li>Rank up as you learn: 🧭 <b>Sourdough</b> (3 right) → 🏔️ <b>Old Timer</b> (8 right). Everyone starts as a Cheechako (a newcomer).</li>
+      <li>Eight color sets, from Dockside Ketchikan up to the Last Frontier. Own a whole set to <b>complete it</b> (rent doubles), then upgrade evenly: <b>Seasoned → Rare → Epic → Legendary → Mythic</b>.</li>
+      <li>⛴️ Routes (ferry, Inside Passage, floatplane, railroad) and 💧☀️ power sources pay off when you own several.</li>
+      <li>⛈️ <b>Storm Warning</b> or three doubles strands you at 🌫️ <b>Weathered In</b>. Fees and fines feed the 🔥 Salmon Bake pot, and whoever lands there eats it all.</li>
+      <li>🌦️ Weather Reports and 🃏 Shore Stories mix Alaska Card legends with real Alaska history.</li>
+      <li>Short on cash? <b>Mortgage</b> cards or sell upgrades. Use 🤝 Negotiate to buy from rivals.</li>
+    </ul></div></div>`);
+}
+function showSetup() {
+  const saved = loadSave();
+  const rows = (UI.setup = UI.setup || DEFAULT_PLAYERS.map(p => ({ ...p })));
+  openModal('setup', `<div class="mbox" style="width:min(620px,94vw)"><div class="mhead" style="background:linear-gradient(135deg,#1b4d6b,#2e9e6a 55%,#7b6cf6)">${st ? '<button class="x" data-act="closeModal">✕</button>' : ''}<small>Alaska Card · Southeast Alaska</small><h2>Ketchikan · Last Frontier Monopoly</h2><div style="font-size:13px;opacity:.9">${fmt(START)} each. Every card you claim asks a real Alaska question, and you learn the answer either way.</div></div>
+    <div class="mbody">
+      <div class="h"><span>Adventurers (2–4)</span><span>tap the token to change it</span></div>
+      ${rows.map((p, k) => `<div class="setrow"><input type="checkbox" data-act="sOn" data-arg="${k}" ${p.on ? 'checked' : ''} ${k < 2 ? 'disabled' : ''}>
+        <button class="emo" style="--pc:${PCOLORS[k]}" data-act="sEmo" data-arg="${k}">${p.emoji}</button>
+        <input type="text" id="sName${k}" value="${esc(p.name)}" maxlength="24">
+        <select id="sBot${k}"><option value="0" ${!p.bot && !p.remote ? 'selected' : ''}>Human (this screen)</option><option value="2" ${p.remote ? 'selected' : ''}>🌐 Remote player</option><option value="1" ${p.bot ? 'selected' : ''}>AI local</option></select></div>`).join('')}
+      <div style="font-size:11.5px;color:var(--muted);margin-top:8px">🌐 Remote players join from their own device over an encrypted peer-to-peer link — you’ll get a QR code and link for each seat.</div>
+      <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+        <label style="font-size:12px;color:var(--muted)">Last ferry<br><select id="sMin"><option value="15">15 min</option><option value="30" selected>30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="0">No limit</option></select></label>
+        <label style="font-size:12px;color:var(--muted)">AI pace<br><select id="sSpeed"><option value="normal">Normal</option><option value="fast">Fast</option></select></label>
+      </div>
+      <div class="acts"><button class="btn pri" data-act="startgame">⚓ Step ashore</button>${saved ? `<button class="btn" data-act="resume">↻ Resume saved game (round ${saved.round})</button>` : ''}<button class="btn" data-act="rules">❔ Rules</button></div>
+      <div class="foot">Inspired by Alaska Card: Ketchikan achievement cards · Built with HowardAI</div>
+    </div></div>`, !st);
+}
+function readSetup() {
+  UI.setup.forEach((p, k) => { p.name = $('#sName' + k).value.trim() || `Adventurer ${k + 1}`; p.bot = $('#sBot' + k).value === '1'; p.remote = $('#sBot' + k).value === '2'; });
+}
+
+// ---------- timer ----------
+setInterval(() => {
+  if (!st) return;
+  const t = $('#timer');
+  if (!st.endAt) { t.textContent = '∞'; return; }
+  const rem = st.over ? 0 : Math.max(0, st.endAt - Date.now());
+  t.textContent = `${String(Math.floor(rem / 60000)).padStart(2, '0')}:${String(Math.floor(rem / 1000) % 60).padStart(2, '0')}`;
+  t.classList.toggle('warn', rem < 120000);
+  if (!rem && !st.timeUp && !st.over && NETX.role !== 'client') { st.timeUp = true; UI.toast('🔔 Last ferry is boarding. This is the final turn'); log('🔔 Last ferry boarding: final turn'); }
+}, 500);
+
+// ---------- events ----------
+const UACT = {
+  view(v) { view = v; localStorage.setItem('ak-view', v); applyView(); },
+  zoom(z) { zoom = z === 'reset' ? 1 : Math.min(2, Math.max(0.5, zoom * +z)); applyView(); },
+  sound() { muted = !muted; localStorage.setItem('ak-muted', muted ? '1' : '0'); $('#soundBtn').textContent = muted ? '🔇' : '🔊'; },
+  rules: showRules, setup: showSetup,
+  deed(i) { showDeed(i); }, portfolio: showPortfolio, trade: showTrade,
+  closeModal() { if (R.card || R.offer) return; UI.closeModal(); },
+  invite() { NET.showInvite(); },
+  takeover(k) { NET.takeover(+k); },
+  copyLink(k) { NET.copyLink(+k); },
+  pubUrl() { NET.setPubUrl(); },
+  cardOk() { R.card && R.card(); },
+  offerAns(v) { R.offer && R.offer(v === '1'); },
+  sOn(k) { readSetup(); UI.setup[k].on = !UI.setup[k].on; showSetup(); },
+  sEmo(k) { readSetup(); const p = UI.setup[k]; p.emoji = EMOJIS[(EMOJIS.indexOf(p.emoji) + 1) % EMOJIS.length]; showSetup(); },
+  startgame() {
+    readSetup();
+    const cfg = { players: UI.setup.filter(p => p.on), minutes: +$('#sMin').value, speed: $('#sSpeed').value };
+    if (st) { sessionStorage.setItem('ak-newcfg', JSON.stringify(cfg)); localStorage.removeItem('ak-save'); location.reload(); return; }
+    launch(cfg);
+  },
+  resume() {
+    if (st) { sessionStorage.setItem('ak-resume', '1'); location.reload(); return; }
+    const s = loadSave(); if (!s) return; UI.closeModal(); resumeGame(s); boot(); log('↻ Game resumed'); NET.maybeHost(false); startTurn();
+  }
+};
+// Remote clients forward game actions to the host instead of running the engine (ak-net.js sets NET.send).
+function dispatch(a, arg) {
+  if (NETX.role === 'client' && typeof NET !== 'undefined' && NET.clientAct(a, arg)) return;
+  if (UACT[a]) UACT[a](arg); else if (ACT[a]) ACT[a](arg);
+}
+document.addEventListener('click', e => {
+  if (e.target.id === 'modal' && !$('#modal').dataset.lock) return UI.closeModal();
+  const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
+  const a = b.dataset.act, arg = b.dataset.arg;
+  if (b.type === 'checkbox') e.preventDefault();
+  dispatch(a, arg);
+});
+document.addEventListener('keydown', e => {
+  if (!st || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  if (e.key === ' ' || e.key === 'Enter') {
+    if (R.card && $('#modal').classList.contains('on') && UI.modalKind === 'card' && ($('#mcontent [data-act=cardOk]') || (cur().bot && NETX.role !== 'client'))) { e.preventDefault(); return dispatch('cardOk'); }
+    if ($('#modal').classList.contains('on')) return;
+    if (human() && st.phase === 'roll') { e.preventDefault(); dispatch('roll'); } else if (human() && st.phase === 'end') { e.preventDefault(); dispatch('end'); }
+  }
+  if (e.key === 'Escape') UACT.closeModal();
+});
+addEventListener('resize', () => applyView());
+
+function boot() {
+  buildBoard(); $('#tokens').innerHTML = ''; UI.tokens(); UI.render();
+  $('#soundBtn').textContent = muted ? '🔇' : '🔊';
+  UI.rollDice(st.dice);
+}
+function launch(cfg) {
+  UI.closeModal(); newGame(cfg); boot();
+  log(`⚓ Ship’s in: ${st.players.map(p => p.emoji + ' ' + p.name).join(', ')} each start with ${fmt(START)}`);
+  UI.render(); NET.maybeHost(true); startTurn();
+}
+(function init() {
+  NET.install();
+  if (NET.joinFromHash()) return;
+  buildBoard();
+  const cfg = sessionStorage.getItem('ak-newcfg');
+  if (cfg) { sessionStorage.removeItem('ak-newcfg'); return launch(JSON.parse(cfg)); }
+  if (sessionStorage.getItem('ak-resume')) { sessionStorage.removeItem('ak-resume'); const s = loadSave(); if (s) { resumeGame(s); boot(); NET.maybeHost(false); startTurn(); return; } }
+  showSetup();
+})();
+
+</script>
+</body>
+</html>
