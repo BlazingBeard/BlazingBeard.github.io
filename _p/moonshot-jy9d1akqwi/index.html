@@ -297,11 +297,11 @@ const LEVEL_SHORT = ['Owned', 'Assist', 'Recommend', 'Orchestrate', 'Scale', 'Co
 
 const GROUPS = {
   foundation: { name: 'Trusted Foundation', short: 'Foundation', color: '#8b5e3c', house: 50, cockpit: 'Platform Control Tower',
-    intent: 'Fund the shared data and control plane as a strategic asset — otherwise Euroclear just digitises silos.',
+    intent: 'Fund the shared data and control plane as a strategic asset — otherwise we just digitise silos.',
     edge: 'Canonical data, identity, workflow, audit and integration that every shop reuses.' },
   agreements: { name: '01 · Zero-friction Distribution', short: 'Moonshot 01', color: '#58b7e0', house: 50, cockpit: 'Distribution Agreement Cockpit',
     intent: 'Make the agreement a living digital asset — not a document at the end of a manual process.',
-    edge: 'Connects agreement data to the parties, funds and post-trade services Euroclear already supports.' },
+    edge: 'Connects agreement data to the parties, funds and post-trade services we already support.' },
   rebates: { name: '02 · Revenue Assurance & Rebates', short: 'Moonshot 02', color: '#d6538f', house: 100, cockpit: 'Rebates Optimiser Cockpit',
     intent: 'Prove FundsPlace generates measurable P&L impact — not only process efficiency.',
     edge: 'Sits at the intersection of agreements, flows, fund relationships and servicing data.' },
@@ -363,7 +363,7 @@ const SP = [
   { t: 'chance', name: 'Market Signal', ico: '📡' },
   P('gold', 'Network Intelligence', 350, [35, 175, 500, 1100, 1300, 1500], 'revenue', 'Every agreement, flow and outcome strengthens a shared intelligence core.', '🕸️'),
   { t: 'tax', name: 'Integration Debt', ico: '🧾', amt: 100, sub: 'Duplicate stacks cost' },
-  P('gold', 'Global Ecosystem', 400, [50, 200, 600, 1400, 1700, 2000], 'strategic', 'Euroclear as the neutral orchestrator of the global funds ecosystem.', '🌍')
+  P('gold', 'Global Ecosystem', 400, [50, 200, 600, 1400, 1700, 2000], 'strategic', 'The neutral orchestrator of the global funds ecosystem.', '🌍')
 ];
 SP.forEach(s => {
   if (s.price) s.price = K(s.price);
@@ -1279,7 +1279,7 @@ function buildBoard() {
   const trees = [[6, 8], [10, 18], [88, 10], [92, 22], [7, 86], [16, 93], [84, 62], [90, 52], [30, 90], [68, 92], [40, 44], [62, 46]];
   const center = document.createElement('div'); center.className = 'center';
   center.innerHTML = `
-    <div class="ctitle"><small>EUROCLEAR · FUNDSPLACE</small><b>MOONSHOT MONOPOLY</b><span>Every investment needs a reason — “I would invest because…”</span></div>
+    <div class="ctitle"><small>FUNDSPLACE</small><b>MOONSHOT MONOPOLY</b><span>Every investment needs a reason — “I would invest because…”</span></div>
     <div class="deck chance"><div>📡</div>MARKET SIGNAL</div>
     <div class="deck chest"><div>🗳️</div>EXECUTIVE DECISION</div>
     <div class="hq" style="left:20%;top:66%"><div class="bld on win cockpit" style="--c:#2b3550;--oc:#19b39a;--h:calc(var(--cell)*1.6)"><div class="f n"></div><div class="f s"></div><div class="f w"></div><div class="f e"></div><div class="f top"></div></div></div>
@@ -1521,7 +1521,7 @@ function showDeed(i) {
   else if (s.t === 'go') body += `<p>Pass to collect the ${fmt(GO_PAY)} learning dividend — each lap compounds.</p>`;
   else if (s.t === 'tax') body += `<p>Pay ${fmt(s.amt)} into the Copilot Cup pot.</p>`;
   else body += `<p>Draw a ${s.name} card.</p>`;
-  if (G) body += `<div class="kv"><b>Moonshot intent</b><span>${esc(G.intent)}</span><b>Euroclear edge</b><span>${esc(G.edge)}</span><b>Cockpit</b><span>${esc(G.cockpit)}</span></div>`;
+  if (G) body += `<div class="kv"><b>Moonshot intent</b><span>${esc(G.intent)}</span><b>Our edge</b><span>${esc(G.edge)}</span><b>Cockpit</b><span>${esc(G.cockpit)}</span></div>`;
   if (o && st) {
     const p = st.players[o.o];
     body += `<div class="kv"><b>Owner</b><span>${p.emoji} ${esc(p.name)}${o.m ? ' · paused' : ''}</span>${s.t === 'prop' ? `<b>Stage</b><span>${LEVELS[o.lvl]}</span>` : ''}<b>Board thesis</b><span>${REASONS[s.best].ico} ${REASONS[s.best].label}</span><b>Rent now</b><span>${fmt(rentFor(i))}${s.t === 'util' ? ' (at last roll)' : ''}</span></div>`;
@@ -1593,7 +1593,7 @@ function showSetup() {
         <label style="font-size:12px;color:var(--muted)">AI pace<br><select id="sSpeed"><option value="normal">Normal</option><option value="fast">Fast</option></select></label>
       </div>
       <div class="acts"><button class="btn pri" data-act="startgame">🚀 Open the market</button>${saved ? `<button class="btn" data-act="resume">↻ Resume saved game (round ${saved.round})</button>` : ''}<button class="btn" data-act="rules">❔ Rules</button></div>
-      <div class="foot">Content adapted from the Euroclear FundsPlace Executive Briefing · Built with HowardAI</div>
+      <div class="foot">Content adapted from the FundsPlace Executive Briefing · Built with HowardAI</div>
     </div></div>`, !st);
 }
 function readSetup() {
