@@ -155,6 +155,17 @@ button{font:inherit;cursor:pointer;color:inherit}
 .rbtn:hover{border-color:#19b39a;background:#24353a}
 .rbtn b{display:block;font-size:16px}
 .because{font-style:italic;color:var(--muted);font-size:12.5px;margin-top:10px}
+.rbtn small{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.quiz{margin-top:10px;border:1px dashed #7b6cf6;background:rgba(123,108,246,.1);border-radius:10px;padding:9px 11px}
+.quiz .qh{font-weight:800;color:#b9b0ff;font-size:13px;letter-spacing:.2px}
+.quiz .qq{margin-top:4px;font-size:12.5px}
+.quiz .qs{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:11.5px;color:var(--muted)}
+.quiz .qrec{margin-top:6px;font-size:11.5px;color:var(--gold)}
+.lesson{margin-top:12px;border-radius:10px;padding:10px 12px;font-size:12.5px;border:1px solid;line-height:1.45}
+.lesson>b:first-child{display:block;font-size:13.5px;margin-bottom:3px}
+.lesson.ok{border-color:#19b39a;background:rgba(25,179,154,.12)}
+.lesson.miss,.lesson.pass{border-color:#7b6cf6;background:rgba(123,108,246,.12)}
+.lesson .lwhy{margin-top:5px;color:var(--muted);font-style:italic}
 .pl{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
 .pl:last-child{border:0}
 .pl .av{width:36px;height:36px;font-size:18px;border-width:2px}
@@ -286,10 +297,10 @@ const fmt = k => {
 const START = K(1500), GO_PAY = K(200), FINE = K(50);
 
 const REASONS = {
-  strategic: { ico: '🧭', label: 'Strategic relevance' },
-  client:    { ico: '🤝', label: 'Client value' },
-  revenue:   { ico: '💶', label: 'Revenue or differentiation potential' },
-  evidence:  { ico: '⚡', label: 'Ability to demonstrate evidence quickly' }
+  strategic: { ico: '🧭', label: 'Strategic relevance', tip: 'Core to where the platform is heading' },
+  client:    { ico: '🤝', label: 'Client value', tip: 'Solves a real pain for clients today' },
+  revenue:   { ico: '💶', label: 'Revenue or differentiation potential', tip: 'Earns money or sets us apart' },
+  evidence:  { ico: '⚡', label: 'Ability to demonstrate evidence quickly', tip: 'Can prove value fast, low risk' }
 };
 
 const LEVELS = ['Owned · Today', 'MVP1 · Assist', 'MVP1+ · Recommend', 'MVP2 · Orchestrate', 'MVP3/4 · Scale', 'Gold · Cockpit live'];
@@ -577,13 +588,15 @@ function buy(p, i, reason) {
   const aligned = reason === s.best;
   st.theses.unshift({ pid: p.id, i, reason, aligned });
   st.theses = st.theses.slice(0, 30);
+  p.picks = (p.picks || 0) + 1;
+  st.lesson = { pid: p.id, i, reason, aligned };
   log(`${p.emoji} ${p.name} invested ${fmt(s.price)} in ${s.name} — “${REASONS[reason].label}”`);
   Sfx.cash();
   if (aligned) {
     p.cash += K(15); p.aligned++;
     UI.toast(`✅ Board agrees with ${p.name}’s thesis: +${fmt(K(15))} conviction bonus`);
     if (p.aligned >= 3) award(p, 'whisper', '🎯', 'Board whisperer — 3 aligned theses');
-  } else if (!p.bot) UI.toast(`🗒️ The board’s thesis was “${REASONS[s.best].label}”`);
+  }
   award(p, 'first', '🎟️', 'First ticket written');
   if (s.t === 'rail' && countType(p.id, 'rail') === 4) award(p, 'rails', '🔗', 'Universal execution fabric — all four rails');
   checkMoonshot(p, s.g);
@@ -709,7 +722,7 @@ async function doRoll() {
 }
 function startTurn() {
   if (st.over) return;
-  const p = cur(); st.dbl = 0; st.canRollAgain = false; st.phase = 'roll';
+  const p = cur(); st.dbl = 0; st.canRollAgain = false; st.phase = 'roll'; st.lesson = null;
   UI.render(); UI.tokens(); save();
   if (p.bot) botTurn();
   else if (st.players.filter(q => !q.bot && !q.out).length > 1) UI.toast(`${p.emoji} ${p.name}, you’re up`);
@@ -814,7 +827,7 @@ const ACT = {
   payfine() { const p = human(); if (!p || !p.jail || st.phase !== 'roll') return; if (p.cash < FINE) return UI.toast('Not enough cash'); payPot(p, FINE); p.jail = false; log(`${p.name} paid ${fmt(FINE)} to leave Poetry Jail`); UI.render(); },
   usecard() { const p = human(); if (!p || !p.jail || !p.cards) return; p.cards--; p.jail = false; log(`🎫 ${p.name} used a get-out card`); UI.render(); },
   buy(reason) { const p = human(); if (!p || st.phase !== 'buy') return; if (!buy(p, st.buyIdx, reason)) return UI.toast('Not enough cash — pause or sell assets first'); st.phase = 'busy'; const r = R.buy; R.buy = null; r && r(); },
-  pass() { const p = human(); if (!p || st.phase !== 'buy') return; log(`${p.emoji} ${p.name} passed on ${SP[st.buyIdx].name}`); st.phase = 'busy'; const r = R.buy; R.buy = null; r && r(); },
+  pass() { const p = human(); if (!p || st.phase !== 'buy') return; log(`${p.emoji} ${p.name} passed on ${SP[st.buyIdx].name}`); st.lesson = { pid: p.id, i: st.buyIdx, passed: true }; st.phase = 'busy'; const r = R.buy; R.buy = null; r && r(); },
   end() { if (!human() || st.phase !== 'end') return; nextTurn(); },
   bankrupt() { const p = human(); if (!p || st.phase !== 'debt') return; if (NETX.actor == null && !confirm('Declare bankruptcy and exit the market?')) return; bankrupt(p); UI.closeModal(); },
   pbuild(i) { const p = human(); if (!p || st.phase === 'busy') return; i = +i; if (!canBuild(p.id, i) || p.cash < houseCost(SP[i].g)) return UI.toast('Cannot build there yet'); build(i); afterPortfolio(); },
@@ -1437,6 +1450,7 @@ function renderTurn() {
   else if (p.bot) h += `<div class="dicetxt" style="color:var(--teal)">🤖 ${esc(p.name)} is weighing opportunities…</div>`;
   else if (!isLocal(p)) h += `<div class="dicetxt" style="color:var(--teal)">${NETX.role === 'client' ? '⏳' : '🌐'} ${esc(p.name)} is playing${NETX.role === 'client' ? '' : ' remotely'}${p.remote && st.netLive && !st.netLive[p.id] ? ' — <b style="color:#ff9e80">not connected yet</b>' : '…'}</div><div class="acts">${NETX.role === 'host' ? '<button class="btn" data-act="invite">🌐 Invite / seats</button>' : ''}<button class="btn" data-act="portfolio">📁 Portfolio</button></div>`;
   else if (st.phase === 'roll') {
+    if (st.dbl) h += lessonHtml(p);
     h += p.jail
       ? `<div class="acts"><button class="btn pri" data-act="roll">🎲 Roll for doubles</button><button class="btn" data-act="payfine" ${p.cash < FINE ? 'disabled' : ''}>Pay ${fmt(FINE)}</button>${p.cards ? '<button class="btn" data-act="usecard">🎫 Use card</button>' : ''}</div><div class="acts">${side}</div>`
       : `<div class="acts"><button class="btn pri" data-act="roll">🎲 ${st.dbl ? 'Roll again — doubles!' : 'Roll the dice'}</button></div><div class="acts">${side}</div>`;
@@ -1444,16 +1458,29 @@ function renderTurn() {
     const s = SP[st.buyIdx], col = s.g ? GROUPS[s.g].color : '#4b5876', afford = p.cash >= s.price;
     h += `<div class="buybox"><div class="bh" style="background:${col}">${s.ico || ''} ${esc(s.name)} <span style="float:right">${fmt(s.price)}</span></div>
       <div class="bb2">${esc(s.blurb || '')}<div style="color:var(--muted);margin-top:4px">${s.g ? esc(GROUPS[s.g].name) : s.t === 'rail' ? 'Execution plane rail' : 'Shared platform utility'} · base rent ${fmt(s.rent ? s.rent[0] : s.t === 'rail' ? K(25) : K(4))}${s.t === 'util' ? '×dice' : ''}</div>
-      <div class="because">I would invest because…</div>
-      <div class="reasons">${Object.entries(REASONS).map(([k, r]) => `<button class="rbtn" data-act="buy" data-arg="${k}" ${afford ? '' : 'disabled'}><b>${r.ico}</b>${r.label}</button>`).join('')}</div>
-      ${afford ? '<div style="font-size:11.5px;color:var(--muted);margin-top:8px">Match the board’s thesis for a conviction bonus.</div>' : '<div style="color:#ff9e80;margin-top:8px">Not enough cash — pause or sell assets via Portfolio.</div>'}
+      <div class="quiz"><div class="qh">🎓 Thesis challenge — pick your reason</div>
+        <div class="qq">Why would you invest in <b>${esc(s.name)}</b>? The board backs every opportunity for <b>one</b> main reason. Can you spot it?</div>
+        <div class="qs"><span>✅ Match → <b>+${fmt(K(15))}</b> bonus</span><span>📘 Miss → you still invest, and learn the board’s reasoning</span></div>
+        <div class="qrec">Your record: <b>${p.aligned || 0} / ${p.picks || 0}</b> matched${(p.aligned || 0) < 3 ? ` · ${3 - (p.aligned || 0)} more for 🎯 Board whisperer` : ' · 🎯 Board whisperer'}</div></div>
+      <div class="because">“I would invest because…”</div>
+      <div class="reasons">${Object.entries(REASONS).map(([k, r]) => `<button class="rbtn" data-act="buy" data-arg="${k}" ${afford ? '' : 'disabled'}><b>${r.ico}</b>${r.label}<small>${r.tip}</small></button>`).join('')}</div>
+      ${afford ? '' : '<div style="color:#ff9e80;margin-top:8px">Not enough cash — pause or sell assets via Portfolio.</div>'}
       <div class="acts"><button class="btn" data-act="pass">Pass</button><button class="btn" data-act="portfolio">📁 Portfolio</button><button class="btn" data-act="deed" data-arg="${st.buyIdx}">Details</button></div></div></div>`;
   } else if (st.phase === 'debt') {
     h += `<div class="acts"><button class="btn pri" data-act="portfolio">📁 Raise ${fmt(-p.cash)}</button><button class="btn warn" data-act="bankrupt">Declare bankruptcy</button></div>`;
   } else if (st.phase === 'end') {
-    h += `<div class="acts"><button class="btn pri" data-act="end">End turn ➜</button></div><div class="acts">${side}</div>`;
+    h += lessonHtml(p) + `<div class="acts"><button class="btn pri" data-act="end">End turn ➜</button></div><div class="acts">${side}</div>`;
   }
   $('#turn').innerHTML = h;
+}
+function lessonHtml(p) {
+  const L = st.lesson; if (!L || L.pid !== p.id || p.bot) return '';
+  const s = SP[L.i], B = REASONS[s.best], why = s.blurb ? `<div class="lwhy">Why: ${esc(s.blurb)}</div>` : '';
+  if (L.passed) return `<div class="lesson pass"><b>📘 You passed on ${esc(s.name)}</b>The board would have backed it for <b>${B.ico} ${B.label}</b>.${why}</div>`;
+  const Y = REASONS[L.reason];
+  return L.aligned
+    ? `<div class="lesson ok"><b>✅ The board agrees: +${fmt(K(15))}</b>You backed ${esc(s.name)} for <b>${Y.ico} ${Y.label}</b>. That’s the board’s thesis too.${why}</div>`
+    : `<div class="lesson miss"><b>📘 Lesson: the board thinks differently</b>You picked <b>${Y.ico} ${Y.label}</b>, but the board backs ${esc(s.name)} for <b>${B.ico} ${B.label}</b>.${why}</div>`;
 }
 function renderPlayers() {
   const max = Math.max(...st.players.map(q => q.out ? 0 : netWorth(q)), 1);
