@@ -854,6 +854,8 @@ const NET = (() => {
   const SALT = new TextEncoder().encode(PROTOCOL);
   const ITERS = 210000;
   const DEFAULT_BROKER = '0.peerjs.com';
+  // Unlisted hosted copy — local/file:// hosts point remote players here.
+  const DEFAULT_PUBLIC_URL = 'https://blazingbeard.github.io/_p/moonshot-jy9d1akqwi/';
   const b64 = {
     enc(buf) { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); return btoa(s); },
     dec(str) { const s = atob(str); const b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b; }
@@ -994,7 +996,7 @@ const NET = (() => {
   function pubUrl() {
     const saved = localStorage.getItem('fp-puburl');
     if (saved) return saved;
-    return /^https?:$/.test(location.protocol) ? location.href.split('#')[0] : '';
+    return /^https?:$/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname) ? location.href.split('#')[0] : DEFAULT_PUBLIC_URL;
   }
   function joinURL(seat) {
     const base = pubUrl(); if (!base || !st.net) return '';
@@ -1016,7 +1018,7 @@ const NET = (() => {
       ${cards}
       <label style="font-size:12px;color:var(--muted)">Public page URL (where players open this game — must be HTTPS)</label>
       <div style="display:flex;gap:8px;margin-top:4px"><input id="pubUrl" value="${esc(base)}" placeholder="https://…/FundsPlace-Moonshot-Monopoly.html" style="flex:1"><button class="btn" data-act="pubUrl">Save</button></div>
-      ${!base ? '<p style="color:#ffb74d;font-size:12.5px">This copy is opened from a local file, so remote players can’t reach it. Host the HTML on HTTPS (e.g. GitHub Pages) and paste that address above — you can keep playing from this local copy.</p>' : ''}
+      ${!/^https?:$/.test(location.protocol) ? '<p style="color:var(--muted);font-size:12px">You’re hosting from a local file; remote players join through the hosted copy above. Both run the same game.</p>' : ''}
       </div></div>`);
     seatsList.forEach(p => {
       const url = joinURL(p.id), c = $('#qr' + p.id); if (!c) return;
