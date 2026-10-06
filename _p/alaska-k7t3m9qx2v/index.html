@@ -233,6 +233,24 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:70}
 .pod .rk{font:900 22px Consolas,monospace;width:30px;color:var(--gold)}
 .foot{font-size:11px;color:var(--muted);text-align:center;margin-top:14px}
 .rules li{margin:5px 0}
+@media (max-width:700px){
+.brand span{display:none}.brand b{font-size:15px}.logo{width:30px;height:30px}
+.top{gap:6px}.top .seg button{padding:5px 8px}.chip{padding:4px 9px}.ibtn{width:32px;height:32px}
+.stage{height:calc(100vw + 70px)!important;min-height:0}
+.stage-chips{left:6px;top:6px;gap:4px;flex-wrap:wrap}.stage-chips .chip{font-size:11px;padding:3px 8px}
+.zoombox{display:none}
+.tile:not(.corner) .tname,.tile:not(.corner) .tprice,.corner .tprice{display:none}
+.tile:not(.corner) .tico{font-size:calc(var(--cell)*.5)}
+.corner .tico{font-size:calc(var(--cell)*.75)}.corner .tname{font-size:calc(var(--cell)*.19);line-height:1;max-width:96%;overflow-wrap:anywhere}
+.ctitle{top:7%;width:92%}.ctitle small{letter-spacing:1px;font-size:calc(var(--cell)*.28)}.ctitle b{font-size:calc(var(--cell)*.62)}.ctitle span{display:none}
+.deck{font-size:calc(var(--cell)*.24)}
+.pot{font-size:calc(var(--cell)*.3);padding:2px 8px}
+.bb{display:none}
+.mbox{width:96vw;max-height:92vh;border-radius:14px}
+.mbody .h{flex-wrap:wrap;gap:4px}
+.setrow{grid-template-columns:24px 40px 1fr}.setrow select{grid-column:2/-1}
+.reasons{grid-template-columns:1fr}
+}
 @media (max-width:1000px){body{overflow:auto}.app{height:auto;grid-template-rows:auto 34px auto}.top{flex-wrap:wrap;padding:8px}.main{grid-template-columns:1fr}.stage{height:78vh}.side{border:0}}
 </style>
 <style>.netpill{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:60;background:#222834;border:1px solid #313848;border-radius:999px;padding:6px 14px;font-size:12px;color:#e8ebf1;box-shadow:0 4px 16px rgba(0,0,0,.35)}.netpill.ok{border-color:#19b39a}.seatcard{display:flex;gap:14px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px;background:var(--panel2)}.seatcard canvas{background:#fff;border-radius:8px;flex:none}.seatcard input{width:100%;font-size:11px}</style>
@@ -277,7 +295,7 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:70}
       <div class="card"><div class="h"><span>Collection value by round</span></div><div id="chart"></div></div>
       <div class="card"><div class="h"><span>🎓 Alaska knowledge</span></div><div class="rgrid" id="reasons"></div></div>
       <div class="card"><div class="h"><span>🏔️ Facts learned this game</span></div><div id="theses"></div></div>
-      <div class="card"><div class="h"><span>Market log</span></div><div class="log" id="log"></div></div>
+      <div class="card"><div class="h"><span>Dock log</span></div><div class="log" id="log"></div></div>
     </aside>
   </div>
 </div>
@@ -1295,7 +1313,7 @@ const ctr = k => (STARTS[k] + U[k] / 2) / TOT * 100;
 const rc = i => i <= 10 ? [10, 10 - i] : i <= 20 ? [10 - (i - 10), 0] : i <= 30 ? [0, i - 20] : [i - 30, 10];
 const sideOf = i => i % 10 === 0 ? 'c' : i < 10 ? 'b' : i < 20 ? 'l' : i < 30 ? 't' : 'r';
 const VIEWS = { flat: { rx: 0, rz: 0, ty: 0, fit: 0.94 }, tilt: { rx: 40, rz: 0, ty: -5, fit: 0.84 }, iso: { rx: 56, rz: 45, ty: -4, fit: 0.86 } };
-let view = localStorage.getItem('ak-view') || 'tilt', zoom = 1, muted = localStorage.getItem('ak-muted') === '1';
+let view = innerWidth <= 700 ? 'flat' : localStorage.getItem('ak-view') || 'tilt', zoom = 1, muted = localStorage.getItem('ak-muted') === '1';
 const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
 const DIE_ROT = { 1: [0, 0], 2: [0, -90], 3: [-90, 0], 4: [90, 0], 5: [0, 90], 6: [0, 180] };
 const spins = [0, 0];
@@ -1372,7 +1390,7 @@ function buildBoard() {
 function applyView() {
   const v = VIEWS[view], stage = $('#stage'), b = $('#board');
   const w = stage.clientWidth, h = stage.clientHeight;
-  let bw = Math.min(w * 0.9, h * (view === 'flat' ? 0.94 : view === 'tilt' ? 1.18 : 1.25)) * v.fit;
+  let bw = innerWidth <= 700 && view === 'flat' ? Math.min(w * 0.97, h - 60) : Math.min(w * 0.9, h * (view === 'flat' ? 0.94 : view === 'tilt' ? 1.18 : 1.25)) * v.fit;
   if (view === 'iso') bw = Math.min(bw, w * 0.66);
   b.style.setProperty('--bw', bw + 'px');
   b.style.setProperty('--cell', bw / TOT + 'px');
