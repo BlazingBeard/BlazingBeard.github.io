@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FundsPlace · Moonshot Monopoly</title>
+<title>Learning Boards · FundsPlace Moonshot</title>
 <style>
 :root{--ink:#12151b;--panel:#1a1e26;--panel2:#222834;--line:#313848;--text:#e8ebf1;--muted:#98a1b1;--gold:#f2b632;--teal:#19b39a;--violet:#7b6cf6}
 *{box-sizing:border-box}
@@ -241,7 +241,7 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:70}
 <div class="app">
   <header class="top">
     <div class="logo">F</div>
-    <div class="brand"><b>FundsPlace · Moonshot Monopoly</b><span>Executive Opportunity Market · build the intelligent marketplace</span></div>
+    <div class="brand"><b>Learning Boards · FundsPlace Moonshot</b><span>Executive Opportunity Market · build the intelligent marketplace</span></div>
     <div class="spacer"></div>
     <div class="seg" id="viewSeg">
       <button data-act="view" data-arg="flat">Flat</button>
@@ -285,8 +285,8 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:70}
 <div class="banner" id="banner"></div>
 <canvas id="fx"></canvas>
 <script>
-// FundsPlace · Moonshot Monopoly — board data drawn from the Executive Briefing
-const K = v => Math.round(v * 20 / 3 / 10) * 10; // classic Monopoly $ → €k (start €10M)
+// Learning Boards · FundsPlace Moonshot — board data drawn from the Executive Briefing
+const K = v => Math.round(v * 20 / 3 / 10) * 10; // classic board-game $ → €k (start €10M)
 const fmt = k => {
   const neg = k < 0; k = Math.abs(Math.round(k));
   let s;
@@ -437,7 +437,7 @@ const DEFAULT_PLAYERS = [
 
 </script>
 <script>
-// FundsPlace · Moonshot Monopoly — game engine
+// Learning Boards · FundsPlace Moonshot — game engine
 let st = null;
 const R = {}; // pending promise resolvers (not saved)
 // Remote play: role is null (local), 'host' (runs the engine) or 'client' (renders host state). actor = remote seat currently acting on host.
@@ -858,7 +858,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 
 </script>
 <script>
-// FundsPlace · Moonshot Monopoly — remote play.
+// Learning Boards · FundsPlace Moonshot — remote play.
 // Birdnode pattern: PeerJS WebRTC data channel (broker = signalling only), AES-256-GCM sealed envelopes,
 // pairing secret lives only in the URL fragment (never sent to any server). The host runs the engine;
 // remote clients render the host's state and send back actions for their own seat.
@@ -1030,7 +1030,7 @@ const NET = (() => {
       <div class="mbody"><p style="margin-top:0;color:var(--muted);font-size:12.5px">Each player scans their QR or opens their link. The game is peer-to-peer and end-to-end encrypted (AES-256-GCM); the key travels only in the link’s <code>#fragment</code>. Keep this tab open — it is the table.</p>
       ${cards}
       <label style="font-size:12px;color:var(--muted)">Public page URL (where players open this game — must be HTTPS)</label>
-      <div style="display:flex;gap:8px;margin-top:4px"><input id="pubUrl" value="${esc(base)}" placeholder="https://…/FundsPlace-Moonshot-Monopoly.html" style="flex:1"><button class="btn" data-act="pubUrl">Save</button></div>
+      <div style="display:flex;gap:8px;margin-top:4px"><input id="pubUrl" value="${esc(base)}" placeholder="https://…/Learning-Boards-FundsPlace.html" style="flex:1"><button class="btn" data-act="pubUrl">Save</button></div>
       ${!/^https?:$/.test(location.protocol) ? '<p style="color:var(--muted);font-size:12px">You’re hosting from a local file; remote players join through the hosted copy above. Both run the same game.</p>' : ''}
       </div></div>`);
     seatsList.forEach(p => {
@@ -1137,7 +1137,7 @@ const NET = (() => {
         if (first || UI.modalKind === 'connect') { if (UI.modalKind === 'connect') UI.closeModal(); boot(); }
         else { UI.render(); UI.tokens(!!m.hop); UI.refreshModal(); }
         const me = st.players[NETX.seat];
-        if (me) { setPill(`🌐 Live at the host’s table · you are ${me.emoji} ${me.name}`, true); document.title = `${me.emoji} ${me.name} · Moonshot Monopoly`; }
+        if (me) { setPill(`🌐 Live at the host’s table · you are ${me.emoji} ${me.name}`, true); document.title = `${me.emoji} ${me.name} · Learning Boards`; }
         break;
       }
       case 'toast': orig.toast(m.msg); break;
@@ -1165,7 +1165,7 @@ const NET = (() => {
     pill = document.createElement('div'); pill.className = 'netpill'; document.body.appendChild(pill);
     setPill('🌐 Connecting…');
     buildBoard();
-    openModal('connect', `<div class="mbox" style="width:min(460px,92vw)"><div class="mhead" style="background:linear-gradient(135deg,#7b6cf6,#0f9a7f)"><small>FundsPlace · Moonshot Monopoly</small><h2>🌐 Joining a remote table</h2></div>
+    openModal('connect', `<div class="mbox" style="width:min(460px,92vw)"><div class="mhead" style="background:linear-gradient(135deg,#7b6cf6,#0f9a7f)"><small>Learning Boards · FundsPlace Moonshot</small><h2>🌐 Joining a remote table</h2></div>
       <div class="mbody"><p id="connMsg" style="margin-top:0">Preparing…</p><p style="color:var(--muted);font-size:12.5px">Peer-to-peer and end-to-end encrypted. The host runs the market; you play seat ${NETX.seat + 1}. Keep this tab open.</p></div></div>`, true);
     connectClient(h.get('k'));
     return true;
@@ -1221,7 +1221,7 @@ const NET = (() => {
 
 </script>
 <script>
-// FundsPlace · Moonshot Monopoly — rendering, modals, sound and effects
+// Learning Boards · FundsPlace Moonshot — rendering, modals, sound and effects
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const U = [1.55, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.55], TOT = 12.1;
@@ -1292,7 +1292,7 @@ function buildBoard() {
   const trees = [[6, 8], [10, 18], [88, 10], [92, 22], [7, 86], [16, 93], [84, 62], [90, 52], [30, 90], [68, 92], [40, 44], [62, 46]];
   const center = document.createElement('div'); center.className = 'center';
   center.innerHTML = `
-    <div class="ctitle"><small>FUNDSPLACE</small><b>MOONSHOT MONOPOLY</b><span>Every investment needs a reason — “I would invest because…”</span></div>
+    <div class="ctitle"><small>LEARNING BOARDS · FUNDSPLACE</small><b>MOONSHOT</b><span>Every investment needs a reason — “I would invest because…”</span></div>
     <div class="deck chance"><div>📡</div>MARKET SIGNAL</div>
     <div class="deck chest"><div>🗳️</div>EXECUTIVE DECISION</div>
     <div class="hq" style="left:20%;top:66%"><div class="bld on win cockpit" style="--c:#2b3550;--oc:#19b39a;--h:calc(var(--cell)*1.6)"><div class="f n"></div><div class="f s"></div><div class="f w"></div><div class="f e"></div><div class="f top"></div></div></div>
@@ -1607,7 +1607,7 @@ function showRules() {
 function showSetup() {
   const saved = loadSave();
   const rows = (UI.setup = UI.setup || DEFAULT_PLAYERS.map(p => ({ ...p })));
-  openModal('setup', `<div class="mbox" style="width:min(620px,94vw)"><div class="mhead" style="background:linear-gradient(135deg,#0f9a7f,#2f3f9e 60%,#7b6cf6)">${st ? '<button class="x" data-act="closeModal">✕</button>' : ''}<small>Executive Opportunity Market</small><h2>FundsPlace · Moonshot Monopoly</h2><div style="font-size:13px;opacity:.9">Five moonshots. ${fmt(START)} each. Turn the marketplace into a compounding intelligence business.</div></div>
+  openModal('setup', `<div class="mbox" style="width:min(620px,94vw)"><div class="mhead" style="background:linear-gradient(135deg,#0f9a7f,#2f3f9e 60%,#7b6cf6)">${st ? '<button class="x" data-act="closeModal">✕</button>' : ''}<small>Executive Opportunity Market</small><h2>Learning Boards · FundsPlace Moonshot</h2><div style="font-size:13px;opacity:.9">Five moonshots. ${fmt(START)} each. Turn the marketplace into a compounding intelligence business.</div></div>
     <div class="mbody">
       <div class="h"><span>Executives (2–4)</span><span>tap the token to change it</span></div>
       ${rows.map((p, k) => `<div class="setrow"><input type="checkbox" data-act="sOn" data-arg="${k}" ${p.on ? 'checked' : ''} ${k < 2 ? 'disabled' : ''}>

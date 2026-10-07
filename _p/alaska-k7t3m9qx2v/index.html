@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Alaska Card · Ketchikan Monopoly</title>
+<title>Learning Boards · Alaska</title>
 <style>
 :root{--ink:#0d1a22;--panel:#13242e;--panel2:#1a2f3b;--line:#294352;--text:#e6f0f2;--muted:#8fa7b0;--gold:#f2b632;--teal:#3fd0a8;--violet:#7b6cf6}
 *{box-sizing:border-box}
@@ -259,7 +259,7 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:70}
 <div class="app">
   <header class="top">
     <div class="logo">🏔️</div>
-    <div class="brand"><b>Alaska Card · Ketchikan Monopoly</b><span>Answer real Alaska questions · earn your collection</span></div>
+    <div class="brand"><b>Learning Boards · Alaska</b><span>Answer real Alaska questions · earn your collection</span></div>
     <div class="spacer"></div>
     <div class="seg" id="viewSeg">
       <button data-act="view" data-arg="flat">Flat</button>
@@ -303,8 +303,8 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:70}
 <div class="banner" id="banner"></div>
 <canvas id="fx"></canvas>
 <script>
-// Alaska Card · Ketchikan Monopoly — board data. Every ownable space carries an Alaska quiz + fact.
-const K = v => Math.round(v * 20 / 3 / 10) * 10; // classic Monopoly $ scaled ×6⅔ (start $10,000)
+// Learning Boards · Alaska — board data. Every ownable space carries an Alaska quiz + fact.
+const K = v => Math.round(v * 20 / 3 / 10) * 10; // classic board-game $ scaled ×6⅔ (start $10,000)
 const fmt = k => (k < 0 ? '−' : '') + '$' + Math.abs(Math.round(k)).toLocaleString('en-US');
 const START = K(1500), GO_PAY = K(200), FINE = K(50), BONUS = K(15);
 
@@ -519,7 +519,7 @@ const DEFAULT_PLAYERS = [
 
 </script>
 <script>
-// Alaska Card · Ketchikan Monopoly — game engine
+// Learning Boards · Alaska — game engine
 let st = null;
 const R = {}; // pending promise resolvers (not saved)
 // Remote play: role is null (local), 'host' (runs the engine) or 'client' (renders host state). actor = remote seat currently acting on host.
@@ -941,7 +941,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 
 </script>
 <script>
-// Alaska Card · Ketchikan Monopoly — remote play.
+// Learning Boards · Alaska — remote play.
 // Birdnode pattern: PeerJS WebRTC data channel (broker = signalling only), AES-256-GCM sealed envelopes,
 // pairing secret lives only in the URL fragment (never sent to any server). The host runs the engine;
 // remote clients render the host's state and send back actions for their own seat.
@@ -1113,7 +1113,7 @@ const NET = (() => {
       <div class="mbody"><p style="margin-top:0;color:var(--muted);font-size:12.5px">Each player scans their QR or opens their link. The game is peer-to-peer and end-to-end encrypted (AES-256-GCM); the key travels only in the link’s <code>#fragment</code>. Keep this tab open — it is the table.</p>
       ${cards}
       <label style="font-size:12px;color:var(--muted)">Public page URL (where players open this game — must be HTTPS)</label>
-      <div style="display:flex;gap:8px;margin-top:4px"><input id="pubUrl" value="${esc(base)}" placeholder="https://…/Alaska-Card-Monopoly.html" style="flex:1"><button class="btn" data-act="pubUrl">Save</button></div>
+      <div style="display:flex;gap:8px;margin-top:4px"><input id="pubUrl" value="${esc(base)}" placeholder="https://…/Learning-Boards-Alaska.html" style="flex:1"><button class="btn" data-act="pubUrl">Save</button></div>
       ${!/^https?:$/.test(location.protocol) ? '<p style="color:var(--muted);font-size:12px">You’re hosting from a local file; remote players join through the hosted copy above. Both run the same game.</p>' : ''}
       </div></div>`);
     seatsList.forEach(p => {
@@ -1220,7 +1220,7 @@ const NET = (() => {
         if (first || UI.modalKind === 'connect') { if (UI.modalKind === 'connect') UI.closeModal(); boot(); }
         else { UI.render(); UI.tokens(!!m.hop); UI.refreshModal(); }
         const me = st.players[NETX.seat];
-        if (me) { setPill(`🌐 Live at the host’s table · you are ${me.emoji} ${me.name}`, true); document.title = `${me.emoji} ${me.name} · Alaska Monopoly`; }
+        if (me) { setPill(`🌐 Live at the host’s table · you are ${me.emoji} ${me.name}`, true); document.title = `${me.emoji} ${me.name} · Learning Boards`; }
         break;
       }
       case 'toast': orig.toast(m.msg); break;
@@ -1248,7 +1248,7 @@ const NET = (() => {
     pill = document.createElement('div'); pill.className = 'netpill'; document.body.appendChild(pill);
     setPill('🌐 Connecting…');
     buildBoard();
-    openModal('connect', `<div class="mbox" style="width:min(460px,92vw)"><div class="mhead" style="background:linear-gradient(135deg,#7b6cf6,#0f9a7f)"><small>Alaska Card · Ketchikan Monopoly</small><h2>🌐 Joining a remote table</h2></div>
+    openModal('connect', `<div class="mbox" style="width:min(460px,92vw)"><div class="mhead" style="background:linear-gradient(135deg,#7b6cf6,#0f9a7f)"><small>Learning Boards · Alaska</small><h2>🌐 Joining a remote table</h2></div>
       <div class="mbody"><p id="connMsg" style="margin-top:0">Preparing…</p><p style="color:var(--muted);font-size:12.5px">Peer-to-peer and end-to-end encrypted. The host runs the market; you play seat ${NETX.seat + 1}. Keep this tab open.</p></div></div>`, true);
     connectClient(h.get('k'));
     return true;
@@ -1304,7 +1304,7 @@ const NET = (() => {
 
 </script>
 <script>
-// Alaska Card · Ketchikan Monopoly — rendering, modals, sound and effects
+// Learning Boards · Alaska — rendering, modals, sound and effects
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const U = [1.55, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.55], TOT = 12.1;
@@ -1375,7 +1375,7 @@ function buildBoard() {
   const trees = [[6, 8], [10, 18], [88, 10], [92, 22], [7, 86], [16, 93], [84, 62], [90, 52], [30, 90], [68, 92], [40, 44], [62, 46]];
   const center = document.createElement('div'); center.className = 'center';
   center.innerHTML = `
-    <div class="ctitle"><small>ALASKA CARD · KETCHIKAN</small><b>LAST FRONTIER MONOPOLY</b><span>Some souvenirs you buy. This one you earn. Answer to claim.</span></div>
+    <div class="ctitle"><small>LEARNING BOARDS · KETCHIKAN, ALASKA</small><b>LAST FRONTIER</b><span>Some souvenirs you buy. This one you earn. Answer to claim.</span></div>
     <div class="deck chance"><div>🌦️</div>WEATHER REPORT</div>
     <div class="deck chest"><div>🃏</div>SHORE STORY</div>
     <div class="hq" style="left:20%;top:66%"><div class="bld on win cockpit" style="--c:#2b3550;--oc:#19b39a;--h:calc(var(--cell)*1.6)"><div class="f n"></div><div class="f s"></div><div class="f w"></div><div class="f e"></div><div class="f top"></div></div></div>
@@ -1691,7 +1691,7 @@ function showRules() {
 function showSetup() {
   const saved = loadSave();
   const rows = (UI.setup = UI.setup || DEFAULT_PLAYERS.map(p => ({ ...p })));
-  openModal('setup', `<div class="mbox" style="width:min(620px,94vw)"><div class="mhead" style="background:linear-gradient(135deg,#1b4d6b,#2e9e6a 55%,#7b6cf6)">${st ? '<button class="x" data-act="closeModal">✕</button>' : ''}<small>Alaska Card · Southeast Alaska</small><h2>Ketchikan · Last Frontier Monopoly</h2><div style="font-size:13px;opacity:.9">${fmt(START)} each. Every card you claim asks a real Alaska question, and you learn the answer either way.</div></div>
+  openModal('setup', `<div class="mbox" style="width:min(620px,94vw)"><div class="mhead" style="background:linear-gradient(135deg,#1b4d6b,#2e9e6a 55%,#7b6cf6)">${st ? '<button class="x" data-act="closeModal">✕</button>' : ''}<small>Alaska Card · Southeast Alaska</small><h2>Learning Boards · Last Frontier</h2><div style="font-size:13px;opacity:.9">${fmt(START)} each. Every card you claim asks a real Alaska question, and you learn the answer either way.</div></div>
     <div class="mbody">
       <div class="h"><span>Adventurers (2–4)</span><span>tap the token to change it</span></div>
       ${rows.map((p, k) => `<div class="setrow"><input type="checkbox" data-act="sOn" data-arg="${k}" ${p.on ? 'checked' : ''} ${k < 2 ? 'disabled' : ''}>
