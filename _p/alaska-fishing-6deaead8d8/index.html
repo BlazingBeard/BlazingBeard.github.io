@@ -83,11 +83,25 @@
   .card-picture{position:relative}.card-picture>img{display:block}.card-picture .specimen{position:absolute;inset:12% 3%;width:94%;height:76%;object-fit:contain;border:0;background:transparent;filter:drop-shadow(0 7px 7px #000b)}.card-picture:has(.specimen)>img:first-child{filter:brightness(.55)}
   .deck-card.locked .card-picture .specimen{filter:grayscale(.65) drop-shadow(0 7px 7px #000b)}
   @media(max-width:740px){.dock-postcard{display:flex;align-items:center;grid-column:1/-1;transform:none}.dock-postcard img{width:110px;height:90px}.dock-postcard span{font-size:17px;padding:10px;text-align:left}.dock-postcard small{font-size:9px;line-height:1.6}}
+  .dock-gallery{margin-top:26px;padding:24px;border:1px solid #716847;border-radius:5px;background:repeating-linear-gradient(2deg,#c2a86c05 0 2px,transparent 2px 8px),#20291f}
+  .gallery-heading{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:20px}.gallery-heading h2{font:30px Georgia,serif;color:#ebd5a3;margin:6px 0}.gallery-heading p{color:#b5bea2;font-size:12px;margin:0;max-width:420px}
+  .gallery-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:24px;align-items:start}
+  .gallery-piece{display:block;width:100%;text-align:left;background:#131f19;border:5px double #b49a5c;border-radius:7px;padding:11px;color:#e9d7ad;box-shadow:0 9px 20px #0004;transition:transform .2s}
+  .gallery-piece:hover{transform:translateY(-3px);border-color:#efd499}.gallery-piece img{display:block;width:100%;height:auto;border-radius:3px}
+  .gallery-piece .caption{display:block;padding:14px 5px 5px}.gallery-piece b{display:block;font:22px Georgia,serif;margin-bottom:6px}.gallery-piece small{display:block;font-size:11px;line-height:1.6;color:#b6c2a7}
+  .gallery-piece .edition-label{display:block;font:9px monospace;letter-spacing:.12em;color:#cdb575;margin-bottom:7px}
+  .gallery-piece.penalty{border-color:#b7a338;background:#25251a}.penalty .edition-label{color:#f1d865}.gallery-piece.penalty img{max-height:550px;object-fit:contain;background:#10140e}
+  .gallery-note{font-size:11px;line-height:1.6;color:#b0bba0;margin:20px 0 0}
+  .image-tools{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px}.image-tools a{color:#304c2c;text-decoration:underline;text-underline-offset:3px;font-weight:bold}.image-tools button{background:#35472d;border:1px solid #546742;border-radius:3px;color:#efdfb5;padding:7px 12px}
+  #inspectDialog.zoomed{width:min(1500px,96vw)}#inspectDialog.zoomed #inspectArt{max-height:none;object-fit:contain}
+  @media(max-width:740px){.dock-gallery{padding:14px}.gallery-heading{display:block}.gallery-heading h2{font-size:25px}.gallery-heading p{margin-top:10px}.gallery-grid{grid-template-columns:1fr;gap:17px}.gallery-piece{padding:7px}.gallery-piece b{font-size:20px}.gallery-piece.penalty img{max-height:none}}
+  .tools>a.small{display:inline-flex;align-items:center;text-decoration:none}.cards-link{display:inline-block;margin-top:12px;padding:10px 16px;border:1px solid #a89762;border-radius:3px;background:#34432c;color:#f0dcac;font-size:13px;text-decoration:none}.cards-link:hover{background:#465739}.cards-link:focus-visible,.tools>a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+  @media(min-width:741px){.tools{flex-wrap:wrap;justify-content:flex-end}}
 </style>
 </head>
 <body>
 <main class="shell">
-  <header><div><div class="brand"><b>HowardAI</b> / Cedar Sanctuary field department</div><h1>Lisa Land <em>Fishing Derby</em></h1></div><div class="tools"><button class="small" id="fullscreen">Full screen</button><button class="small" id="sound" aria-pressed="false">Sound off</button><button class="small" id="pause" disabled>Pause</button><button class="small" id="help">How to play</button></div></header>
+  <header><div><div class="brand"><b>HowardAI</b> / Cedar Sanctuary field department</div><h1>Lisa Land <em>Fishing Derby</em></h1></div><div class="tools"><a class="small" href="https://blazingbeard.github.io/alaskacard/" target="_blank" rel="noopener noreferrer">Alaska Cards ↗</a><button class="small" id="fullscreen">Full screen</button><button class="small" id="sound" aria-pressed="false">Sound off</button><button class="small" id="pause" disabled>Pause</button><button class="small" id="help">How to play</button></div></header>
   <div class="warning-strip"><strong>Welcome to Cedar Sanctuary. Enter at your own risk.</strong><span>Boats: hopeful. Generators: not making promises.</span></div>
   <div class="layout">
     <div>
@@ -119,7 +133,14 @@
     </aside>
   </div>
   <section class="deck-section" aria-labelledby="deckTitle"><div class="deck-heading"><div><div class="eyebrow">Lisa Land / Souvenirs you actually earn</div><h2 id="deckTitle">The dockside card collection</h2><p>Catch something. Survive the nonsense. Keep the story.</p></div><div class="deck-total" id="deckTotal">0 / 7 EARNED</div></div><div class="card-deck" id="cardDeck"></div><p class="deck-note">Tap any card for its story and unlock condition. Saved on this browser. These are game souvenirs, not real-world achievement claims. Inspired by <a href="https://blazingbeard.github.io/alaskacard/" target="_blank" rel="noopener noreferrer">Alaska Card</a>.</p></section>
-  <dialog id="inspectDialog" aria-labelledby="inspectTitle"><button class="small" id="closeInspect" autofocus>Close</button><div class="eyebrow" id="inspectLabel">From the dock</div><img id="inspectArt" alt=""><h2 id="inspectTitle"></h2><p id="inspectStory"></p><p class="criterion" id="inspectRule"></p></dialog>
+  <section class="dock-gallery" aria-labelledby="galleryTitle">
+    <div class="gallery-heading"><div><div class="eyebrow">Pinned up at Cedar Sanctuary</div><h2 id="galleryTitle">Cred, chaos &amp; cautionary tales.</h2></div><p>Some things belong in a trophy case. Others belong beside the first-aid kit. Around here, they share a wall.</p></div>
+    <div class="gallery-grid">
+      <button class="gallery-piece" id="cardSheet"><img src="alaska-fishing-assets/alaska-card-sheet-preview.webp" width="720" height="480" loading="lazy" alt="Alaska Card collection sheet with twelve illustrated achievements, a card back, and rarity guide."><span class="caption"><span class="edition-label">ALASKA CARD / OFFICIAL ALASKA CRED</span><b>Collect stories. Not just cards.</b><small>From Tongass Narrows to Northern Lights. The full illustrated sheet, including the card back and rarity guide. Tap to inspect every detail.</small></span></button>
+      <button class="gallery-piece penalty" id="penaltyCard"><img src="alaska-fishing-assets/lisa-penalty-card-preview.webp" width="515" height="720" loading="lazy" alt="Lisa Land Accident Prone penalty card: trips, slips, spills, and still smiling."><span class="caption"><span class="edition-label">LISA LAND / LEGENDARY MISADVENTURES / #007</span><b>Still smiling. Naturally.</b><small>Trips. Slips. Spills. An extra turn to pick up, clean up, or fix it. The official-looking paperwork for a very unofficial adventure.</small></span></button>
+    </div><p class="gallery-note">These are gallery keepsakes, separate from your seven earnable game cards. The penalty card does not deduct points or turns. Real-world Alaska achievements are not awarded by playing the derby.</p><a class="cards-link" href="https://blazingbeard.github.io/alaskacard/" target="_blank" rel="noopener noreferrer">Explore the Alaska Cards collection ↗</a>
+  </section>
+  <dialog id="inspectDialog" aria-labelledby="inspectTitle"><button class="small" id="closeInspect" autofocus>Close</button><div class="eyebrow" id="inspectLabel">From the dock</div><img id="inspectArt" alt=""><div class="image-tools"><button id="zoomInspect" aria-pressed="false">Enlarge image</button><a id="fullInspect" target="_blank" rel="noopener noreferrer">Open full-resolution image</a></div><h2 id="inspectTitle"></h2><p id="inspectStory"></p><p class="criterion" id="inspectRule"></p></dialog>
   <div id="storageNotice" class="notice" hidden>Browser storage is unavailable. Your record will last only for this visit.</div>
   <div id="artNotice" class="notice" hidden></div>
   <footer class="footer"><span>NO GENERATORS WERE RELIED UPON IN THE MAKING OF THIS GAME.</span><span>Lisa Land / A HowardAI field trip</span></footer>
@@ -229,7 +250,8 @@ function openInspection(title,story,rule,image,label){
   inspectTrigger=document.activeElement;inspectPaused=mode==='playing'&&!paused;
   if(inspectPaused){paused=true;held=false;$('pause').textContent='Resume';}
   $('inspectTitle').textContent=title;$('inspectStory').textContent=story;$('inspectRule').textContent=rule;$('inspectLabel').textContent=label;
-  $('inspectArt').src=artBase+image+'.webp';$('inspectArt').alt=title;$('inspectDialog').showModal();
+  $('inspectDialog').classList.remove('zoomed');$('zoomInspect').textContent='Enlarge image';$('zoomInspect').setAttribute('aria-pressed','false');
+  $('inspectArt').src=artBase+image+'.webp';$('inspectArt').alt=title;$('fullInspect').href=artBase+image+'.webp';$('inspectDialog').showModal();$('inspectDialog').scrollTop=0;
 }
 $('cardDeck').onclick=e=>{
   const button=e.target.closest('[data-card]');if(!button)return;
@@ -237,6 +259,12 @@ $('cardDeck').onclick=e=>{
   openInspection(c.name,c.story,c.rule,c.image,c.rarity+' / '+(earnedCards.has(c.id)?'EARNED':'NOT YET EARNED'));
 };
 $('postcard').onclick=()=>openInspection('Cedar Sanctuary: the Bermuda Triangle','Boats sink. Generators die. Nothing escapes. A postcard from the unofficial department of "it was fine yesterday."','The local forecast: a chance of repairs. Your fishing game pauses while you read.','cedar-postcard','A postcard from Lisa Land');
+$('cardSheet').onclick=()=>openInspection('Alaska Card: the original field notes','Twelve illustrated stories from Southeast Alaska: boats, bears, eagles, island life, and the occasional questionable forecast. The reverse and rarity guide are here too.','Gallery artwork only. Playing this game does not claim any real-world Alaska Card achievement.','alaska-card-sheet','ALASKA CARD / COLLECTION SHEET');
+$('penaltyCard').onclick=()=>openInspection('Accident Prone. Still Smiling.','Some adventures come with a trophy. Some come with a first-aid kit and an extra turn to clean up. This one gets a place of honor on the Lisa Land wall.','Legendary Misadventures #007. A gallery keepsake: no game points or turns are deducted.','lisa-penalty-card','LISA LAND / PENALTY CARD');
+$('zoomInspect').onclick=()=>{
+  const zoomed=$('inspectDialog').classList.toggle('zoomed');$('zoomInspect').textContent=zoomed?'Fit image':'Enlarge image';$('zoomInspect').setAttribute('aria-pressed',String(zoomed));$('inspectDialog').scrollTop=0;
+};
+$('inspectArt').addEventListener('error',()=>{console.error('Inspection image could not load:',$('inspectArt').src);$('inspectRule').textContent='This image could not load. Check that the artwork folder is present, or refresh the published page.';});
 $('closeInspect').onclick=()=>$('inspectDialog').close();
 $('inspectDialog').addEventListener('close',()=>{
   if(inspectPaused&&mode==='playing'){resume();if(document.hidden)pauseGame();}
