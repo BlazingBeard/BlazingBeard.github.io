@@ -29,8 +29,8 @@ export class FishingRound {
   cast(species, distance = 0) {
     if (this.phase !== 'idle') return false;
     this.species = species;
-    this.approach = 1.3 + distance / 80 + this.random() * 1.5;
-    this.nibbles = 1 + Math.floor(this.random() * 3);
+    this.approach = .9 + distance / 100 + this.random();
+    this.nibbles = 1 + Math.floor(this.random() * 2);
     this.nibbleCount = 0;
     this.waitTime = this.approach;
     this.enter('casting');
@@ -39,9 +39,9 @@ export class FishingRound {
   investigate(species) {
     if (this.phase !== 'idle') return false;
     this.species = species;
-    this.nibbles = 1 + Math.floor(this.random() * 3);
+    this.nibbles = 1 + Math.floor(this.random() * 2);
     this.nibbleCount = 0;
-    this.waitTime = .75 + this.random() * .55;
+    this.waitTime = .5 + this.random() * .35;
     this.enter('waiting');
     return true;
   }
@@ -80,7 +80,7 @@ export class FishingRound {
     if (!(dt > 0)) return;
     dt = Math.min(dt, .05);
     this.age += dt;
-    if (this.phase === 'casting' && this.age >= .85) this.enter('waiting');
+    if (this.phase === 'casting' && this.age >= .68) this.enter('waiting');
     else if (this.phase === 'waiting' && this.age >= this.waitTime) {
       if (!this.species) this.escape('A quiet patch of water.', 'Try casting closer to one of the moving fish shadows.');
       else if (this.nibbleCount < this.nibbles) {
@@ -90,8 +90,8 @@ export class FishingRound {
         this.biteWindow = this.species.power > 1.2 ? 1.15 : 1.55;
         this.enter('bite');
       }
-    } else if (this.phase === 'nibble' && this.age >= .43) {
-      this.waitTime = .85 + this.random() * .8;
+    } else if (this.phase === 'nibble' && this.age >= .32) {
+      this.waitTime = .55 + this.random() * .45;
       this.enter('waiting');
     } else if (this.phase === 'bite' && this.age >= this.biteWindow) {
       this.escape('A splash. A flash. Gone.', 'Hook on the big splash. That fish was quicker this time.');
@@ -119,7 +119,7 @@ export class FishingRound {
     const reel = this.held ? (fighting ? .3 : .165) * this.drag : (fighting ? -.21 : -.25);
     this.tension = clamp(this.tension + (pull + reel) * dt, 0, 1);
     if (this.held && this.tension > .1 && this.tension < .9) {
-      this.progress += (fighting ? .018 : .16 * Math.sqrt(this.drag) / Math.sqrt(power)) * dt;
+      this.progress += (fighting ? .024 : .21 * Math.sqrt(this.drag) / Math.sqrt(power)) * dt;
     } else {
       this.progress -= (fighting ? .018 * power : .006) * dt;
     }

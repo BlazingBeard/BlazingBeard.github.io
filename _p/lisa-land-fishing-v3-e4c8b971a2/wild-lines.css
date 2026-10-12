@@ -121,3 +121,106 @@ header{margin-bottom:16px}
 }
 @media(max-width:370px){.console-copy strong{font-size:14px}.reel-button{min-width:108px}.outing-choice{padding:7px 8px}.rig-bar select{max-width:138px}}
 @media(prefers-reduced-motion:reduce){.waypoint{transition:none}}
+.trophy-nav{border-color:#ad935c;background:#38432c}
+.trophy-nav span{margin-left:6px;font:9px monospace;color:#edd599}
+.trophy-wing{margin-top:25px;padding:25px;border:1px solid #766744;border-radius:6px;background:radial-gradient(ellipse at 55% 0,#57634530,transparent 65%),repeating-linear-gradient(0deg,#d9b16f04 0 2px,transparent 2px 9px),#1c2a20}
+.trophy-wing-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:22px}
+.trophy-wing h2{font:32px/1.15 Georgia,serif;color:#efdaad;margin:8px 0 10px;letter-spacing:-.5px}
+.trophy-wing-heading p{font-size:12px;color:#aeb89a;margin:0}
+.trophy-wing .eyebrow{font-size:8px;color:#b4b88a}
+.trophy-wing-heading .primary{margin:0;white-space:nowrap;font-size:11px;padding:12px 18px}
+.trophy-shelf{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px;border-bottom:9px ridge #5b4b32;padding-bottom:15px}
+.trophy-preview{position:relative;overflow:hidden;text-align:left;padding:15px 16px 18px;border:1px solid var(--tier);border-radius:7px;background:radial-gradient(ellipse at 50% 25%,#b2c09617,transparent 65%),#101f19;box-shadow:inset 0 0 0 4px #111b16,0 7px 14px #0004}
+.trophy-preview:after{content:"";position:absolute;inset:5px;border:1px solid #c5b78430;border-radius:3px;pointer-events:none}
+.trophy-preview-top{display:flex;align-items:center;justify-content:space-between;font:700 11px Georgia,serif;color:var(--tier);text-transform:uppercase;letter-spacing:1.2px}
+.trophy-preview-top b{font:9px monospace;color:#a6b096;letter-spacing:0}
+.trophy-preview img{display:block;width:100%;height:82px;object-fit:contain;margin:13px 0;filter:drop-shadow(0 8px 6px #0007)}
+.trophy-preview.locked img{opacity:.18;filter:grayscale(1)}
+.trophy-preview>strong{display:block;font:19px Georgia,serif;color:#eee0b9}
+.trophy-preview>small{display:block;margin-top:7px;color:#98a584;font-size:9px}
+.trophy-preview:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 4px #111b16,0 10px 25px #0007}
+.trophy-wing-note{font:10px/1.7 system-ui,sans-serif;color:#96a27f;margin:17px 0 0}
+#trophyRoom{width:min(1170px,95vw);max-height:92dvh;padding:28px;border:6px double #a48d55;border-radius:8px;background:linear-gradient(#102018ed,#15251ff7),url("alaska-fishing-assets/island-sanctuary.webp") center top/cover fixed;color:#e9dfbd;box-shadow:0 25px 100px #000b}
+#trophyRoom::backdrop{background:#07130eee;backdrop-filter:blur(7px)}
+.trophy-room-top{position:sticky;top:0;z-index:3;display:flex;align-items:start;justify-content:space-between;gap:20px;border-bottom:1px solid #626548;padding:10px 0 22px;background:#14251ff7;box-shadow:0 -28px 0 #14251f}
+#trophyRoom .eyebrow{font-size:8px;color:#a4b18a;letter-spacing:2px}
+#trophyRoom h2{font:52px/1.1 Georgia,serif;color:#f0dca9;margin:10px 0 8px;letter-spacing:-1px}
+#trophyRoom .trophy-room-top p{color:#a8b498;font:italic 15px Georgia,serif;margin:0}
+#trophyRoom #closeTrophies{float:none;flex-shrink:0;font-size:11px;white-space:nowrap}
+.trophy-room-stats{display:flex;align-items:center;gap:27px;flex-wrap:wrap;padding:18px 0;font-size:10px;color:#9daa8a}
+.trophy-room-stats b{font:27px Georgia,serif;color:#e5d29a;margin-right:5px}
+#trophyBest{margin-left:auto;color:#b2bd9f;font-style:italic}
+.trophy-filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
+.trophy-filters button{background:#203025;border:1px solid #4f5f43;border-radius:4px;padding:9px 13px;font-size:11px;color:#a6b291}
+.trophy-filters button span{margin-left:9px;font:8px monospace;color:#7f9479}
+.trophy-filters button[aria-pressed=true]{border-color:var(--tier);color:var(--tier);background:#34402a}
+.trophy-filters button[aria-pressed=true] span{color:var(--tier)}
+.trophy-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:19px 15px}
+.trophy-card{display:flex;flex-direction:column;position:relative;isolation:isolate;overflow:hidden;text-align:left;min-width:0;padding:12px 12px 10px;border:2px solid var(--tier);border-radius:8px;background:radial-gradient(ellipse at 50% 0%,#aaa76e30,transparent 60%),linear-gradient(130deg,#28362a,#101b16);box-shadow:0 7px 0 #07150f,0 12px 16px #0006;color:#e5d8ad;transition:transform .18s,box-shadow .18s}
+.trophy-card:before{content:"";position:absolute;inset:5px;border:1px solid #c9b77c44;border-radius:3px;pointer-events:none}
+.trophy-card.earned:hover{transform:translateY(-5px);box-shadow:0 7px 0 #07150f,0 16px 26px #0009}
+.trophy-card-top{display:flex;align-items:center;justify-content:space-between;gap:5px;border-bottom:1px solid #a7976540;padding:2px 0 8px;color:var(--tier)}
+.trophy-card-top b{font-size:9px;text-transform:uppercase;letter-spacing:1px}
+.trophy-card-top small{font:7px monospace;color:#8b9979}
+.trophy-card-picture{position:relative;display:block;margin:12px 0 15px;height:110px;border-radius:4px;background:radial-gradient(ellipse at center,#99b6872b,#15292000 70%)}
+#trophyRoom .trophy-card img{display:block;position:relative;z-index:1;width:100%;height:100%;max-height:none;object-fit:contain;margin:0;background:transparent;filter:drop-shadow(0 7px 5px #0008)}
+.trophy-seal{position:absolute;bottom:-7px;right:0;z-index:2;transform:rotate(-8deg);padding:3px 6px;border:1px solid var(--tier);background:#1e3027;color:var(--tier);font:7px monospace;letter-spacing:1px}
+.trophy-card>strong{font:20px/1.1 Georgia,serif;display:block;color:#eadcb4;min-height:44px;margin-bottom:8px}
+.trophy-card-weight{display:block;font:24px Georgia,serif;color:var(--tier);min-height:39px}
+.trophy-card-weight small{font:7px/1.5 system-ui,sans-serif;letter-spacing:.04em;color:#91a07e}
+.trophy-card-foot{display:flex;align-items:center;justify-content:space-between;gap:7px;border-top:1px solid #8a9c6750;margin-top:10px;padding-top:9px;font-size:7px;color:#a6b394}
+.trophy-card-foot b{font:10px monospace;color:var(--tier)}
+.trophy-card.locked{border-color:#4a5a43;background:linear-gradient(135deg,#233124,#132019);box-shadow:0 7px 0 #0f1d14,0 12px 16px #0003}
+.trophy-card.locked .trophy-card-picture img{filter:grayscale(1)!important;opacity:.16}
+.trophy-card.locked .trophy-card-weight{font:italic 13px/1.5 Georgia,serif;color:#829277}
+.trophy-card.locked>strong{color:#899a7e}
+.trophy-card.locked .trophy-seal{border-color:#607052;color:#849777}
+#trophyRoom .trophy-room-note{font-size:10px;line-height:1.8;color:#8d9d80;margin:25px 0 0;padding-top:17px;border-top:1px solid #4e6244}
+.trophy-room-note b{color:#c3c7a4}
+#catchCard[data-rarity]{border-color:var(--tier);outline-color:var(--tier)}
+#catchRarity{font-weight:bold;letter-spacing:2px}
+#catchCard[data-rarity=rare]{background:radial-gradient(ellipse at top,#dbe9e5,#bbc8b7);box-shadow:0 0 32px #7eafd445,0 16px 70px #000a}
+#catchCard[data-rarity=epic]{background:radial-gradient(ellipse at top,#ece3ef,#c5b7cb);box-shadow:0 0 40px #b495de65,0 16px 70px #000a}
+#catchCard[data-rarity=legendary]{background:radial-gradient(ellipse at top,#fff1bd,#d7b775);box-shadow:0 0 50px #edc96b80,0 16px 70px #000a}
+.catch-trophy-note{font:7px/1.6 monospace;letter-spacing:.03em;margin-top:11px;color:#546343}
+.catch-trophy-button{pointer-events:auto;margin-top:9px;padding:7px 10px;background:#2f492e;border:1px solid #708753;border-radius:3px;font-size:9px;color:#efe4bd}
+@media(max-width:1100px){
+  .trophy-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .trophy-wing h2{font-size:28px}.trophy-wing-heading{gap:15px}
+  .trophy-preview{padding:13px}.trophy-preview>strong{font-size:17px}
+  .trophy-preview-top{font-size:9px;letter-spacing:.6px}
+}
+@media(max-width:740px){
+  .trophy-nav span{font-size:7px;margin-left:4px}
+  .trophy-wing{padding:16px;margin-top:17px}
+  .trophy-wing-heading{display:block;margin-bottom:19px}
+  .trophy-wing h2{font-size:28px}.trophy-wing-heading p{font-size:11px;line-height:1.6}
+  .trophy-wing .eyebrow{font-size:6px}
+  .trophy-wing-heading .primary{margin-top:15px;font-size:10px;padding:10px 15px}
+  .trophy-shelf{grid-template-columns:1fr 1fr;gap:12px;border-bottom-width:6px}
+  .trophy-preview img{height:63px;margin:9px 0}.trophy-preview>strong{font-size:16px}
+  .trophy-preview>small{font-size:8px}.trophy-wing-note{font-size:9px}
+  #trophyRoom{padding:16px 12px;width:96vw;border-width:4px}
+  .trophy-room-top{gap:10px;padding-bottom:17px}
+  #trophyRoom h2{font-size:33px;letter-spacing:-.5px;margin:9px 0 7px}
+  #trophyRoom .eyebrow{font-size:6px;letter-spacing:1px}
+  #trophyRoom .trophy-room-top p{font-size:11px;line-height:1.5}
+  #trophyRoom #closeTrophies{font-size:8px;white-space:normal;width:85px;padding:7px}
+  .trophy-room-stats{gap:12px;padding:14px 0;font-size:8px}
+  .trophy-room-stats b{font-size:22px}
+  #trophyBest{margin:0;font-size:9px;flex-basis:100%}
+  .trophy-filters{gap:5px;margin-bottom:16px}
+  .trophy-filters button{font-size:9px;padding:7px 8px}
+  .trophy-filters button span{font-size:7px;margin-left:5px}
+  .trophy-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 11px}
+  .trophy-card{padding:10px;border-radius:5px}
+  .trophy-card-top b{font-size:8px}.trophy-card-top small{font-size:6px}
+  .trophy-card-picture{height:90px;margin:8px 0 15px}
+  .trophy-card>strong{font-size:19px;min-height:42px}
+  .trophy-card-weight{font-size:23px}
+  .trophy-card-foot{font-size:7px;padding-top:7px}
+  #trophyRoom .trophy-room-note{font-size:9px}
+  .catch-trophy-note{font-size:6px;margin-top:8px}.catch-trophy-button{font-size:8px;padding:6px 9px;margin-top:7px}
+  #catchCard{top:17%;padding:12px}
+}
+@media(prefers-reduced-motion:reduce){.trophy-card{transition:none}.trophy-card.earned:hover,.trophy-preview:hover{transform:none}}
