@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#09191e">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Welcome to Lisa Land. Catch fish, collect cards, and escape Cedar Sanctuary with your boat still floating. A HowardAI arcade.">
+<title>Lisa Land | Wild Lines · Third Edition</title>
+<style>
+  :root{color-scheme:dark;--bg:#09191e;--panel:#10252c;--line:#284048;--ink:#e9efdf;--muted:#9bb4b8;--gold:#f2ca7e;--mint:#80dcc0}
+  *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#183a40,transparent 65%),var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif;min-height:100vh}
+  button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible,canvas:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+  button:disabled{opacity:.4;cursor:default}.shell{max-width:1480px;margin:auto;padding:28px 36px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px}.brand{font-size:11px;letter-spacing:.22em;color:var(--mint);text-transform:uppercase}.brand b{color:var(--ink)}
+  h1{font:400 clamp(26px,3vw,42px)/1.2 Georgia,serif;letter-spacing:-.03em;margin:6px 0 0}h1 em{font-style:normal;color:var(--gold)}
+  .tools{display:flex;gap:8px}.small{background:#122c32;border:1px solid #365057;border-radius:8px;padding:9px 14px;font-size:12px;white-space:nowrap}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:20px}.stage{position:relative;overflow:hidden;border:1px solid #42606a;border-radius:14px;background:#092832;box-shadow:0 24px 70px #0005;aspect-ratio:1100/720}
+  canvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}.topline{position:absolute;top:22px;left:25px;right:25px;display:flex;justify-content:space-between;align-items:start;pointer-events:none}.location{font-size:10px;letter-spacing:.16em;color:#cae3dc;text-transform:uppercase}.location b{display:block;font:400 22px Georgia,serif;color:#fff4d9;letter-spacing:0;margin-top:2px}.weather{font-size:10px;color:#bcdfda;letter-spacing:.08em;text-align:right}
+  .hud{position:absolute;left:22px;right:22px;bottom:22px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:14px;pointer-events:none}.status{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--mint);margin-bottom:3px;text-shadow:0 1px 3px #000}.hint{font-size:13px;color:#f1f3df;text-shadow:0 1px 4px #000}.chip{font-variant-numeric:tabular-nums;background:#081c25cc;border:1px solid #3d555f;border-radius:9px;padding:9px 14px;font-size:12px;color:#d0e4e0}.chip b{font:24px Georgia,serif;color:var(--gold);margin-right:5px}
+  .overlay{position:absolute;inset:0;background:linear-gradient(90deg,#061b25ed,#071d2670);display:flex;align-items:center;padding:7%;backdrop-filter:blur(3px);z-index:3}.overlay[hidden]{display:none}.card{max-width:560px}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.25em;color:var(--mint)}h2{font:400 clamp(30px,4.4vw,64px)/1.04 Georgia,serif;margin:17px 0;color:#fff1d5;letter-spacing:-.035em}.card p{color:#bad0d1;font-size:14px;max-width:420px}.primary{background:var(--gold);color:#15292e;border:0;border-radius:8px;padding:13px 24px;font-weight:750;margin-top:12px;box-shadow:0 3px 0 #a47f43}.primary:hover{background:#ffe0a4}.micro{font-size:10px!important;color:#8facb5!important;margin-top:18px!important}.steps{display:flex;gap:22px;margin:25px 0 12px;font-size:11px;color:#b6d1d0}.steps b{display:block;color:var(--gold);font-size:12px;margin-bottom:3px}
+  aside{display:flex;flex-direction:column;gap:14px}.panel{border:1px solid var(--line);border-radius:12px;padding:20px;background:linear-gradient(125deg,#152e35,#0e242b)}.paneltitle{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}.score{font:48px/1 Georgia,serif;color:var(--gold);font-variant-numeric:tabular-nums}.scorelabel{font-size:11px;color:var(--muted);margin-top:5px}.stats{display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:18px;padding-top:14px;font-size:11px;color:var(--muted)}.stats b{display:block;color:var(--ink);font-size:17px}
+  .species{display:flex;align-items:center;gap:11px;margin:14px 0}.fishmark{width:27px;height:12px;border-radius:65% 40% 40% 65%;background:var(--fish);position:relative;flex-shrink:0}.fishmark:before{content:"";position:absolute;right:-6px;top:1px;border-right:7px solid var(--fish);border-top:5px solid transparent;border-bottom:5px solid transparent}.species .name{font-size:12px}.species .detail{font-size:10px;color:var(--muted)}.species .count{margin-left:auto;font-size:12px;color:var(--gold);font-variant-numeric:tabular-nums}
+  .objective{font-size:12px;color:#c2d6d2}.track{height:5px;background:#253e44;border-radius:8px;overflow:hidden;margin:12px 0 7px}.track i{display:block;width:0;height:100%;background:var(--mint);transition:width .2s}.sub{font-size:10px;color:var(--muted)}.lastcatch{font-size:12px;color:var(--gold);min-height:36px}.controls{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 3px;color:var(--muted);font-size:11px}kbd{border:1px solid #39515a;background:#152f36;border-radius:4px;padding:1px 5px;font:10px monospace;color:#d7e5df}.footer{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:18px;margin-top:10px;color:#74989f;font-size:10px;letter-spacing:.08em}.notice{color:var(--gold);font-size:11px}
+  @media(max-width:1000px){.shell{padding:18px}.layout{grid-template-columns:minmax(0,1fr) 215px}.panel{padding:15px}.topline{top:15px;left:17px;right:17px}.hud{left:15px;bottom:15px;right:15px}.hint{font-size:11px}.steps{margin:15px 0}.card p{font-size:12px}}
+  @media(max-width:740px){.shell{padding:12px}header{align-items:start}.tools{flex-wrap:wrap;justify-content:end;max-width:165px}.small{padding:7px 9px}.layout{grid-template-columns:1fr;gap:12px}.stage{aspect-ratio:1.2}.topline .weather{display:none}aside{display:grid;grid-template-columns:1fr 1fr;gap:10px}.panel{padding:14px}.paneltitle{margin-bottom:10px}.score{font-size:36px}.stats{margin-top:12px;padding-top:10px}.journal{grid-row:span 2}.log{display:none}.overlay{padding:7%}.card h2{font-size:40px}.steps{gap:18px}.location b{font-size:18px}.chip{padding:7px}.chip b{font-size:20px}.hud{gap:7px}.hint{max-width:220px}.footer{font-size:9px}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+  .steps[hidden]{display:none}
+  @media(max-width:740px){.stage{aspect-ratio:1;min-height:360px}.overlay{display:block;overflow-y:auto;padding:6%}.card h2{font-size:34px;margin:12px 0}.card .micro{display:none}.steps{margin:16px 0 8px}}
+  body{background:radial-gradient(ellipse at 65% -10%,#24494b,transparent 65%),#08161c}
+  .shell{max-width:1600px;padding-top:22px}.stage{border-color:#55716e;border-radius:16px;box-shadow:0 30px 90px #0008}
+  .location,.weather{text-shadow:0 2px 6px #000,0 0 20px #000}.topline{padding:10px 14px;border-radius:8px;background:linear-gradient(90deg,#061b28b0,#061b2830);top:14px;left:14px;right:14px}
+  .overlay{backdrop-filter:blur(5px);background:linear-gradient(90deg,#061820ee,#06182090)}
+  .overlay.hero{background-size:cover;background-position:center;backdrop-filter:none}
+  .hero h2{font-size:clamp(40px,5.1vw,76px);text-shadow:0 3px 30px #0006}.hero .card{max-width:620px}.hero .card p{color:#d6e2df}.hero .eyebrow{color:#dfcc9e}
+  .hero .primary{padding:15px 30px}.hero .steps{padding-top:18px;border-top:1px solid #b6cdb033;max-width:430px}
+  .species{margin:12px 0}.species img{width:60px;height:32px;object-fit:contain;filter:drop-shadow(0 4px 5px #0005)}.species .name{font-size:11px}
+  .panel{background:linear-gradient(120deg,#142c33,#0c2028)}.paneltitle{color:#b6cbc5}
+  .route{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .waypoint{position:relative;overflow:hidden;padding:12px 14px;border:1px solid #294751;border-radius:8px;background:#102d35;background-size:cover;background-position:center 30%;isolation:isolate}
+  .waypoint:before{content:"";position:absolute;inset:0;background:#061a26bf;z-index:-1}.waypoint.active{border-color:#e7c782}.waypoint.active:before{background:linear-gradient(90deg,#132b30dd,#132b3070)}
+  .waypoint span{font:9px monospace;letter-spacing:.13em;color:#b8c9c1}.waypoint b{display:block;font:15px Georgia,serif;color:#e2e6d8}.waypoint.active b{color:#ffe3a9}
+  .tackle{display:flex;align-items:center;gap:8px;margin-top:12px;background:#0b2028;border:1px solid #29414a;border-radius:10px;padding:9px 12px}
+  .tackle>span{font:10px monospace;letter-spacing:.12em;color:#9bb8ba;padding-right:8px}.lure{flex:1;background:transparent;text-align:left;border:1px solid transparent;border-radius:6px;padding:7px 10px;color:#9eb8b7;font-size:11px}
+  .lure b{display:block;font-weight:600;color:#dde8d9}.lure[aria-pressed="true"]{background:#213c3d;border-color:#b4a174}.lure[aria-pressed="true"] b{color:#f6d793}.lure small{font-size:9px}.lure:disabled{opacity:.6}
+  .catchcard{position:absolute;top:19%;left:50%;transform:translateX(-50%);width:320px;padding:22px;border:1px solid #bba778;border-radius:14px;background:radial-gradient(ellipse at 50% 35%,#305858,#091d28 75%);box-shadow:0 20px 70px #0009;text-align:center;pointer-events:none;z-index:2;animation:catch-in .3s ease-out}
+  .catchcard[hidden]{display:none}.catchcard img{width:100%;height:105px;object-fit:contain;filter:drop-shadow(0 12px 8px #0008);margin:10px 0}.catchcard h3{font:26px Georgia,serif;color:#ffe1a2;margin:0}.catchstats{display:flex;justify-content:center;gap:25px;margin-top:14px;font-size:10px;color:#a3bebd}.catchstats b{display:block;font:27px Georgia,serif;color:#eff0dc}
+  @keyframes catch-in{from{opacity:0;transform:translate(-50%,15px) scale(.92)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+  .shell:fullscreen{max-width:none;background:#08161c;overflow-y:auto;height:100vh;padding:16px 24px}.shell:fullscreen .stage{max-height:calc(100vh - 230px)}
+  .edition{font-size:9px;color:#87b5ab;letter-spacing:.08em;margin-top:6px}.notice{margin:8px 0}
+  @media(max-width:1000px){.tackle{flex-wrap:wrap}.tackle>span{display:none}.lure{padding:5px}.waypoint{padding:8px}.waypoint b{font-size:12px}.species img{width:40px}}
+  @media(max-width:740px){.hero h2{font-size:37px}.route{gap:5px}.waypoint{padding:8px 7px}.waypoint span{font-size:8px}.waypoint b{font-size:12px}.hero .steps{margin:13px 0;padding-top:12px}.hero .primary{padding:12px 20px}.catchcard{top:23%;width:225px;padding:13px}.catchcard img{height:64px}.catchcard h3{font-size:20px}.catchstats{margin-top:8px}.catchstats b{font-size:23px}.topline{padding:4px 7px;left:8px;right:8px;top:8px}.location b{font-size:16px}.species img{width:40px}.tackle{padding:6px}.lure{font-size:10px}.lure small{font-size:8px}.controls{font-size:10px}}
+  :root{--bg:#101c17;--panel:#1c2c24;--line:#465040;--ink:#f0e4c7;--muted:#b0b8a0;--gold:#dcb973;--mint:#abc391}
+  body{background:repeating-linear-gradient(93deg,#0000 0 47px,#e7d3a503 48px 49px),radial-gradient(ellipse at 70% 0,#354233,transparent 65%),#101b17}
+  .brand{color:#b8c7a4}h1{font-family:Georgia,serif;font-weight:bold;color:#f3dfac}h1 em{font-weight:normal;color:#d7cbb0}
+  .small{background:#28382c;border-color:#667052;color:#efe3c6}.small:hover{background:#354735}
+  .stage{border:5px solid #5b4b32;outline:1px solid #a18c58;box-shadow:0 0 0 6px #18271e,0 24px 80px #0008;border-radius:6px}
+  .panel{background:repeating-linear-gradient(1deg,#ffffff03 0 1px,transparent 1px 5px),linear-gradient(120deg,#29372a,#18271f);border-color:#4e5b42;border-radius:6px}
+  .paneltitle{color:#d6c394;font-weight:bold;letter-spacing:.15em}.score{color:#f2d896}.stats{border-color:#526045}.stats b{color:#f5e9cb}
+  .route{gap:10px;margin-bottom:16px}.waypoint{border-color:#526247;border-radius:3px}.waypoint.active{border-color:#d1b270;box-shadow:inset 0 0 0 2px #c5a96b50}.waypoint:before{background:#142116c7}.waypoint span{color:#d1c7a8}
+  .topline{background:linear-gradient(90deg,#142418d4,#18251c50);border:1px solid #d7c49630;border-radius:3px}.location b{color:#fff0c9}.chip{background:#17271ae8;border-color:#819061;border-radius:3px}.status{color:#d2daa6}
+  .tackle{background:#202d22;border-color:#526045;border-radius:4px}.lure[aria-pressed="true"]{background:#465037;border-color:#c3ac72}.lure b{color:#e9e1c6}.lure small{color:#b7c3a6}
+  .primary{background:linear-gradient(#f0dfb1,#d4b478);color:#283222;box-shadow:0 3px 0 #8c7247;border:1px solid #fff1c2;border-radius:3px;letter-spacing:.02em}
+  .overlay{background:linear-gradient(90deg,#142318f5,#14231899)}.hero h2{font:900 clamp(44px,6.4vw,90px)/.95 Georgia,serif;color:#f4e4bd;letter-spacing:-.035em;text-shadow:0 3px 0 #1d2d26,0 7px 22px #0007}
+  .hero .eyebrow{font-size:11px;color:#f6d694;letter-spacing:.17em}.hero .card>p{max-width:360px}.hero .steps{border-color:#debd7450}.hero .card{max-width:620px}
+  .warning-strip{display:flex;justify-content:space-between;gap:15px;align-items:center;margin:0 0 16px;border-top:1px solid #7c8053;border-bottom:1px solid #7c8053;padding:7px 0;font:10px/1.5 monospace;text-transform:uppercase;letter-spacing:.09em;color:#c3c6a7}.warning-strip strong{color:#ead294}.warning-strip span:last-child{color:#9aa98c}
+  .catchcard{background:repeating-linear-gradient(45deg,#694e2406 0 1px,transparent 1px 4px),linear-gradient(140deg,#f4e9c9,#d0bc8d);color:#253022;border:7px double #596344;border-radius:5px;box-shadow:0 16px 70px #000a;outline:2px solid #b9a269}
+  .catchcard .eyebrow{color:#64754a;font-weight:bold}.catchcard h3{color:#263721}.catchstats{color:#5f684d;border-top:1px solid #8e99744d;padding-top:9px}.catchstats b{color:#30482b}
+  .dock-postcard{padding:0;overflow:hidden;text-align:left;width:100%;background:#dccc9f;border:6px solid #dccc9f;border-radius:2px;transform:rotate(-1deg);color:#293b2a;box-shadow:0 6px 15px #0004}.dock-postcard img{display:block;width:100%;aspect-ratio:1.35;object-fit:cover}.dock-postcard span{display:block;padding:10px 7px 5px;font:15px Georgia,serif}.dock-postcard small{display:block;font:9px system-ui,sans-serif;margin-top:4px;letter-spacing:.06em}.dock-postcard:hover{transform:rotate(0)}
+  .deck-section{border-top:1px solid #626747;margin-top:24px;padding-top:25px}.deck-heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:19px}.deck-heading h2{font:30px Georgia,serif;letter-spacing:0;margin:5px 0;color:#efddb3}.deck-heading p{color:#aeb99b;font-size:12px;margin:0}.deck-total{font:13px monospace;color:#ecd495;white-space:nowrap}
+  .card-deck{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:14px}.deck-card{position:relative;text-align:left;padding:8px;border:2px solid #899270;border-radius:7px;background:linear-gradient(140deg,#f1e7c7,#d0bb8c);color:#27372c;box-shadow:0 6px 18px #0005;transition:transform .2s,border-color .2s}
+  .deck-card:before{content:"";position:absolute;inset:4px;border:1px solid #8b8860;border-radius:3px;pointer-events:none}.deck-card:hover{transform:translateY(-5px);border-color:#f4d892}
+  .card-head{font:700 12px Georgia,serif;letter-spacing:.08em;text-align:center;padding:6px 0 8px}.card-head small{display:block;font:8px system-ui,sans-serif;letter-spacing:.13em;color:#687150;margin-top:3px}
+  .deck-card img{width:100%;height:112px;object-fit:cover;border:1px solid #59644d;background:#17291f}.deck-card h3{font:700 16px/1.1 Georgia,serif;margin:10px 5px 6px;min-height:35px}
+  .deck-card p{font:10px/1.45 Georgia,serif;margin:0 5px 10px;min-height:43px;color:#435039}.card-foot{border-top:1px solid #8d966e;padding:8px 5px 3px;display:flex;justify-content:space-between;gap:5px;font-size:8px;font-weight:bold;letter-spacing:.08em}.card-foot b{color:var(--rarity,#4f7046)}
+  .deck-card.locked{background:linear-gradient(140deg,#c5c2a9,#9b9e88);border-color:#4c5a40}.deck-card.locked img{filter:grayscale(.75) brightness(.7)}.deck-card.locked p{color:#344832}.deck-card.earned:after{content:"EARNED";position:absolute;top:129px;right:9px;transform:rotate(-12deg);border:2px solid #295932;border-radius:2px;color:#295932;background:#e1d6a9e8;font:900 11px Georgia,serif;padding:3px 5px;letter-spacing:.12em}
+  .deck-note{font-size:11px;color:#a7b493;margin-top:16px}.deck-note a{color:#e4d39f;text-underline-offset:3px}
+  .award-toast{position:absolute;bottom:82px;left:50%;transform:translateX(-50%);max-width:85%;width:max-content;padding:8px 14px;color:#203c2a;background:#ecdeb6;border:3px double #7c8960;border-radius:3px;z-index:2;pointer-events:none;font-size:11px;text-align:center;box-shadow:0 4px 20px #0007}.award-toast[hidden]{display:none}.award-toast b{color:#4c6838}
+  dialog{width:min(610px,92vw);max-height:90vh;overflow:auto;padding:20px;border:4px double #8c9669;border-radius:5px;background:#e3d5ae;color:#263d2b;box-shadow:0 20px 80px #000a}dialog::backdrop{background:#07140ddb;backdrop-filter:blur(5px)}dialog img{display:block;width:100%;max-height:54vh;object-fit:contain;margin:14px 0;background:#1b3026}dialog h2{color:#2b432e;font:30px Georgia,serif;margin:15px 0 8px}dialog p{font-size:14px;line-height:1.6}dialog .eyebrow{color:#566a42}dialog .small{float:right}dialog .criterion{border-top:1px solid #819168;padding-top:13px;font-size:12px;font-weight:bold}
+  .shell:fullscreen{background:#101b17}.footer{color:#b0bc96;border-color:#576446}kbd{background:#2c3d2c;border-color:#667750;color:#ece2c6}
+  @media(max-width:1000px){.card-deck{grid-template-columns:repeat(4,1fr)}}
+  @media(max-width:740px){.hero h2{font-size:48px}.hero .eyebrow{font-size:9px}.hero .card>p{font-size:12px;max-width:285px}.warning-strip{font-size:8px;gap:8px}.warning-strip span:last-child{display:none}.dock-postcard{display:none}.deck-heading{align-items:start}.deck-heading h2{font-size:24px}.deck-heading p{font-size:11px}.card-deck{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.deck-total{font-size:10px}.deck-card img{height:106px}.award-toast{font-size:9px;bottom:80px}.catchcard{border-width:5px}.route{gap:6px}.waypoint span{font-size:8px}}
+  .card-picture{position:relative}.card-picture>img{display:block}.card-picture .specimen{position:absolute;inset:12% 3%;width:94%;height:76%;object-fit:contain;border:0;background:transparent;filter:drop-shadow(0 7px 7px #000b)}.card-picture:has(.specimen)>img:first-child{filter:brightness(.55)}
+  .deck-card.locked .card-picture .specimen{filter:grayscale(.65) drop-shadow(0 7px 7px #000b)}
+  @media(max-width:740px){.dock-postcard{display:flex;align-items:center;grid-column:1/-1;transform:none}.dock-postcard img{width:110px;height:90px}.dock-postcard span{font-size:17px;padding:10px;text-align:left}.dock-postcard small{font-size:9px;line-height:1.6}}
+  .dock-gallery{margin-top:26px;padding:24px;border:1px solid #716847;border-radius:5px;background:repeating-linear-gradient(2deg,#c2a86c05 0 2px,transparent 2px 8px),#20291f}
+  .gallery-heading{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:20px}.gallery-heading h2{font:30px Georgia,serif;color:#ebd5a3;margin:6px 0}.gallery-heading p{color:#b5bea2;font-size:12px;margin:0;max-width:420px}
+  .gallery-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:24px;align-items:start}
+  .gallery-piece{display:block;width:100%;text-align:left;background:#131f19;border:5px double #b49a5c;border-radius:7px;padding:11px;color:#e9d7ad;box-shadow:0 9px 20px #0004;transition:transform .2s}
+  .gallery-piece:hover{transform:translateY(-3px);border-color:#efd499}.gallery-piece img{display:block;width:100%;height:auto;border-radius:3px}
+  .gallery-piece .caption{display:block;padding:14px 5px 5px}.gallery-piece b{display:block;font:22px Georgia,serif;margin-bottom:6px}.gallery-piece small{display:block;font-size:11px;line-height:1.6;color:#b6c2a7}
+  .gallery-piece .edition-label{display:block;font:9px monospace;letter-spacing:.12em;color:#cdb575;margin-bottom:7px}
+  .gallery-piece.penalty{border-color:#b7a338;background:#25251a}.penalty .edition-label{color:#f1d865}.gallery-piece.penalty img{max-height:550px;object-fit:contain;background:#10140e}
+  .gallery-note{font-size:11px;line-height:1.6;color:#b0bba0;margin:20px 0 0}
+  .image-tools{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px}.image-tools a{color:#304c2c;text-decoration:underline;text-underline-offset:3px;font-weight:bold}.image-tools button{background:#35472d;border:1px solid #546742;border-radius:3px;color:#efdfb5;padding:7px 12px}
+  #inspectDialog.zoomed{width:min(1500px,96vw)}#inspectDialog.zoomed #inspectArt{max-height:none;object-fit:contain}
+  @media(max-width:740px){.dock-gallery{padding:14px}.gallery-heading{display:block}.gallery-heading h2{font-size:25px}.gallery-heading p{margin-top:10px}.gallery-grid{grid-template-columns:1fr;gap:17px}.gallery-piece{padding:7px}.gallery-piece b{font-size:20px}.gallery-piece.penalty img{max-height:none}}
+  .tools>a.small{display:inline-flex;align-items:center;text-decoration:none}.cards-link{display:inline-block;margin-top:12px;padding:10px 16px;border:1px solid #a89762;border-radius:3px;background:#34432c;color:#f0dcac;font-size:13px;text-decoration:none}.cards-link:hover{background:#465739}.cards-link:focus-visible,.tools>a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+  @media(min-width:741px){.tools{flex-wrap:wrap;justify-content:flex-end}}
+</style>
+<link rel="stylesheet" href="wild-lines.css">
+</head>
+<body>
+<main class="shell">
+  <header><div><div class="brand"><b>HowardAI</b> / Cedar Sanctuary field department</div><h1>Lisa Land <em>Wild Lines</em></h1><div class="edition">THE ORIGINAL WATERS. A FISH WITH OTHER PLANS. / EDITION 03</div></div><div class="tools"><a class="small" href="https://blazingbeard.github.io/alaskacard/" target="_blank" rel="noopener noreferrer">Alaska Cards ↗</a><button class="small" id="fullscreen">Full screen</button><button class="small" id="sound" aria-pressed="false">Sound off</button><button class="small" id="pause" disabled>Pause</button><button class="small" id="help">How to play</button></div></header>
+  <div class="warning-strip"><strong>Welcome to Cedar Sanctuary. Enter at your own risk.</strong><span>Boats: hopeful. Generators: not making promises.</span></div>
+  <div class="layout">
+    <div>
+      <div class="outing-bar"><div class="outing-choices" aria-label="Fishing mode"><button id="freeMode" class="outing-choice" aria-pressed="true">Free fishing <small>No clock. Pick your water.</small></button><button id="derbyMode" class="outing-choice" aria-pressed="false">The derby <small>Three waters. Chase the score.</small></button></div><span id="outingNote">YOUR BOAT. YOUR PACE.</span></div>
+      <div class="route" aria-label="Fishing locations"><button class="waypoint active" id="route0" aria-pressed="true"><span>01 / STILL FLOATING</span><b>The Home Dock</b></button><button class="waypoint" id="route1" aria-pressed="false"><span>02 / POWER OPTIONAL</span><b>Generator Bay</b></button><button class="waypoint" id="route2" aria-pressed="false"><span>03 / NO REFUNDS</span><b>The Cedar Triangle</b></button></div>
+      <div class="stage">
+        <canvas id="game" width="1100" height="720" tabindex="0" aria-label="Fishing game. Arrow keys aim your cast. Space casts, hooks, and reels. Release Space to ease line tension. P pauses."></canvas>
+        <div class="topline"><div class="location">Cedar Sanctuary / Southeast Alaska<b id="location">The Home Dock</b></div><div class="weather" id="weather">NO ROAD REQUIRED<br>GENERATOR CONFIDENCE: LOW</div></div>
+        <div class="hud"><div><div id="status" class="status">Your next great catch is out there</div><div id="hint" class="hint">Three waters. One derby. Make every cast count.</div></div><div class="chip"><b id="clock">90</b><span id="roundLabel">SEC / ROUND 1</span></div></div>
+        <div class="award-toast" id="awardToast" hidden aria-live="polite"></div>
+        <div class="catchcard" id="catchCard" hidden aria-live="polite"><div class="eyebrow">LISA LAND / CATCH CARD</div><img id="catchArt" alt=""><h3 id="catchName"></h3><div class="catchstats"><div><b id="catchWeight"></b>POUNDS</div><div><b id="catchPoints"></b>POINTS</div></div><div class="eyebrow" id="catchTier" style="margin-top:12px">A BEAUTIFUL CATCH</div></div>
+        <div class="overlay hero" id="overlay"><div class="card">
+          <div class="eyebrow" id="overlayLabel">Cedar Sanctuary / Unofficial Alaska cred</div>
+          <h2 id="overlayTitle">Welcome to<br>Lisa Land.</h2>
+          <p id="overlayText">Same questionable boat. Same spectacular water. This time the fish nibble, bolt, dive, and mean it. Pick your tackle. Read the water. Earn the story.</p>
+          <div class="steps" id="steps"><div><b>01 / TEMPT</b>Cast. Let it investigate.</div><div><b>02 / WAIT</b>Nibbles aren't a bite.</div><div><b>03 / OUTSMART</b>Reel the rest. Yield the run.</div></div>
+          <button class="primary" id="continue">Launch the boat</button>
+          <p class="micro" id="overlayNote">Free fishing or a three-water derby. Three lures. Adjustable drag. Seven stories to earn.</p>
+        </div></div>
+      </div>
+      <div class="fishing-console"><div class="console-copy" aria-live="polite"><span class="console-kicker" id="consoleKicker">THE ORIGINAL LISA LAND / REBUILT BELOW THE SURFACE</span><strong id="consoleTitle">Good water. Uncooperative fish.</strong><p id="consoleHint">Pick free fishing or the derby, then launch the boat.</p></div><div class="console-actions"><button class="recall-button" id="recall" disabled>Recall <kbd>R</kbd></button><button class="reel-button" id="reel" disabled><span id="reelLabel">Launch the boat</span><small id="reelSub">CLICK / TOUCH / SPACE</small></button></div></div>
+      <div class="tackle" aria-label="Choose fishing lure"><span>TACKLE BOX</span><button class="lure" data-lure="0" aria-pressed="true"><b>1 / Silver spinner</b><small>Shallow / pink &amp; coho</small></button><button class="lure" data-lure="1" aria-pressed="false"><b>2 / Copper spoon</b><small>Midwater / sockeye &amp; kings</small></button><button class="lure" data-lure="2" aria-pressed="false"><b>3 / Deepwater jig</b><small>Fast sink / bottom halibut</small></button></div>
+      <div class="rig-bar"><label for="drag">REEL DRAG <select id="drag"><option value="0.76">Light / forgiving, slower</option><option value="1" selected>Balanced / a little give</option><option value="1.22">Firm / faster, more tension</option></select></label><span id="rigNote">Silver spinner · slow sink · pink &amp; coho</span><button id="jig" disabled>Twitch lure <kbd>J</kbd></button><button id="finishTrip" disabled>Back to dock</button></div>
+      <div class="controls"><span><kbd>Move</kbd> or <kbd>Arrows</kbd> Aim &nbsp; <kbd>Click / Space</kbd> Cast + hook</span><span><kbd>Hold</kbd> Reel &nbsp; <kbd>Release</kbd> Ease &nbsp; <kbd>P</kbd> Pause &nbsp; <kbd>R</kbd> Recall lure</span></div>
+    </div>
+    <aside>
+      <section class="panel"><div class="paneltitle">Derby scoreboard</div><div class="score" id="score">0</div><div class="scorelabel">POINTS / PERSONAL BEST <span id="best">0</span></div><div class="stats"><div><b id="landed">0</b>landed</div><div><b id="streak">x1.0</b>streak</div><div><b id="largest">--</b>largest / lb</div></div></section>
+      <section class="panel journal"><div class="paneltitle">The catch journal</div><div id="species"></div><div class="sub">Larger fish fight harder. Rare kings pay off.</div></section>
+      <section class="panel"><div class="paneltitle">Round objective</div><div class="objective" id="objective">Land 3 fish at Sitka Sound.</div><div class="track"><i id="objectiveBar"></i></div><div class="sub" id="objectiveProgress">0 / 3 &nbsp; +300 bonus points</div></section>
+      <section class="panel log"><div class="paneltitle">Overheard on the dock</div><div class="lastcatch" id="lastcatch" aria-live="polite">"It was running when we parked it." The generator, probably.</div></section>
+      <button class="dock-postcard" id="postcard"><img src="alaska-fishing-assets/cedar-postcard.webp" alt="Cedar Sanctuary's humorous Bermuda Triangle warning sign beside a cabin, a sinking boat, and broken generators."><span>A postcard from Lisa Land<small>BOATS SINK. GENERATORS DIE. TAP FOR THE FULL STORY.</small></span></button>
+    </aside>
+  </div>
+  <section class="deck-section" aria-labelledby="deckTitle"><div class="deck-heading"><div><div class="eyebrow">Lisa Land / Souvenirs you actually earn</div><h2 id="deckTitle">The dockside card collection</h2><p>Catch something. Survive the nonsense. Keep the story.</p></div><div class="deck-total" id="deckTotal">0 / 7 EARNED</div></div><div class="card-deck" id="cardDeck"></div><p class="deck-note">Tap any card for its story and unlock condition. Saved on this browser. These are game souvenirs, not real-world achievement claims. Inspired by <a href="https://blazingbeard.github.io/alaskacard/" target="_blank" rel="noopener noreferrer">Alaska Card</a>.</p></section>
+  <section class="dock-gallery" aria-labelledby="galleryTitle">
+    <div class="gallery-heading"><div><div class="eyebrow">Pinned up at Cedar Sanctuary</div><h2 id="galleryTitle">Cred, chaos &amp; cautionary tales.</h2></div><p>Some things belong in a trophy case. Others belong beside the first-aid kit. Around here, they share a wall.</p></div>
+    <div class="gallery-grid">
+      <button class="gallery-piece" id="cardSheet"><img src="alaska-fishing-assets/alaska-card-sheet-preview.webp" width="720" height="480" loading="lazy" alt="Alaska Card collection sheet with twelve illustrated achievements, a card back, and rarity guide."><span class="caption"><span class="edition-label">ALASKA CARD / OFFICIAL ALASKA CRED</span><b>Collect stories. Not just cards.</b><small>From Tongass Narrows to Northern Lights. The full illustrated sheet, including the card back and rarity guide. Tap to inspect every detail.</small></span></button>
+      <button class="gallery-piece penalty" id="penaltyCard"><img src="alaska-fishing-assets/lisa-penalty-card-preview.webp" width="515" height="720" loading="lazy" alt="Lisa Land Accident Prone penalty card: trips, slips, spills, and still smiling."><span class="caption"><span class="edition-label">LISA LAND / LEGENDARY MISADVENTURES / #007</span><b>Still smiling. Naturally.</b><small>Trips. Slips. Spills. An extra turn to pick up, clean up, or fix it. The official-looking paperwork for a very unofficial adventure.</small></span></button>
+    </div><p class="gallery-note">These are gallery keepsakes, separate from your seven earnable game cards. The penalty card does not deduct points or turns. Real-world Alaska achievements are not awarded by playing the derby.</p><a class="cards-link" href="https://blazingbeard.github.io/alaskacard/" target="_blank" rel="noopener noreferrer">Explore the Alaska Cards collection ↗</a>
+  </section>
+  <dialog id="inspectDialog" aria-labelledby="inspectTitle"><button class="small" id="closeInspect" autofocus>Close</button><div class="eyebrow" id="inspectLabel">From the dock</div><img id="inspectArt" alt=""><div class="image-tools"><button id="zoomInspect" aria-pressed="false">Enlarge image</button><a id="fullInspect" target="_blank" rel="noopener noreferrer">Open full-resolution image</a></div><h2 id="inspectTitle"></h2><p id="inspectStory"></p><p class="criterion" id="inspectRule"></p></dialog>
+  <div id="storageNotice" class="notice" hidden>Browser storage is unavailable. Your record will last only for this visit.</div>
+  <div id="artNotice" class="notice" hidden></div>
+  <footer class="footer"><span>NO GENERATORS WERE RELIED UPON IN THE MAKING OF THIS GAME.</span><span><a href="../alaska-fishing-6deaead8d8/">Preserved original</a> / <a href="../lisa-land-tides-c8b27f4e91/">Little Tides</a> / Wild Lines · HowardAI</span></footer>
+</main>
+<script type="module">
+'use strict';
+import {FishingRound, SPECIES as fightingSpecies} from './fishing.mjs';
+const $ = id => document.getElementById(id);
+const canvas = $('game'), ctx = canvas.getContext('2d'), W = 1100, H = 720, surface = 302;
+const ROD={x:350,y:212}, art={}, sceneBuffers=[], fishArt=['fish-pink','fish-coho','fish-sockeye','fish-halibut','fish-king'];
+const sceneNames=['lisa-cedar','lisa-generator','lisa-triangle'], waterlines=[620,592,576];
+const lureTypes=[{name:'Silver spinner',color:'#e8eade',fav:[0,1],sink:66,depth:390,note:'slow sink · pink & coho'},{name:'Copper spoon',color:'#eaa370',fav:[2,4],sink:91,depth:480,note:'fluttering sink · sockeye & kings'},{name:'Deepwater jig',color:'#a9c9f3',fav:[3],sink:155,depth:575,note:'fast sink · bottom halibut'}];
+let selectedLure=0, perfectFight=true, ambientGain=null, reelSoundAge=0;
+const encounter=new FishingRound(), waterCatches=[0,0,0], waterBonus=[false,false,false];
+let outing='free', encounterMood='', lastTwitch=-10, fishRunStart={x:0,y:0}, fishTrail=[];
+const artBase='alaska-fishing-assets/';
+function loadArt(name){
+  return new Promise(resolve=>{
+    const image=new Image();
+    image.onload=()=>{art[name]=image;resolve(true);};
+    image.onerror=()=>{console.error('Could not load artwork:',name);$('artNotice').hidden=false;$('artNotice').textContent='Some artwork could not load. Keep alaska-fishing-assets beside this HTML file. Original drawings are being used where needed.';resolve(false);};
+    image.src=artBase+name+'.webp';
+  });
+}
+Promise.all([...sceneNames,'lisa-hero','cedar-postcard',...fishArt,'boat'].map(loadArt)).then(()=>{
+  sceneNames.forEach((name,i)=>{
+    if(!art[name])return;
+    const buffer=document.createElement('canvas');buffer.width=W;buffer.height=H;const b=buffer.getContext('2d'),im=art[name],cut=waterlines[i];
+    b.drawImage(im,0,0,im.width,cut,0,0,W,surface);b.drawImage(im,0,cut,im.width,im.height-cut,0,surface,W,H-surface);sceneBuffers[i]=buffer;
+    $('route'+i).style.backgroundImage=`url("${im.src}")`;
+  });
+  if(art['lisa-hero']&&$('overlay').classList.contains('hero'))setHero();
+  document.querySelectorAll('.species').forEach((row,i)=>{
+    if(!art[fishArt[i]])return;const img=document.createElement('img');img.src=art[fishArt[i]].src;img.alt='';row.firstElementChild.replaceWith(img);
+  });
+});
+function setHero(){
+  if(art['lisa-hero'])$('overlay').style.backgroundImage=`linear-gradient(90deg,rgba(10,24,16,.89),rgba(10,24,16,.36) 57%,rgba(10,24,16,.02)),url("${art['lisa-hero'].src}")`;
+}
+function selectLure(index){
+  if(mode==='playing'&&!['ready','result'].includes(phase))return;
+  selectedLure=index;document.querySelectorAll('[data-lure]').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
+  target.y=lureTypes[index].depth;
+  $('rigNote').textContent=lureTypes[index].name+' · '+lureTypes[index].note;
+  if(mode==='playing'){setHint(lureTypes[index].name+' equipped','Aim near its favorite fish. Click or press Space to cast.');canvas.focus();}
+}
+document.querySelectorAll('[data-lure]').forEach(b=>b.onclick=()=>selectLure(Number(b.dataset.lure)));
+$('fullscreen').onclick=async()=>{
+  try{if(document.fullscreenElement)await document.exitFullscreen();else await document.querySelector('.shell').requestFullscreen();}
+  catch(error){console.error(error);$('artNotice').hidden=false;$('artNotice').textContent='This browser could not enter full screen. You can use F11 instead.';}
+};
+document.addEventListener('fullscreenchange',()=>$('fullscreen').textContent=document.fullscreenElement?'Exit full screen':'Full screen');
+const clamp = (n,a,b) => Math.max(a,Math.min(b,n));
+const rand = (a,b) => a+Math.random()*(b-a);
+const species = [
+  {name:'Pink salmon',color:'#e8a9b1',size:21,points:100,min:3,max:7,power:.88,depth:365},
+  {name:'Coho salmon',color:'#8cddc6',size:27,points:180,min:7,max:15,power:1,depth:420},
+  {name:'Sockeye salmon',color:'#e77d64',size:25,points:220,min:5,max:12,power:1.08,depth:475},
+  {name:'Pacific halibut',color:'#bcba8e',size:34,points:280,min:12,max:45,power:1.16,depth:575},
+  {name:'King salmon',color:'#f0ca78',size:37,points:400,min:18,max:50,power:1.25,depth:520}
+];
+const places = ['The Home Dock / Still floating','Generator Bay / Power optional','The Cedar Triangle / No refunds'];
+const goals = [3,4,5], ROUND_TIME = 90;
+let mode='title', phase='ready', paused=false, round=0, remaining=ROUND_TIME, score=0, landed=0, streak=0, largest=0, best=0;
+let counts=species.map(()=>0), roundCatch=0, bonusPaid=false, fish=[], particles=[], ripples=[], labels=[];
+let time=0, target={x:670,y:430}, lure={x:300,y:260}, hooked=null, held=false, pointerId=null, phaseAge=0, biteLeft=0, tension=28, progress=0, fightAge=0, surge=false, resultLeft=0;
+let castStart={...ROD}, castEnd={x:670,y:430}, activeOverlay='title', audio=null, sound=false;
+const DECK=[
+  {id:'not-skunked',name:'Officially Not Skunked',rarity:'COMMON',color:'#53674a',image:'fish-coho',scene:'lisa-cedar',quote:'Dinner has entered the chat.',story:'You arrived with a fishing rod and dangerously high expectations. For once, the universe cooperated. One fish is all it takes to become unbearable at dinner.',rule:'Land your first fish.'},
+  {id:'held-together',name:'Held Together With Hope',rarity:'SEASONED',color:'#397747',image:'boat',scene:'lisa-cedar',quote:'The line survived. Nobody ask how.',story:'No panic, no snapped line, no dramatic explanation for the one that got away. A clean fight in a place where nothing else seems to run smoothly.',rule:'Land a fish with the perfect-fight bonus: avoid dangerously high or low tension.'},
+  {id:'dinner-service',name:'Fish First. Repairs Later.',rarity:'RARE',color:'#376685',image:'fish-sockeye',scene:'lisa-generator',quote:'Three in a row. The to-do list can wait.',story:'The dock needs a board. The generator needs everything. You have decided these are after-dinner problems. An excellent local tradition.',rule:'Land three fish in a row without missing a bite or losing a fish.'},
+  {id:'plywood',name:'Plywood With Opinions',rarity:'RARE',color:'#376685',image:'fish-halibut',scene:'lisa-cedar',quote:'That is not the bottom. Reel harder.',story:'A flatfish with the turning circle of a dinner table and a firm objection to being dinner. You got it aboard. The pan is now somebody else\'s problem.',rule:'Land a Pacific halibut of any weight.'},
+  {id:'dock-royalty',name:'Dockside Royalty',rarity:'LEGENDARY',color:'#97612a',image:'fish-king',scene:'lisa-triangle',quote:'Tell this story until people leave.',story:'A king salmon. The sort of catch that gets heavier every time the story is told. Your actual weight is recorded, which is deeply inconvenient.',rule:'Land a king salmon.'},
+  {id:'generator-optional',name:'Generator Optional',rarity:'EPIC',color:'#735181',image:'lisa-generator',scene:'lisa-generator',quote:'No power. Still providing dinner.',story:'The generator contributed nothing but atmosphere. You worked around its schedule and kept fishing. Technically, that makes you the reliable equipment.',rule:'Land a fish at Generator Bay in free fishing, or finish Round 2 with a catch in the derby.'},
+  {id:'cedar-triangle',name:'Escaped the Cedar Triangle',rarity:'MYTHIC',color:'#333e38',image:'cedar-postcard',scene:'cedar-postcard',quote:'Boat: present. Wallet: inconclusive.',story:'Three waters, an uncooperative generator, and enough local nonsense to fill a postcard. You made it through with a catch. We are calling that a win.',rule:'Land a fish in each of the three waters during one free outing, or complete the derby with at least one catch.'}
+];
+const DECK_KEY='howardai-lisaland-wild-lines-deck-v3';
+let earnedCards=new Set(),deckWritable=true,awardLeft=0,inspectPaused=false,inspectTrigger=null;
+try{
+  const raw=localStorage.getItem(DECK_KEY) ?? localStorage.getItem('howardai-lisaland-deck-v1');
+  if(raw!==null){
+    const saved=JSON.parse(raw);
+    if(!Array.isArray(saved)||saved.some(id=>typeof id!=='string'))throw new Error('Invalid saved card collection');
+    earnedCards=new Set(saved.filter(id=>DECK.some(c=>c.id===id)));
+  }
+}catch(error){
+  console.warn('Card collection could not be read:',error);deckWritable=false;$('storageNotice').hidden=false;
+  $('storageNotice').textContent='Your saved card collection could not be read. New cards will stay available for this visit only.';
+}
+function renderDeck(){
+  $('deckTotal').textContent=earnedCards.size+' / '+DECK.length+' EARNED';
+  $('cardDeck').innerHTML=DECK.map((c,i)=>{
+    const earned=earnedCards.has(c.id);
+    return `<button class="deck-card ${earned?'earned':'locked'}" data-card="${c.id}" style="--rarity:${c.color}" aria-label="Inspect ${c.name}, ${earned?'earned':'locked'}">
+      <div class="card-head">LISA LAND CARD<small>CEDAR SANCTUARY / LL-00${i+1}</small></div>
+      <div class="card-picture"><img src="${artBase+c.scene}.webp" alt="" loading="lazy">${c.image.startsWith('fish-')||c.image==='boat'?`<img class="specimen" src="${artBase+c.image}.webp" alt="" loading="lazy">`:''}</div>
+      <h3>${c.name}</h3><p>${c.quote}</p><div class="card-foot"><b>${c.rarity}</b><span>${earned?'YOUR STORY':'NOT YET EARNED'}</span></div></button>`;
+  }).join('');
+}
+function earnCards(ids){
+  const fresh=ids.filter(id=>!earnedCards.has(id));
+  if(!fresh.length)return;
+  fresh.forEach(id=>earnedCards.add(id));
+  if(deckWritable){
+    try{localStorage.setItem(DECK_KEY,JSON.stringify([...earnedCards]));}
+    catch(error){console.warn('Card collection could not be saved:',error);deckWritable=false;$('storageNotice').hidden=false;$('storageNotice').textContent='Your card collection could not be saved. New cards will last for this visit only.';}
+  }
+  renderDeck();awardLeft=5;$('awardToast').hidden=false;
+  $('awardToast').textContent='CARD'+(fresh.length>1?'S':'')+' EARNED / '+fresh.map(id=>DECK.find(c=>c.id===id).name).join(' + ');
+}
+function openInspection(title,story,rule,image,label){
+  inspectTrigger=document.activeElement;inspectPaused=mode==='playing'&&!paused;
+  if(inspectPaused){paused=true;held=false;$('pause').textContent='Resume';}
+  $('inspectTitle').textContent=title;$('inspectStory').textContent=story;$('inspectRule').textContent=rule;$('inspectLabel').textContent=label;
+  $('inspectDialog').classList.remove('zoomed');$('zoomInspect').textContent='Enlarge image';$('zoomInspect').setAttribute('aria-pressed','false');
+  $('inspectArt').src=artBase+image+'.webp';$('inspectArt').alt=title;$('fullInspect').href=artBase+image+'.webp';$('inspectDialog').showModal();$('inspectDialog').scrollTop=0;
+}
+$('cardDeck').onclick=e=>{
+  const button=e.target.closest('[data-card]');if(!button)return;
+  const c=DECK.find(card=>card.id===button.dataset.card);
+  openInspection(c.name,c.story,c.rule,c.image,c.rarity+' / '+(earnedCards.has(c.id)?'EARNED':'NOT YET EARNED'));
+};
+$('postcard').onclick=()=>openInspection('Cedar Sanctuary: the Bermuda Triangle','Boats sink. Generators die. Nothing escapes. A postcard from the unofficial department of "it was fine yesterday."','The local forecast: a chance of repairs. Your fishing game pauses while you read.','cedar-postcard','A postcard from Lisa Land');
+$('cardSheet').onclick=()=>openInspection('Alaska Card: the original field notes','Twelve illustrated stories from Southeast Alaska: boats, bears, eagles, island life, and the occasional questionable forecast. The reverse and rarity guide are here too.','Gallery artwork only. Playing this game does not claim any real-world Alaska Card achievement.','alaska-card-sheet','ALASKA CARD / COLLECTION SHEET');
+$('penaltyCard').onclick=()=>openInspection('Accident Prone. Still Smiling.','Some adventures come with a trophy. Some come with a first-aid kit and an extra turn to clean up. This one gets a place of honor on the Lisa Land wall.','Legendary Misadventures #007. A gallery keepsake: no game points or turns are deducted.','lisa-penalty-card','LISA LAND / PENALTY CARD');
+$('zoomInspect').onclick=()=>{
+  const zoomed=$('inspectDialog').classList.toggle('zoomed');$('zoomInspect').textContent=zoomed?'Fit image':'Enlarge image';$('zoomInspect').setAttribute('aria-pressed',String(zoomed));$('inspectDialog').scrollTop=0;
+};
+$('inspectArt').addEventListener('error',()=>{console.error('Inspection image could not load:',$('inspectArt').src);$('inspectRule').textContent='This image could not load. Check that the artwork folder is present, or refresh the published page.';});
+$('closeInspect').onclick=()=>$('inspectDialog').close();
+$('inspectDialog').addEventListener('close',()=>{
+  if(inspectPaused&&mode==='playing'){resume();if(document.hidden)pauseGame();}
+  inspectPaused=false;if(inspectTrigger?.isConnected)inspectTrigger.focus();
+});
+renderDeck();
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+loadBest();
+$('species').innerHTML=species.map((f,i)=>`<div class="species"><span class="fishmark" style="--fish:${f.color}"></span><div><div class="name">${f.name}</div><div class="detail">${f.points} base / ${f.min}-${f.max} lb</div></div><span class="count" id="count${i}">0</span></div>`).join('');
+const stars=Array.from({length:65},()=>({x:rand(0,W),y:rand(10,190),r:rand(.5,1.6),p:rand(0,6)}));
+const motes=Array.from({length:45},()=>({x:rand(0,W),y:rand(325,680),r:rand(.6,2),p:rand(0,6)}));
+const mountains=[
+  [[0,230],[90,130],[160,178],[252,82],[345,175],[425,120],[500,208],[580,147],[688,221],[785,135],[875,183],[960,101],[1100,210]],
+  [[0,267],[80,200],[167,252],[260,193],[340,245],[435,181],[530,250],[660,190],[775,247],[875,202],[975,248],[1100,180]]
+];
+function tone(freq,duration=.1,type='sine',volume=.035){
+  if(!sound||!audio)return;
+  const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,audio.currentTime);o.frequency.exponentialRampToValueAtTime(freq*.65,audio.currentTime+duration);
+  g.gain.setValueAtTime(volume,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+duration);
+}
+function spawnFish(index,edge=false){
+  const t=species[index],dir=Math.random()>.5?1:-1;
+  return {type:index,x:edge?(dir>0?-60:W+60):rand(80,W-60),y:t.depth+rand(-24,24),dir,speed:rand(22,44),size:t.size*rand(.88,1.13),weight:rand(t.min,t.max),p:rand(0,7)};
+}
+function populate(){fish=[0,0,0,0,0,1,1,1,1,2,2,3,3,4].map(i=>spawnFish(i));}
+function setHint(title,text){$('status').textContent=title;$('hint').textContent=text;$('consoleTitle').textContent=title;$('consoleHint').textContent=text;}
+function updateHUD(){
+  $('score').textContent=score.toLocaleString();$('landed').textContent=landed;
+  $('streak').textContent='x'+(1+Math.min(streak,5)*.2).toFixed(1);$('largest').textContent=largest?largest.toFixed(1):'--';
+  counts.forEach((n,i)=>$('count'+i).textContent=n);
+  $('clock').textContent=outing==='free'?'∞':Math.ceil(remaining);$('roundLabel').textContent=outing==='free'?'NO HURRY / FREE FISHING':`SEC / ROUND ${round+1}`;
+  $('objective').textContent=`Land ${goals[round]} fish${round===0?' before the dock needs fixing':round===1?' without relying on the generator':' and get out of the Triangle'}.`;
+  $('objectiveBar').style.width=Math.min(100,roundCatch/goals[round]*100)+'%';
+  $('objectiveProgress').textContent=`${roundCatch} / ${goals[round]} | ${bonusPaid?'BONUS LANDED':'+'+(round+1)*300+' bonus points'}`;
+  for(let i=0;i<3;i++){$('route'+i).classList.toggle('active',i===round);$('route'+i).setAttribute('aria-pressed',String(i===round));}
+}
+function showOverlay(kind,title,text,button){
+  $('overlay').classList.toggle('hero',kind==='end');$('overlay').style.backgroundImage='';
+  if(kind==='end')setHero();
+  activeOverlay=kind;$('overlay').hidden=false;$('overlayTitle').textContent=title;$('overlayText').textContent=text;
+  $('overlayLabel').textContent=kind==='end'?'Filed under: survived the field trip':kind==='round'?'A fresh set of questionable decisions':kind==='help'?'Unofficial operating instructions':'Repairs can wait';
+  $('continue').textContent=button;$('steps').hidden=kind!=='help';$('overlayNote').textContent=kind==='end'?'Your best score is saved on this browser.':'Mouse, touch or keyboard. P to pause.';
+  $('continue').focus();held=false;
+}
+function resetLure(){
+  encounter.reset();encounterMood='';fishTrail=[];phase='ready';phaseAge=0;hooked=null;held=false;lure={...ROD};$('catchCard').hidden=true;
+  setHint('Pick your water. Pick your story.','Aim near a fish, then cast. Match the lure to its depth.');
+}
+function beginRound(){
+  mode='playing';paused=false;remaining=ROUND_TIME;roundCatch=outing==='free'?waterCatches[round]:0;bonusPaid=outing==='free'?waterBonus[round]:false;particles=[];ripples=[];labels=[];
+  awardLeft=0;$('awardToast').hidden=true;
+  $('weather').textContent=['NO ROAD REQUIRED / BOAT STILL FLOATING','GENERATOR: ON AN EXTENDED BREAK','THE CEDAR TRIANGLE / NO REFUNDS'][round];
+  populate();resetLure();$('location').textContent=places[round];$('overlay').hidden=true;$('pause').disabled=false;$('help').disabled=false;$('pause').textContent='Pause';updateHUD();canvas.focus();
+}
+function newDerby(){if(outing==='derby')round=0;score=0;landed=0;streak=0;largest=0;counts.fill(0);waterCatches.fill(0);waterBonus.fill(false);$('lastcatch').textContent='"Let\'s go before something else breaks."';beginRound();}
+function loadBest(){
+  best=0;
+  try{const n=Number(localStorage.getItem('howardai-lisaland-wild-lines-best-'+outing));if(Number.isFinite(n)&&n>0)best=n;}
+  catch(error){console.warn('Could not read outing record:',error);$('storageNotice').hidden=false;}
+  $('best').textContent=best.toLocaleString();
+}
+function saveBest(){
+  if(score<=best)return;best=score;$('best').textContent=best.toLocaleString();
+  try{localStorage.setItem('howardai-lisaland-wild-lines-best-'+outing,String(best));}catch(error){console.warn('Could not save outing record:',error);$('storageNotice').hidden=false;}
+}
+function endRound(){
+  if(round===1&&roundCatch>0)earnCards(['generator-optional']);
+  if(round===2&&landed>0)earnCards(['cedar-triangle']);
+  held=false;hooked=null;phase='ready';$('catchCard').hidden=true;$('pause').disabled=true;$('help').disabled=true;saveBest();
+  if(round<2){mode='between';showOverlay('round',round===0?'Naturally, the power is out.':'Welcome to the Triangle.',`${roundCatch} fish landed. ${score.toLocaleString()} points. ${round===0?'Next: Generator Bay. It was running when we left. Allegedly.':'Next: the Cedar Triangle. Even the fish have trust issues.'}`,'Next water / Round '+(round+2));}
+  else{mode='ended';showOverlay('end',landed>=5?'Local legend. Mostly afloat.':landed?'You brought dinner back.':'At least the boat came back.',`${score.toLocaleString()} points. ${landed} fish. ${largest?largest.toFixed(1)+' lb was your biggest.':'The fish have declined to comment.'} ${earnedCards.size} of ${DECK.length} Lisa Land cards earned. Your deck is below. Personal best: ${best.toLocaleString()}.`,'Fish another derby');}
+}
+function pauseGame(help=false){
+  if(mode!=='playing')return;
+  if(paused&&!help){resume();return;}paused=true;held=false;$('pause').textContent='Resume';
+  showOverlay(help?'help':'pause',help?'Read the fish. Not just the meter.':'The fish can wait.',help?'Cast near a fish at its depth. Twitch the lure with J if it needs convincing. Let small nibbles pass; hook only on the big BITE. Hold to reel during a rest. Release before a run or dive. Too tight snaps the line; too loose lets it shake free. Light drag is forgiving. R recalls a quiet cast.':'Your line and clock are stopped. Come back when you are ready.', 'Back to the water');
+}
+function resume(){paused=false;$('overlay').hidden=true;$('pause').textContent='Pause';canvas.focus();}
+$('continue').onclick=()=>{if(activeOverlay==='pause'||activeOverlay==='help'){if(mode==='playing')resume();else newDerby();}else if(activeOverlay==='round'){round++;beginRound();}else newDerby();};
+$('pause').onclick=()=>pauseGame();
+$('help').onclick=()=>{if(mode==='playing')pauseGame(true);else if(mode==='title')showOverlay('help','Same water. Smarter fish.','Choose free fishing or a timed derby. Match your lure to the fish and depth. Cast, wait through nibbles, then hook on the big BITE. Hold to reel at rest; release during runs and dives. Adjust reel drag before your next cast. Free fishing lets you travel between all three waters.','Launch the boat');};
+$('sound').onclick=async()=>{
+  if(!sound){try{audio??=new (window.AudioContext||window.webkitAudioContext)();await audio.resume();sound=true;
+    if(!ambientGain){
+      const buffer=audio.createBuffer(1,audio.sampleRate*3,audio.sampleRate),data=buffer.getChannelData(0);
+      for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(.65+.35*Math.sin(i/data.length*Math.PI*2));
+      const source=audio.createBufferSource(),filter=audio.createBiquadFilter();source.buffer=buffer;source.loop=true;filter.type='lowpass';filter.frequency.value=380;ambientGain=audio.createGain();source.connect(filter);filter.connect(ambientGain);ambientGain.connect(audio.destination);source.start();
+    }ambientGain.gain.setTargetAtTime(.035,audio.currentTime,.25);tone(660,.2);
+  }catch(error){console.error(error);sound=false;$('sound').textContent='Audio unavailable';return;}}
+  else{sound=false;ambientGain?.gain.setTargetAtTime(0,audio.currentTime,.1);}$('sound').textContent=sound?'Sound on':'Sound off';$('sound').setAttribute('aria-pressed',String(sound));
+};
+function splash(x,y,color='#b7ece4',count=18){
+  ripples.push({x,y,age:0});
+  for(let i=0;i<count;i++)particles.push({x,y,vx:rand(-90,90),vy:rand(-160,-30),life:rand(.4,1),max:1,color,size:rand(1.5,3)});
+}
+function actionDown(){
+  if(mode!=='playing'||paused)return;
+  if(phase==='ready'){phase='cast';phaseAge=0;castEnd={...target};held=false;tone(460,.18);setHint('Line out','The lure is dropping. Watch for a bite.');}
+  else if(phase==='bite'||phase==='nibble'){encounter.press();handleEncounter();}
+  else if(phase==='fight'){held=true;encounter.press();}
+  else if(phase==='soak')twitchLure();
+  else if(phase==='result')resetLure();
+}
+function actionUp(){held=false;encounter.release();}
+function twitchLure(){
+  if(mode!=='playing'||paused||phase!=='soak'||time-lastTwitch<.9)return;
+  lastTwitch=time;lure.y=Math.max(surface+18,lure.y-17);
+  splash(lure.x,lure.y,lureTypes[selectedLure].color,6);tone(380,.08,'sine',.025);
+  setHint('A little flash. A little temptation.','The twitch attracts nearby fish. Let it settle and watch.');
+}
+function setOuting(next){
+  if(mode==='playing'||mode==='between')return;
+  outing=next;if(next==='derby')round=0;
+  loadBest();
+  $('freeMode').setAttribute('aria-pressed',String(next==='free'));
+  $('derbyMode').setAttribute('aria-pressed',String(next==='derby'));
+  $('outingNote').textContent=next==='free'?'YOUR BOAT. YOUR PACE.':'90 SECONDS PER WATER. FINISH YOUR LAST FIGHT.';
+  updateHUD();
+}
+$('freeMode').onclick=()=>setOuting('free');
+$('derbyMode').onclick=()=>setOuting('derby');
+for(let i=0;i<3;i++)$('route'+i).onclick=()=>{
+  if(outing!=='free'||paused||(mode==='playing'&&!['ready','result'].includes(phase)))return;
+  round=i;
+  if(mode==='playing')beginRound();else updateHUD();
+};
+$('drag').onchange=()=>{
+  if(mode==='playing'&&!['ready','result'].includes(phase))return;
+  encounter.drag=Number($('drag').value);
+  if(mode==='playing')setHint('Drag set. Make the fish work for it.',encounter.drag<1?'A softer drag buys time, but brings fish in more slowly.':encounter.drag>1?'Faster retrieve. Less forgiveness. Ease off before a surge.':'A balanced reel: enough pull, with a little give.');
+};
+$('jig').onclick=twitchLure;
+$('recall').onclick=()=>{if(mode==='playing'&&!paused&&phase==='soak'){resetLure();tone(220,.1);}};
+$('finishTrip').onclick=()=>{
+  if(mode!=='playing'||paused||!['ready','result'].includes(phase))return;
+  actionUp();saveBest();resetLure();mode='ended';$('pause').disabled=true;$('help').disabled=true;
+  showOverlay('end',landed?'Good fish. Better stories.':'The boat made it back.',`${landed} fish landed. ${score.toLocaleString()} points. ${largest?largest.toFixed(1)+' lb was the biggest. ':''}${earnedCards.size} of ${DECK.length} cards earned. Your cards and personal best are saved.`,'Head out again');
+};
+$('reel').addEventListener('pointerdown',e=>{
+  if(e.button!==0||pointerId!==null)return;e.preventDefault();pointerId=e.pointerId;$('reel').setPointerCapture(e.pointerId);actionDown();
+});
+$('reel').addEventListener('pointerup',e=>{if(pointerId===e.pointerId){actionUp();pointerId=null;}});
+$('reel').addEventListener('pointercancel',()=>{actionUp();pointerId=null;});
+$('reel').addEventListener('lostpointercapture',()=>{actionUp();pointerId=null;});
+$('reel').addEventListener('click',e=>{if(e.detail===0)actionDown();});
+function handleEncounter(){
+  for(const event of encounter.drainEvents()){
+    if(event==='waiting'){
+      phase='nibble';held=false;
+      setHint('Something is investigating. Hands off.','Small nibbles are a test. Wait for the big BITE.');
+    }else if(event==='nibble'){
+      phase='nibble';splash(lure.x,surface,'#e6d4a2',7);tone(420,.06,'sine',.025);
+      labels.push({x:lure.x,y:lure.y-35,text:'NIBBLE… NOT YET',color:'#d7d9b0',life:.75});
+      setHint('Just a nibble. Don’t take the bait.','Wait. You will see and hear the real bite.');
+    }else if(event==='bite'){
+      phase='bite';biteLeft=encounter.biteWindow;held=false;
+      splash(lure.x,surface,'#f4d795',25);tone(1060,.17,'triangle',.07);
+      setHint('BITE! / Set the hook','Tap HOOK NOW or press Space. This is the one.');
+      if(navigator.vibrate)navigator.vibrate([45,35,65]);
+    }else if(event==='fight'){
+      phase='fight';held=false;fightAge=0;perfectFight=true;progress=12;tension=42;encounterMood='';
+      fishRunStart={x:lure.x,y:lure.y};fishTrail=[];tone(760,.14);
+      setHint('Fish on / '+species[hooked.type].name,'Hold to reel while it rests. Release before a run or dive.');
+    }else if(event==='mood'){
+      if(encounter.mode!=='rest'){fishRunStart={x:lure.x,y:lure.y};splash(lure.x,lure.y,'#e2d6aa',15);tone(encounter.mode==='dive'?180:310,.16);}
+    }else if(event==='landed'){
+      perfectFight=encounter.roughTime<.25;finishCatch(true);
+    }else if(event==='escaped'){
+      finishCatch(false,encounter.result.title);
+    }
+  }
+}
+function syncFightCue(){
+  const state=encounter.tension>.87?'tight':encounter.tension<.14?'slack':encounter.telegraph?'warning':encounter.mode;
+  if(encounterMood===state)return;encounterMood=state;
+  const cues={
+    tight:['Line at its limit / RELEASE','Stop reeling. Let the fish take line before it snaps.'],
+    slack:['The hook is coming loose / REEL','Take up the slack. Even during a run, keep a little tension.'],
+    warning:[encounter.nextMode==='dive'?'Bracing for a dive…':'Winding up for a run…','Get ready to let go. Fish are stronger when you fight them.'],
+    run:['It’s making a run for it!','Release and let the reel give line. Take it back when the fish rests.'],
+    dive:['Diving for the bottom!','Let it dive. Keep some tension, then reel as it tires.'],
+    rest:['It’s catching its breath / REEL','Hold to bring it closer. Ease off if tension gets too high.']
+  };
+  setHint(...cues[state]);
+}
+function syncControls(){
+  const playing=mode==='playing',available=playing&&!paused,ready=['ready','result'].includes(phase);
+  $('freeMode').disabled=playing||mode==='between';$('derbyMode').disabled=playing||mode==='between';
+  for(let i=0;i<3;i++)$('route'+i).disabled=outing!=='free'||paused||(playing&&!ready)||mode==='between';
+  $('drag').disabled=playing&&(!ready||paused);$('finishTrip').disabled=!available||!ready;
+  $('recall').disabled=!available||phase!=='soak';$('jig').disabled=!available||phase!=='soak'||time-lastTwitch<.9;
+  $('reel').disabled=!available||phase==='cast';
+  const labels={ready:['Cast a line','AIM ON WATER · TAP TO CAST'],cast:['Casting…','LET THE LURE SETTLE'],soak:['Twitch lure','A LITTLE MOVEMENT ATTRACTS FISH'],nibble:['Wait for it…','SMALL NIBBLES ARE NOT A BITE'],bite:['HOOK NOW!','TAP OR PRESS SPACE'],fight:[held?'Reeling…':encounter.mode==='rest'&&!encounter.telegraph?'Hold to reel':'Let it run','HOLD TO REEL · RELEASE TO EASE'],result:[$('catchCard').hidden?'Try again':'Next cast','ANOTHER FISH. ANOTHER STORY.']};
+  const [title,sub]=labels[phase]||labels.ready;
+  $('reelLabel').textContent=playing?title:'Launch the boat';$('reelSub').textContent=sub;
+  $('reel').classList.toggle('strike',phase==='bite');$('reel').classList.toggle('reeling',held&&phase==='fight');
+  $('consoleKicker').textContent=playing?`${outing==='free'?'FREE FISHING':'DERBY / ROUND '+(round+1)} · ${lureTypes[selectedLure].name.toUpperCase()} · ${Number($('drag').value)<1?'LIGHT':Number($('drag').value)>1?'FIRM':'BALANCED'} DRAG`:'THE ORIGINAL LISA LAND / REBUILT BELOW THE SURFACE';
+}
+function aim(e){const r=canvas.getBoundingClientRect();target={x:clamp((e.clientX-r.left)*W/r.width,370,W-60),y:clamp((e.clientY-r.top)*H/r.height,345,600)};}
+canvas.addEventListener('pointermove',e=>{if(pointerId===null||pointerId===e.pointerId)aim(e);});
+canvas.addEventListener('pointerdown',e=>{if(e.button!==0||pointerId!==null)return;e.preventDefault();pointerId=e.pointerId;canvas.focus();aim(e);canvas.setPointerCapture(e.pointerId);actionDown();});
+canvas.addEventListener('pointerup',e=>{if(e.pointerId===pointerId){actionUp();pointerId=null;}});
+canvas.addEventListener('pointercancel',()=>{actionUp();pointerId=null;});
+canvas.addEventListener('lostpointercapture',()=>{actionUp();pointerId=null;});
+document.addEventListener('keydown',e=>{
+  if($('inspectDialog').open)return;
+  if(e.target instanceof Element&&e.target.matches('select,input,textarea,a'))return;
+  if(e.target instanceof HTMLButtonElement&&e.target!==$('reel'))return;
+  if(['Space','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.code))e.preventDefault();
+  if(e.code==='Space'&&!e.repeat)actionDown();
+  if(e.code==='Enter'&&e.target===$('reel')){e.preventDefault();if(!e.repeat)actionDown();}
+  if(e.code==='KeyP'||e.code==='Escape'){if(!e.repeat)pauseGame();}
+  if(mode!=='playing'||paused)return;
+  if(['Digit1','Digit2','Digit3'].includes(e.code))selectLure(Number(e.code.slice(-1))-1);
+  if(e.code==='ArrowLeft')target.x=clamp(target.x-25,370,W-60);
+  if(e.code==='ArrowRight')target.x=clamp(target.x+25,370,W-60);
+  if(e.code==='ArrowUp')target.y=clamp(target.y-20,345,600);
+  if(e.code==='ArrowDown')target.y=clamp(target.y+20,345,600);
+  if(e.code==='KeyR'&&phase==='soak'){resetLure();tone(220,.1);}
+  if(e.code==='KeyJ'&&!e.repeat)twitchLure();
+});
+document.addEventListener('keyup',e=>{if(e.code==='Space'||e.code==='Enter')actionUp();});
+window.addEventListener('blur',()=>{actionUp();if(mode==='playing'&&!paused)pauseGame();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='playing'&&!paused)pauseGame();});
+function finishCatch(success,reason){
+  const f=hooked;held=false;
+  if(success&&f){
+    const t=species[f.type],mult=1+Math.min(streak,5)*.2,points=Math.round((t.points+f.weight*5)*mult)+(perfectFight?75:0),isRecord=f.weight>largest;
+    score+=points;streak++;landed++;roundCatch++;counts[f.type]++;largest=Math.max(largest,f.weight);
+    waterCatches[round]++;
+    const newCards=['not-skunked'];
+    if(perfectFight)newCards.push('held-together');
+    if(streak>=3)newCards.push('dinner-service');
+    if(f.type===3)newCards.push('plywood');
+    if(f.type===4)newCards.push('dock-royalty');
+    if(outing==='free'&&round===1)newCards.push('generator-optional');
+    if(outing==='free'&&waterCatches.every(n=>n>0))newCards.push('cedar-triangle');
+    earnCards(newCards);
+    if(!bonusPaid&&roundCatch>=goals[round]){score+=(round+1)*300;bonusPaid=true;waterBonus[round]=true;labels.push({x:570,y:350,text:'WATER BONUS +'+(round+1)*300,color:'#f2ca7e',life:3});}
+    $('lastcatch').textContent=`${f.weight.toFixed(1)} lb ${t.name} / +${points} points`;
+    $('catchTier').textContent=perfectFight?'PERFECT FIGHT / +75 BONUS':isRecord?'PERSONAL BEST / BIGGEST FISH':'ANOTHER STORY FOR THE DOCK';
+    $('catchName').textContent=t.name;$('catchWeight').textContent=f.weight.toFixed(1);$('catchPoints').textContent='+'+points;
+    $('catchArt').hidden=!art[fishArt[f.type]];if(art[fishArt[f.type]])$('catchArt').src=art[fishArt[f.type]].src;
+    $('catchCard').hidden=false;
+    setHint('Landed / +'+points+' points',`${f.weight.toFixed(1)} lb ${t.name}. Beautiful fish.`);
+    labels.push({x:lure.x,y:lure.y-45,text:'+'+points+' / '+f.weight.toFixed(1)+' lb',color:t.color,life:2.5});splash(lure.x,lure.y,t.color,30);
+    fish=fish.filter(v=>v!==f);fish.push(spawnFish(f.type,true));tone(880,.35,'triangle');saveBest();
+  }else{streak=0;if(f){f.spooked=2.8;f.dir=f.x<W/2?-1:1;}setHint(reason||'It got away',encounter.result?.hint||'A new story. A slightly worse story, but still.');$('lastcatch').textContent=(reason||'A fish slipped the hook.')+' / Nobody on the dock needs to know.';splash(lure.x,lure.y,'#d9e3c8',20);tone(150,.25);}
+  hooked=null;phase='result';phaseAge=0;resultLeft=success?(outing==='free'?Infinity:3.2):3;updateHUD();
+}
+function update(dt){
+  if(paused)return;time+=dt;
+  if(awardLeft>0){awardLeft=Math.max(0,awardLeft-dt);if(awardLeft===0)$('awardToast').hidden=true;}
+  particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=180*dt;p.life-=dt;});particles=particles.filter(p=>p.life>0);
+  ripples.forEach(r=>r.age+=dt);ripples=ripples.filter(r=>r.age<1.8);
+  labels.forEach(l=>{l.y-=14*dt;l.life-=dt;});labels=labels.filter(l=>l.life>0);
+  for(const f of fish){
+    if(f===hooked)continue;
+    const preferred=lureTypes[selectedLure].fav.includes(f.type);
+    const radius=(preferred?230:140)+(time-lastTwitch<1.5?80:0);
+    let attracted=mode==='playing'&&phase==='soak'&&Math.hypot(f.x-lure.x,f.y-lure.y)<radius;
+    if(f.spooked){f.spooked=Math.max(0,f.spooked-dt);attracted=false;}
+    if(attracted){const dx=lure.x-f.x,dy=lure.y-f.y,d=Math.hypot(dx,dy),speed=preferred?75:47;f.x+=dx/Math.max(d,1)*speed*dt;f.y+=dy/Math.max(d,1)*speed*.8*dt;f.dir=dx>=0?1:-1;
+      if(d<23){hooked=f;encounter.reset();encounter.drag=Number($('drag').value);const kind=species[f.type],weightPower=.92+.18*(f.weight-kind.min)/(kind.max-kind.min);encounter.investigate({...fightingSpecies[f.type],power:fightingSpecies[f.type].power*weightPower});handleEncounter();}}
+    else{f.x+=f.dir*f.speed*dt*(f.spooked?5:1);f.y+=Math.sin(time*1.5+f.p)*3*dt;if(f.x>W+65)f.x=-60;if(f.x<-65)f.x=W+60;}
+  }
+  if(mode!=='playing')return;
+  if(outing==='derby'){
+    remaining=Math.max(0,remaining-dt);$('clock').textContent=remaining>0?Math.ceil(remaining):'LAST';
+    if(remaining<=0){$('roundLabel').textContent='CAST / FINISH THE FIGHT';if(['ready','soak'].includes(phase)){endRound();return;}}
+  }
+  phaseAge+=dt;
+  if(phase==='cast'){
+    let p=clamp(phaseAge/.85,0,1);lure.x=castStart.x+(castEnd.x-castStart.x)*p;lure.y=castStart.y+(surface-castStart.y)*p-Math.sin(p*Math.PI)*130;
+    if(p===1){phase='soak';phaseAge=0;splash(lure.x,surface);tone(180,.16);setHint('Let it sink / Watch your lure','Fish investigate nearby lures. R to recall.');}
+  }else if(phase==='soak'){
+    lure.y+=Math.min(lureTypes[selectedLure].sink*dt,Math.max(0,castEnd.y-lure.y));
+    if(phaseAge>14){phase='result';resultLeft=2.4;setHint('Quiet water. It happens.','Try a different lure or depth. Twitch with J to tempt nearby fish.');}
+  }else if(['nibble','bite','fight'].includes(phase)){
+    encounter.held=held;encounter.tick(dt);handleEncounter();
+    if(phase==='bite')biteLeft=Math.max(0,encounter.biteWindow-encounter.age);
+    if(phase==='nibble'&&hooked){hooked.x=lure.x+Math.sin(time*3)*13;hooked.y=lure.y+5;hooked.dir=Math.cos(time*3)>0?1:-1;}
+    if(phase==='fight'&&hooked){
+      fightAge=encounter.fightAge;tension=encounter.tension*100;progress=clamp(encounter.progress*100,0,100);surge=encounter.mode!=='rest';
+      syncFightCue();
+      reelSoundAge+=dt;if(held&&reelSoundAge>.14){tone(surge?145:105,.04,'triangle',.013);reelSoundAge=0;}
+      const restX=320+(castEnd.x-320)*(1-progress/100);
+      const burst=encounter.mode==='run'?Math.sin(Math.min(1,encounter.modeAge/encounter.modeLength)*Math.PI)*130*encounter.direction:0;
+      const destinationX=clamp(restX+burst+Math.sin(fightAge*2.5)*18,340,W-65);
+      const oldX=lure.x;
+      lure.x+=(destinationX-lure.x)*Math.min(1,dt*(surge?6:3));
+      let depth=surface+35+(castEnd.y-surface-35)*(1-progress/100);
+      if(encounter.mode==='dive')depth+=Math.sin(encounter.modeAge/encounter.modeLength*Math.PI)*85;
+      if(encounter.mode==='run'&&[1,4].includes(hooked.type)&&encounter.modeAge<.85)depth-=(depth-surface+65)*Math.sin(encounter.modeAge/.85*Math.PI);
+      lure.y=clamp(depth+Math.sin(fightAge*8)*4,surface-70,625);
+      hooked.x=lure.x;hooked.y=lure.y;hooked.dir=lure.x>oldX?1:-1;
+      fishTrail.push({x:lure.x,y:lure.y});if(fishTrail.length>18)fishTrail.shift();
+      if(surge&&Math.random()<dt*7)splash(lure.x,lure.y,'#d9e9d0',2);
+    }
+  }else if(phase==='result'){resultLeft-=dt;if(resultLeft<=0)resetLure();}
+}
+function polygon(points,fill){ctx.fillStyle=fill;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();}
+function line(points,color,width=1){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();}
+function ellipse(x,y,rx,ry,color){ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();}
+function text(str,x,y,size=12,color='#d8e6df',align='center',font='system-ui'){ctx.fillStyle=color;ctx.font=`${size}px ${font}`;ctx.textAlign=align;ctx.fillText(str,x,y);}
+function roundBox(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();}
+function drawLandscape(){
+  if(sceneBuffers[round]){drawPaintedWater();return;}
+  const sky=ctx.createLinearGradient(0,0,0,surface);sky.addColorStop(0,'#071f30');sky.addColorStop(.62,'#285159');sky.addColorStop(1,'#aa9780');ctx.fillStyle=sky;ctx.fillRect(0,0,W,surface);
+  for(const s of stars)ellipse(s.x,s.y,s.r,s.r,`rgba(223,246,227,${.3+(Math.sin(time*.5+s.p)+1)*.2})`);
+  const aTime=reducedMotion?0:time;
+  ctx.save();ctx.globalCompositeOperation='screen';
+  for(let band=0;band<3;band++){
+    const g=ctx.createLinearGradient(0,20,0,170);g.addColorStop(0,'#74d6b000');g.addColorStop(.5,'#60d9b01c');g.addColorStop(1,'#63a9c900');
+    const pts=[];for(let x=200;x<=W;x+=15)pts.push([x,80+band*18+Math.sin(x*.006+aTime*.16+band)*32]);
+    for(let x=W;x>=200;x-=15)pts.push([x,22+band*12+Math.sin(x*.006+aTime*.16+band)*25]);polygon(pts,g);
+  }ctx.restore();
+  const glow=ctx.createRadialGradient(861,82,4,861,82,72);glow.addColorStop(0,'#f7e9bd50');glow.addColorStop(1,'#f7e9bd00');ellipse(861,82,72,72,glow);ellipse(861,82,19,19,'#ecdfb5');ellipse(868,77,17,18,'#163646');
+  mountains.forEach((m,i)=>{polygon([[0,surface],...m,[W,surface]],i?'#193e48':'#34545e');if(!i)for(let j=1;j<m.length-1;j++){const [x,y]=m[j];if(y<145)polygon([[x,y],[x+30,y+34],[x+9,y+23],[x-4,y+31],[x-27,y+34]],'#8eaaa9');}});
+  polygon([[0,270],[75,243],[142,269],[180,273],[223,291],[315,302],[0,316]],'#092f36');
+  polygon([[860,304],[909,275],[959,270],[1010,240],[1100,239],[1100,324]],'#092f36');
+  for(let i=0;i<48;i++){let x=i<24?i*7:920+(i-24)*9,y=i<24?267+x*.07:274-(x-920)*.17,h=18+Math.sin(i*12)**2*38;
+    line([[x,y],[x,y-h]],'#082c32',2);polygon([[x,y-h],[x-9,y-6],[x+9,y-6]],'#082c32');}
+  const water=ctx.createLinearGradient(0,surface,0,H);water.addColorStop(0,'#286268');water.addColorStop(.12,'#174751');water.addColorStop(.55,'#0d333f');water.addColorStop(1,'#071b2b');ctx.fillStyle=water;ctx.fillRect(0,surface,W,H-surface);
+  for(let i=0;i<5;i++)polygon([[700+i*55,surface],[733+i*55,surface],[900+i*90,650],[790+i*90,650]],'#7ad7c005');
+  for(let i=0;i<33;i++){let y=surface+5+i*2.8,x=800+Math.sin(i*17)*60+Math.sin(time*.7+i)*5;line([[x-i*1.8,y],[x+40+i*2,y]],'#d8d8b51c',1);}
+  for(let i=0;i<26;i++){let x=(i*137+time*7)%W,y=surface+5+(i%7)*7;line([[x,y],[x+randFixed(i)*45+15,y]],'#8ddcc027',1);}
+  for(const m of motes)ellipse((m.x+time*3)%W,m.y+Math.sin(time*.3+m.p)*8,m.r,m.r,'#94dfcf28');
+  for(let i=0;i<22;i++){let x=i*55+Math.sin(i*2)*20;ellipse(x,665+Math.sin(i*5)*15,42,16,'#09222c');}
+  for(let i=0;i<34;i++){let x=i*37,h=18+randFixed(i)*34;ctx.strokeStyle='#23504b70';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,685);ctx.quadraticCurveTo(x-15,685-h/2,x+Math.sin(time+i)*7,685-h);ctx.stroke();}
+  line([[0,surface],[W,surface]],'#a6d8c360',1);
+  text('SHALLOWS',30,375,9,'#73a5aa','left');text('DEEP WATER',30,570,9,'#517b86','left');
+  for(let y=400;y<620;y+=40)line([[30,y],[38,y]],'#426774',1);
+}
+function drawPaintedWater(){
+  const scene=sceneBuffers[round],motion=reducedMotion?0:time;
+  ctx.drawImage(scene,0,0);
+  for(let y=surface;y<H;y+=12){
+    const shift=Math.sin(motion*.75+y*.032)*1.4,height=Math.min(12,H-y);
+    ctx.drawImage(scene,0,y,W,height,shift,y,W,height);
+  }
+  const shade=ctx.createLinearGradient(0,surface,0,H);shade.addColorStop(0,'#06263508');shade.addColorStop(.65,'#041c2c15');shade.addColorStop(1,'#03101eb0');ctx.fillStyle=shade;ctx.fillRect(0,surface,W,H-surface);
+  ctx.save();ctx.globalCompositeOperation='screen';
+  for(let i=0;i<5;i++){
+    const x=240+i*115+Math.sin(motion*.17+i)*30;
+    const ray=ctx.createLinearGradient(x,surface,x+120,H);ray.addColorStop(0,'#a1e6cf0b');ray.addColorStop(1,'#a1e6cf00');
+    polygon([[x,surface],[x+25,surface],[x+220,H],[x+70,H]],ray);
+  }
+  ctx.restore();
+  for(const m of motes)ellipse((m.x+motion*3)%W,m.y+Math.sin(motion*.3+m.p)*8,m.r*.7,m.r*.7,'#a4ead333');
+  for(let i=0;i<15;i++){
+    const x=(i*101+motion*8)%W,y=surface-3+Math.sin(motion+i)*2;
+    line([[x,y],[x+22+randFixed(i)*30,y]],'#caebda30',1);
+  }
+  if(round===2&&!reducedMotion){ctx.globalAlpha=.05+.02*Math.sin(time*.4);ctx.fillStyle='#64efc3';ctx.fillRect(0,0,W,surface);ctx.globalAlpha=1;}
+  if(round===1&&!reducedMotion){
+    for(let i=0;i<50;i++){
+      const x=(i*131+motion*43)%W,y=(i*71+motion*215)%surface;
+      line([[x,y],[x+3,Math.min(surface,y+10)]],'#bfd9da3a',.7);
+    }
+  }
+  text('SHALLOWS',25,363,9,'#b8d7cf88','left');text('DEEP WATER',25,587,9,'#a4c4c877','left');
+}
+function randFixed(n){return (Math.sin(n*127.1+7)*43758.5453)%1/2+.5;}
+function drawBoat(){
+  const bob=reducedMotion?0:Math.sin(time*1.7)*2;
+  if(art.boat){
+    const img=art.boat;ellipse(230,310+bob,110,5,'#011b2870');ctx.save();ctx.translate(230,305+bob);ctx.rotate(reducedMotion?0:Math.sin(time*.9)*.008);
+    ctx.drawImage(img,-120,-240*img.height/img.width,240,240*img.height/img.width);ctx.restore();return;
+  }
+  ctx.save();ctx.translate(0,bob);
+  ellipse(231,316,95,6,'#081c2c90');
+  polygon([[144,280],[317,280],[291,309],[176,309]],'#af6644');
+  polygon([[144,280],[317,280],[312,289],[150,289]],'#f0c991');
+  line([[169,302],[292,302]],'#ebc389',2);polygon([[168,262],[180,262],[180,289],[168,289]],'#25404b');
+  roundBox(193,267,42,15,3,'#d1c9a3');line([[223,270],[229,249],[248,249],[256,281]],'#132831',8);
+  ellipse(237,232,10,11,'#b79a75');roundBox(225,219,25,8,3,'#d4a653');
+  polygon([[228,243],[246,243],[255,265],[220,265]],'#e2aa52');line([[243,247],[260,251],[271,242]],'#d8ad6b',6);
+  ctx.strokeStyle='#cfb888';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(265,251);ctx.quadraticCurveTo(289,200,310,228);ctx.stroke();
+  ellipse(273,245,4,4,'#e2ddd0');ctx.restore();
+}
+function drawFish(f){
+  const t=species[f.type],s=f.size,flat=f.type===3;ctx.save();ctx.translate(f.x,f.y);ctx.scale(f.dir,1);
+  if(art[fishArt[f.type]]){
+    const image=art[fishArt[f.type]],w=s*3,h=w*image.height/image.width;
+    ctx.globalAlpha=f===hooked?1:.93;ctx.rotate(reducedMotion?0:Math.sin(time*2+f.p)*.028);
+    if(f.type===4){ctx.shadowColor='#f6c76a70';ctx.shadowBlur=9;}
+    const slices=14;
+    for(let i=0;i<slices;i++){const sx=image.width*i/slices,sw=image.width/slices,tail=(1-i/slices)**3,bend=reducedMotion?0:Math.sin(time*9+f.p+i*.18)*tail*4;
+      ctx.drawImage(image,sx,0,sw,image.height,-w/2+i*w/slices,-h/2+bend,w/slices+.4,h);}
+    ctx.restore();return;
+  }
+  ctx.globalAlpha=f===hooked?1:.83;
+  if(f.type===4){ctx.shadowColor='#e2ca70';ctx.shadowBlur=12;}
+  let tail=Math.sin(time*8+f.p)*4;
+  polygon([[-s*.73,0],[-s*1.3,-s*.4+tail],[-s*1.25,s*.38+tail]],t.color);
+  const g=ctx.createLinearGradient(0,-s*.4,0,s*.4);g.addColorStop(0,'#366277');g.addColorStop(.48,t.color);g.addColorStop(1,'#d6dfc1');
+  ellipse(0,0,s,s*(flat?.54:.34),g);ctx.shadowBlur=0;
+  polygon([[-s*.3,-s*.23],[0,-s*.6],[s*.22,-s*.24]],t.color);
+  polygon([[0,s*.15],[-s*.16,s*.5],[s*.34,s*.24]],'#669997');
+  line([[-s*.55,0],[s*.5,0]],t.color,2);
+  ellipse(s*.62,-s*.08,2.7,2.7,'#eaf2d6');ellipse(s*.67,-s*.08,1.6,1.6,'#09212a');
+  for(let i=0;i<6;i++)ellipse(-s*.5+i*s*.17,-s*.13+(i%2)*3,1,1,'#2d515b');
+  ctx.restore();
+}
+function drawLineAndLure(){
+  if(mode!=='playing')return;
+  if(phase==='ready'){
+    ctx.save();ctx.setLineDash([3,7]);line([[ROD.x,ROD.y],[target.x,surface],[target.x,target.y]],'#c1e2d345',1);ctx.setLineDash([]);
+    ellipse(target.x,target.y,23,10,'#78d9c013');ctx.strokeStyle='#8adcc58c';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(target.x,target.y,23,10,0,0,Math.PI*2);ctx.stroke();
+    line([[target.x-31,target.y],[target.x-14,target.y]],'#aad9cb');line([[target.x+14,target.y],[target.x+31,target.y]],'#aad9cb');
+    text('CAST HERE',target.x,target.y-19,10,'#cae7d6');ctx.restore();return;
+  }
+  if(phase==='result')return;
+  ctx.strokeStyle=phase==='fight'&&tension>80?'#f19d6f':'#e0e7cf90';ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(ROD.x,ROD.y);ctx.quadraticCurveTo((ROD.x+lure.x)/2,phase==='fight'?230:265,lure.x,Math.min(lure.y,surface));if(lure.y>surface)ctx.lineTo(lure.x,lure.y);ctx.stroke();
+  if(lure.y>=surface){const bob=phase==='nibble'&&encounter.phase==='nibble'?Math.sin(encounter.age*27)*6:phase==='bite'?10:Math.sin(time*3)*1.5;ellipse(lure.x,surface+bob,5,3,'#edb677');ellipse(lure.x,surface-3+bob,3,5,'#ecdbc0');}
+  const glow=ctx.createRadialGradient(lure.x,lure.y,0,lure.x,lure.y,26);glow.addColorStop(0,'#ffdc8450');glow.addColorStop(1,'#ffdc8400');ellipse(lure.x,lure.y,26,26,glow);
+  ellipse(lure.x,lure.y,selectedLure===1?4:3,selectedLure===2?9:6,lureTypes[selectedLure].color);line([[lure.x,lure.y+4],[lure.x+3,lure.y+9],[lure.x+7,lure.y+4]],'#e7e6d7',1.5);
+  if(phase==='bite'){
+    const x=clamp(lure.x,100,W-100),y=lure.y-70;
+    roundBox(x-67,y-22,134,36,9,'#f2ca7e');text('BITE!  HOOK IT',x,y+1,13,'#102b32');
+    ctx.strokeStyle='#f2ca7e';ctx.lineWidth=3;ctx.beginPath();ctx.arc(lure.x,lure.y,24,-Math.PI/2,-Math.PI/2+Math.PI*2*biteLeft/encounter.biteWindow);ctx.stroke();
+  }
+  if(phase==='nibble'){
+    const x=clamp(lure.x,135,W-135),y=lure.y-52;
+    roundBox(x-94,y-19,188,29,5,'#172a23e8');text('NIBBLE / WAIT FOR THE BITE',x,y,10,'#dad8b4');
+  }
+  if(phase==='fight')drawFight();
+}
+function drawFight(){
+  ctx.save();
+  if(canvas.clientWidth<600){ctx.translate(550,415);ctx.scale(1.9,1.9);ctx.translate(-550,-535);}
+  const x=345,y=535,w=410;
+  roundBox(x-20,y-25,w+40,122,7,'#111f19f2');
+  ctx.strokeStyle='#c7ac6e77';ctx.lineWidth=1;ctx.strokeRect(x-13,y-18,w+26,108);
+  const warning=tension>87?'LINE AT LIMIT / RELEASE':tension<14?'HOOK LOOSE / REEL A LITTLE':encounter.telegraph?'ABOUT TO BOLT / GET READY':encounter.mode==='dive'?'DEEP DIVE / GIVE IT LINE':surge?'RUNNING HARD / LET IT GO':'CATCHING ITS BREATH / REEL';
+  text(warning,x,y,10,surge||encounter.telegraph?'#f2ca7e':'#d7dfbd','left');
+  text(Math.floor(progress)+'% LANDED',x+w,y,11,'#f2ca7e','right');
+  roundBox(x,y+15,w,13,3,'#5a6252');ctx.fillStyle='#73956c';ctx.fillRect(x+w*.14,y+15,w*.59,13);
+  ctx.fillStyle='#b79c53';ctx.fillRect(x+w*.73,y+15,w*.14,13);ctx.fillStyle='#b77f53';ctx.fillRect(x+w*.87,y+15,w*.13,13);roundBox(x+w*tension/100-3,y+10,6,23,3,'#fff1d0');
+  text('SLACK',x,y+45,9,'#93adb5','left');text('TENSION / KEEP IN GREEN',x+w/2,y+45,9,'#a6c7be');text('SNAP',x+w,y+45,9,'#f2b182','right');
+  roundBox(x,y+57,w,4,2,'#274751');roundBox(x,y+57,w*progress/100,4,2,'#f2ca7e');
+  text(species[hooked.type].name.toUpperCase()+' / '+(encounter.mode==='dive'?'GOING DEEP':encounter.mode==='run'?'MAKING DISTANCE':'TIRED, NOT BEATEN'),x,y+80,9,'#9db08f','left');
+  ctx.restore();
+}
+function render(){
+  syncControls();
+  const lockTackle=mode==='playing'&&(paused||!['ready','result'].includes(phase));
+  document.querySelectorAll('[data-lure]').forEach(button=>{button.disabled=lockTackle;});
+  ctx.clearRect(0,0,W,H);drawLandscape();
+  fish.filter(f=>f!==hooked).sort((a,b)=>a.y-b.y).forEach(drawFish);
+  for(const r of ripples){ctx.globalAlpha=1-r.age/1.8;ctx.strokeStyle='#bde1cc';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(r.x,r.y,10+r.age*40,3+r.age*8,0,0,Math.PI*2);ctx.stroke();}ctx.globalAlpha=1;
+  drawBoat();
+  if(phase==='fight'&&surge&&fishTrail.length>2){ctx.save();ctx.strokeStyle='#d9e7cb35';ctx.lineWidth=2;ctx.setLineDash([4,8]);line(fishTrail.map(p=>[p.x,p.y]),'#d9e7cb35',2);ctx.restore();}
+  if(hooked)drawFish(hooked);drawLineAndLure();
+  for(const p of particles){ctx.globalAlpha=clamp(p.life/p.max,0,1);ellipse(p.x,p.y,p.size,p.size,p.color);}ctx.globalAlpha=1;
+  for(const l of labels){ctx.globalAlpha=clamp(l.life,0,1);text(l.text,clamp(l.x,180,W-180),l.y,23,l.color,'center','Georgia');}ctx.globalAlpha=1;
+}
+populate();updateHUD();
+let previous=0;
+function frame(timestamp){const dt=previous?Math.min((timestamp-previous)/1000,.05):0;previous=timestamp;update(dt);render();requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
