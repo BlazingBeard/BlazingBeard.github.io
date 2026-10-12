@@ -98,7 +98,7 @@
   .tools>a.small{display:inline-flex;align-items:center;text-decoration:none}.cards-link{display:inline-block;margin-top:12px;padding:10px 16px;border:1px solid #a89762;border-radius:3px;background:#34432c;color:#f0dcac;font-size:13px;text-decoration:none}.cards-link:hover{background:#465739}.cards-link:focus-visible,.tools>a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
   @media(min-width:741px){.tools{flex-wrap:wrap;justify-content:flex-end}}
 </style>
-<link rel="stylesheet" href="wild-lines.css?v=catch-guard-4">
+<link rel="stylesheet" href="wild-lines.css?v=fishbox-5">
 </head>
 <body>
 <main class="shell">
@@ -118,14 +118,15 @@
         <div class="overlay hero" id="overlay"><div class="card">
           <div class="eyebrow" id="overlayLabel">Cedar Sanctuary / Unofficial Alaska cred</div>
           <h2 id="overlayTitle">Welcome to<br>Lisa Land.</h2>
-          <p id="overlayText">Same questionable boat. Same spectacular water. This time the fish nibble, bolt, dive, and mean it. Pick your tackle. Read the water. Earn the story.</p>
+          <p id="overlayText">Same questionable boat. Same spectacular water. Build a rig for your fish, let the lure settle, and give it time. Some fish will look. Some will pass. The ones that bite still put up a fight.</p>
           <div class="steps" id="steps"><div><b>01 / TEMPT</b>Cast. Let it investigate.</div><div><b>02 / WAIT</b>Nibbles aren't a bite.</div><div><b>03 / OUTSMART</b>Reel the rest. Yield the run.</div></div>
           <button class="primary" id="continue">Launch the boat</button>
-          <p class="micro" id="overlayNote">Quick catches. Surprise trophies. An occasional whale, just passing through.</p>
+          <p class="micro" id="overlayNote">Quick fights. Patient fish. Your own fishbox. Whales, just passing through.</p>
         </div></div>
       </div>
       <div class="fishing-console"><div class="console-copy" aria-live="polite"><span class="console-kicker" id="consoleKicker">THE ORIGINAL LISA LAND / REBUILT BELOW THE SURFACE</span><strong id="consoleTitle">Good water. Uncooperative fish.</strong><p id="consoleHint">Pick free fishing or the derby, then launch the boat.</p></div><div class="console-actions"><button class="recall-button" id="recall" disabled>Recall <kbd>R</kbd></button><button class="reel-button" id="reel" disabled><span id="reelLabel">Launch the boat</span><small id="reelSub">CLICK / TOUCH / SPACE</small></button></div></div>
-      <div class="tackle" aria-label="Choose fishing lure"><span>TACKLE BOX</span><button class="lure" data-lure="0" aria-pressed="true"><b>1 / Silver spinner</b><small>Shallow / pink &amp; coho</small></button><button class="lure" data-lure="1" aria-pressed="false"><b>2 / Copper spoon</b><small>Midwater / sockeye &amp; kings</small></button><button class="lure" data-lure="2" aria-pressed="false"><b>3 / Deepwater jig</b><small>Fast sink / bottom halibut</small></button></div>
+      <div class="fishbox-bar"><button id="openFishbox">My fishbox <small>BUILD A RIG / FISH PREFERENCES</small></button><div><b id="rigSummary"></b><span id="rigBest"></span></div></div>
+      <div class="tackle" aria-label="Choose fishing lure"><span>QUICK LURES</span><button class="lure" data-lure="0" aria-pressed="true"><b>1 / Silver spinner</b><small>Light flash / slow sink</small></button><button class="lure" data-lure="1" aria-pressed="false"><b>2 / Copper spoon</b><small>Baitfish wobble / medium sink</small></button><button class="lure" data-lure="2" aria-pressed="false"><b>3 / Deepwater jig</b><small>Weighted / bottom fishing</small></button></div>
       <div class="rig-bar"><label for="drag">REEL DRAG <select id="drag"><option value="0.76">Light / forgiving, slower</option><option value="1" selected>Balanced / a little give</option><option value="1.22">Firm / faster, more tension</option></select></label><span id="rigNote">Silver spinner · slow sink · pink &amp; coho</span><button id="jig" disabled>Twitch lure <kbd>J</kbd></button><button id="finishTrip" disabled>Back to dock</button></div>
       <div class="controls"><span><kbd>Move</kbd> or <kbd>Arrows</kbd> Aim &nbsp; <kbd>Click / Space</kbd> Cast + hook</span><span><kbd>Hold</kbd> Reel &nbsp; <kbd>Release</kbd> Ease &nbsp; <kbd>P</kbd> Pause &nbsp; <kbd>R</kbd> Recall lure</span></div>
     </div>
@@ -148,6 +149,19 @@
   </section>
   <dialog id="trophyRoom" aria-labelledby="trophyRoomTitle"><div class="trophy-room-top"><div><div class="eyebrow">HOWARDAI / LISA LAND FIELD COLLECTION</div><h2 id="trophyRoomTitle">The trophy room.</h2><p>Only the lucky catches make this wall.</p></div><button class="small" id="closeTrophies" autofocus>Back to the water ×</button></div><div class="trophy-room-stats"><span><b id="trophyUnique">0</b> / 20 editions collected</span><span><b id="trophyCaught">0</b> trophies earned</span><span id="trophyBest">Your first frame is waiting.</span></div><div class="trophy-filters" id="trophyFilters" aria-label="Filter trophy cards"></div><div id="trophyNotice" class="notice" role="alert" hidden></div><div class="trophy-grid" id="trophyGrid"></div><p class="trophy-room-note">Every landed fish independently has a <b>25% chance</b> of a trophy. When one drops, its rarity is rolled separately: <b>Normal 55%</b>, <b>Rare 28%</b>, <b>Epic 14%</b>, <b>Legendary 3%</b>. Weight and tackle do not change the odds. Repeat trophies add to your count and keep your biggest specimen. Earlier saved cards are preserved. Whales are wildlife, never catches or trophies.</p></dialog>
   <dialog id="inspectDialog" aria-labelledby="inspectTitle"><button class="small" id="closeInspect" autofocus>Close</button><div class="eyebrow" id="inspectLabel">From the dock</div><img id="inspectArt" alt=""><div class="image-tools"><button id="zoomInspect" aria-pressed="false">Enlarge image</button><a id="fullInspect" target="_blank" rel="noopener noreferrer">Open full-resolution image</a></div><h2 id="inspectTitle"></h2><p id="inspectStory"></p><p class="criterion" id="inspectRule"></p></dialog>
+  <dialog id="fishbox" aria-labelledby="fishboxTitle">
+    <div class="fishbox-heading"><div><div class="eyebrow">CEDAR SANCTUARY / RIG IT YOUR WAY</div><h2 id="fishboxTitle">Your fishbox.</h2><p>A pink salmon isn't a halibut. Give each fish a reason to look.</p></div><button id="closeFishbox" class="small" autofocus>Close ×</button></div>
+    <div class="rig-workbench"><div class="rig-preview"><span>ON THE WORKBENCH</span><div id="rigSketch"></div><b id="draftRigName"></b></div><div class="rig-components">
+      <label for="boxLure">01 / LURE BODY<select id="boxLure"></select><small id="boxLureNote"></small></label>
+      <label for="boxBait">02 / BAIT<select id="boxBait"></select><small id="boxBaitNote"></small></label>
+      <label for="boxHook">03 / HOOK SIZE<select id="boxHook"></select><small id="boxHookNote"></small></label>
+      <p>Mix your own setup, or start with a fish's recommended rig below. Your equipped tackle is saved in this browser.</p>
+    </div></div>
+    <div class="fishbox-guide"><h3>Who likes this rig?</h3><p>Live in-game ratings, not a promise of a bite. Lure 45% · bait 35% · hook 20%. Match the depth, let it settle, and use gentle twitches.</p></div>
+    <div id="fishRatings" class="fish-ratings"></div>
+    <div id="fishboxNotice" class="notice" role="alert" hidden></div>
+    <div class="fishbox-footer"><p>Fish may cruise past, inspect, or turn away. Tackle affects interest—not trophy rarity. Changes apply only when you equip.</p><button id="equipRig" class="primary">Equip this rig ↗</button></div>
+  </dialog>
   <div id="storageNotice" class="notice" hidden>Browser storage is unavailable. Your record will last only for this visit.</div>
   <div id="artNotice" class="notice" hidden></div>
   <footer class="footer"><span>NO GENERATORS WERE RELIED UPON IN THE MAKING OF THIS GAME.</span><span><a href="alaska-fishing-assets/island-sanctuary.webp" download="Lisa-Land-Island-Backdrop.webp">Save the island backdrop</a> / <a href="../alaska-fishing-6deaead8d8/">Preserved original</a> / <a href="../lisa-land-tides-c8b27f4e91/">Little Tides</a> / Wild Lines · HowardAI</span></footer>
@@ -156,11 +170,13 @@
 'use strict';
 import {FishingRound, SPECIES as fightingSpecies} from './fishing.mjs?v=wildlife-2';
 import {RARITIES, createTrophyBook, parseTrophyBook, recordTrophy, rollTrophy} from './trophies.mjs?v=wildlife-2';
+import {LURES, BAITS, HOOKS, DEFAULT_RIG, PREFERENCES, validateRig, parseFishbox, rateRig, recommendedRig, FishInterest} from './tackle.mjs?v=fishbox-5';
 const $ = id => document.getElementById(id);
 const canvas = $('game'), ctx = canvas.getContext('2d'), W = 1100, H = 720, surface = 302;
 const ROD={x:350,y:212}, art={}, sceneBuffers=[], fishArt=['fish-pink','fish-coho','fish-sockeye','fish-halibut','fish-king'];
 const sceneNames=['island-sanctuary','lisa-generator','lisa-triangle'], waterlines=[600,592,576];
-const lureTypes=[{name:'Silver spinner',color:'#e8eade',fav:[0,1],sink:82,depth:390,note:'slow sink · pink & coho'},{name:'Copper spoon',color:'#eaa370',fav:[2,4],sink:114,depth:480,note:'fluttering sink · sockeye & kings'},{name:'Deepwater jig',color:'#a9c9f3',fav:[3],sink:185,depth:575,note:'fast sink · bottom halibut'}];
+const lureTypes=LURES;
+let rig={...DEFAULT_RIG},rigRatings=fightingSpecies.map(s=>rateRig(s.id,rig)),curiousFish=null;
 let selectedLure=0, perfectFight=true, ambientGain=null, reelSoundAge=0;
 const encounter=new FishingRound(), waterCatches=[0,0,0], waterBonus=[false,false,false];
 const whale={x:-120,y:505,width:440,height:156,age:0,direction:1,active:true,wait:0};
@@ -191,10 +207,9 @@ function setHero(){
 }
 function selectLure(index){
   if(mode==='playing'&&!['ready','result'].includes(phase))return;
-  selectedLure=index;document.querySelectorAll('[data-lure]').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
+  rig={...rig,lure:LURES[index].id};syncRigUI();saveFishbox();
   target.y=lureTypes[index].depth;
-  $('rigNote').textContent=lureTypes[index].name+' · '+lureTypes[index].note;
-  if(mode==='playing'){setHint(lureTypes[index].name+' equipped','Aim near its favorite fish. Click or press Space to cast.');canvas.focus();}
+  if(mode==='playing'){setHint(lureTypes[index].name+' equipped','Your bait and hook stay fitted. Open My fishbox to compare fish preferences.');canvas.focus();}
 }
 document.querySelectorAll('[data-lure]').forEach(b=>b.onclick=()=>selectLure(Number(b.dataset.lure)));
 $('fullscreen').onclick=async()=>{
@@ -338,6 +353,75 @@ function awardTrophy(f){
   renderTrophies();
   return award;
 }
+const FISHBOX_KEY='howardai-lisaland-wild-lines-fishbox-v1';
+let fishboxWritable=true,fishboxResume=false,fishboxTrigger=null,draftRig={...rig},draftTarget=null;
+function fishboxStorageError(message,error){
+  console.warn(message,error);fishboxWritable=false;
+  $('fishboxNotice').textContent=message;$('fishboxNotice').hidden=false;
+  $('storageNotice').textContent=message;$('storageNotice').hidden=false;
+}
+try{
+  const saved=localStorage.getItem(FISHBOX_KEY);
+  if(saved!==null)rig=parseFishbox(saved);
+}catch(error){fishboxStorageError('Your saved fishbox could not be read and has not been overwritten. Tackle changes will last for this visit only.',error);}
+function saveFishbox(){
+  if(!fishboxWritable)return;
+  try{localStorage.setItem(FISHBOX_KEY,JSON.stringify({version:1,rig}));}
+  catch(error){fishboxStorageError('Your fishbox could not be saved. This rig will last for this visit only.',error);}
+}
+function rigDescription(value){
+  return [LURES.find(x=>x.id===value.lure).name,BAITS.find(x=>x.id===value.bait).name,HOOKS.find(x=>x.id===value.hook).name].join(' · ');
+}
+function syncRigUI(){
+  selectedLure=LURES.findIndex(x=>x.id===rig.lure);
+  rigRatings=fightingSpecies.map(s=>rateRig(s.id,rig));
+  document.querySelectorAll('[data-lure]').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===selectedLure)));
+  $('rigSummary').textContent=rigDescription(rig);
+  const bestIndex=rigRatings.reduce((best,r,i)=>r.score>rigRatings[best].score?i:best,0);
+  $('rigBest').textContent=`Best match: ${fightingSpecies[bestIndex].name} · ${rigRatings[bestIndex].score.toFixed(1)}/5 · ${PREFERENCES[fightingSpecies[bestIndex].id].water}`;
+  $('rigNote').textContent=rigDescription(rig);
+}
+function showDraftRig(){
+  for(const [id,key,items] of [['boxLure','lure',LURES],['boxBait','bait',BAITS],['boxHook','hook',HOOKS]]){
+    $(id).value=draftRig[key];$(id+'Note').textContent=items.find(x=>x.id===draftRig[key]).note;
+  }
+  $('draftRigName').textContent=rigDescription(draftRig);
+  const body=draftRig.lure==='spinner'?'<ellipse cx="115" cy="55" rx="16" ry="28" fill="#d8dccc" transform="rotate(25 115 55)"/><circle cx="145" cy="87" r="8" fill="#d9b16c"/>':draftRig.lure==='spoon'?'<ellipse cx="131" cy="65" rx="22" ry="42" fill="#c89562" transform="rotate(23 131 65)"/>':'<path d="M121 35h21l6 67h-34z" fill="#8caec6"/>';
+  const bait=draftRig.bait==='eggs'?'<g fill="#c77949"><circle cx="145" cy="113" r="7"/><circle cx="153" cy="105" r="7"/><circle cx="159" cy="116" r="7"/></g>':draftRig.bait==='herring'?'<path d="M136 116q30-28 58-4l13-7-3 17-12-7q-29 20-56 1" fill="#a5b7a5"/>':draftRig.bait==='squid'?'<path d="M145 104q24-2 20 18l-6 18-4-18-5 18-3-19-6 14z" fill="#d3b7a0"/>':'';
+  const hookWidth={small:2,medium:3,large:4}[draftRig.hook];
+  $('rigSketch').innerHTML=`<svg viewBox="0 0 270 155" role="img" aria-label="Diagram of your selected lure and bait"><path d="M132 0v36m0 52v29q0 26 22 19q12-5 7-17l-5 8" fill="none" stroke="#e3d3a4" stroke-width="${hookWidth}"/>${body}${bait}</svg>`;
+  $('fishRatings').innerHTML=fightingSpecies.map(s=>{
+    const rating=rateRig(s.id,draftRig),profile=PREFERENCES[s.id],stars=Math.round(rating.score);
+    return `<article class="fish-rating" data-species-rating="${s.id}"><div class="rating-fish"><img src="${artBase}fish-${s.id}.webp" alt=""><div><h4>${s.name}</h4><span>${profile.water}</span></div></div><div class="rig-score" aria-label="${rating.score.toFixed(1)} out of 5"><span aria-hidden="true">${'★'.repeat(stars)}${'☆'.repeat(5-stars)}</span><b>${rating.score.toFixed(1)} / 5</b></div><div class="rating-parts"><span>Lure <b>${rating.lure}/5</b></span><span>Bait <b>${rating.bait}/5</b></span><span>Hook <b>${rating.hook}/5</b></span></div><p>${profile.tip}</p><button data-rig-for="${s.id}">Build a ${s.id==='halibut'?'halibut':s.id+' salmon'} rig ↗</button></article>`;
+  }).join('');
+}
+for(const [id,key,items] of [['boxLure','lure',LURES],['boxBait','bait',BAITS],['boxHook','hook',HOOKS]]){
+  $(id).innerHTML=items.map(x=>`<option value="${x.id}">${x.name}</option>`).join('');
+  $(id).onchange=()=>{draftRig[key]=$(id).value;draftTarget=null;showDraftRig();};
+}
+$('openFishbox').onclick=()=>{
+  if(mode==='between'||(mode==='playing'&&(paused||!['ready','result'].includes(phase)||(phase==='result'&&!$('catchCard').hidden&&!catchArmed))))return;
+  draftRig={...rig};draftTarget=null;showDraftRig();fishboxTrigger=document.activeElement;fishboxResume=mode==='playing'&&!paused;
+  if(fishboxResume){paused=true;actionUp();catchPointers.clear();catchKeys.clear();$('pause').textContent='Resume';}
+  $('fishbox').showModal();$('fishbox').scrollTop=0;
+};
+$('fishRatings').onclick=e=>{
+  const button=e.target.closest('[data-rig-for]');if(!button)return;
+  draftTarget=button.dataset.rigFor;draftRig=recommendedRig(draftTarget);showDraftRig();
+  $('fishRatings').querySelector(`[data-rig-for="${draftTarget}"]`).focus();
+};
+$('equipRig').onclick=()=>{
+  rig=validateRig(draftRig);syncRigUI();saveFishbox();
+  target.y=draftTarget?PREFERENCES[draftTarget].depth:lureTypes[selectedLure].depth;
+  $('fishbox').close();setHint('Your rig is ready.',rigDescription(rig)+'. Let it settle at the right depth.');
+};
+$('closeFishbox').onclick=()=>$('fishbox').close();
+$('fishbox').addEventListener('close',()=>{
+  if(fishboxResume&&mode==='playing'){resume();if(document.hidden)pauseGame();}
+  fishboxResume=false;if(fishboxTrigger?.isConnected)fishboxTrigger.focus();
+});
+syncRigUI();
+target.y=lureTypes[selectedLure].depth;
 function openTrophyRoom(filter='all'){
   trophyFilter=filter;renderTrophies();
   if($('trophyRoom').open)return;
@@ -386,7 +470,7 @@ function tone(freq,duration=.1,type='sine',volume=.035){
 }
 function spawnFish(index,edge=false){
   const t=species[index],dir=Math.random()>.5?1:-1;
-  return {type:index,x:edge?(dir>0?-60:W+60):rand(80,W-60),y:t.depth+rand(-24,24),dir,speed:rand(22,44),size:t.size*rand(.88,1.13),weight:rand(t.min,t.max),p:rand(0,7)};
+  return {type:index,x:edge?(dir>0?-60:W+60):rand(80,W-60),y:t.depth+rand(-24,24),dir,speed:rand(17,32),size:t.size*rand(.88,1.13),weight:rand(t.min,t.max),p:rand(0,7),interest:new FishInterest()};
 }
 function populate(){fish=[0,0,0,0,0,1,1,1,1,2,2,3,3,4].map(i=>spawnFish(i));}
 function setHint(title,text){$('status').textContent=title;$('hint').textContent=text;$('consoleTitle').textContent=title;$('consoleHint').textContent=text;}
@@ -409,8 +493,9 @@ function showOverlay(kind,title,text,button){
   $('continue').focus();held=false;
 }
 function resetLure(){
+  curiousFish=null;fish.forEach(f=>f.interest.distract(1.5+Math.random()*3));
   encounter.reset();encounterMood='';fishTrail=[];phase='ready';phaseAge=0;hooked=null;held=false;lure={...ROD};$('catchCard').hidden=true;
-  setHint('Pick your water. Pick your story.','Aim near a fish, then cast. Match the lure to its depth.');
+  setHint('Pick your water. Pick your story.','Rig for the species in My fishbox. Cast nearby, let it settle, and be patient.');
 }
 function nextCast(){
   if(mode!=='playing'||paused||phase!=='result')return;
@@ -478,9 +563,13 @@ function actionDown(){
 function actionUp(){held=false;encounter.release();}
 function twitchLure(){
   if(mode!=='playing'||paused||phase!=='soak'||time-lastTwitch<.9)return;
+  const tooMuch=time-lastTwitch<2.2;
   lastTwitch=time;lure.y=Math.max(surface+18,lure.y-17);
   splash(lure.x,lure.y,lureTypes[selectedLure].color,6);tone(380,.08,'sine',.025);
-  setHint('A little flash. A little temptation.','The twitch attracts nearby fish. Let it settle and watch.');
+  if(tooMuch){
+    for(const f of fish)if(Math.hypot(f.x-lure.x,f.y-lure.y)<110){f.spooked=1.2;f.interest.distract(5);}
+    setHint('Too much movement / They noticed.','Repeated twitches can spook nearby fish. Let the lure rest.');
+  }else setHint('A little flash. A little temptation.','One gentle twitch may draw a look. Wait before twitching again.');
 }
 function setOuting(next){
   if(mode==='playing'||mode==='between')return;
@@ -560,6 +649,7 @@ function syncFightCue(){
 function syncControls(){
   const playing=mode==='playing',available=playing&&!paused,readingCatch=phase==='result'&&!$('catchCard').hidden;
   const ready=['ready','result'].includes(phase)&&(!readingCatch||catchArmed);
+  $('openFishbox').disabled=mode==='between'||(playing&&(!ready||paused));
   if($('catchNext').getAttribute('aria-disabled')!==String(!catchArmed)){
     $('catchNext').setAttribute('aria-disabled',String(!catchArmed));
     $('catchNextLabel').textContent=catchArmed?'Next cast':'Take a look...';
@@ -595,7 +685,7 @@ canvas.addEventListener('pointercancel',()=>{actionUp();pointerId=null;});
 canvas.addEventListener('lostpointercapture',()=>{actionUp();pointerId=null;});
 document.addEventListener('keydown',e=>{
   if(e.code==='Space'||e.code==='Enter'){catchKeys.add(e.code);if(!catchArmed)catchLastInput=time;}
-  if($('inspectDialog').open||$('trophyRoom').open)return;
+  if($('inspectDialog').open||$('trophyRoom').open||$('fishbox').open)return;
   if(phase==='result'&&!$('catchCard').hidden&&(e.code==='Space'||e.code==='Enter')
     &&[canvas,$('reel'),$('catchNext'),document.body].includes(e.target)){
     e.preventDefault();if(!e.repeat)nextCast();return;
@@ -713,13 +803,37 @@ function update(dt){
   labels.forEach(l=>{l.y-=14*dt;l.life-=dt;});labels=labels.filter(l=>l.life>0);
   for(const f of fish){
     if(f===hooked)continue;
-    const preferred=lureTypes[selectedLure].fav.includes(f.type);
-    const radius=(preferred?230:140)+(time-lastTwitch<1.5?80:0);
-    let attracted=mode==='playing'&&phase==='soak'&&Math.hypot(f.x-lure.x,f.y-lure.y)<radius;
-    if(f.spooked){f.spooked=Math.max(0,f.spooked-dt);attracted=false;}
-    if(attracted){const dx=lure.x-f.x,dy=lure.y-f.y,d=Math.hypot(dx,dy),speed=preferred?95:60;f.x+=dx/Math.max(d,1)*speed*dt;f.y+=dy/Math.max(d,1)*speed*.8*dt;f.dir=dx>=0?1:-1;
-      if(d<23){hooked=f;encounter.reset();encounter.drag=Number($('drag').value);const kind=species[f.type],weightPower=.92+.18*(f.weight-kind.min)/(kind.max-kind.min);encounter.investigate({...fightingSpecies[f.type],power:fightingSpecies[f.type].power*weightPower});handleEncounter();}}
-    else{f.x+=f.dir*f.speed*dt*(f.spooked?5:1);f.y+=Math.sin(time*1.5+f.p)*3*dt;if(f.x>W+65)f.x=-60;if(f.x<-65)f.x=W+60;}
+    if(f.spooked)f.spooked=Math.max(0,f.spooked-dt);
+    const dx=lure.x-f.x,dy=lure.y-f.y,d=Math.hypot(dx,dy),match=rigRatings[f.type].score/5;
+    const previous=f.interest.state;
+    const investigate=f.interest.tick(dt,{
+      active:mode==='playing'&&phase==='soak'&&!f.spooked&&(!curiousFish||curiousFish===f),
+      settled:phaseAge>=2.5&&Math.abs(lure.y-castEnd.y)<20,
+      distance:d,vertical:Math.abs(dy),match,caution:PREFERENCES[fightingSpecies[f.type].id].caution,
+      twitched:time-lastTwitch<1.5,
+    });
+    if(investigate){
+      curiousFish=null;hooked=f;encounter.reset();encounter.drag=Number($('drag').value);
+      const kind=species[f.type],weightPower=.92+.18*(f.weight-kind.min)/(kind.max-kind.min);
+      encounter.investigate({...fightingSpecies[f.type],power:fightingSpecies[f.type].power*weightPower});handleEncounter();
+      continue;
+    }
+    if(f.interest.state!=='cruise'){
+      curiousFish=f;
+      if(f.interest.state!==previous)setHint(f.interest.state==='watch'?'A fish is sizing it up.':'A cautious approach.','Keep still. Looking is not biting. Wait for the big bite.');
+    }else if(curiousFish===f){
+      curiousFish=null;
+      if(phase==='soak')setHint('It decided to swim on.','Some fish are not interested. Check your rig and depth, or give it a little more time.');
+    }
+    if(f.interest.state==='approach'){
+      const speed=28+match*12;
+      f.x+=dx/Math.max(d,1)*speed*dt;f.y+=dy/Math.max(d,1)*speed*.8*dt;f.dir=dx>=0?1:-1;
+    }else{
+      const watching=f.interest.state==='watch';
+      if(watching)f.dir=dx>=0?1:-1;
+      f.x+=f.dir*f.speed*dt*(f.spooked?3.5:watching?.15:1);f.y+=Math.sin(time*1.5+f.p)*3*dt;
+      if(f.x>W+65)f.x=-60;if(f.x<-65)f.x=W+60;
+    }
   }
   if(mode!=='playing')return;
   if(outing==='derby'){
@@ -730,10 +844,10 @@ function update(dt){
   phaseAge+=dt;
   if(phase==='cast'){
     let p=clamp(phaseAge/.68,0,1);lure.x=castStart.x+(castEnd.x-castStart.x)*p;lure.y=castStart.y+(surface-castStart.y)*p-Math.sin(p*Math.PI)*130;
-    if(p===1){phase='soak';phaseAge=0;splash(lure.x,surface);tone(180,.16);setHint('Let it sink / Watch your lure','Fish investigate nearby lures. R to recall.');}
+    if(p===1){phase='soak';phaseAge=0;splash(lure.x,surface);tone(180,.16);setHint('Let it settle / Give them a moment','Fish may look, pass, or turn away. A good rig helps; nothing guarantees a bite.');}
   }else if(phase==='soak'){
     lure.y+=Math.min(lureTypes[selectedLure].sink*dt,Math.max(0,castEnd.y-lure.y));
-    if(phaseAge>11){phase='result';resultLeft=1.8;setHint('Quiet water. It happens.','Try a different lure or depth. Twitch with J to tempt nearby fish.');}
+    if(phaseAge>30){phase='result';resultLeft=1.8;setHint('Quiet water. It happens.','Try a better-matched rig in My fishbox, a different depth, or another patch of water.');}
   }else if(['nibble','bite','fight'].includes(phase)){
     encounter.held=held;encounter.tick(dt);handleEncounter();
     if(phase==='bite')biteLeft=Math.max(0,encounter.biteWindow-encounter.age);
@@ -920,6 +1034,7 @@ let previous=0;
 function frame(timestamp){const dt=previous?Math.min((timestamp-previous)/1000,.05):0;previous=timestamp;update(dt);render();requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 if(location.hash==='#trophies')openTrophyRoom();
+else if(location.hash==='#fishbox')$('openFishbox').click();
 </script>
 </body>
 </html>

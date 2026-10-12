@@ -253,3 +253,72 @@ header{margin-bottom:16px}
   .catch-headline strong{font-size:17px}.catch-headline svg{width:26px;height:26px}
 }
 @media(prefers-reduced-motion:reduce){.trophy-card{transition:none}.trophy-card.earned:hover,.trophy-preview:hover{transform:none}}
+.fishbox-bar{display:flex;align-items:center;gap:18px;margin-top:12px;padding:12px;background:linear-gradient(110deg,#374431,#1c2d23);border:1px solid #8c8055;border-radius:5px}
+.fishbox-bar>button{flex-shrink:0;padding:10px 17px;border:1px solid #d7ba7b;border-radius:3px;background:#dbc187;color:#263b29;font:700 21px Georgia,serif}
+.fishbox-bar>button small{display:block;margin-top:4px;font:6px monospace;letter-spacing:.07em}
+.fishbox-bar>div{min-width:0}
+.fishbox-bar b{display:block;font:13px/1.5 Georgia,serif;color:#ebdcb5}
+.fishbox-bar span{display:block;margin-top:5px;font:8px/1.7 monospace;color:#b0c0a0}
+.fishbox-bar>button:disabled{opacity:.55;cursor:default}
+#fishbox{width:min(1080px,96vw);max-height:92dvh;padding:26px;background:linear-gradient(135deg,#233429,#11241e);border:5px double #ac9560;border-radius:8px;color:#d7dfc5}
+#fishbox::backdrop{background:#07170deb;backdrop-filter:blur(6px)}
+.fishbox-heading{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;gap:20px;padding:8px 0 18px;background:#213329;border-bottom:1px solid #677653;box-shadow:0 -26px 0 #213329}
+#fishbox .eyebrow{font-size:8px;color:#b0bb8d;letter-spacing:1.6px}
+#fishbox h2{font:46px/1.1 Georgia,serif;color:#ebd49d;margin:10px 0}
+#fishbox .fishbox-heading p{margin:0;color:#aabf9f;font:italic 14px Georgia,serif}
+#fishbox #closeFishbox{float:none;align-self:start;flex-shrink:0;background:#334934;color:#e9d6a2;border-color:#859365}
+.rig-workbench{display:grid;grid-template-columns:215px 1fr;gap:23px;margin:22px 0}
+.rig-preview{padding:15px;background:repeating-linear-gradient(0deg,#c19f6420 0 1px,transparent 1px 24px),repeating-linear-gradient(90deg,#c19f6418 0 1px,transparent 1px 24px),#26392d;border:1px solid #788261;border-radius:5px;text-align:center}
+.rig-preview>span{font:7px monospace;letter-spacing:1.4px;color:#bdb38a}
+.rig-preview svg{display:block;width:100%;height:140px;filter:drop-shadow(0 8px 6px #0007)}
+.rig-preview>b{display:block;font:12px/1.7 Georgia,serif;color:#e3d8b0}
+.rig-components{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;align-content:center}
+.rig-components label{font:8px monospace;letter-spacing:.07em;color:#c8c49b;min-width:0}
+.rig-components select{display:block;width:100%;margin:10px 0;padding:12px 8px;border:1px solid #83905f;border-radius:3px;background:#12271d;color:#f0e1b9;font:13px Georgia,serif}
+.rig-components small{display:block;color:#9faf8f;font:10px/1.6 system-ui,sans-serif}
+#fishbox .rig-components p{grid-column:1/-1;font-size:11px;color:#9daf92;margin:8px 0 0}
+.fishbox-guide{padding-top:18px;border-top:1px solid #5b7151}
+.fishbox-guide h3{font:27px Georgia,serif;color:#e9d7a6;margin:0}
+#fishbox .fishbox-guide p{font-size:11px;color:#a6ba9b;margin:10px 0 18px}
+.fish-ratings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.fish-rating{display:flex;flex-direction:column;padding:15px;border:1px solid #6f8057;border-radius:5px;background:linear-gradient(135deg,#2b4030,#17291f)}
+.rating-fish{display:flex;align-items:center;gap:10px;min-height:53px}
+#fishbox .rating-fish img{width:76px;height:43px;object-fit:contain;margin:0;background:transparent;filter:drop-shadow(0 4px 4px #0007)}
+.rating-fish h4{font:18px/1.2 Georgia,serif;color:#eadab1;margin:0}
+.rating-fish span{font-size:8px;color:#a1b692}
+.rig-score{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:13px 0 9px;color:#e5c67b}
+.rig-score>span{font-size:18px;letter-spacing:2px}
+.rig-score>b{font:15px Georgia,serif}
+.rating-parts{display:flex;gap:12px;font:8px monospace;color:#99b28e;border-bottom:1px solid #536d48;padding-bottom:11px}
+.rating-parts b{color:#d2d6ae}
+#fishbox .fish-rating p{font-size:10px;line-height:1.7;color:#aebe9d;margin:12px 0;flex:1}
+.fish-rating button{border:1px solid #7c8a5d;border-radius:3px;background:#344b32;color:#e7d5a4;font-size:10px;padding:9px}
+.fish-rating button:hover{background:#486140}
+.fishbox-footer{position:sticky;bottom:-26px;z-index:2;display:flex;align-items:center;gap:22px;justify-content:space-between;background:#192e23;border-top:1px solid #748459;margin:20px -2px -10px;padding:15px 2px}
+#fishbox .fishbox-footer p{font-size:10px;line-height:1.7;color:#b1c29f;max-width:620px;margin:0}
+.fishbox-footer .primary{white-space:nowrap;flex-shrink:0;margin:0;border-radius:3px;font-size:12px}
+@media(min-width:1001px) and (max-height:850px){
+  .stage{height:clamp(350px,calc(100svh - 420px),460px)}
+  #catchCard{top:5%}
+}
+@media(max-width:900px){.fish-ratings{grid-template-columns:repeat(2,minmax(0,1fr))}.rig-workbench{grid-template-columns:175px 1fr;gap:16px}.rig-components{gap:8px}.rig-components select{font-size:11px}}
+@media(max-width:600px){
+  .fishbox-bar{gap:10px;padding:9px}.fishbox-bar>button{font-size:18px;padding:9px 11px}.fishbox-bar>button small{font-size:5px}
+  .fishbox-bar b{font-size:10px}.fishbox-bar span{font-size:7px;margin-top:3px}
+  #fishbox{padding:15px 12px;border-width:4px;width:97vw}
+  .fishbox-heading{gap:10px;padding-bottom:15px;box-shadow:0 -15px 0 #213329}
+  #fishbox h2{font-size:35px}#fishbox .eyebrow{font-size:6px;letter-spacing:.8px}
+  #fishbox .fishbox-heading p{font-size:11px;line-height:1.5}#fishbox #closeFishbox{font-size:9px;padding:7px}
+  .rig-workbench{grid-template-columns:1fr;margin:16px 0;gap:15px}
+  .rig-preview{padding:9px}.rig-preview svg{height:95px}.rig-preview>b{font-size:10px}
+  .rig-components{gap:8px}.rig-components label{font-size:7px;letter-spacing:0}
+  .rig-components select{padding:9px 3px;font-size:11px;margin:7px 0}.rig-components small{font-size:8px}
+  #fishbox .rig-components p{font-size:9px}
+  .fishbox-guide h3{font-size:24px}#fishbox .fishbox-guide p{font-size:9px}
+  .fish-ratings{grid-template-columns:1fr;gap:11px}.fish-rating{padding:13px}
+  .rating-fish h4{font-size:20px}#fishbox .rating-fish img{width:96px;height:48px}
+  .rating-fish span{font-size:9px}#fishbox .fish-rating p{font-size:11px}
+  .rating-parts{font-size:9px}.rig-score>span{font-size:21px}.rig-score>b{font-size:18px}
+  .fishbox-footer{bottom:-15px;gap:10px;padding:12px 0}.fishbox-footer .primary{font-size:10px;padding:11px 12px}
+  #fishbox .fishbox-footer p{font-size:8px;line-height:1.6}
+}
