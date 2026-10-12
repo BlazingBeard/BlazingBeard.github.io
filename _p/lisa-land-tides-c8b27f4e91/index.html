@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3efe2">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="A little island. A lively line. A new, original Lisa Land fishing escape by HowardAI.">
+  <title>Lisa Land · Little Tides</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='14' fill='%232b7669'/%3E%3Cpath d='M8 26Q24 6 34 24L42 17V33L34 26Q24 42 8 26' fill='%23f3dfaa'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="game.js"></script>
+</head>
+<body>
+  <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="fish-icon" viewBox="0 0 32 24"><path d="M3 12C8 2 20 2 24 10l6-5v14l-6-5C20 22 8 22 3 12Z" fill="currentColor"/><circle cx="10" cy="10" r="1.5" fill="#fff9e9"/></symbol>
+    <symbol id="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 1v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="wave-icon" viewBox="0 0 32 24"><path d="M2 8q5-6 10 0t10 0q5-6 9 0M2 17q5-6 10 0t10 0q5-6 9 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </svg>
+  <main class="shell">
+    <header>
+      <a class="wordmark" href="./" aria-label="Lisa Land Little Tides home"><span class="logo"><svg><use href="#fish-icon"/></svg></span><span>Lisa Land<span class="edition">LITTLE TIDES</span></span></a>
+      <div class="header-note">A little island. A lively line.</div>
+      <nav aria-label="Game tools"><button id="sound" class="quiet" aria-pressed="false">Sound off</button><button id="help" class="quiet">How to fish</button><button id="pause" class="quiet" disabled>Pause</button></nav>
+    </header>
+    <div class="layout">
+      <section class="play-column" aria-label="Fishing game">
+        <div class="scene" id="scene">
+          <canvas id="water" width="1200" height="800" tabindex="0" aria-label="Lisa Land fishing cove. Use arrow keys to aim, Space to cast or hook, and hold Space to reel. Release to ease the line."></canvas>
+          <div class="scene-top">
+            <div class="location"><span class="location-dot"></span><div><small>WELCOME TO YOUR HAPPY PLACE</small><b>Cedar Sanctuary</b></div></div>
+            <button id="time" class="weather" aria-label="Change time of day"><svg><use href="#sun-icon"/></svg><span id="timeLabel">Golden afternoon</span></button>
+          </div>
+          <div class="water-label" id="waterLabel" hidden>Find a shadow. Make a little splash.</div>
+          <div class="bite-prompt" id="bitePrompt" hidden><small>THAT'S THE ONE!</small><strong>Hook it!</strong><span>Tap or press Space</span><i id="biteClock"></i></div>
+          <div class="fight-panel" id="fightPanel" hidden>
+            <div class="fight-heading"><span id="fishMood">Easy does it</span><b id="fightPercent">0%</b></div>
+            <div class="landing-track" role="progressbar" aria-label="Fish reeled in" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="landingTrack"><i id="landingFill"></i></div>
+            <div class="line-label"><span>LINE TENSION</span><b id="tensionText">Steady</b></div>
+            <div class="tension-track" id="tensionTrack" role="meter" aria-label="Line tension" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40"><span class="safe-zone"></span><i id="tensionNeedle"></i></div>
+            <div class="tension-labels"><span>slack</span><span>happy place</span><span>snap!</span></div>
+          </div>
+          <div class="scene-bottom"><span class="state-pill" id="statePill"><i></i>Take your time</span><span class="scene-version">LITTLE TIDES / VOL. 02</span></div>
+          <div class="welcome" id="welcome">
+            <div class="welcome-card">
+              <div class="eyebrow">OFF THE GRID. ON THE WATER.</div>
+              <h1>Stay a little.<br><em>Fish a little.</em></h1>
+              <p>Your cedar hideaway, a pocketful of possibility, and fish with absolutely no intention of making this easy.</p>
+              <button class="primary" id="start" disabled>Preparing your island…</button>
+              <div class="welcome-foot"><span>No clock to beat.</span><span>Just one more cast.</span></div>
+            </div>
+            <div class="welcome-stamp"><svg><use href="#wave-icon"/></svg><span>ALASKA STATE<br>OF MIND</span></div>
+          </div>
+          <div class="pause-screen" id="pauseScreen" hidden><span class="eyebrow">THE FISH CAN WAIT</span><h2>A little breather.</h2><p>Your line is right where you left it.</p><button class="primary" id="resume">Back to the water</button></div>
+          <div class="catch-overlay" id="catchOverlay" hidden>
+            <div class="catch-card">
+              <div class="eyebrow" id="catchEyebrow">A LITTLE MOMENT. A LOVELY CATCH.</div>
+              <div class="catch-art"><span class="catch-halo"></span><img id="catchImage" alt=""></div>
+              <span class="rarity" id="catchRarity">COVE REGULAR</span>
+              <h2 id="catchName">Pink salmon</h2>
+              <p id="catchQuip">Well, hello there.</p>
+              <div class="catch-stats"><div><b id="catchWeight">5.2</b><small>POUNDS</small></div><div><b id="catchLength">24</b><small>INCHES</small></div><div><b id="catchQuality">Lovely</b><small>YOUR FIGHT</small></div></div>
+              <button class="primary" id="release">Release &amp; remember</button>
+              <small class="release-note">Your journal keeps the memory. The cove keeps the fish.</small>
+            </div>
+          </div>
+        </div>
+        <div class="action-bar">
+          <div class="action-copy" aria-live="polite"><span id="statusTitle">Your little escape is ready.</span><p id="statusHint">Five species. Plenty of personality. Nowhere else to be.</p></div>
+          <button class="action-button" id="action" disabled><svg><use href="#fish-icon"/></svg><span id="actionText">Let's go fishing</span></button>
+        </div>
+        <div class="keyboard-note"><span><kbd>SPACE</kbd> cast / hook / hold to reel <span class="desktop-only"> &nbsp; <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd> aim</span></span><span>Release to ease the line <span class="desktop-only"> · <kbd>P</kbd> pause</span></span></div>
+      </section>
+      <aside>
+        <section class="journal panel">
+          <div class="panel-heading"><span class="eyebrow">THE GOOD KIND OF RECORD</span><svg><use href="#fish-icon"/></svg></div>
+          <h2>Your field notes<span class="handmark">from Lisa Land</span></h2>
+          <div class="journal-stats"><div><b id="total">0</b><span>fish befriended</span></div><div><b id="discovered">0<span>/5</span></b><span>species found</span></div></div>
+          <div class="species-list" id="speciesList"></div>
+          <div class="record"><span>THE ONE YOU'LL TALK ABOUT</span><strong id="record">Your story starts with a cast.</strong></div>
+        </section>
+        <section class="tip-card"><span class="tip-number">A NOTE FROM THE DOCK</span><p id="dockTip">A nibble is a question.<br>A splash is an invitation.</p><span class="tip-foot" id="tipFoot">Wait for the bobber to go under.</span></section>
+        <button class="postcard" id="postcard"><img src="assets/postcard.webp" alt="ComfyUI illustration inspired by the cedar island photograph"><span>Somewhere worth slowing down.</span><small>A POSTCARD FROM LISA LAND ↗</small></button>
+      </aside>
+    </div>
+    <footer><span><b>HowardAI</b> &nbsp; / &nbsp; Small worlds. Good company.</span><span>Original ComfyUI island art <i>·</i> <a href="../alaska-fishing-6deaead8d8/">Visit the preserved original ↗</a></span></footer>
+    <p class="notice" id="notice" role="alert" hidden></p>
+  </main>
+  <dialog id="helpDialog">
+    <button class="close-dialog" data-close aria-label="Close">×</button><span class="eyebrow">A FEW THINGS THE FISH WON'T TELL YOU</span><h2>A little patience.<br>A little give and take.</h2>
+    <ol class="instructions"><li><b>Find your fish.</b><p>Tap the water near a moving shadow to cast. Or aim with the arrow keys and press Space. A cast close to a fish gets its attention.</p></li><li><b>Don't fall for the nibble.</b><p>Small bobs are only a tease. Wait for the big splash and <strong>“Hook it!”</strong>, then tap or press Space. Too early or too late, and it swims away.</p></li><li><b>Let it fight. Then reel.</b><p>Hold the button or Space to bring it in. When a fish runs or dives, <strong>let go</strong> to ease the line. Reel during its rest. Keep tension out of both ends: a tight line snaps, a slack line loses the hook.</p></li><li><b>A memory, not a deadline.</b><p>Every catch adds a memory to your field notes. Release it when you're ready. Five species have different fights. Your collection saves on this browser, independently of the original game.</p></li></ol>
+    <button class="primary" data-close>Got it. Let's fish.</button>
+  </dialog>
+  <dialog id="postcardDialog" class="postcard-dialog"><button class="close-dialog" data-close aria-label="Close">×</button><img src="assets/postcard.webp" alt="A painted miniature of the cedar island, cabin, steps and wind turbine"><div><span class="eyebrow">CEDAR SANCTUARY / LISA LAND</span><h2>Wish you were here.<br>Actually, stay a while.</h2><p>Inspired by your island photograph. Reimagined locally with ComfyUI for this new edition.</p><button class="primary" data-close>Back to my happy place</button></div></dialog>
+  <noscript><p class="notice">This fishing game needs JavaScript enabled.</p></noscript>
+</body>
+</html>
