@@ -181,6 +181,7 @@ header{margin-bottom:16px}
 .trophy-card.locked .trophy-seal{border-color:#607052;color:#849777}
 #trophyRoom .trophy-room-note{font-size:10px;line-height:1.8;color:#8d9d80;margin:25px 0 0;padding-top:17px;border-top:1px solid #4e6244}
 .trophy-room-note b{color:#c3c7a4}
+#catchCard{top:12%;pointer-events:auto;cursor:pointer}
 #catchCard[data-rarity]{border-color:var(--tier);outline-color:var(--tier)}
 #catchRarity{font-weight:bold;letter-spacing:2px}
 .catch-headline{display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:9px;color:#354b33}
@@ -194,6 +195,10 @@ header{margin-bottom:16px}
 #catchCard[data-rarity=legendary]{background:radial-gradient(ellipse at top,#fff1bd,#d7b775);box-shadow:0 0 50px #edc96b80,0 16px 70px #000a}
 .catch-trophy-note{font:7px/1.6 monospace;letter-spacing:.03em;margin-top:11px;color:#546343}
 .catch-trophy-button{pointer-events:auto;margin-top:9px;padding:7px 10px;background:#2f492e;border:1px solid #708753;border-radius:3px;font-size:9px;color:#efe4bd}
+.catch-next-button{display:block;width:100%;margin-top:9px;padding:7px 10px;border:1px solid #2f492e;border-radius:3px;background:#2f492e;color:#fff1c9;font:700 15px Georgia,serif}
+.catch-next-button small{display:block;margin-top:3px;font:6px monospace;letter-spacing:.04em}
+.catch-next-button:focus-visible{outline:2px solid #294529;outline-offset:3px}
+#catchTrophyButton{background:transparent;color:#334a2d;border-color:transparent;text-decoration:underline;text-underline-offset:2px;padding:3px 5px;margin-top:5px}
 @media(max-width:1100px){
   .trophy-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
   .trophy-wing h2{font-size:28px}.trophy-wing-heading{gap:15px}
@@ -235,7 +240,7 @@ header{margin-bottom:16px}
   .wildlife-notice b{font-size:10px}.wildlife-notice span{font-size:6px}
 }
 @media(max-width:1000px),(min-width:1001px) and (max-height:950px){
-  #catchCard{top:15%;padding:10px;width:244px;max-width:calc(100% - 28px)}
+  #catchCard{top:10%;padding:10px;width:244px;max-width:calc(100% - 28px)}
   #catchCard .eyebrow{font-size:7px;line-height:1.4;letter-spacing:1px}
   #catchCard img{display:block;height:50px;margin:4px 0}
   #catchCard h3{font-size:20px;line-height:1.1}
