@@ -98,7 +98,7 @@
   .tools>a.small{display:inline-flex;align-items:center;text-decoration:none}.cards-link{display:inline-block;margin-top:12px;padding:10px 16px;border:1px solid #a89762;border-radius:3px;background:#34432c;color:#f0dcac;font-size:13px;text-decoration:none}.cards-link:hover{background:#465739}.cards-link:focus-visible,.tools>a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
   @media(min-width:741px){.tools{flex-wrap:wrap;justify-content:flex-end}}
 </style>
-<link rel="stylesheet" href="wild-lines.css?v=click-catches-3">
+<link rel="stylesheet" href="wild-lines.css?v=catch-guard-4">
 </head>
 <body>
 <main class="shell">
@@ -114,7 +114,7 @@
         <div class="hud"><div><div id="status" class="status">Your next great catch is out there</div><div id="hint" class="hint">Three waters. One derby. Make every cast count.</div></div><div class="chip"><b id="clock">90</b><span id="roundLabel">SEC / ROUND 1</span></div></div>
         <div class="award-toast" id="awardToast" hidden aria-live="polite"></div>
         <div id="whaleNotice" class="wildlife-notice" hidden aria-live="polite"><b>A humpback is passing through.</b><span>WILDLIFE ONLY / YOU CAN'T CATCH WHALES</span></div>
-        <div class="catchcard" id="catchCard" hidden aria-live="polite"><div class="catch-headline"><svg id="catchCup" viewBox="0 0 48 48" aria-hidden="true" hidden><path d="M14 7h20v10c0 10-5 15-10 15s-10-5-10-15V7Zm0 4H7v6c0 6 4 9 10 9m17-15h7v6c0 6-4 9-10 9M24 32v8m-9 2h18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><strong id="catchHeadline">GOOD CATCH</strong></div><div class="eyebrow" id="catchRarity">LISA LAND / CATCH</div><img id="catchArt" alt="" draggable="false"><h3 id="catchName"></h3><div class="catchstats"><div><b id="catchWeight"></b>POUNDS</div><div><b id="catchPoints"></b>POINTS</div></div><div class="eyebrow" id="catchTier" style="margin-top:12px">A BEAUTIFUL CATCH</div><div class="catch-trophy-note" id="catchTrophyNote"></div><button class="catch-next-button" id="catchNext">Next cast <small>CLICK CARD OR WATER / SPACE / ENTER</small></button><button class="catch-trophy-button" id="catchTrophyButton" hidden>View trophy in my room ↗</button></div>
+        <div class="catchcard" id="catchCard" hidden aria-live="polite"><div class="catch-headline"><svg id="catchCup" viewBox="0 0 48 48" aria-hidden="true" hidden><path d="M14 7h20v10c0 10-5 15-10 15s-10-5-10-15V7Zm0 4H7v6c0 6 4 9 10 9m17-15h7v6c0 6-4 9-10 9M24 32v8m-9 2h18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><strong id="catchHeadline">GOOD CATCH</strong></div><div class="eyebrow" id="catchRarity">LISA LAND / CATCH</div><img id="catchArt" alt="" draggable="false"><h3 id="catchName"></h3><div class="catchstats"><div><b id="catchWeight"></b>POUNDS</div><div><b id="catchPoints"></b>POINTS</div></div><div class="eyebrow" id="catchTier" style="margin-top:12px">A BEAUTIFUL CATCH</div><div class="catch-trophy-note" id="catchTrophyNote"></div><button class="catch-next-button" id="catchNext" aria-disabled="true"><span id="catchNextLabel">Take a look...</span><small id="catchNextHint">RELEASE CONTROLS / THIS CATCH WILL STAY</small></button><button class="catch-trophy-button" id="catchTrophyButton" hidden>View trophy in my room ↗</button></div>
         <div class="overlay hero" id="overlay"><div class="card">
           <div class="eyebrow" id="overlayLabel">Cedar Sanctuary / Unofficial Alaska cred</div>
           <h2 id="overlayTitle">Welcome to<br>Lisa Land.</h2>
@@ -216,6 +216,8 @@ const goals = [3,4,5], ROUND_TIME = 90;
 let mode='title', phase='ready', paused=false, round=0, remaining=ROUND_TIME, score=0, landed=0, streak=0, largest=0, best=0;
 let counts=species.map(()=>0), roundCatch=0, bonusPaid=false, fish=[], particles=[], ripples=[], labels=[];
 let time=0, target={x:670,y:430}, lure={x:300,y:260}, hooked=null, held=false, pointerId=null, phaseAge=0, biteLeft=0, tension=28, progress=0, fightAge=0, surge=false, resultLeft=0;
+const catchPointers=new Set(),catchKeys=new Set();
+let catchArmed=false,catchLastInput=0;
 let castStart={...ROD}, castEnd={x:670,y:430}, activeOverlay='title', audio=null, sound=false;
 const DECK=[
   {id:'not-skunked',name:'Officially Not Skunked',rarity:'COMMON',color:'#53674a',image:'fish-coho',scene:'lisa-cedar',quote:'Dinner has entered the chat.',story:'You arrived with a fishing rod and dangerously high expectations. For once, the universe cooperated. One fish is all it takes to become unbearable at dinner.',rule:'Land your first fish.'},
@@ -412,6 +414,7 @@ function resetLure(){
 }
 function nextCast(){
   if(mode!=='playing'||paused||phase!=='result')return;
+  if(!$('catchCard').hidden&&!catchArmed){catchLastInput=time;return;}
   resetLure();canvas.focus();
   if(outing==='derby'&&remaining<=0)endRound();
 }
@@ -443,6 +446,7 @@ function endRound(){
 function pauseGame(help=false){
   if(mode!=='playing')return;
   if(paused&&!help){resume();return;}paused=true;held=false;$('pause').textContent='Resume';
+  catchPointers.clear();catchKeys.clear();catchLastInput=time;
   showOverlay(help?'help':'pause',help?'Read the fish. Not just the meter.':'The fish can wait.',help?'Cast near a fish at its depth. Twitch the lure with J if it needs convincing. Let small nibbles pass; hook only on the big BITE. Hold to reel during a rest. Release before a run or dive. Too tight snaps the line; too loose lets it shake free. Light drag is forgiving. R recalls a quiet cast.':'Your line and clock are stopped. Come back when you are ready.', 'Back to the water');
 }
 function resume(){paused=false;$('overlay').hidden=true;$('pause').textContent='Pause';canvas.focus();}
@@ -554,7 +558,13 @@ function syncFightCue(){
   setHint(...cues[state]);
 }
 function syncControls(){
-  const playing=mode==='playing',available=playing&&!paused,ready=['ready','result'].includes(phase);
+  const playing=mode==='playing',available=playing&&!paused,readingCatch=phase==='result'&&!$('catchCard').hidden;
+  const ready=['ready','result'].includes(phase)&&(!readingCatch||catchArmed);
+  if($('catchNext').getAttribute('aria-disabled')!==String(!catchArmed)){
+    $('catchNext').setAttribute('aria-disabled',String(!catchArmed));
+    $('catchNextLabel').textContent=catchArmed?'Next cast':'Take a look...';
+    $('catchNextHint').textContent=catchArmed?'CLICK CARD OR WATER / SPACE / ENTER':'RELEASE CONTROLS / THIS CATCH WILL STAY';
+  }
   $('freeMode').disabled=playing||mode==='between';$('derbyMode').disabled=playing||mode==='between';
   for(let i=0;i<3;i++)$('route'+i).disabled=outing!=='free'||paused||(playing&&!ready)||mode==='between';
   $('drag').disabled=playing&&(!ready||paused);$('finishTrip').disabled=!available||!ready;
@@ -563,17 +573,33 @@ function syncControls(){
   const labels={ready:['Cast a line','AIM ON WATER · TAP TO CAST'],cast:['Casting…','LET THE LURE SETTLE'],soak:['Twitch lure','A LITTLE MOVEMENT ATTRACTS FISH'],nibble:['Wait for it…','SMALL NIBBLES ARE NOT A BITE'],bite:['HOOK NOW!','TAP OR PRESS SPACE'],fight:[held?'Reeling…':encounter.mode==='rest'&&!encounter.telegraph?'Hold to reel':'Let it run','HOLD TO REEL · RELEASE TO EASE'],result:[$('catchCard').hidden?'Try again':'Next cast','ANOTHER FISH. ANOTHER STORY.']};
   const [title,sub]=labels[phase]||labels.ready;
   $('reelLabel').textContent=playing?title:'Launch the boat';$('reelSub').textContent=sub;
+  if(readingCatch&&!catchArmed){$('reelLabel').textContent='Take a look...';$('reelSub').textContent='RELEASE CONTROLS / NO RUSH';}
   $('reel').classList.toggle('strike',phase==='bite');$('reel').classList.toggle('reeling',held&&phase==='fight');
   $('consoleKicker').textContent=playing?`${outing==='free'?'FREE FISHING':'DERBY / ROUND '+(round+1)} · ${lureTypes[selectedLure].name.toUpperCase()} · ${Number($('drag').value)<1?'LIGHT':Number($('drag').value)>1?'FIRM':'BALANCED'} DRAG`:'THE ORIGINAL LISA LAND / REBUILT BELOW THE SURFACE';
 }
 function aim(e){const r=canvas.getBoundingClientRect();target={x:clamp((e.clientX-r.left)*W/r.width,370,W-60),y:clamp((e.clientY-r.top)*H/r.height,345,600)};}
+document.addEventListener('pointerdown',e=>{
+  if(e.button!==0||!e.target.closest('#game,#reel,#catchCard'))return;
+  catchPointers.add(e.pointerId);
+  if(!catchArmed)catchLastInput=time;
+},true);
+function releaseCatchPointer(e){
+  if(catchPointers.delete(e.pointerId)&&!catchArmed)catchLastInput=time;
+}
+document.addEventListener('pointerup',releaseCatchPointer,true);
+document.addEventListener('pointercancel',releaseCatchPointer,true);
 canvas.addEventListener('pointermove',e=>{if(pointerId===null||pointerId===e.pointerId)aim(e);});
 canvas.addEventListener('pointerdown',e=>{if(e.button!==0||pointerId!==null)return;e.preventDefault();pointerId=e.pointerId;canvas.focus();aim(e);canvas.setPointerCapture(e.pointerId);actionDown();});
 canvas.addEventListener('pointerup',e=>{if(e.pointerId===pointerId){actionUp();pointerId=null;}});
 canvas.addEventListener('pointercancel',()=>{actionUp();pointerId=null;});
 canvas.addEventListener('lostpointercapture',()=>{actionUp();pointerId=null;});
 document.addEventListener('keydown',e=>{
+  if(e.code==='Space'||e.code==='Enter'){catchKeys.add(e.code);if(!catchArmed)catchLastInput=time;}
   if($('inspectDialog').open||$('trophyRoom').open)return;
+  if(phase==='result'&&!$('catchCard').hidden&&(e.code==='Space'||e.code==='Enter')
+    &&[canvas,$('reel'),$('catchNext'),document.body].includes(e.target)){
+    e.preventDefault();if(!e.repeat)nextCast();return;
+  }
   if(e.target instanceof Element&&e.target.matches('select,input,textarea,a'))return;
   if(e.target instanceof HTMLButtonElement&&e.target!==$('reel'))return;
   if(['Space','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.code))e.preventDefault();
@@ -589,8 +615,12 @@ document.addEventListener('keydown',e=>{
   if(e.code==='KeyR'&&phase==='soak'){resetLure();tone(220,.1);}
   if(e.code==='KeyJ'&&!e.repeat)twitchLure();
 });
-document.addEventListener('keyup',e=>{if(e.code==='Space'||e.code==='Enter')actionUp();});
-window.addEventListener('blur',()=>{actionUp();if(mode==='playing'&&!paused)pauseGame();});
+document.addEventListener('keyup',e=>{
+  if(e.code==='Space'||e.code==='Enter'){
+    catchKeys.delete(e.code);if(!catchArmed)catchLastInput=time;actionUp();
+  }
+});
+window.addEventListener('blur',()=>{catchPointers.clear();catchKeys.clear();actionUp();if(mode==='playing'&&!paused)pauseGame();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='playing'&&!paused)pauseGame();});
 function finishCatch(success,reason){
   const f=hooked;held=false;lastTrophy=null;
@@ -631,7 +661,7 @@ function finishCatch(success,reason){
     fish=fish.filter(v=>v!==f);fish.push(spawnFish(f.type,true));tone(880,.35,'triangle');saveBest();
   }else{streak=0;if(f){f.spooked=2.8;f.dir=f.x<W/2?-1:1;}setHint(reason||'It got away',encounter.result?.hint||'A new story. A slightly worse story, but still.');$('lastcatch').textContent=(reason||'A fish slipped the hook.')+' / Nobody on the dock needs to know.';splash(lure.x,lure.y,'#d9e3c8',20);tone(150,.25);}
   hooked=null;phase='result';phaseAge=0;resultLeft=success?Infinity:2;updateHUD();
-  if(success&&f)$('catchNext').focus({preventScroll:true});
+  if(success&&f){catchArmed=false;catchLastInput=time;syncControls();$('catchNext').focus({preventScroll:true});}
 }
 function whaleAt(x,y){
   return whale.active&&!!art.humpback&&((x-whale.x)/(whale.width*.46))**2+((y-whale.y)/(whale.height*.42))**2<1;
@@ -672,6 +702,10 @@ function drawWhale(){
 }
 function update(dt){
   if(paused)return;time+=dt;
+  if(phase==='result'&&!$('catchCard').hidden&&!catchArmed){
+    // A quiet release separates fishing input from a deliberate dismissal.
+    catchArmed=phaseAge>=2&&time-catchLastInput>=.65&&catchPointers.size===0&&catchKeys.size===0;
+  }
   if(mode==='playing')updateWhale(dt);
   if(awardLeft>0){awardLeft=Math.max(0,awardLeft-dt);if(awardLeft===0)$('awardToast').hidden=true;}
   particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=180*dt;p.life-=dt;});particles=particles.filter(p=>p.life>0);
