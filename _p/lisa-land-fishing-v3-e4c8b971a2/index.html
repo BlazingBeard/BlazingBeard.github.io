@@ -98,7 +98,7 @@
   .tools>a.small{display:inline-flex;align-items:center;text-decoration:none}.cards-link{display:inline-block;margin-top:12px;padding:10px 16px;border:1px solid #a89762;border-radius:3px;background:#34432c;color:#f0dcac;font-size:13px;text-decoration:none}.cards-link:hover{background:#465739}.cards-link:focus-visible,.tools>a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
   @media(min-width:741px){.tools{flex-wrap:wrap;justify-content:flex-end}}
 </style>
-<link rel="stylesheet" href="wild-lines.css?v=trophies-1">
+<link rel="stylesheet" href="wild-lines.css?v=wildlife-2">
 </head>
 <body>
 <main class="shell">
@@ -113,14 +113,15 @@
         <div class="topline"><div class="location">Cedar Sanctuary / Southeast Alaska<b id="location">The Home Dock</b></div><div class="weather" id="weather">NO ROAD REQUIRED<br>GENERATOR CONFIDENCE: LOW</div></div>
         <div class="hud"><div><div id="status" class="status">Your next great catch is out there</div><div id="hint" class="hint">Three waters. One derby. Make every cast count.</div></div><div class="chip"><b id="clock">90</b><span id="roundLabel">SEC / ROUND 1</span></div></div>
         <div class="award-toast" id="awardToast" hidden aria-live="polite"></div>
-        <div class="catchcard" id="catchCard" hidden aria-live="polite"><div class="eyebrow" id="catchRarity">LISA LAND / CATCH CARD</div><img id="catchArt" alt=""><h3 id="catchName"></h3><div class="catchstats"><div><b id="catchWeight"></b>POUNDS</div><div><b id="catchPoints"></b>POINTS</div></div><div class="eyebrow" id="catchTier" style="margin-top:12px">A BEAUTIFUL CATCH</div><div class="catch-trophy-note" id="catchTrophyNote"></div><button class="catch-trophy-button" id="catchTrophyButton">See it in the trophy room ↗</button></div>
+        <div id="whaleNotice" class="wildlife-notice" hidden aria-live="polite"><b>A humpback is passing through.</b><span>WILDLIFE ONLY / YOU CAN'T CATCH WHALES</span></div>
+        <div class="catchcard" id="catchCard" hidden aria-live="polite"><div class="catch-headline"><svg id="catchCup" viewBox="0 0 48 48" aria-hidden="true" hidden><path d="M14 7h20v10c0 10-5 15-10 15s-10-5-10-15V7Zm0 4H7v6c0 6 4 9 10 9m17-15h7v6c0 6-4 9-10 9M24 32v8m-9 2h18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><strong id="catchHeadline">GOOD CATCH</strong></div><div class="eyebrow" id="catchRarity">LISA LAND / CATCH</div><img id="catchArt" alt=""><h3 id="catchName"></h3><div class="catchstats"><div><b id="catchWeight"></b>POUNDS</div><div><b id="catchPoints"></b>POINTS</div></div><div class="eyebrow" id="catchTier" style="margin-top:12px">A BEAUTIFUL CATCH</div><div class="catch-trophy-note" id="catchTrophyNote"></div><button class="catch-trophy-button" id="catchTrophyButton" hidden>View trophy in my room ↗</button></div>
         <div class="overlay hero" id="overlay"><div class="card">
           <div class="eyebrow" id="overlayLabel">Cedar Sanctuary / Unofficial Alaska cred</div>
           <h2 id="overlayTitle">Welcome to<br>Lisa Land.</h2>
           <p id="overlayText">Same questionable boat. Same spectacular water. This time the fish nibble, bolt, dive, and mean it. Pick your tackle. Read the water. Earn the story.</p>
           <div class="steps" id="steps"><div><b>01 / TEMPT</b>Cast. Let it investigate.</div><div><b>02 / WAIT</b>Nibbles aren't a bite.</div><div><b>03 / OUTSMART</b>Reel the rest. Yield the run.</div></div>
           <button class="primary" id="continue">Launch the boat</button>
-          <p class="micro" id="overlayNote">Quicker catches. Normal, Rare, Epic &amp; Legendary trophy cards. Your island. Your collection.</p>
+          <p class="micro" id="overlayNote">Quick catches. Surprise trophies. An occasional whale, just passing through.</p>
         </div></div>
       </div>
       <div class="fishing-console"><div class="console-copy" aria-live="polite"><span class="console-kicker" id="consoleKicker">THE ORIGINAL LISA LAND / REBUILT BELOW THE SURFACE</span><strong id="consoleTitle">Good water. Uncooperative fish.</strong><p id="consoleHint">Pick free fishing or the derby, then launch the boat.</p></div><div class="console-actions"><button class="recall-button" id="recall" disabled>Recall <kbd>R</kbd></button><button class="reel-button" id="reel" disabled><span id="reelLabel">Launch the boat</span><small id="reelSub">CLICK / TOUCH / SPACE</small></button></div></div>
@@ -136,7 +137,7 @@
       <button class="dock-postcard" id="postcard"><img src="alaska-fishing-assets/cedar-postcard.webp" alt="Cedar Sanctuary's humorous Bermuda Triangle warning sign beside a cabin, a sinking boat, and broken generators."><span>A postcard from Lisa Land<small>BOATS SINK. GENERATORS DIE. TAP FOR THE FULL STORY.</small></span></button>
     </aside>
   </div>
-  <section class="trophy-wing" aria-labelledby="trophyWingTitle"><div class="trophy-wing-heading"><div><div class="eyebrow">CEDAR SANCTUARY / THE ONE THAT DIDN'T GET AWAY</div><h2 id="trophyWingTitle">Some catches deserve a frame.</h2><p>Every landed fish earns a card. Bigger specimens unlock rarer editions.</p></div><button class="primary" id="enterTrophies">Enter your trophy room ↗</button></div><div class="trophy-shelf" id="trophyShelf"></div><p class="trophy-wing-note">5 species × 4 rarities. Keep every edition, improve your best specimen, and build a collection that stays on this browser.</p></section>
+  <section class="trophy-wing" aria-labelledby="trophyWingTitle"><div class="trophy-wing-heading"><div><div class="eyebrow">CEDAR SANCTUARY / THE ONE THAT DIDN'T GET AWAY</div><h2 id="trophyWingTitle">Some catches deserve a frame.</h2><p>Not every fish is a trophy. Each landed fish has a fresh 25% chance.</p></div><button class="primary" id="enterTrophies">Enter your trophy room ↗</button></div><div class="trophy-shelf" id="trophyShelf"></div><p class="trophy-wing-note">Normal · Rare · Epic · Legendary. Rarity is a surprise, not a weight requirement. Ordinary fish still earn points. Trophy cards stay in this browser's room.</p></section>
   <section class="deck-section" aria-labelledby="deckTitle"><div class="deck-heading"><div><div class="eyebrow">Lisa Land / Souvenirs you actually earn</div><h2 id="deckTitle">The dockside card collection</h2><p>Catch something. Survive the nonsense. Keep the story.</p></div><div class="deck-total" id="deckTotal">0 / 7 EARNED</div></div><div class="card-deck" id="cardDeck"></div><p class="deck-note">Tap any card for its story and unlock condition. Saved on this browser. These are game souvenirs, not real-world achievement claims. Inspired by <a href="https://blazingbeard.github.io/alaskacard/" target="_blank" rel="noopener noreferrer">Alaska Card</a>.</p></section>
   <section class="dock-gallery" aria-labelledby="galleryTitle">
     <div class="gallery-heading"><div><div class="eyebrow">Pinned up at Cedar Sanctuary</div><h2 id="galleryTitle">Cred, chaos &amp; cautionary tales.</h2></div><p>Some things belong in a trophy case. Others belong beside the first-aid kit. Around here, they share a wall.</p></div>
@@ -145,7 +146,7 @@
       <button class="gallery-piece penalty" id="penaltyCard"><img src="alaska-fishing-assets/lisa-penalty-card-preview.webp" width="515" height="720" loading="lazy" alt="Lisa Land Accident Prone penalty card: trips, slips, spills, and still smiling."><span class="caption"><span class="edition-label">LISA LAND / LEGENDARY MISADVENTURES / #007</span><b>Still smiling. Naturally.</b><small>Trips. Slips. Spills. An extra turn to pick up, clean up, or fix it. The official-looking paperwork for a very unofficial adventure.</small></span></button>
     </div><p class="gallery-note">These are gallery keepsakes, separate from your seven earnable game cards. The penalty card does not deduct points or turns. Real-world Alaska achievements are not awarded by playing the derby.</p><a class="cards-link" href="https://blazingbeard.github.io/alaskacard/" target="_blank" rel="noopener noreferrer">Explore the Alaska Cards collection ↗</a>
   </section>
-  <dialog id="trophyRoom" aria-labelledby="trophyRoomTitle"><div class="trophy-room-top"><div><div class="eyebrow">HOWARDAI / LISA LAND FIELD COLLECTION</div><h2 id="trophyRoomTitle">The trophy room.</h2><p>Not a tall tale. You actually caught these.</p></div><button class="small" id="closeTrophies" autofocus>Back to the water ×</button></div><div class="trophy-room-stats"><span><b id="trophyUnique">0</b> / 20 editions collected</span><span><b id="trophyCaught">0</b> fish framed</span><span id="trophyBest">Your first frame is waiting.</span></div><div class="trophy-filters" id="trophyFilters" aria-label="Filter trophy cards"></div><div id="trophyNotice" class="notice" role="alert" hidden></div><div class="trophy-grid" id="trophyGrid"></div><p class="trophy-room-note">Size sets the rarity within each species' weight range: <b>Normal</b> below halfway, <b>Rare</b> from 50%, <b>Epic</b> from 80%, <b>Legendary</b> from 95%. Tap any frame for its exact weight requirement. Repeat catches add to your count and keep your best specimen. No catches are awarded retroactively.</p></dialog>
+  <dialog id="trophyRoom" aria-labelledby="trophyRoomTitle"><div class="trophy-room-top"><div><div class="eyebrow">HOWARDAI / LISA LAND FIELD COLLECTION</div><h2 id="trophyRoomTitle">The trophy room.</h2><p>Only the lucky catches make this wall.</p></div><button class="small" id="closeTrophies" autofocus>Back to the water ×</button></div><div class="trophy-room-stats"><span><b id="trophyUnique">0</b> / 20 editions collected</span><span><b id="trophyCaught">0</b> trophies earned</span><span id="trophyBest">Your first frame is waiting.</span></div><div class="trophy-filters" id="trophyFilters" aria-label="Filter trophy cards"></div><div id="trophyNotice" class="notice" role="alert" hidden></div><div class="trophy-grid" id="trophyGrid"></div><p class="trophy-room-note">Every landed fish independently has a <b>25% chance</b> of a trophy. When one drops, its rarity is rolled separately: <b>Normal 55%</b>, <b>Rare 28%</b>, <b>Epic 14%</b>, <b>Legendary 3%</b>. Weight and tackle do not change the odds. Repeat trophies add to your count and keep your biggest specimen. Earlier saved cards are preserved. Whales are wildlife, never catches or trophies.</p></dialog>
   <dialog id="inspectDialog" aria-labelledby="inspectTitle"><button class="small" id="closeInspect" autofocus>Close</button><div class="eyebrow" id="inspectLabel">From the dock</div><img id="inspectArt" alt=""><div class="image-tools"><button id="zoomInspect" aria-pressed="false">Enlarge image</button><a id="fullInspect" target="_blank" rel="noopener noreferrer">Open full-resolution image</a></div><h2 id="inspectTitle"></h2><p id="inspectStory"></p><p class="criterion" id="inspectRule"></p></dialog>
   <div id="storageNotice" class="notice" hidden>Browser storage is unavailable. Your record will last only for this visit.</div>
   <div id="artNotice" class="notice" hidden></div>
@@ -153,8 +154,8 @@
 </main>
 <script type="module">
 'use strict';
-import {FishingRound, SPECIES as fightingSpecies} from './fishing.mjs?v=trophies-1';
-import {RARITIES, createTrophyBook, parseTrophyBook, recordTrophy, rarityMinimum} from './trophies.mjs?v=trophies-1';
+import {FishingRound, SPECIES as fightingSpecies} from './fishing.mjs?v=wildlife-2';
+import {RARITIES, createTrophyBook, parseTrophyBook, recordTrophy, rollTrophy} from './trophies.mjs?v=wildlife-2';
 const $ = id => document.getElementById(id);
 const canvas = $('game'), ctx = canvas.getContext('2d'), W = 1100, H = 720, surface = 302;
 const ROD={x:350,y:212}, art={}, sceneBuffers=[], fishArt=['fish-pink','fish-coho','fish-sockeye','fish-halibut','fish-king'];
@@ -162,6 +163,7 @@ const sceneNames=['island-sanctuary','lisa-generator','lisa-triangle'], waterlin
 const lureTypes=[{name:'Silver spinner',color:'#e8eade',fav:[0,1],sink:82,depth:390,note:'slow sink · pink & coho'},{name:'Copper spoon',color:'#eaa370',fav:[2,4],sink:114,depth:480,note:'fluttering sink · sockeye & kings'},{name:'Deepwater jig',color:'#a9c9f3',fav:[3],sink:185,depth:575,note:'fast sink · bottom halibut'}];
 let selectedLure=0, perfectFight=true, ambientGain=null, reelSoundAge=0;
 const encounter=new FishingRound(), waterCatches=[0,0,0], waterBonus=[false,false,false];
+const whale={x:-120,y:505,width:440,height:156,age:0,direction:1,active:true,wait:0};
 let outing='free', encounterMood='', lastTwitch=-10, fishRunStart={x:0,y:0}, fishTrail=[];
 const artBase='alaska-fishing-assets/';
 function loadArt(name){
@@ -172,7 +174,7 @@ function loadArt(name){
     image.src=artBase+name+'.webp';
   });
 }
-Promise.all([...sceneNames,'lisa-hero','cedar-postcard',...fishArt,'boat'].map(loadArt)).then(()=>{
+Promise.all([...sceneNames,'lisa-hero','cedar-postcard',...fishArt,'boat','humpback'].map(loadArt)).then(()=>{
   sceneNames.forEach((name,i)=>{
     if(!art[name])return;
     const buffer=document.createElement('canvas');buffer.width=W;buffer.height=H;const b=buffer.getContext('2d'),im=art[name],cut=waterlines[i];
@@ -298,9 +300,9 @@ function trophyCardHTML(s,rarity){
   const key=s.id+':'+rarity.id,record=trophyBook.cards[key],number=fightingSpecies.indexOf(s)*4+RARITIES.indexOf(rarity)+1;
   return `<button class="trophy-card ${record?'earned':'locked'}" style="--tier:${rarity.color}" data-trophy="${key}" aria-label="${rarity.name} ${s.name}, ${record?record.bestWeight.toFixed(1)+' pounds, earned':'not yet earned'}">
     <span class="trophy-card-top"><b>${rarity.name}</b><small>LL / ${String(number).padStart(2,'0')}</small></span>
-    <span class="trophy-card-picture"><img src="${artBase}fish-${s.id}.webp" alt=""><span class="trophy-seal">${record?'LANDED':'NOT YET'}</span></span>
+    <span class="trophy-card-picture"><img src="${artBase}fish-${s.id}.webp" alt=""><span class="trophy-seal">${record?'TROPHY':'NOT YET'}</span></span>
     <strong>${s.name}</strong><span class="trophy-card-weight">${record?record.bestWeight.toFixed(1)+' <small>LB · YOUR BEST</small>':'An empty frame.<br><small>A story still out there.</small>'}</span>
-    <span class="trophy-card-foot"><span>${record?waterNames[record.place]:'Tap for the weight to beat'}</span><b>${record?'×'+record.count:'◇'}</b></span></button>`;
+    <span class="trophy-card-foot"><span>${record?waterNames[record.place]:'A lucky catch. Any weight.'}</span><b>${record?'×'+record.count:'◇'}</b></span></button>`;
 }
 function renderTrophies(){
   const records=Object.values(trophyBook.cards),unique=records.length,total=records.reduce((sum,c)=>sum+c.count,0);
@@ -319,8 +321,11 @@ function renderTrophies(){
   }).join('');
 }
 function awardTrophy(f){
+  lastTrophy=null;
+  const rarity=rollTrophy();
+  if(!rarity)return null;
   const award=recordTrophy(trophyBook,{
-    speciesId:fightingSpecies[f.type].id,weight:f.weight,place:round,
+    speciesId:fightingSpecies[f.type].id,rarityId:rarity.id,weight:f.weight,place:round,
     quality:encounter.result.quality,caughtAt:new Date().toISOString()
   });
   lastTrophy=award;
@@ -350,10 +355,9 @@ $('trophyFilters').onclick=e=>{
 $('trophyGrid').onclick=e=>{
   const button=e.target.closest('[data-trophy]');if(!button)return;
   const [speciesId,rarityId]=button.dataset.trophy.split(':'),s=fightingSpecies.find(s=>s.id===speciesId),rarity=RARITIES.find(r=>r.id===rarityId);
-  const record=trophyBook.cards[button.dataset.trophy],index=RARITIES.indexOf(rarity),min=rarityMinimum(s,rarity),next=RARITIES[index+1];
-  const range=next?`${min.toFixed(1)}–${(rarityMinimum(s,next)-.1).toFixed(1)} lb`:`${min.toFixed(1)}–${s.max.toFixed(1)} lb`;
-  const story=record?`${record.bestWeight.toFixed(1)} lb, landed at ${waterNames[record.place]} on ${new Date(record.caughtAt).toLocaleDateString()}. ${record.quality} fight. This edition has been caught ${record.count} ${record.count===1?'time':'times'}. Your biggest specimen keeps the frame.`:'This frame is waiting for a real catch. Fish this species at the right weight to earn this edition. Higher rarities do not replace your earlier cards; you keep every edition.';
-  openInspection(rarity.name+' '+s.name,story,'Earn this '+rarity.name+' card by landing a '+s.name.toLowerCase()+' weighing '+range+'.','fish-'+s.id,rarity.name.toUpperCase()+' / '+(record?'YOUR TROPHY':'NOT YET EARNED'));
+  const record=trophyBook.cards[button.dataset.trophy];
+  const story=record?`${record.bestWeight.toFixed(1)} lb, landed at ${waterNames[record.place]} on ${new Date(record.caughtAt).toLocaleDateString()}. ${record.quality} fight. This edition has been caught ${record.count} ${record.count===1?'time':'times'}. Your biggest specimen keeps the frame.`:'An empty frame, waiting for a lucky catch. Land this species and hope for a trophy drop. Any weight can earn any rarity. Higher rarities do not replace earlier cards; you keep every edition.';
+  openInspection(rarity.name+' '+s.name,story,`Each landed ${s.name.toLowerCase()} has a 25% trophy chance. Among trophy drops, ${rarity.chance}% are ${rarity.name}. No weight requirement.`,'fish-'+s.id,rarity.name.toUpperCase()+' / '+(record?'YOUR TROPHY':'NOT YET EARNED'));
 };
 $('closeTrophies').onclick=()=>$('trophyRoom').close();
 $('trophyRoom').addEventListener('close',()=>{
@@ -407,6 +411,7 @@ function resetLure(){
 function beginRound(){
   mode='playing';paused=false;remaining=ROUND_TIME;roundCatch=outing==='free'?waterCatches[round]:0;bonusPaid=outing==='free'?waterBonus[round]:false;particles=[];ripples=[];labels=[];
   awardLeft=0;$('awardToast').hidden=true;
+  Object.assign(whale,{x:-120,y:505,age:0,direction:1,active:true,wait:0});
   $('weather').textContent=['NO ROAD REQUIRED / BOAT STILL FLOATING','GENERATOR: ON AN EXTENDED BREAK','THE CEDAR TRIANGLE / NO REFUNDS'][round];
   populate();resetLure();$('location').textContent=places[round];$('overlay').hidden=true;$('pause').disabled=false;$('help').disabled=false;$('pause').textContent='Pause';updateHUD();canvas.focus();
 }
@@ -453,7 +458,7 @@ function splash(x,y,color='#b7ece4',count=18){
 }
 function actionDown(){
   if(mode!=='playing'||paused)return;
-  if(phase==='ready'){phase='cast';phaseAge=0;castEnd={...target};held=false;tone(460,.18);setHint('Line out','The lure is dropping. Watch for a bite.');}
+  if(phase==='ready'){phase='cast';phaseAge=0;castEnd={...target};held=false;tone(460,.18);setHint('Line out',whaleAt(target.x,target.y)?'Whales ignore lures. Only nearby fish can bite.':'The lure is dropping. Watch for a bite.');}
   else if(phase==='bite'||phase==='nibble'){encounter.press();handleEncounter();}
   else if(phase==='fight'){held=true;encounter.press();}
   else if(phase==='soak')twitchLure();
@@ -581,7 +586,7 @@ document.addEventListener('keyup',e=>{if(e.code==='Space'||e.code==='Enter')acti
 window.addEventListener('blur',()=>{actionUp();if(mode==='playing'&&!paused)pauseGame();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='playing'&&!paused)pauseGame();});
 function finishCatch(success,reason){
-  const f=hooked;held=false;
+  const f=hooked;held=false;lastTrophy=null;
   if(success&&f){
     const trophy=awardTrophy(f);
     const t=species[f.type],mult=1+Math.min(streak,5)*.2,points=Math.round((t.points+f.weight*5)*mult)+(perfectFight?75:0),isRecord=f.weight>largest;
@@ -598,20 +603,68 @@ function finishCatch(success,reason){
     if(!bonusPaid&&roundCatch>=goals[round]){score+=(round+1)*300;bonusPaid=true;waterBonus[round]=true;labels.push({x:570,y:350,text:'WATER BONUS +'+(round+1)*300,color:'#f2ca7e',life:3});}
     $('lastcatch').textContent=`${f.weight.toFixed(1)} lb ${t.name} / +${points} points`;
     $('catchTier').textContent=perfectFight?'PERFECT FIGHT / +75 BONUS':isRecord?'PERSONAL BEST / BIGGEST FISH':'ANOTHER STORY FOR THE DOCK';
-    $('catchCard').dataset.rarity=trophy.rarity.id;$('catchCard').style.setProperty('--tier',trophy.rarity.color);
-    $('catchRarity').textContent=trophy.rarity.name.toUpperCase()+' / TROPHY CARD';
-    $('catchTrophyNote').textContent=(trophy.isNew?'NEW EDITION':trophy.isBest?'NEW BEST SPECIMEN':'ANOTHER FOR THE COLLECTION')+' · '+(trophyWritable?'SAVED TO YOUR ROOM':'THIS VISIT ONLY');
+    $('catchCup').toggleAttribute('hidden',!trophy);$('catchTrophyButton').hidden=!trophy;
+    $('catchHeadline').textContent=trophy?'TROPHY CATCH!':'GOOD CATCH';
+    if(trophy){
+      $('catchCard').dataset.rarity=trophy.rarity.id;$('catchCard').style.setProperty('--tier',trophy.rarity.color);
+      $('catchRarity').textContent=trophy.rarity.name.toUpperCase()+' / COLLECTIBLE CARD';
+      $('catchTrophyNote').textContent=(trophy.isNew?'NEW TROPHY EDITION':trophy.isBest?'NEW BEST TROPHY':'REPEAT TROPHY')+' · '+(trophyWritable?'SAVED TO YOUR ROOM':'THIS VISIT ONLY');
+      labels.push({x:W/2,y:surface+100,text:trophy.rarity.name.toUpperCase()+' TROPHY!',color:trophy.rarity.color,life:3});
+      tone(1320,.5,'sine',.035);
+    }else{
+      delete $('catchCard').dataset.rarity;$('catchCard').style.removeProperty('--tier');
+      $('catchRarity').textContent='ORDINARY FISH / POINTS EARNED';
+      $('catchTrophyNote').textContent='Not a trophy this time. Your next catch gets a fresh roll.';
+    }
     $('catchName').textContent=t.name;$('catchWeight').textContent=f.weight.toFixed(1);$('catchPoints').textContent='+'+points;
     $('catchArt').hidden=!art[fishArt[f.type]];if(art[fishArt[f.type]])$('catchArt').src=art[fishArt[f.type]].src;
     $('catchCard').hidden=false;
-    setHint('Landed / +'+points+' points',`${f.weight.toFixed(1)} lb ${t.name}. Beautiful fish.`);
+    setHint(trophy?trophy.rarity.name+' trophy catch!':'Landed / +'+points+' points',trophy?'A lucky catch! Open your trophy room to see its card.':`${f.weight.toFixed(1)} lb ${t.name}. Points earned, no trophy this time.`);
     labels.push({x:lure.x,y:lure.y-45,text:'+'+points+' / '+f.weight.toFixed(1)+' lb',color:t.color,life:2.5});splash(lure.x,lure.y,t.color,30);
     fish=fish.filter(v=>v!==f);fish.push(spawnFish(f.type,true));tone(880,.35,'triangle');saveBest();
   }else{streak=0;if(f){f.spooked=2.8;f.dir=f.x<W/2?-1:1;}setHint(reason||'It got away',encounter.result?.hint||'A new story. A slightly worse story, but still.');$('lastcatch').textContent=(reason||'A fish slipped the hook.')+' / Nobody on the dock needs to know.';splash(lure.x,lure.y,'#d9e3c8',20);tone(150,.25);}
-  hooked=null;phase='result';phaseAge=0;resultLeft=success?(outing==='free'?Infinity:2.2):2;updateHUD();
+  hooked=null;phase='result';phaseAge=0;resultLeft=success?(outing==='free'?Infinity:lastTrophy?5:2.2):2;updateHUD();
+}
+function whaleAt(x,y){
+  return whale.active&&!!art.humpback&&((x-whale.x)/(whale.width*.46))**2+((y-whale.y)/(whale.height*.42))**2<1;
+}
+function updateWhale(dt){
+  if(!whale.active){
+    whale.wait-=dt;
+    if(whale.wait<=0){whale.active=true;whale.age=0;whale.direction*=-1;whale.x=whale.direction===1?-240:W+240;}
+    return;
+  }
+  whale.age+=dt;whale.x+=whale.direction*31*dt;
+  const rise=whale.age>8&&whale.age<20?Math.sin((whale.age-8)/12*Math.PI):0;
+  whale.y=505-rise*147+(reducedMotion?0:Math.sin(whale.age*.6)*5);
+  if(whale.x>W+260||whale.x<-260){whale.active=false;whale.wait=22;}
+}
+function drawWhale(){
+  const visible=mode==='playing'&&whale.active&&!!art.humpback&&whale.x>-whale.width/2&&whale.x<W+whale.width/2;
+  $('whaleNotice').hidden=!visible;
+  if(!visible)return;
+  const image=art.humpback;
+  ctx.save();ctx.beginPath();ctx.rect(0,surface+2,W,H-surface);ctx.clip();
+  ctx.translate(whale.x,whale.y);ctx.scale(whale.direction,1);ctx.globalAlpha=.86;
+  const slices=48;
+  for(let i=0;i<slices;i++){
+    const bend=reducedMotion?0:Math.sin(whale.age*2.1-i*.09)*10*(1-i/slices)**2;
+    ctx.drawImage(image,i*image.width/slices,0,image.width/slices,image.height,-whale.width/2+i*whale.width/slices,-whale.height/2+bend,whale.width/slices+.5,whale.height);
+  }
+  ctx.restore();
+  if(whale.age>13&&whale.age<15){
+    const breath=Math.sin((whale.age-13)/2*Math.PI),x=whale.x+whale.direction*whale.width*.32;
+    ctx.save();ctx.globalAlpha=breath*.75;ctx.strokeStyle='#e4f4e9';ctx.lineWidth=2.5;
+    for(const direction of [-1,1]){
+      ctx.beginPath();ctx.moveTo(x,surface);ctx.quadraticCurveTo(x+direction*8,surface-45,x+direction*23,surface-34);ctx.stroke();
+      if(!reducedMotion)for(let i=0;i<4;i++)ellipse(x+direction*(13+i*5),surface-32+i*4-breath*9,1.6,2,'#e4f4e9');
+    }
+    ctx.restore();
+  }
 }
 function update(dt){
   if(paused)return;time+=dt;
+  if(mode==='playing')updateWhale(dt);
   if(awardLeft>0){awardLeft=Math.max(0,awardLeft-dt);if(awardLeft===0)$('awardToast').hidden=true;}
   particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=180*dt;p.life-=dt;});particles=particles.filter(p=>p.life>0);
   ripples.forEach(r=>r.age+=dt);ripples=ripples.filter(r=>r.age<1.8);
@@ -810,7 +863,7 @@ function render(){
   syncControls();
   const lockTackle=mode==='playing'&&(paused||!['ready','result'].includes(phase));
   document.querySelectorAll('[data-lure]').forEach(button=>{button.disabled=lockTackle;});
-  ctx.clearRect(0,0,W,H);drawLandscape();
+  ctx.clearRect(0,0,W,H);drawLandscape();drawWhale();
   fish.filter(f=>f!==hooked).sort((a,b)=>a.y-b.y).forEach(drawFish);
   for(const r of ripples){ctx.globalAlpha=1-r.age/1.8;ctx.strokeStyle='#bde1cc';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(r.x,r.y,10+r.age*40,3+r.age*8,0,0,Math.PI*2);ctx.stroke();}ctx.globalAlpha=1;
   drawBoat();
@@ -823,6 +876,7 @@ populate();updateHUD();
 let previous=0;
 function frame(timestamp){const dt=previous?Math.min((timestamp-previous)/1000,.05):0;previous=timestamp;update(dt);render();requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
+if(location.hash==='#trophies')openTrophyRoom();
 </script>
 </body>
 </html>

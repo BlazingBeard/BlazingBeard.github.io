@@ -123,6 +123,10 @@ header{margin-bottom:16px}
 @media(prefers-reduced-motion:reduce){.waypoint{transition:none}}
 .trophy-nav{border-color:#ad935c;background:#38432c}
 .trophy-nav span{margin-left:6px;font:9px monospace;color:#edd599}
+.trophy-nav{box-shadow:inset 0 0 0 1px #e0c98928}
+.wildlife-notice{position:absolute;top:46%;left:16px;pointer-events:none;padding:8px 11px;border-left:2px solid #b9d8cc;background:#122c29df;border-radius:0 4px 4px 0;color:#d8ede0;max-width:230px}
+.wildlife-notice b{display:block;font:italic 13px Georgia,serif}
+.wildlife-notice span{display:block;margin-top:5px;font:7px monospace;letter-spacing:.04em;color:#a4c8bb}
 .trophy-wing{margin-top:25px;padding:25px;border:1px solid #766744;border-radius:6px;background:radial-gradient(ellipse at 55% 0,#57634530,transparent 65%),repeating-linear-gradient(0deg,#d9b16f04 0 2px,transparent 2px 9px),#1c2a20}
 .trophy-wing-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:22px}
 .trophy-wing h2{font:32px/1.15 Georgia,serif;color:#efdaad;margin:8px 0 10px;letter-spacing:-.5px}
@@ -179,6 +183,12 @@ header{margin-bottom:16px}
 .trophy-room-note b{color:#c3c7a4}
 #catchCard[data-rarity]{border-color:var(--tier);outline-color:var(--tier)}
 #catchRarity{font-weight:bold;letter-spacing:2px}
+.catch-headline{display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:9px;color:#354b33}
+.catch-headline strong{font:700 20px Georgia,serif;letter-spacing:.02em}
+.catch-headline svg{width:32px;height:32px;flex-shrink:0;color:#785620}
+#catchCup[hidden]{display:none}
+#catchCard[data-rarity] .catch-headline{border-bottom:1px solid #88724370;padding-bottom:7px}
+#catchCard:not([data-rarity]){outline:none;border-color:#89967b;box-shadow:0 10px 35px #0006}
 #catchCard[data-rarity=rare]{background:radial-gradient(ellipse at top,#dbe9e5,#bbc8b7);box-shadow:0 0 32px #7eafd445,0 16px 70px #000a}
 #catchCard[data-rarity=epic]{background:radial-gradient(ellipse at top,#ece3ef,#c5b7cb);box-shadow:0 0 40px #b495de65,0 16px 70px #000a}
 #catchCard[data-rarity=legendary]{background:radial-gradient(ellipse at top,#fff1bd,#d7b775);box-shadow:0 0 50px #edc96b80,0 16px 70px #000a}
@@ -221,6 +231,19 @@ header{margin-bottom:16px}
   .trophy-card-foot{font-size:7px;padding-top:7px}
   #trophyRoom .trophy-room-note{font-size:9px}
   .catch-trophy-note{font-size:6px;margin-top:8px}.catch-trophy-button{font-size:8px;padding:6px 9px;margin-top:7px}
-  #catchCard{top:17%;padding:12px}
+  .wildlife-notice{left:10px;padding:6px 8px;max-width:180px}
+  .wildlife-notice b{font-size:10px}.wildlife-notice span{font-size:6px}
+}
+@media(max-width:1000px),(min-width:1001px) and (max-height:950px){
+  #catchCard{top:15%;padding:10px;width:244px;max-width:calc(100% - 28px)}
+  #catchCard .eyebrow{font-size:7px;line-height:1.4;letter-spacing:1px}
+  #catchCard img{display:block;height:50px;margin:4px 0}
+  #catchCard h3{font-size:20px;line-height:1.1}
+  #catchCard .catchstats{font-size:8px;padding-top:6px;margin-top:6px}
+  #catchCard .catchstats b{font-size:22px}
+  #catchTier{margin-top:5px!important}
+  #catchCard .catch-headline{margin-bottom:5px;padding-bottom:5px}
+  #catchCard .catch-trophy-note{margin-top:5px}
+  .catch-headline strong{font-size:17px}.catch-headline svg{width:26px;height:26px}
 }
 @media(prefers-reduced-motion:reduce){.trophy-card{transition:none}.trophy-card.earned:hover,.trophy-preview:hover{transform:none}}
