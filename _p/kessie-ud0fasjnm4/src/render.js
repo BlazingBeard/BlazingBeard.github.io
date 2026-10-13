@@ -106,12 +106,15 @@
     // ---------- draw ----------
     draw(time) {
       const ctx = this.ctx, W = this.W, H = this.H, T = this.T, L = this.L;
-      const scale = Math.max(H / 660, W / 1300);
+      // phones get a closer camera; in portrait, Kessie sits higher to clear the thumb controls
+      const portrait = H > W * 1.05;
+      const scale = this.touch ? (portrait ? W / 540 : Math.max(H / 520, W / 1040)) : Math.max(H / 660, W / 1300);
       this.scale = scale;
       const vw = W / scale, vh = H / scale;
-      let cx = this.cam.x, cy = this.cam.y;
+      const lift = this.touch && portrait ? vh * 0.12 : 0;
+      let cx = this.cam.x, cy = this.cam.y + lift;
       cx = vw >= L.W ? L.W / 2 : Math.max(vw / 2, Math.min(L.W - vw / 2, cx));
-      cy = Math.min(L.H - vh / 2 + 10, cy);
+      cy = Math.min(L.H - vh / 2 + 10 + lift * 1.6, cy);
       if (this.shake) { cx += (Math.random() - .5) * this.shake; cy += (Math.random() - .5) * this.shake; }
       this.view = { x1: cx - vw / 2, x2: cx + vw / 2, y1: cy - vh / 2, y2: cy + vh / 2 };
       ctx.setTransform(1, 0, 0, 1, 0, 0);

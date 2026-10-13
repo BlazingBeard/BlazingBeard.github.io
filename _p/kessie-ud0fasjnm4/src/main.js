@@ -31,6 +31,57 @@
   });
   addEventListener('keyup', e => keys.delete(e.code));
   addEventListener('blur', () => { keys.clear(); if (state === 'play') pause(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'play') pause(); });
+
+  // ---------- touch: floating stick on the left, jump anywhere on the right ----------
+  const touch = { on: false, x: 0, up: false, down: false, jump: false };
+  const stick = { id: null, ox: 0, oy: 0 }, jumpers = new Set(), RAD = 56;
+  const tz = $('touch'), stickEl = $('stick'), knob = $('knob');
+  const tip = (kb, tc) => touch.on ? tc : kb;
+  function enableTouch() {
+    if (touch.on) return;
+    touch.on = true; document.body.classList.add('touch'); if (R) R.touch = true; restStick();
+  }
+  function restStick() {
+    stickEl.style.left = `calc(${110}px + env(safe-area-inset-left))`; stickEl.style.top = `${innerHeight - 110}px`;
+    stickEl.classList.remove('on'); knob.style.transform = '';
+  }
+  function moveStick(e) {
+    let dx = e.clientX - stick.ox, dy = e.clientY - stick.oy;
+    const d = Math.hypot(dx, dy);
+    // drag the base along so reversing direction is always a short thumb move
+    if (d > RAD) { stick.ox += dx * (1 - RAD / d); stick.oy += dy * (1 - RAD / d); dx = e.clientX - stick.ox; dy = e.clientY - stick.oy; }
+    stickEl.style.left = `${stick.ox}px`; stickEl.style.top = `${stick.oy}px`;
+    knob.style.transform = `translate(${dx}px,${dy}px)`;
+    touch.x = dx > 14 ? 1 : dx < -14 ? -1 : 0;
+    touch.up = dy < -RAD * 0.6 && -dy > Math.abs(dx) * 0.7;
+    touch.down = dy > RAD * 0.6 && dy > Math.abs(dx) * 0.7;
+  }
+  function endPointer(e) {
+    if (e.pointerId === stick.id) { stick.id = null; touch.x = 0; touch.up = touch.down = false; restStick(); }
+    if (jumpers.delete(e.pointerId)) { touch.jump = jumpers.size > 0; $('tjump').classList.toggle('on', touch.jump); }
+  }
+  tz.addEventListener('pointerdown', e => {
+    if (e.target.closest('.tbtn')) return;
+    e.preventDefault(); audio.init(); enableTouch();
+    if (e.clientX < innerWidth * 0.45 && stick.id === null) {
+      stick.id = e.pointerId; stick.ox = e.clientX; stick.oy = e.clientY; stickEl.classList.add('on'); moveStick(e);
+    } else { jumpers.add(e.pointerId); touch.jump = true; $('tjump').classList.add('on'); }
+  });
+  tz.addEventListener('pointermove', e => { if (e.pointerId === stick.id) moveStick(e); });
+  for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) tz.addEventListener(t, endPointer);
+  tz.addEventListener('contextmenu', e => e.preventDefault());
+  $('tpause').onclick = () => state === 'play' && pause();
+  $('tflag').onclick = () => { if (state === 'play') { game.respawn(); msg('Back to the last flag'); } };
+  if (matchMedia('(pointer: coarse)').matches) enableTouch();
+  addEventListener('touchstart', enableTouch, { passive: true });
+  addEventListener('resize', () => { if (touch.on && stick.id === null) restStick(); });
+  const buzz = ms => touch.on && navigator.vibrate && navigator.vibrate(ms);
+  function goFull() {
+    if (!touch.on || document.fullscreenElement) return;
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
+  }
 
   function readInput() {
     let x = (held('right') ? 1 : 0) - (held('left') ? 1 : 0), up = held('up'), down = held('down'), jump = held('jump');
@@ -44,8 +95,9 @@
       if (b(9) && !readInput.start) { readInput.start = true; state === 'play' ? pause() : state === 'pause' && resume(); }
       if (!b(9)) readInput.start = false;
     }
-    // ↑ doubles as jump except when it means "climb" (on ivy)
+    // ↑ doubles as jump except when it means "climb" (on ivy); the touch stick never jumps on its own
     if (up && !game.nearIvy() && !game.p.hang) jump = true;
+    if (touch.on) { if (touch.x) x = touch.x; up = up || touch.up; down = down || touch.down; jump = jump || touch.jump; }
     return { x, up, down, jump };
   }
 
@@ -80,13 +132,13 @@
     banner(game.zoneIndex() + 1, LEVEL.zones[game.zoneIndex()].name);
   }
   function newGame() {
-    audio.init(); game.reset(); best = 0; maxZone = 0; for (const k in seen) delete seen[k];
+    audio.init(); goFull(); game.reset(); best = 0; maxZone = 0; for (const k in seen) delete seen[k];
     begin();
-    setTimeout(() => coach('move', '<b>←/→</b> run · <b>Space</b> jump · tap <b>Space</b> again in mid-air to <b>double jump</b>'), 1200);
+    setTimeout(() => coach('move', tip('<b>←/→</b> run · <b>Space</b> jump · tap <b>Space</b> again in mid-air to <b>double jump</b>', '<b>Left thumb</b> runs · tap the <b>right side</b> to jump · tap again mid-air to <b>double jump</b>')), 1200);
   }
   function cont() {
     const sv = load(); if (!sv) return newGame();
-    audio.init(); game.restore(sv.s); best = sv.best || 0; maxZone = sv.maxZone || 0; Object.assign(seen, sv.seen || {});
+    audio.init(); goFull(); game.restore(sv.s); best = sv.best || 0; maxZone = sv.maxZone || 0; Object.assign(seen, sv.seen || {});
     begin();
   }
   function pause() { state = 'pause'; show('pause'); save(); }
@@ -120,16 +172,16 @@
       case 'djump': audio.djump(); break;
       case 'walljump': audio.walljump(); coach('wj2', 'Nice! Chain wall jumps to climb any chimney.', 3.5); break;
       case 'land': audio.land(Math.min(12, e.drop / 40)); break;
-      case 'fall': msg(e.m > 12 ? `Oof — ${e.m.toFixed(1)} m. She's fine. Go again!` : 'Shake it off!'); audio.grunt(0.9); break;
+      case 'fall': buzz(40); msg(e.m > 12 ? `Oof — ${e.m.toFixed(1)} m. She's fine. Go again!` : 'Shake it off!'); audio.grunt(0.9); break;
       case 'spring': audio.spring(); break;
       case 'shell': audio.shell(Object.keys(game.shells).length); break;
       case 'checkpoint': audio.checkpoint(); save(); break;
-      case 'dance': audio.dance(e.move); coach('dance', 'Every flag earns a <b>power move</b>! Press <b>Space</b> to skip.', 4); msg('Checkpoint saved'); break;
+      case 'dance': audio.dance(e.move); coach('dance', 'Every flag earns a <b>power move</b>! ' + tip('Press <b>Space</b>', 'Tap <b>Jump</b>') + ' to skip.', 4); msg('Checkpoint saved'); break;
       case 'crumble': audio.crumble(); break;
       case 'shake': coach('crumble', 'Dashed sandy rock <b>crumbles</b> under you — keep moving!', 4); break;
       case 'splash': audio.splash(); msg('Splash! Back to the flag'); break;
-      case 'ouch': audio.ouch(); if (game.zoneIndex() === 0) coach('urchin', 'Sea urchins sting — <b>jump over</b> them.', 4); else coach('porc', 'Porcupine! Give it room, eh — <b>jump over</b>.', 4); break;
-      case 'hang': audio.grip('rock'); coach('hang', 'Kessie <b>grabs ledges</b> automatically. Press <b>↑</b> or <b>Space</b> to pull up, <b>↓</b> to let go.', 6); break;
+      case 'ouch': buzz(25); audio.ouch(); if (game.zoneIndex() === 0) coach('urchin', 'Sea urchins sting — <b>jump over</b> them.', 4); else coach('porc', 'Porcupine! Give it room, eh — <b>jump over</b>.', 4); break;
+      case 'hang': audio.grip('rock'); coach('hang', 'Kessie <b>grabs ledges</b> automatically. ' + tip('Press <b>↑</b> or <b>Space</b> to pull up, <b>↓</b> to let go.', 'Tap <b>Jump</b> to pull up, pull the stick <b>down</b> to let go.'), 6); break;
       case 'mantle': audio.grunt(0.4); break;
       case 'grab': audio.grip('rope'); break;
       case 'gust': audio.gust(); break;
@@ -164,11 +216,11 @@
       // contextual coaching
       if (game.p.air === 0 && !seen.move2) seen.move2 = 1;
       if (zi === 0 && h > 4) coach('ledge', 'Hold toward a wall as you reach its top — Kessie <b>grabs the ledge</b>.', 5);
-      if (zi === 1) coach('wall', '<b>Wall jump:</b> hold into a wall to slide, then press <b>Space</b> to kick off.', 6);
+      if (zi === 1) coach('wall', '<b>Wall jump:</b> hold into a wall to slide, then ' + tip('press <b>Space</b>', 'tap <b>Jump</b>') + ' to kick off.', 6);
       if (zi === 1) coach('banff', 'Welcome to <b>Banff National Park</b>! Grab the 🍁 maple leaves.', 5);
-      if (zi === 2) coach('ivy', '<b>↑</b> climbs ladders and vines · golden springs <b>launch</b> you.', 5);
+      if (zi === 2) coach('ivy', tip('<b>↑</b>', 'Stick <b>up</b>') + ' climbs ladders and vines · golden springs <b>launch</b> you.', 5);
       if (zi === 5) coach('wind', '<b>Mountain gusts!</b> Arrows warn you. Hide behind rocks, jump when it calms.', 6);
-      if (game.nearIvy() && !game.p.climb) coach('ivy2', 'Press <b>↑</b> to climb.', 3);
+      if (game.nearIvy() && !game.p.climb) coach('ivy2', tip('Press <b>↑</b> to climb.', 'Push the stick <b>up</b> to climb.'), 3);
       audio.ambience(h, game.wind.force ? 1 : 0, game.wind.warn);
       saveT += dt; if (saveT > 3) { saveT = 0; save(); }
       if (msgT > 0 && (msgT -= dt) <= 0) $('msg').classList.remove('on');
@@ -182,7 +234,7 @@
   Promise.all(IMGS.map(n => new Promise(res => { const i = new Image(); i.onload = () => res([n, i]); i.onerror = () => res([n, null]); i.src = `assets/${n}.jpg`; })))
     .then(list => {
       const A = Object.fromEntries(list);
-      R = new Renderer($('game'), game, A); R.shakeOn = settings.shake;
+      R = new Renderer($('game'), game, A); R.shakeOn = settings.shake; R.touch = touch.on;
       R.resize(); addEventListener('resize', () => R.resize());
       $('loading').hidden = true; $('loading').style.display = 'none';
       state = 'title'; refreshTitle(); show('title');
@@ -192,7 +244,7 @@
 
   // dev hooks for tests
   window.__grip = {
-    game, get R() { return R; }, get state() { return state; },
+    game, touch, get R() { return R; }, get state() { return state; },
     zone(i) { const z = LEVEL.zones[i]; const g = new Game(LEVEL); game.restore(g.snapshot()); let r = z.bottom; for (; r > z.top; r--) { const c = LEVEL.rows[r].indexOf('F'); if (c > 0) { game.p.x = (c + 0.5) * LEVEL.T; game.p.y = (r + 1) * LEVEL.T; game.cp = { x: game.p.x, y: game.p.y }; break; } } if (R) R.setGame(game); },
   };
 })();
