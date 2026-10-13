@@ -16,9 +16,25 @@
   canvas { position:fixed; inset:0; width:100%; height:100%; display:block;  }
   .screen { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:5; }
   .screen[hidden], #hud[hidden] { display:none; }
-  #title { background: linear-gradient(90deg, rgba(8,22,30,.92) 0%, rgba(8,22,30,.55) 42%, rgba(8,22,30,0) 70%), url(assets/title_banff.jpg) center/cover; justify-content:flex-start; }
+  #title { --tbg:url(assets/title_banff.jpg); justify-content:flex-start; }
+  #title::before, #title::after { content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; }
+  #title::before { background:var(--tbg) center/cover; transition:transform .4s; }
+  #title.flip::before { transform:scaleX(-1); }
+  #title::after { background:linear-gradient(90deg, rgba(8,22,30,.94) 0%, rgba(8,22,30,.6) 42%, rgba(8,22,30,0) 70%); }
+  #routes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:0 0 18px; }
+  button.rcard { display:flex; gap:10px; align-items:stretch; text-align:left; text-transform:none; letter-spacing:0; font-size:13px; font-weight:400; padding:6px; margin:0; background:rgba(8,22,30,.62); color:var(--foam); border:2px solid rgba(191,232,226,.22); border-radius:8px; backdrop-filter:blur(4px); }
+  button.rcard:hover { background:rgba(16,48,58,.8); color:var(--foam); }
+  button.rcard.on { border-color:var(--amber); box-shadow:0 0 22px rgba(242,178,76,.3); }
+  .rcard i { flex:0 0 62px; border-radius:5px; background:center/cover; }
+  .rcard i.flip { transform:scaleX(-1); background-position:12% center; }
+  .rcard span { display:flex; flex-direction:column; gap:1px; min-width:0; }
+  .rcard em { font-style:normal; font-size:11px; letter-spacing:.18em; color:var(--amber); font-weight:700; }
+  .rcard strong { font-size:16px; color:var(--sun); }
+  .rcard small { color:var(--dim); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rcard u { text-decoration:none; font-size:11.5px; color:var(--foam); margin-top:3px; }
+  .rcard u b { color:var(--sun); }
   .tcol { margin-left:7vw; max-width:460px; }
-  h1 { font-size:clamp(54px,8vw,116px); margin:0; letter-spacing:.04em; line-height:.88; color:var(--sun); text-shadow:0 6px 30px rgba(242,178,76,.35); font-weight:900; }
+  h1 { font-size:clamp(48px,min(8vw,10.5vh),116px); margin:0; letter-spacing:.04em; line-height:.88; color:var(--sun); text-shadow:0 6px 30px rgba(242,178,76,.35); font-weight:900; }
   h1 span { display:block; color:var(--amber); }
   .tag { font-size:15px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber); margin:14px 0 6px; }
   .sub { color:var(--foam); opacity:.85; margin:0 0 28px; font-size:17px; line-height:1.45; }
@@ -78,7 +94,9 @@
     #title { align-items:flex-start; }
     .tcol { margin:auto 0 auto calc(5vw + env(safe-area-inset-left)); max-width:min(470px,88vw); padding:16px 0 40px; }
     .tag { font-size:12px; margin:8px 0 4px; }
-    .sub { font-size:14px; margin-bottom:14px; }
+    .sub { font-size:14px; margin-bottom:12px; }
+    #routes { margin-bottom:12px; gap:8px; }
+    .rcard i { flex-basis:46px; } .rcard strong { font-size:14px; }
     button { font-size:15px; padding:11px 20px; }
     .controls { margin-top:10px; font-size:12.5px; line-height:1.6; }
     .stat .big { font-size:30px; } .stat .big small { font-size:14px; }
@@ -99,7 +117,10 @@
   }
   @media (orientation:portrait) and (max-width:760px) {
     #coach { top:calc(110px + env(safe-area-inset-top)); max-width:90vw; }
-    #title { align-items:flex-end; background: linear-gradient(0deg, rgba(8,22,30,.95) 0%, rgba(8,22,30,.7) 55%, rgba(8,22,30,0) 85%), url(assets/title_banff.jpg) 62% center/cover; }
+    #title { align-items:flex-end; }
+    #title::before { background-position:62% center; }
+    #title.flip::before { transform:none; background-position:4% center; }
+    #title::after { background:linear-gradient(0deg, rgba(8,22,30,.96) 0%, rgba(8,22,30,.72) 60%, rgba(8,22,30,0) 88%); }
   }
   .big2 { font-size:54px; color:var(--sun); font-weight:900; margin:4px 0 18px; }
 </style>
@@ -111,8 +132,9 @@
 <div id="title" class="screen" hidden>
   <div class="tcol">
     <h1>KESSIE<span>KLIMBER</span></h1>
-    <div class="tag">Pacific shore to Banff peaks</div>
-    <p class="sub">Help Kessie bound 84 metres from the Pacific tide pools up through Banff National Park &mdash; the Bow River, Johnston Canyon, Mount Rundle and Moraine Lake &mdash; to the northern lights over Cascade Summit. Every flag earns a power move. 24 shells &amp; maple leaves to find.</p>
+    <div class="tag" id="rtag">Pacific shore to Banff peaks</div>
+    <p class="sub" id="rblurb"></p>
+    <div id="routes"></div>
     <button id="continue" hidden>Continue</button>
     <button id="newgame" class="ghost">New climb</button>
     <div id="records"></div>
@@ -146,11 +168,12 @@
 
 <div id="summit" class="screen" hidden>
   <div class="panel" style="text-align:center">
-    <h2>SUMMIT</h2>
-    <div>Kessie topped out in</div>
+    <h2 id="stitle">SUMMIT</h2>
+    <div id="slead">Kessie topped out in</div>
     <div class="big2" id="stime">0:00</div>
     <div>with <span id="sshells" style="color:var(--sun)">0</span> keepsakes and <span id="sfalls" style="color:var(--sun)">0</span> big falls.</div>
     <div id="srecord" style="margin-top:10px;color:var(--amber);letter-spacing:.1em"></div>
+    <div id="snote" style="margin-top:8px;color:var(--dim);font-size:14px;max-width:420px"></div>
     <div style="margin-top:26px">
       <button id="again">Climb again</button>
       <button id="summitTitle" class="ghost">Title</button>
@@ -162,7 +185,7 @@
   <div class="stat">
     <div class="big"><span id="h">0.0</span><small>m</small></div>
     <div class="row">Best <span id="best">0.0</span> m · <span id="time">0:00</span> · Falls <span id="falls">0</span></div>
-    <div class="row">🍁 <span id="shells">0/0</span></div>
+    <div class="row"><i id="kicon" style="font-style:normal">🍁</i> <span id="shells">0/0</span></div>
   </div>
   <div id="zone"></div>
   <div id="track"><div id="meter"></div><div id="bestmark"></div></div>
@@ -180,6 +203,7 @@
 <div class="brand"><b>HowardAI</b> — I want that</div>
 
 <script src="src/level.js"></script>
+<script src="src/route_meathooks.js"></script>
 <script src="src/game.js"></script>
 <script src="src/render.js"></script>
 <script src="src/audio.js"></script>

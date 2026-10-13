@@ -1,18 +1,26 @@
 // Kessie Klimber: boot, input, fixed-step loop, HUD, coaching and saves.
 (function () {
   const { Game, Renderer, Audio, DT } = GRIP;
-  const SAVE = 'kessie.jump.v1', REC = 'kessie.jump.records';
+  const REC = 'kessie.records.v2', OLD_REC = 'kessie.jump.records';
+  const saveKey = r => r.id === 'banff' ? 'kessie.jump.v1' : `kessie.jump.v1.${r.id}`;
   const $ = id => document.getElementById(id);
-  const IMGS = ['bg_z1', 'bg_b2', 'bg_b3', 'bg_b4', 'bg_b5', 'bg_b6', 'bg_b7', 'tex_granite', 'tex_limestone', 'tex_canyon', 'tex_snowrock'];
+  const IMGS = [...new Set(ROUTES.flatMap(r => r.images))];
   const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
-  const game = new Game(LEVEL);
+  let route = ROUTES.find(r => r.id === localStorage.getItem('kessie.route')) || ROUTES[0];
+  let game = new Game(route);
   const audio = new Audio();
   let R = null, state = 'loading', acc = 0, last = 0, maxZone = 0, best = 0, saveT = 0;
   const seen = {};
   const keys = new Set();
   const settings = Object.assign({ sound: true, shake: true }, JSON.parse(localStorage.getItem('kessie.settings') || '{}'));
-  const records = JSON.parse(localStorage.getItem(REC) || '{}');
+  const records = JSON.parse(localStorage.getItem(REC) || 'null') || (() => {
+    // migrate the single-route records from v5 into the classic route
+    const old = JSON.parse(localStorage.getItem(OLD_REC) || '{}');
+    return old.time ? { banff: { time: old.time, shells: old.shells || 0, sends: 1 } } : {};
+  })();
+  const recOf = r => records[r.id] || (records[r.id] = {});
+  const grassi = () => route.theme === 'grassi';
 
   // ---------- input ----------
   const K = {
@@ -105,23 +113,51 @@
   let msgT = 0, coachT = 0;
   function msg(s, t = 2.2) { $('msg').textContent = s; $('msg').classList.add('on'); msgT = t; }
   function coach(id, html, t = 6) { if (seen[id]) return; seen[id] = 1; $('coach').innerHTML = html; $('coach').classList.add('on'); coachT = t; }
-  function banner(n, name) { const b = $('banner'); b.innerHTML = `<small>ZONE ${n} OF 7</small>${name}`; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); }
+  function banner(n, name) { const b = $('banner'); b.innerHTML = `<small>${grassi() ? 'SECTION' : 'ZONE'} ${n} OF ${route.zones.length}</small>${name}`; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); }
   function show(id) { for (const s of ['title', 'pause', 'summit']) $(s).hidden = s !== id; $('hud').hidden = !(id === null || id === 'pause'); }
 
   // ---------- saves ----------
   function save() {
-    if (game.won) { localStorage.removeItem(SAVE); return; }
-    localStorage.setItem(SAVE, JSON.stringify({ s: game.snapshot(), best, maxZone, seen }));
+    if (game.won) { localStorage.removeItem(saveKey(route)); return; }
+    localStorage.setItem(saveKey(route), JSON.stringify({ s: game.snapshot(), best, maxZone, seen }));
   }
-  function load() { try { return JSON.parse(localStorage.getItem(SAVE)); } catch { return null; } }
+  function load(r = route) { try { return JSON.parse(localStorage.getItem(saveKey(r))); } catch { return null; } }
+  const totals = {};
+  const shellTotal = r => totals[r.id] ?? (totals[r.id] = r.rows.join('').split('*').length - 1);
+  function recLine(r) {
+    const rc = records[r.id] || {}, sv = load(r);
+    if (rc.time) return `<b>${fmt(rc.time)}</b> best · ${rc.shells || 0}/${shellTotal(r)} ${r.icon} · ${rc.sends || 1} send${(rc.sends || 1) > 1 ? 's' : ''}`;
+    if (sv) return `In progress · ${(sv.best || 0).toFixed(1)} m of ${r.metres}`;
+    return 'Not sent yet';
+  }
+  function buildPicker() {
+    $('routes').innerHTML = ROUTES.map(r => `<button class="rcard" data-id="${r.id}">
+      <i class="${r.flipTitle ? 'flip' : ''}" style="background-image:url(assets/${r.title}.jpg)"></i>
+      <span><em>${r.grade}</em><strong>${r.name}</strong><small>${r.area}</small><u id="rec_${r.id}"></u></span></button>`).join('');
+    for (const b of $('routes').querySelectorAll('.rcard')) b.onclick = () => pickRoute(b.dataset.id);
+  }
+  function pickRoute(id) {
+    const r = ROUTES.find(x => x.id === id);
+    if (!r || (r === route && game)) { refreshTitle(); return; }
+    route = r; localStorage.setItem('kessie.route', r.id);
+    game = new Game(r);
+    if (R) { R.setGame(game); R.cam.y = game.p.y - 300; }
+    refreshTitle();
+  }
   function refreshTitle() {
     const sv = load();
     $('continue').hidden = !sv;
     $('newgame').className = sv ? 'ghost' : '';
-    const r = [];
-    if (sv) r.push(`Saved climb: ${(sv.best || 0).toFixed(1)} m · ${fmt(sv.s.time)}`);
-    if (records.time) r.push(`Best summit ${fmt(records.time)} · ${records.shells || 0}/${game.shellTotal} keepsakes`);
-    $('records').textContent = r.join('   ·   ');
+    $('newgame').textContent = sv ? 'New climb' : grassi() ? 'Rope up' : 'Start climb';
+    $('rtag').textContent = route.tag;
+    $('rblurb').innerHTML = route.blurb;
+    $('title').style.setProperty('--tbg', `url(assets/${route.title}.jpg)`);
+    $('title').classList.toggle('flip', !!route.flipTitle);
+    $('kicon').textContent = route.icon;
+    for (const r of ROUTES) { const el = $('rec_' + r.id); if (el) el.innerHTML = recLine(r); }
+    for (const b of $('routes').querySelectorAll('.rcard')) b.classList.toggle('on', b.dataset.id === route.id);
+    const rc = records[route.id] || {};
+    $('records').textContent = sv ? `Saved climb: ${(sv.best || 0).toFixed(1)} m · ${fmt(sv.s.time)}` : rc.falls !== undefined ? `Fewest falls on a send: ${rc.falls}` : '';
   }
 
   // ---------- flow ----------
@@ -129,12 +165,13 @@
     R.setGame(game);
     state = 'play'; show(null); last = performance.now(); acc = 0;
     audio.setEnabled(settings.sound);
-    banner(game.zoneIndex() + 1, LEVEL.zones[game.zoneIndex()].name);
+    banner(game.zoneIndex() + 1, route.zones[game.zoneIndex()].name);
   }
   function newGame() {
     audio.init(); goFull(); game.reset(); best = 0; maxZone = 0; for (const k in seen) delete seen[k];
     begin();
-    setTimeout(() => coach('move', tip('<b>←/→</b> run · <b>Space</b> jump · tap <b>Space</b> again in mid-air to <b>double jump</b>', '<b>Left thumb</b> runs · tap the <b>right side</b> to jump · tap again mid-air to <b>double jump</b>')), 1200);
+    if (grassi()) setTimeout(() => coach('grassi', `Welcome to <b>Grassi Lakes</b>, Canmore! Climb to <b>${route.name} (${route.grade})</b> and find the ${route.icon} fossils in the 350-million-year-old reef.`, 6), 1200);
+    else setTimeout(() => coach('move', tip('<b>←/→</b> run · <b>Space</b> jump · tap <b>Space</b> again in mid-air to <b>double jump</b>', '<b>Left thumb</b> runs · tap the <b>right side</b> to jump · tap again mid-air to <b>double jump</b>')), 1200);
   }
   function cont() {
     const sv = load(); if (!sv) return newGame();
@@ -145,19 +182,24 @@
   function resume() { state = 'play'; show(null); last = performance.now(); }
   function summit() {
     state = 'summit'; save();
-    const shells = Object.keys(game.shells).length;
+    const shells = Object.keys(game.shells).length, rc = recOf(route);
+    $('stitle').textContent = grassi() ? 'SENT!' : 'SUMMIT';
+    $('slead').textContent = grassi() ? `Kessie clipped the chains on ${route.name} (${route.grade}) in` : 'Kessie topped out in';
+    $('snote').textContent = route.sendNote || '';
     $('stime').textContent = fmt(game.time); $('sfalls').textContent = game.falls; $('sshells').textContent = `${shells}/${game.shellTotal}`;
-    const nb = !records.time || game.time < records.time;
-    if (nb) records.time = game.time;
-    records.shells = Math.max(records.shells || 0, shells);
+    const nb = !rc.time || game.time < rc.time;
+    if (nb) rc.time = game.time;
+    rc.shells = Math.max(rc.shells || 0, shells);
+    rc.falls = Math.min(rc.falls ?? Infinity, game.falls);
+    rc.sends = (rc.sends || 0) + 1;
     localStorage.setItem(REC, JSON.stringify(records));
-    $('srecord').textContent = nb ? 'New personal best!' : `Best: ${fmt(records.time)}`;
+    $('srecord').textContent = (nb ? 'New personal best!' : `Best: ${fmt(rc.time)}`) + ` · Send #${rc.sends}`;
     audio.summit();
     setTimeout(() => show('summit'), 2600);
   }
 
   $('newgame').onclick = newGame; $('continue').onclick = cont; $('resume').onclick = resume;
-  $('restart').onclick = () => { localStorage.removeItem(SAVE); newGame(); };
+  $('restart').onclick = () => { localStorage.removeItem(saveKey(route)); newGame(); };
   $('totitle').onclick = () => { save(); state = 'title'; refreshTitle(); show('title'); };
   $('again').onclick = newGame; $('summitTitle').onclick = () => { state = 'title'; refreshTitle(); show('title'); };
   $('sound').checked = settings.sound; $('shake').checked = settings.shake;
@@ -176,14 +218,15 @@
       case 'spring': audio.spring(); break;
       case 'shell': audio.shell(Object.keys(game.shells).length); break;
       case 'checkpoint': audio.checkpoint(); save(); break;
-      case 'dance': audio.dance(e.move); coach('dance', 'Every flag earns a <b>power move</b>! ' + tip('Press <b>Space</b>', 'Tap <b>Jump</b>') + ' to skip.', 4); msg('Checkpoint saved'); break;
+      case 'dance': audio.dance(e.move); coach('dance', `Every ${grassi() ? 'bolt clip' : 'flag'} earns a <b>power move</b>! ` + tip('Press <b>Space</b>', 'Tap <b>Jump</b>') + ' to skip.', 4); msg(grassi() ? 'Clipped! Checkpoint saved' : 'Checkpoint saved'); break;
       case 'crumble': audio.crumble(); break;
       case 'shake': coach('crumble', 'Dashed sandy rock <b>crumbles</b> under you — keep moving!', 4); break;
       case 'splash': audio.splash(); msg('Splash! Back to the flag'); break;
-      case 'ouch': buzz(25); audio.ouch(); if (game.zoneIndex() === 0) coach('urchin', 'Sea urchins sting — <b>jump over</b> them.', 4); else coach('porc', 'Porcupine! Give it room, eh — <b>jump over</b>.', 4); break;
+      case 'ouch': buzz(25); audio.ouch(); if (route.zones[game.zoneIndex()].coast) coach('urchin', 'Sea urchins sting — <b>jump over</b> them.', 4); else coach('porc', 'Porcupine! Give it room, eh — <b>jump over</b>.', 4); break;
       case 'hang': audio.grip('rock'); coach('hang', 'Kessie <b>grabs ledges</b> automatically. ' + tip('Press <b>↑</b> or <b>Space</b> to pull up, <b>↓</b> to let go.', 'Tap <b>Jump</b> to pull up, pull the stick <b>down</b> to let go.'), 6); break;
       case 'mantle': audio.grunt(0.4); break;
-      case 'grab': audio.grip('rope'); break;
+      case 'grab': audio.grip(grassi() ? 'rock' : 'rope'); if (route.zones[game.zoneIndex()].pump) coach('dyno', 'Jugs! ' + tip('<b>Space</b>', 'Tap <b>Jump</b>') + ' to <b>dyno</b> off a hold — every grab resets your double jump.', 5); break;
+      case 'pumped': buzz(60); audio.grunt(1); coach('pump2', 'Forearms <b>pumped</b> out! Stand on a ledge to shake out, then go again.', 5); break;
       case 'gust': audio.gust(); break;
       case 'summit': summit(); break;
     }
@@ -206,20 +249,26 @@
       }
       const h = game.height();
       best = Math.max(best, h);
-      const zi = game.zoneIndex(), z = LEVEL.zones[zi];
+      const zi = game.zoneIndex(), z = route.zones[zi];
       if (zi > maxZone) { maxZone = zi; banner(zi + 1, z.name); audio.checkpoint(); save(); }
       $('zone').textContent = `${zi + 1} · ${z.name}`;
       $('h').textContent = h.toFixed(1); $('best').textContent = best.toFixed(1);
       $('time').textContent = fmt(game.time); $('falls').textContent = game.falls;
       $('shells').textContent = `${Object.keys(game.shells).length}/${game.shellTotal}`;
-      $('meter').style.height = `${Math.min(100, h / 84 * 100)}%`; $('bestmark').style.bottom = `${Math.min(100, best / 84 * 100)}%`;
+      $('meter').style.height = `${Math.min(100, h / route.metres * 100)}%`; $('bestmark').style.bottom = `${Math.min(100, best / route.metres * 100)}%`;
       // contextual coaching
       if (game.p.air === 0 && !seen.move2) seen.move2 = 1;
+      if (grassi()) {
+        if (zi === 1) coach('wall', 'The Reef: <b>wall jump</b> up the chimney · hold into a wall, then ' + tip('press <b>Space</b>', 'tap <b>Jump</b>') + '.', 6);
+        if (z.pump) coach('pump', `<b>${route.name}</b>: overhanging jugs. Hanging builds <b>pump</b> (ring above Kessie) — rest on ledges.`, 6);
+        if (zi === 3 && game.p.climb) coach('roof', 'Traverse the roof: hold <b>←/→</b> on the jugs, then pull for the <b>chains</b>!', 5);
+      } else {
       if (zi === 0 && h > 4) coach('ledge', 'Hold toward a wall as you reach its top — Kessie <b>grabs the ledge</b>.', 5);
       if (zi === 1) coach('wall', '<b>Wall jump:</b> hold into a wall to slide, then ' + tip('press <b>Space</b>', 'tap <b>Jump</b>') + ' to kick off.', 6);
       if (zi === 1) coach('banff', 'Welcome to <b>Banff National Park</b>! Grab the 🍁 maple leaves.', 5);
       if (zi === 2) coach('ivy', tip('<b>↑</b>', 'Stick <b>up</b>') + ' climbs ladders and vines · golden springs <b>launch</b> you.', 5);
       if (zi === 5) coach('wind', '<b>Mountain gusts!</b> Arrows warn you. Hide behind rocks, jump when it calms.', 6);
+      }
       if (game.nearIvy() && !game.p.climb) coach('ivy2', tip('Press <b>↑</b> to climb.', 'Push the stick <b>up</b> to climb.'), 3);
       audio.ambience(h, game.wind.force ? 1 : 0, game.wind.warn);
       saveT += dt; if (saveT > 3) { saveT = 0; save(); }
@@ -237,14 +286,14 @@
       R = new Renderer($('game'), game, A); R.shakeOn = settings.shake; R.touch = touch.on;
       R.resize(); addEventListener('resize', () => R.resize());
       $('loading').hidden = true; $('loading').style.display = 'none';
-      state = 'title'; refreshTitle(); show('title');
+      state = 'title'; buildPicker(); refreshTitle(); show('title');
       R.cam.y = game.p.y - 300;
       last = performance.now(); requestAnimationFrame(frame);
     });
 
   // dev hooks for tests
   window.__grip = {
-    game, touch, get R() { return R; }, get state() { return state; },
-    zone(i) { const z = LEVEL.zones[i]; const g = new Game(LEVEL); game.restore(g.snapshot()); let r = z.bottom; for (; r > z.top; r--) { const c = LEVEL.rows[r].indexOf('F'); if (c > 0) { game.p.x = (c + 0.5) * LEVEL.T; game.p.y = (r + 1) * LEVEL.T; game.cp = { x: game.p.x, y: game.p.y }; break; } } if (R) R.setGame(game); },
+    get game() { return game; }, get route() { return route; }, touch, get R() { return R; }, get state() { return state; }, pickRoute, records,
+    zone(i) { const L = route, z = L.zones[i]; const g = new Game(L); game.restore(g.snapshot()); let r = z.bottom; for (; r > z.top; r--) { const c = L.rows[r].indexOf('F'); if (c > 0) { game.p.x = (c + 0.5) * L.T; game.p.y = (r + 1) * L.T; game.cp = { x: game.p.x, y: game.p.y }; break; } } if (R) R.setGame(game); },
   };
 })();

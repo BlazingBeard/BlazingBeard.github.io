@@ -7,7 +7,7 @@
     GRAV: 2300, FALL_MUL: 1.25, MAXFALL: 980, JUMP: 720, DJUMP: 660, CUT: 0.45, APEX: 0.55,
     COYOTE: 0.1, BUFFER: 0.13, SLIDE: 130, WJ_X: 300, WJ_Y: 700, WJ_LOCK: 0.16,
     SPRING: 1190, CLIMB: 150, CLIMB_X: 110, HOP_OFF: 560, PW: 18, PH: 44,
-    CRUMBLE: 0.5, REGROW: 3, GUST: 7.5, DANCE: 1.3, DANCE_SKIP: 0.35,
+    CRUMBLE: 0.5, REGROW: 3, GUST: 7.5, DANCE: 1.3, DANCE_SKIP: 0.35, PUMP: 6, PUMP_REST: 1.4,
   };
   const { PW, PH } = K;
 
@@ -28,7 +28,7 @@
     }
     fresh(x, y) {
       return { x, y, vx: 0, vy: 0, face: 1, ground: true, coyote: 0, buffer: 0, air: 1, wallT: 0, wallDir: 0, lockT: 0,
-        hang: null, climbUp: null, climb: false, dance: 0, danceQ: 0, danceMove: 0, regrab: 0, dropT: 0, hurtT: 0, cut: false, peak: y, land: 0, run: 0 };
+        hang: null, climbUp: null, climb: false, dance: 0, danceQ: 0, danceMove: 0, regrab: 0, pump: 0, dropT: 0, hurtT: 0, cut: false, peak: y, land: 0, run: 0 };
     }
 
     // ---------- tiles ----------
@@ -122,6 +122,12 @@
       this.updateCrumbles();
       this.updateWind();
       if (this.won) return;
+
+      // forearm pump: holding jugs or a ledge in a pump zone builds it, standing shakes it out; full pump peels her off
+      if (this.L.zones[this.zoneIndex()].pump && (p.climb || p.hang)) {
+        p.pump = Math.min(1, p.pump + DT / K.PUMP);
+        if (p.pump >= 1) { p.climb = false; p.hang = null; p.regrab = 0.5; p.vy = 60; p.pump = 0.85; ev.push({ type: 'pumped', x: p.x, y: p.y }); }
+      } else if (p.ground || !this.L.zones[this.zoneIndex()].pump) p.pump = Math.max(0, p.pump - DT / K.PUMP_REST);
 
       // pulling up over a ledge
       if (p.climbUp) {

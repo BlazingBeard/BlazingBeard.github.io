@@ -231,19 +231,35 @@
     ], marks: [[16, 33, 'F']] },
   ];
 
-  const rows = [], zones = [];
-  for (let zi = Z.length - 1; zi >= 0; zi--) {
-    const z = Z[zi], start = rows.length;
-    const grid = z.rows.map(r => {
-      if (r.length > INNER) throw new Error(`zone ${zi} row too long: ${r}`);
-      return r.padEnd(INNER, '.').split('');
-    });
-    for (const [r, c, ch] of z.marks || []) grid[r][c] = ch;
-    for (const g of grid) rows.push('#' + g.join('') + '#');
-    zones[zi] = { name: z.name, bg: z.bg, tex: z.tex, wind: !!z.wind, coast: !!z.coast, snow: !!z.snow, aurora: !!z.aurora, top: start, bottom: rows.length - 1 };
-  }
-  const cols = INNER + 2;
-  let spawn = null;
-  rows.forEach((r, i) => { const c = r.indexOf('S'); if (c >= 0) spawn = { x: c * T + T / 2, y: (i + 1) * T }; });
-  G.LEVEL = { T, cols, rows, zones, spawn, H: rows.length * T, W: cols * T, PX_PER_M: (rows.length - 1) * T / 84 };
+  // Builds a playable route from zone definitions (listed top zone last; each zone's rows are written top row first).
+  G.buildRoute = function (def) {
+    const Z = def.zones, inner = def.inner || INNER, T = def.T || 32;
+    const rows = [], zones = [];
+    for (let zi = Z.length - 1; zi >= 0; zi--) {
+      const z = Z[zi], start = rows.length;
+      const grid = z.rows.map(r => {
+        if (r.length > inner) throw new Error(`${def.id} zone ${zi} row too long: ${r}`);
+        return r.padEnd(inner, '.').split('');
+      });
+      for (const [r, c, ch] of z.marks || []) grid[r][c] = ch;
+      for (const g of grid) rows.push('#' + g.join('') + '#');
+      const { rows: _r, marks: _m, ...flags } = z;
+      zones[zi] = { wind: false, coast: false, snow: false, aurora: false, pump: false, ...flags, top: start, bottom: rows.length - 1 };
+    }
+    const cols = inner + 2;
+    let spawn = null;
+    rows.forEach((r, i) => { const c = r.indexOf('S'); if (c >= 0) spawn = { x: c * T + T / 2, y: (i + 1) * T }; });
+    const { zones: _z, ...meta } = def;
+    return { ...meta, T, cols, rows, zones, spawn, H: rows.length * T, W: cols * T, PX_PER_M: (rows.length - 1) * T / def.metres };
+  };
+
+  G.ROUTES = G.ROUTES || [];
+  G.LEVEL = G.buildRoute({
+    id: 'banff', name: 'Pacific to Banff', area: 'Banff National Park, Alberta', grade: 'Classic', metres: 84,
+    keepsake: 'keepsakes', icon: '\u{1F341}', title: 'title_banff', theme: 'banff', tag: 'Pacific shore to Banff peaks',
+    blurb: 'Bound 84 metres from the Pacific tide pools up through Banff National Park &mdash; the Bow River, Johnston Canyon, Mount Rundle and Moraine Lake &mdash; to the northern lights over Cascade Summit. Every flag earns a power move. 24 shells &amp; maple leaves to find.',
+    images: ['bg_z1', 'bg_b2', 'bg_b3', 'bg_b4', 'bg_b5', 'bg_b6', 'bg_b7', 'tex_granite', 'tex_limestone', 'tex_canyon', 'tex_snowrock'],
+    zones: Z,
+  });
+  G.ROUTES.unshift(G.LEVEL);
 })(typeof window !== 'undefined' ? window : globalThis);
