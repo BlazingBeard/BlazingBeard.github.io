@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<title>Kessie Klimber — HowardAI</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root { --ink:#0b1a22; --deep:#10303a; --teal:#2f9c97; --foam:#bfe8e2; --amber:#f2b24c; --sun:#ffd98a; --dim:#7fa6a6; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--ink); overflow:hidden; font-family: "Trebuchet MS", "Gill Sans", system-ui, sans-serif; color:var(--foam); user-select:none; }
+  canvas { position:fixed; inset:0; width:100%; height:100%; display:block;  }
+  .screen { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:5; }
+  .screen[hidden], #hud[hidden] { display:none; }
+  #title { background: linear-gradient(90deg, rgba(8,22,30,.92) 0%, rgba(8,22,30,.55) 42%, rgba(8,22,30,0) 70%), url(assets/title_banff.jpg) center/cover; justify-content:flex-start; }
+  .tcol { margin-left:7vw; max-width:460px; }
+  h1 { font-size:clamp(54px,8vw,116px); margin:0; letter-spacing:.04em; line-height:.88; color:var(--sun); text-shadow:0 6px 30px rgba(242,178,76,.35); font-weight:900; }
+  h1 span { display:block; color:var(--amber); }
+  .tag { font-size:15px; letter-spacing:.3em; text-transform:uppercase; color:var(--amber); margin:14px 0 6px; }
+  .sub { color:var(--foam); opacity:.85; margin:0 0 28px; font-size:17px; line-height:1.45; }
+  button { font:inherit; font-size:18px; letter-spacing:.12em; text-transform:uppercase; padding:14px 28px; margin:0 10px 12px 0; border-radius:4px; cursor:pointer; border:2px solid var(--amber); background:var(--amber); color:var(--ink); font-weight:700; transition:transform .1s, background .2s; }
+  button.ghost { background:transparent; color:var(--amber); }
+  button:hover { transform:translateY(-2px); background:var(--sun); color:var(--ink); }
+  .controls { margin-top:24px; font-size:14px; line-height:1.9; color:var(--dim); }
+  kbd { display:inline-block; min-width:22px; padding:1px 7px; border:1px solid var(--dim); border-bottom-width:3px; border-radius:4px; color:var(--foam); font-family:inherit; font-size:12px; text-align:center; }
+  #records { margin-top:14px; color:var(--sun); font-size:14px; letter-spacing:.05em; min-height:1em; }
+  .brand { position:fixed; right:22px; bottom:16px; font-size:12px; letter-spacing:.25em; text-transform:uppercase; color:var(--amber); opacity:.75; z-index:6; pointer-events:none; }
+  .brand b { color:var(--sun); }
+  .panel { background:rgba(10,30,38,.88); border:1px solid rgba(47,156,151,.6); border-radius:8px; padding:34px 40px; min-width:340px; box-shadow:0 20px 60px rgba(0,0,0,.5); backdrop-filter: blur(6px); }
+  .panel h2 { margin:0 0 20px; color:var(--sun); letter-spacing:.2em; font-size:26px; }
+  .panel label { display:flex; justify-content:space-between; align-items:center; gap:18px; margin:12px 0; color:var(--foam); }
+  input[type=range] { accent-color:var(--amber); width:160px; }
+  input[type=checkbox] { accent-color:var(--amber); width:18px; height:18px; }
+  #pause, #summit { background:rgba(6,16,22,.45); }
+  #hud { position:fixed; inset:0; pointer-events:none; z-index:3; }
+  .stat { position:fixed; left:22px; top:18px; text-shadow:0 2px 6px rgba(0,0,0,.8); }
+  .stat .big { font-size:44px; font-weight:900; color:var(--sun); line-height:1; }
+  .stat .big small { font-size:18px; color:var(--amber); margin-left:3px; }
+  .stat .row { font-size:13px; letter-spacing:.12em; color:var(--foam); opacity:.9; margin-top:6px; text-transform:uppercase; }
+  .stat .row span { color:var(--sun); }
+  #zone { position:fixed; right:22px; top:20px; font-size:14px; letter-spacing:.2em; text-transform:uppercase; color:var(--amber); text-shadow:0 2px 6px rgba(0,0,0,.8); }
+  #track { position:fixed; right:28px; top:60px; bottom:60px; width:5px; background:rgba(191,232,226,.15); border-radius:3px; }
+  #meter { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top, var(--teal), var(--amber)); border-radius:3px; }
+  #bestmark { position:absolute; left:-5px; width:15px; height:2px; background:var(--sun); }
+  #msg { position:fixed; left:50%; bottom:12vh; transform:translate(-50%,10px); font-size:20px; color:var(--foam); background:rgba(8,22,30,.7); padding:10px 22px; border-radius:30px; opacity:0; transition:opacity .3s, transform .3s; white-space:nowrap; }
+  #msg.on { opacity:1; transform:translate(-50%,0); }
+  #coach { position:fixed; left:50%; top:16px; transform:translate(-50%,-8px); max-width:min(760px,80vw); text-align:center; font-size:18px; line-height:1.5; color:var(--foam); background:rgba(8,22,30,.82); border:1px solid rgba(242,178,76,.55); padding:10px 22px; border-radius:10px; opacity:0; transition:opacity .35s, transform .35s; }
+  #coach.on { opacity:1; transform:translate(-50%,0); }
+  #coach b { color:var(--sun); }
+  #banner { position:fixed; left:0; right:0; top:26vh; text-align:center; font-size:56px; font-weight:900; color:var(--sun); letter-spacing:.12em; text-shadow:0 4px 30px rgba(0,0,0,.7); opacity:0; }
+  #banner small { display:block; font-size:16px; letter-spacing:.5em; color:var(--amber); margin-bottom:6px; }
+  #banner.on { animation: ban 4s ease forwards; }
+  @keyframes ban { 0%{opacity:0; transform:translateY(16px)} 15%{opacity:1; transform:none} 75%{opacity:1} 100%{opacity:0} }
+  #loading { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; font-size:22px; letter-spacing:.4em; color:var(--amber); z-index:10; background:var(--ink); }
+  .big2 { font-size:54px; color:var(--sun); font-weight:900; margin:4px 0 18px; }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="loading">CHALKING UP…</div>
+
+<div id="title" class="screen" hidden>
+  <div class="tcol">
+    <h1>KESSIE<span>KLIMBER</span></h1>
+    <div class="tag">Pacific shore to Banff peaks</div>
+    <p class="sub">Help Kessie bound 84 metres from the Pacific tide pools up through Banff National Park &mdash; the Bow River, Johnston Canyon, Mount Rundle and Moraine Lake &mdash; to the northern lights over Cascade Summit. Every flag earns a power move. 24 shells &amp; maple leaves to find.</p>
+    <button id="continue" hidden>Continue</button>
+    <button id="newgame" class="ghost">New climb</button>
+    <div id="records"></div>
+    <div class="controls">
+      <kbd>←</kbd><kbd>→</kbd> / <kbd>A</kbd><kbd>D</kbd> run &nbsp; <kbd>Space</kbd> / <kbd>Z</kbd> / <kbd>↑</kbd> jump &mdash; again in mid-air to <b>double jump</b><br>
+      Hold into a wall to slide, jump to <b>wall kick</b> &nbsp; Ledges are grabbed for you: <kbd>↑</kbd> pull up, <kbd>↓</kbd> let go<br>
+      <kbd>↑</kbd> climb ivy &amp; rigging &nbsp; <kbd>↓</kbd>+<kbd>Space</kbd> drop through planks &nbsp; <kbd>R</kbd> back to flag &nbsp; <kbd>Esc</kbd> pause &nbsp; 🎮 gamepad works too
+      <div style="margin-top:10px"><a href="versions/physics/index.html" style="color:var(--dim)">Play the classic physics version &rarr;</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="pause" class="screen" hidden>
+  <div class="panel">
+    <h2>PAUSED</h2>
+    <label>Screen shake <input id="shake" type="checkbox"></label>
+    <label>Sound <input id="sound" type="checkbox"></label>
+    <div style="margin-top:22px">
+      <button id="resume">Resume</button>
+      <button id="restart" class="ghost">Restart</button>
+      <button id="totitle" class="ghost">Title</button>
+    </div>
+  </div>
+</div>
+
+<div id="summit" class="screen" hidden>
+  <div class="panel" style="text-align:center">
+    <h2>SUMMIT</h2>
+    <div>Kessie topped out in</div>
+    <div class="big2" id="stime">0:00</div>
+    <div>with <span id="sshells" style="color:var(--sun)">0</span> keepsakes and <span id="sfalls" style="color:var(--sun)">0</span> big falls.</div>
+    <div id="srecord" style="margin-top:10px;color:var(--amber);letter-spacing:.1em"></div>
+    <div style="margin-top:26px">
+      <button id="again">Climb again</button>
+      <button id="summitTitle" class="ghost">Title</button>
+    </div>
+  </div>
+</div>
+
+<div id="hud" hidden>
+  <div class="stat">
+    <div class="big"><span id="h">0.0</span><small>m</small></div>
+    <div class="row">Best <span id="best">0.0</span> m · <span id="time">0:00</span> · Falls <span id="falls">0</span></div>
+    <div class="row">🍁 <span id="shells">0/0</span></div>
+  </div>
+  <div id="zone"></div>
+  <div id="track"><div id="meter"></div><div id="bestmark"></div></div>
+  <div id="msg"></div>
+  <div id="coach"></div>
+  <div id="banner"></div>
+</div>
+
+<div class="brand"><b>HowardAI</b> — I want that</div>
+
+<script src="src/level.js"></script>
+<script src="src/game.js"></script>
+<script src="src/render.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>
