@@ -57,7 +57,8 @@ defWorld({id:2,name:'FROSTBITE PEAKS',overBg:'bg_snow',
  {id:'lodge',n:'SKI LODGE - COMING SOON',c:6,r:7,k:'lodge',soon:1},
  {id:'2-3',n:'2-3 COMING SOON',c:12,r:7,k:'lvl',num:3,soon:1},
  {id:'2-4',n:'2-4 COMING SOON',c:12,r:2,k:'lvl',num:4,soon:1},
- {id:'peak',n:'THE SUMMIT - COMING SOON',c:19,r:2,k:'peak',soon:1,big:1}],
+ {id:'peak',n:'THE SUMMIT - COMING SOON',c:19,r:2,k:'peak',soon:1,big:1},
+ {id:'w3',n:'TO REDWOOD GIANTS',c:22,r:2,k:'warp',to:3,at:'back',glow:'peak',sign:['W3','#ffd0a0','#b8582a']}],
  levels:{
  "2-1":{name:'SNOWDRIFT SLOPES',areas:{
   main:{

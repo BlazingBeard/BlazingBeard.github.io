@@ -7,4 +7,5 @@
 const MANIFEST=[
  {id:1,name:'BIGFOOT VALLEY',file:'worlds/w1.js'},
  {id:2,name:'FROSTBITE PEAKS',file:'worlds/w2.js'},
+ {id:3,name:'REDWOOD GIANTS',file:'worlds/w3.js'},
 ];
