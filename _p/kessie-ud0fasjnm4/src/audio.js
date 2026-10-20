@@ -116,6 +116,15 @@
       [523.3, 659.3, 784].forEach(f => this.ping(f * (1 + (m % 2) * 0.122), 0.4, 0.04, 'square', 0.66));
       this.ping(1046.5, 0.5, 0.05, 'triangle', 0.82);
     }
+    nuke() {
+      if (!this.ctx) return;
+      this.burst(3.5, 90, 0.4, 1.4); this.burst(2.2, 260, 0.5, 0.8, 0.05); this.burst(1.2, 1200, 0.6, 0.5);
+      this.sweep(110, 30, 3, 0.25, 'sawtooth'); this.sweep(60, 25, 4, 0.3, 'sine', 0.1);
+      [440, 466, 440, 466].forEach((f, i) => this.sweep(f * 0.9, f * 1.2, 0.5, 0.05, 'sawtooth', 1.6 + i * 0.5));
+    }
+    geiger() { if (!this.ctx) return; this.burst(0.012, 3200 + Math.random() * 1500, 2, 0.22); }
+    terminal() { [880, 1320, 1760].forEach((f, i) => this.ping(f, 0.08, 0.05, 'square', i * 0.07)); this.ping(660, 0.3, 0.03, 'square', 0.25); }
+    levelUp() { [392, 523.3, 659.3, 784, 1046.5].forEach((f, i) => this.ping(f, 0.35, 0.05, 'square', i * 0.09)); this.ping(1568, 0.8, 0.04, 'triangle', 0.45); }
     gust() { if (!this.ctx) return; this.burst(1.2, 500, 0.3, 0.25); }
   }
   G.GRIP.Audio = Audio;

@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta name="robots" content="noindex,nofollow">
+<head>`n<meta name="robots" content="noindex,nofollow">
 <meta charset="utf-8">
 <title>Kessie Klimber — HowardAI</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
@@ -71,6 +70,15 @@
   #banner small { display:block; font-size:16px; letter-spacing:.5em; color:var(--amber); margin-bottom:6px; }
   #banner.on { animation: ban 4s ease forwards; }
   @keyframes ban { 0%{opacity:0; transform:translateY(16px)} 15%{opacity:1; transform:none} 75%{opacity:1} 100%{opacity:0} }
+  body.waste #hud { font-family:'Courier New', monospace; }
+  body.waste .stat, body.waste #zone, body.waste .stat .row { color:#9dff8a; text-shadow:0 0 8px rgba(120,255,110,.7), 0 2px 4px #000; }
+  body.waste .stat .big, body.waste .stat .big small, body.waste .stat .row span { color:#c8ffb8; }
+  body.waste #meter { background:linear-gradient(to top, #2f8a3a, #9dff8a); box-shadow:0 0 10px #9dff8a; }
+  body.waste #track { background:rgba(157,255,138,.15); }
+  body.waste #coach, body.waste #msg { background:rgba(6,22,10,.88); border:1px solid #9dff8a; color:#c8ffb8; font-family:'Courier New', monospace; box-shadow:0 0 18px rgba(120,255,110,.35); }
+  body.waste #coach b { color:#f2c94c; }
+  body.waste #banner { color:#9dff8a; font-family:'Courier New', monospace; text-shadow:0 0 24px rgba(120,255,110,.9), 0 4px 30px #000; }
+  body.waste #banner small { color:#f2c94c; }
   #loading { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; font-size:22px; letter-spacing:.4em; color:var(--amber); z-index:10; background:var(--ink); }
   .tc { display:none; }
   body.touch .kb { display:none; }
@@ -204,6 +212,7 @@
 
 <script src="src/level.js"></script>
 <script src="src/route_meathooks.js"></script>
+<script src="src/route_jade.js"></script>
 <script src="src/game.js"></script>
 <script src="src/render.js"></script>
 <script src="src/audio.js"></script>
