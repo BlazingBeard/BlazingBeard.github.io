@@ -22,7 +22,7 @@
       this.cam = { x: game.p.x, y: game.p.y - 80, lead: 0, vy: 0 };
       this.particles = []; this.texts = []; this.shake = 0; this.spin = 0; this.sq = 0; this.flash = 0;
       this.hair = null;
-      this.jade = this.L.theme === 'jade';
+      this.jade = this.L.theme === 'jade' || this.L.theme === 'waste';
       this.grassi = this.L.theme === 'grassi' || this.jade;
       this.morphT = 0; this.lvl = 0; this.wonT = -1;
     }
@@ -573,10 +573,10 @@
       ctx.fillStyle = '#c9a23a'; ctx.beginPath(); ctx.arc(0, 0, R - 12, 0, 7); ctx.fill();
       ctx.fillStyle = '#2f5fa8'; ctx.beginPath(); ctx.arc(0, 0, R - 20, 0, 7); ctx.fill();
       ctx.strokeStyle = '#1d3b6a'; ctx.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i * 1.047; ctx.beginPath(); ctx.moveTo(Math.cos(a) * 14, Math.sin(a) * 14); ctx.lineTo(Math.cos(a) * (R - 22), Math.sin(a) * (R - 22)); ctx.stroke(); }
-      ctx.fillStyle = SUIT_Y; ctx.font = '900 34px Trebuchet MS'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('42', 0, 2);
+      ctx.fillStyle = SUIT_Y; ctx.font = '900 34px Trebuchet MS'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(((this.L.vaultLabel || '42').match(/\d+/) || ['42'])[0], 0, 2);
       ctx.textBaseline = 'alphabetic'; ctx.restore();
-      ctx.fillStyle = 'rgba(8,22,30,0.6)'; ctx.font = 'bold 12px Courier New'; ctx.textAlign = 'center'; ctx.fillText('VAULT 42 \u00b7 WELCOME HOME, JADE', x + 1, cy - R - 21);
-      ctx.fillStyle = '#9dff8a'; ctx.fillText('VAULT 42 \u00b7 WELCOME HOME, JADE', x, cy - R - 22); ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(8,22,30,0.6)'; ctx.font = 'bold 12px Courier New'; ctx.textAlign = 'center'; const lbl = this.L.vaultLabel || 'VAULT 42 \u00b7 WELCOME HOME, JADE'; ctx.fillText(lbl, x + 1, cy - R - 21);
+      ctx.fillStyle = '#9dff8a'; ctx.fillText(lbl, x, cy - R - 22); ctx.textAlign = 'left';
     }
     drawCRT(time) {
       const ctx = this.ctx, W = this.W, H = this.H, d = this.dpr || 1;
