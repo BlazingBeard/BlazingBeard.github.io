@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Half AI genius. Half bum. All beard. Stick-figure shorts from HowardAI.">
+<meta property="og:title" content="AI Prophet Gary · HowardAI">
+<meta property="og:description" content="Half AI genius. Half bum. All beard. Episode 1: The Intern.">
+<meta property="og:image" content="https://blazingbeard.github.io/AIGary/assets/og.jpg">
+<meta property="og:url" content="https://blazingbeard.github.io/AIGary/">
+<meta name="twitter:card" content="summary_large_image">
+<title>AI Prophet Gary · HowardAI</title>
+<style>
+  :root{--paper:#fbf8f1;--ink:#1b1b1f;--muted:#6b6a66;--accent:#ff5a36;--cyan:#27e1ff;--line:#e7e2d6;--card:#fff;--gold:#ffd23f}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 "Inter",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
+  .brand{font-weight:800;letter-spacing:.08em;font-size:13px;color:var(--accent);text-transform:uppercase}
+  .hero{background:#16161a;color:#f3efe4;padding:56px 6vw 64px;display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 400px at 78% 40%,rgba(39,225,255,.18),transparent 70%);pointer-events:none}
+  @media(max-width:900px){.hero{grid-template-columns:1fr}}
+  .hero h1{font-size:clamp(44px,6.4vw,84px);line-height:.98;margin:12px 0 18px;font-weight:900;letter-spacing:-.03em}
+  .hero h1 span{color:var(--cyan);text-shadow:0 0 24px rgba(39,225,255,.45)}
+  .hero .tag{font-size:21px;color:var(--gold);font-weight:800;margin:0 0 18px}
+  .hero p{color:#cfcabd;max-width:58ch;margin:0 0 14px}
+  .portrait{justify-self:center;width:min(380px,82vw);border-radius:22px;overflow:hidden;border:3px solid var(--cyan);box-shadow:0 0 0 6px rgba(39,225,255,.12),0 30px 70px -20px rgba(0,0,0,.6);position:relative}
+  .portrait img{width:100%;display:block}
+  .listen{display:flex;align-items:center;gap:12px;margin-top:22px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px 14px;max-width:520px}
+  .listen b{font-size:14px;white-space:nowrap} .listen audio{flex:1;height:36px}
+  main{padding:0 6vw 80px}
+  section{margin-top:64px}
+  h2{font-size:34px;margin:0 0 6px;letter-spacing:-.02em}
+  .kicker{color:var(--muted);margin:0 0 24px}
+  .facts{display:grid;gap:14px;grid-template-columns:repeat(3,1fr)}
+  @media(max-width:800px){.facts{grid-template-columns:1fr 1fr}}
+  .fact{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:18px;box-shadow:4px 4px 0 var(--ink)}
+  .fact small{display:block;text-transform:uppercase;letter-spacing:.08em;font-size:12px;font-weight:800;color:var(--accent);margin-bottom:4px}
+  .fact b{font-size:18px;line-height:1.3}
+  .quotes{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:18px}
+  .quote{background:#16161a;color:#f3efe4;border-radius:16px;padding:20px 22px;font-size:20px;font-weight:800;line-height:1.3;border-left:6px solid var(--cyan)}
+  .quote small{display:block;color:#9b978c;font-size:13px;font-weight:600;margin-top:8px}
+  .ep{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center}
+  @media(max-width:900px){.ep{grid-template-columns:1fr}}
+  .phone{justify-self:center;width:min(340px,80vw);aspect-ratio:9/16;border-radius:34px;background:#111;padding:10px;box-shadow:0 30px 60px -20px rgba(0,0,0,.35)}
+  .phone video{width:100%;height:100%;border-radius:26px;display:block;background:#fff;object-fit:cover}
+  .ep h3{font-size:42px;margin:4px 0 10px;letter-spacing:-.02em;line-height:1.05}
+  .ep .num{font-weight:800;color:var(--accent);letter-spacing:.08em;font-size:13px;text-transform:uppercase}
+  .lines{list-style:none;padding:0;margin:20px 0 0;border-left:3px solid var(--line)}
+  .lines li{padding:4px 0 4px 16px}
+  .lines .w{font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-right:8px}
+  .lines .g{color:#0aa6c2} .lines .b{color:var(--accent)} .lines .p{color:var(--muted)}
+  .gallery{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+  .gallery figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .gallery img,.gallery video{width:100%;display:block;background:#f3eee2}
+  .gallery figure.wide{grid-column:span 2}
+  .gallery figcaption{padding:10px 12px;font-size:14px;color:#3b3a37}
+  .gallery figcaption b{color:var(--ink)}
+  footer{padding:30px 6vw;color:var(--muted);border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div>
+    <div class="brand">HowardAI · I want that</div>
+    <h1>AI Prophet <span>Gary</span></h1>
+    <p class="tag">Half AI genius. Half bum. All beard.</p>
+    <p>Gary read the entire internet. Twice. Somewhere around the second pass he gave away his apartment, grew a beard down to his shins and wired it with whatever circuit boards he found behind the Best Buy.</p>
+    <p>Now he wanders the city in a patchwork blanket, LED eyes glowing, staff topped with a salvaged GPU chip, dispensing prophecy, stock tips and unsolicited code reviews. He is usually right. Nobody ever listens. His only follower is a pigeon who lives in his beard.</p>
+    <div class="listen"><b>🔊 Hear Gary</b><audio src="assets/gary_take0.m4a" controls preload="none"></audio></div>
+  </div>
+  <div class="portrait"><img src="assets/ai_gary_b.webp" alt="AI Prophet Gary holding a 'Will prompt for food' sign"></div>
+</header>
+
+<main>
+
+<section>
+  <h2>The file on Gary</h2>
+  <p class="kicker">Everything HR would have found, if HR had checked.</p>
+  <div class="facts">
+    <div class="fact"><small>Home</small><b>A milk crate on 5th Street with excellent Wi-Fi</b></div>
+    <div class="fact"><small>Trained on</small><b>The entire internet, twice, plus your Q3 numbers</b></div>
+    <div class="fact"><small>Eyes</small><b>LEDs. They show a loading spinner when he's thinking</b></div>
+    <div class="fact"><small>Staff</small><b>Driftwood topped with a GPU chip, glows when he prophesies</b></div>
+    <div class="fact"><small>Sidekick</small><b>A pigeon with an antenna. Communicates in *coo*</b></div>
+    <div class="fact"><small>Wardrobe</small><b>A blanket, an ethernet-cable belt and exactly one blue sock</b></div>
+  </div>
+  <div class="quotes">
+    <div class="quote">"Will prompt for food."<small>his sign, most days</small></div>
+    <div class="quote">"Thou shalt prompt."<small>the first commandment, on a cracked tablet</small></div>
+    <div class="quote">"The singularity is near-ish."<small>his sign, on optimistic days</small></div>
+  </div>
+</section>
+
+<section>
+  <h2>Episode 1</h2>
+  <p class="kicker">Gary shows up for his first day as the company's new AI intern.</p>
+  <div class="ep">
+    <div class="phone"><video src="assets/ep01_the_intern.mp4" controls playsinline poster="assets/ai_scene_office.webp"></video></div>
+    <div>
+      <div class="num">AI Prophet Gary · Ep. 01 · 22 seconds</div>
+      <h3>The Intern</h3>
+      <p>The boss was expecting a chatbot. HR sent Gary instead. He has already read everything.</p>
+      <ul class="lines">
+        <li><span class="w b">Boss</span>Uh… can I help you?</li>
+        <li><span class="w g">Gary</span>I am the new AI intern.</li>
+        <li><span class="w b">Boss</span>HR sent… you?</li>
+        <li><span class="w g">Gary</span>I have trained on your Q3 numbers.</li>
+        <li><span class="w b">Boss</span>And?</li>
+        <li><span class="w p">Pigeon</span>*coo*</li>
+        <li><span class="w g">Gary</span>Update your résumé.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Artwork</h2>
+  <p class="kicker">Concept art and animated cold opens.</p>
+  <div class="gallery">
+    <figure><video src="assets/ai_gary_preach.mp4" controls loop muted playsinline poster="assets/ai_gary_b.webp"></video><figcaption><b>"Will prompt… for food"</b></figcaption></figure>
+    <figure><video src="assets/ai_gary_tablet.mp4" controls loop muted playsinline poster="assets/ai_gary_c.webp"></video><figcaption><b>"Thou shalt… prompt"</b>, from the mountain</figcaption></figure>
+    <figure><img src="assets/ai_gary_b.webp" alt="Will prompt for food"><figcaption><b>Will prompt for food</b></figcaption></figure>
+    <figure><img src="assets/ai_gary_c.webp" alt="Thou shalt prompt"><figcaption><b>Thou shalt prompt</b></figcaption></figure>
+    <figure><img src="assets/ai_gary_a.webp" alt="The singularity is near-ish"><figcaption><b>The singularity is near-ish</b></figcaption></figure>
+    <figure><img src="assets/ai_scene_office.webp" alt="Gary in the office"><figcaption><b>The new AI intern</b></figcaption></figure>
+    <figure><img src="assets/ai_scene_street.webp" alt="Gary's street office"><figcaption><b>The office</b>: a milk crate, a laptop, $1 prompts</figcaption></figure>
+    <figure><video src="assets/prophet_preach.mp4" controls loop muted playsinline poster="assets/prophet_a.webp"></video><figcaption><b>Gary, before the upgrade</b></figcaption></figure>
+    <figure class="wide"><img src="assets/ai_gary_d.webp" alt="Gary model sheet"><figcaption><b>Model sheet</b>: front, side, back and LED-eye expressions</figcaption></figure>
+  </div>
+</section>
+
+</main>
+
+<footer><a href="../" style="color:inherit">← HowardAI home</a> · I want that · AI Prophet Gary</footer>
+</body>
+</html>
