@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>HowardAI · Pick the voice of SYN</title>
+<style>
+  :root { --bg:#0e0f12; --card:#17191e; --line:#2a2e36; --ink:#ecebe7; --mute:#8e939c; --gold:#d8b26a; --win:#7fd1a8; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(1200px 600px at 50% -200px,#1f1c16 0,var(--bg) 60%); color:var(--ink);
+         font:16px/1.5 Georgia, "Times New Roman", serif; min-height:100vh; }
+  main { max-width:820px; margin:0 auto; padding:48px 20px 64px; }
+  .eyebrow { font:600 12px/1 system-ui,sans-serif; letter-spacing:.24em; text-transform:uppercase; color:var(--gold); }
+  h1 { font-weight:normal; font-size:clamp(28px,5vw,42px); margin:10px 0 6px; }
+  .lede { color:var(--mute); margin:0 0 28px; }
+  .line { font-style:italic; color:#c9c4ba; border-left:2px solid var(--gold); padding:4px 0 4px 14px; margin:0 0 32px; font-size:.95em; }
+  .cards { display:grid; gap:14px; }
+  .card { display:grid; grid-template-columns:56px 1fr auto; gap:16px; align-items:center; background:var(--card);
+          border:1px solid var(--line); border-radius:14px; padding:16px 18px; transition:border-color .2s, transform .2s; }
+  .card.mine { border-color:var(--gold); }
+  .card.lead { box-shadow:0 0 0 1px var(--win) inset; }
+  .tag { width:56px; height:56px; border-radius:50%; display:grid; place-items:center; font:600 22px system-ui,sans-serif;
+         background:#22252c; color:var(--gold); }
+  .mid { min-width:0; }
+  .name { font:600 13px system-ui,sans-serif; color:var(--mute); margin-bottom:6px; min-height:18px; }
+  .name b { color:var(--ink); }
+  audio { width:100%; height:36px; }
+  .bar { height:6px; background:#22252c; border-radius:3px; margin-top:10px; overflow:hidden; }
+  .bar i { display:block; height:100%; width:0; background:var(--gold); transition:width .6s ease; }
+  .card.lead .bar i { background:var(--win); }
+  .count { font:12px system-ui,sans-serif; color:var(--mute); margin-top:4px; }
+  button { font:600 14px system-ui,sans-serif; border:1px solid var(--gold); background:transparent; color:var(--gold);
+           border-radius:999px; padding:10px 20px; cursor:pointer; transition:background .15s,color .15s; }
+  button:hover:not(:disabled) { background:var(--gold); color:#111; }
+  button:disabled { opacity:.35; cursor:default; }
+  .card.mine button { opacity:1; background:var(--gold); color:#111; }
+  .status { font:13px system-ui,sans-serif; color:var(--mute); margin:22px 0 0; text-align:center; min-height:20px; }
+  footer { margin-top:44px; color:#6d717a; font:12px/1.6 system-ui,sans-serif; text-align:center; }
+  footer b { color:var(--gold); font-weight:600; }
+  @media (max-width:560px){ .card{ grid-template-columns:44px 1fr; } .tag{ width:44px;height:44px;font-size:18px; } button{ grid-column:1/-1; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">HowardAI · SYN × Bloomberg</div>
+  <h1>Who should narrate SYN?</h1>
+  <p class="lede">Five voices read the same line. Listen, then vote for one. You get one vote; names are revealed after you vote.</p>
+  <p class="line">“Before you walk into the room, wouldn't it be nice to know how the room will react? This is Syn…”</p>
+  <div class="cards" id="cards"></div>
+  <p class="status" id="status">Loading tally…</p>
+  <footer>
+    <b>HowardAI</b> — I want that<br>
+    Voices cloned on a local RTX 5080 from LibriVox public-domain recordings read by David Clarke, Peter Yearsley,
+    Martin Geeson, Andy Minter and Anne Fletcher.
+  </footer>
+</main>
+<script>
+const NS = "howardai-synvote-zu102r109z";
+const API = "https://abacus.jasoncameron.dev";
+const VOTED = "synvote:" + NS;
+const VOICES = [
+  { id: "v1", tag: "A", name: "DBBrit", who: "David Clarke" },
+  { id: "v2", tag: "B", name: "AFBrit", who: "Anne Fletcher" },
+  { id: "v3", tag: "C", name: "MGBrit", who: "Martin Geeson" },
+  { id: "v4", tag: "D", name: "AmBrit", who: "Andy Minter" },
+  { id: "v5", tag: "E", name: "PYBrit", who: "Peter Yearsley" },
+];
+const counts = Object.fromEntries(VOICES.map(v => [v.id, 0]));
+let myVote = localStorage.getItem(VOTED);
+let busy = false;
+
+const cards = document.getElementById("cards");
+const status = document.getElementById("status");
+
+for (const v of VOICES) {
+  const el = document.createElement("div");
+  el.className = "card"; el.id = "card-" + v.id;
+  el.innerHTML = `
+    <div class="tag">${v.tag}</div>
+    <div class="mid">
+      <div class="name" id="name-${v.id}">Voice ${v.tag}</div>
+      <audio controls preload="none" src="${v.id}.mp3"></audio>
+      <div class="bar"><i id="bar-${v.id}"></i></div>
+      <div class="count" id="count-${v.id}">–</div>
+    </div>
+    <button id="btn-${v.id}">Vote</button>`;
+  cards.appendChild(el);
+  el.querySelector("button").addEventListener("click", () => vote(v.id));
+  // only one clip plays at a time
+  el.querySelector("audio").addEventListener("play", e =>
+    document.querySelectorAll("audio").forEach(a => a !== e.target && a.pause()));
+}
+
+function render() {
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  const max = Math.max(0, ...Object.values(counts));
+  for (const v of VOICES) {
+    const n = counts[v.id];
+    document.getElementById("bar-" + v.id).style.width = total ? (n / total * 100) + "%" : "0";
+    document.getElementById("count-" + v.id).textContent =
+      `${n} vote${n === 1 ? "" : "s"}${total ? " · " + Math.round(n / total * 100) + "%" : ""}`;
+    document.getElementById("card-" + v.id).classList.toggle("lead", max > 0 && n === max);
+    document.getElementById("card-" + v.id).classList.toggle("mine", myVote === v.id);
+    const btn = document.getElementById("btn-" + v.id);
+    btn.disabled = !!myVote || busy;
+    btn.textContent = myVote === v.id ? "Your vote" : "Vote";
+    document.getElementById("name-" + v.id).innerHTML = myVote
+      ? `Voice ${v.tag} · <b>${v.name}</b> — ${v.who}` : `Voice ${v.tag}`;
+  }
+  const leaders = VOICES.filter(v => max > 0 && counts[v.id] === max).map(v => myVote ? v.name : "Voice " + v.tag);
+  status.textContent = !total ? "No votes yet — be the first."
+    : `${total} vote${total === 1 ? "" : "s"} so far · ${leaders.length > 1 ? "Tied: " : "Leading: "}${leaders.join(", ")}`
+      + (myVote ? "" : " · vote to reveal names");
+}
+
+async function refresh() {
+  try {
+    const vals = await Promise.all(VOICES.map(v =>
+      fetch(`${API}/get/${NS}/vote-${v.id}`, { cache: "no-store" }).then(r => r.ok ? r.json() : { value: 0 })));
+    VOICES.forEach((v, i) => counts[v.id] = Math.max(0, vals[i].value | 0));
+    render();
+  } catch { status.textContent = "Couldn't reach the tally — retrying…"; }
+}
+
+async function vote(id) {
+  if (myVote || busy) return;
+  busy = true; render();
+  try {
+    const r = await fetch(`${API}/hit/${NS}/vote-${id}`, { cache: "no-store" });
+    if (!r.ok) throw new Error(r.status);
+    counts[id] = (await r.json()).value;
+    myVote = id; localStorage.setItem(VOTED, id);
+  } catch { status.textContent = "Vote didn't go through — please try again."; }
+  busy = false; render();
+}
+
+render(); refresh(); setInterval(refresh, 5000);
+</script>
+</body>
+</html>
