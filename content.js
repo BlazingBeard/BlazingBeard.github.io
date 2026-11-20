@@ -1,5 +1,5 @@
 /*
-  HowardAI — AI Enablement Lab · site content.
+  HowardAI — I Want That · site content.
   Everything on the page renders from this file. Edit here, not in index.html.
   Music video fields: title, line (optional), video (mp4 URL), poster, link (GitHub Pages URL; swap for YouTube later), duration (seconds).
 */
