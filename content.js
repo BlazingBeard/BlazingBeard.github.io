@@ -23,7 +23,7 @@ window.LAB = {
     { n: "03", title: "Put it in front of people", body: "Real users, real feedback, real numbers. The experiment is only finished when someone else has used it." },
     { n: "04", title: "Teach it so it spreads", body: "Turn the working thing into a quest, a walkthrough or a story, so the next person can do it without me." }
   ],
-  thesis: "I don't ship features. I ship colleagues.",
+  thesis: "Are you AI Enabled? Let me unlock you!",
 
   experiment: {
     status: "Running",
