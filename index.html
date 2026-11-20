@@ -277,6 +277,7 @@ $("#thesis").innerHTML = esc(L.thesis).replace("colleagues.", "<b>colleagues.</b
 /* ---------- music experiment ---------- */
 const M = L.music, vid = $("#mxVideo"), tracks = $("#tracks");
 const two = n => String(n).padStart(2, "0");
+const host = u => /youtu\.?be/.test(u) ? "YouTube" : "GitHub";
 const fmt = s => `${Math.floor(s / 60)}:${two(Math.round(s % 60))}`;
 tracks.innerHTML = M.map((m, i) => `
   <div class="trk" data-i="${i}">
@@ -285,7 +286,7 @@ tracks.innerHTML = M.map((m, i) => `
       <span class="thumb"><img src="${esc(m.poster)}" alt="" loading="lazy"></span>
       <span class="tt"><b>${esc(m.title)}</b><span class="mono">${m.sub ? esc(m.sub) + " · " : ""}${fmt(m.duration)}</span></span>
     </button>
-    <a class="gh mono" href="${esc(m.link)}" target="_blank" rel="noopener">GitHub ↗</a>
+    <a class="gh mono" href="${esc(m.link)}" target="_blank" rel="noopener">${host(m.link)} ↗</a>
   </div>`).join("");
 let cur = 0;
 function load(i, play) {
@@ -296,6 +297,7 @@ function load(i, play) {
   $("#nowTitle").innerHTML = esc(m.title) + (m.sub ? ` <small>${esc(m.sub)}</small>` : "");
   $("#nowLine").textContent = m.line || ""; $("#nowLine").hidden = !m.line;
   $("#nowLink").href = m.link;
+  $("#nowLink").firstChild.textContent = `Open on ${host(m.link)} `;
   document.querySelectorAll(".trk").forEach(t => t.classList.toggle("on", +t.dataset.i === cur));
   if (play) vid.play().catch(() => {});
 }

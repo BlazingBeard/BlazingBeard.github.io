@@ -37,7 +37,7 @@ window.LAB = {
     { title: "Hush Little Baby", sub: "AI in Your Head", line: "A dark lullaby about a blob that collects AI body parts and takes your heart.",
       video: "https://blazingbeard.github.io/_p/hush-little-baby-jzifctlwwx/hush-little-baby-v1.mp4",
       poster: "https://blazingbeard.github.io/_p/hush-little-baby-jzifctlwwx/poster.jpg",
-      link: "https://blazingbeard.github.io/_p/hush-little-baby-jzifctlwwx/", duration: 242 },
+      link: "https://youtu.be/km_G4vyG0dw", duration: 242 },
     { title: "I Unlock You", sub: "", line: "",
       video: "https://blazingbeard.github.io/_p/i-unlock-you-0kge2lrjhv/i-unlock-you-v4.mp4",
       poster: "https://blazingbeard.github.io/_p/i-unlock-you-0kge2lrjhv/poster.jpg",
