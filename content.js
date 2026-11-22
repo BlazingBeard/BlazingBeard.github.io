@@ -28,12 +28,16 @@ window.LAB = {
   experiment: {
     status: "Running",
     question: "Can one person write, perform and ship real music videos with AI collaborators?",
-    built: "Seven songs and seven full music videos, from lyrics and vocals to visuals and the final edit.",
+    built: "Eight songs and eight full music videos, from lyrics and vocals to visuals and the final edit.",
     learned: "Short, tight prompts generate. Overstuffed ones quietly produce nothing."
   },
 
   // Links point at GitHub Pages for now. Replace "link" with the YouTube URL when each video moves.
   music: [
+    { title: "Hoot Lives Here", sub: "Who?", line: "Five owls, one branch, one moon, and nobody can agree who lives here.",
+      video: "https://blazingbeard.github.io/_p/hoot-lives-here-1dr7qp9oz4/hoot-lives-here-v1.mp4",
+      poster: "https://blazingbeard.github.io/_p/hoot-lives-here-1dr7qp9oz4/poster.jpg",
+      link: "https://blazingbeard.github.io/_p/hoot-lives-here-1dr7qp9oz4/", duration: 178 },
     { title: "Three Lilys: Lunch Time", sub: "For kids", line: "Three hungry Lilys tidy up, then feast in a land full of unicorns.",
       video: "https://blazingbeard.github.io/_p/lunch-time-lilys-cxjpl6qng7/lunch-time-lilys-v1.mp4",
       poster: "https://blazingbeard.github.io/_p/lunch-time-lilys-cxjpl6qng7/poster.jpg",
