@@ -34,6 +34,10 @@ window.LAB = {
 
   // Links point at GitHub Pages for now. Replace "link" with the YouTube URL when each video moves.
   music: [
+    { title: "Shhh, We're Cute", sub: "For kids", line: "Three sleepy kittens just want a nap while the whole world gets loud around their bed.",
+      video: "https://blazingbeard.github.io/_p/shhh-were-cute-1mp0hnr8xb/shhh-were-cute-v1.mp4",
+      poster: "https://blazingbeard.github.io/_p/shhh-were-cute-1mp0hnr8xb/poster.jpg",
+      link: "https://blazingbeard.github.io/_p/shhh-were-cute-1mp0hnr8xb/", duration: 160 },
     { title: "Hoot Lives Here", sub: "Who?", line: "Five owls, one branch, one moon, and nobody can agree who lives here.",
       video: "https://blazingbeard.github.io/_p/hoot-lives-here-1dr7qp9oz4/hoot-lives-here-v1.mp4",
       poster: "https://blazingbeard.github.io/_p/hoot-lives-here-1dr7qp9oz4/poster.jpg",
