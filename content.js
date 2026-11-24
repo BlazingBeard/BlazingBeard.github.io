@@ -53,7 +53,7 @@ window.LAB = {
     { title: "Yes We Should", sub: "", line: "",
       video: "https://blazingbeard.github.io/_p/yes-we-should-6jw2utdk18/yes-we-should-v1.mp4",
       poster: "https://blazingbeard.github.io/_p/yes-we-should-6jw2utdk18/poster.jpg",
-      link: "https://blazingbeard.github.io/_p/yes-we-should-6jw2utdk18/", duration: 200 },
+      link: "https://youtu.be/PakgL9JKqXA", duration: 200 },
     { title: "Possibilities", sub: "", line: "",
       video: "https://blazingbeard.github.io/_p/possibilities-8j5ne9amgq/possibilities-v1.mp4",
       poster: "https://blazingbeard.github.io/_p/possibilities-8j5ne9amgq/poster.jpg",
