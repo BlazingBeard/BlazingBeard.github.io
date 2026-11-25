@@ -28,12 +28,16 @@ window.LAB = {
   experiment: {
     status: "Running",
     question: "Can one person write, perform and ship real music videos with AI collaborators?",
-    built: "Eight songs and eight full music videos, from lyrics and vocals to visuals and the final edit.",
+    built: "Ten songs and ten full music videos, from lyrics and vocals to visuals and the final edit.",
     learned: "Short, tight prompts generate. Overstuffed ones quietly produce nothing."
   },
 
   // Links point at GitHub Pages for now. Replace "link" with the YouTube URL when each video moves.
   music: [
+    { title: "If You're Watching", sub: "CCTV, 1986", line: "One man, one Trans Am, one gas station at 2 a.m., and he knows exactly where the camera is.",
+      video: "https://blazingbeard.github.io/_p/if-youre-watching-y1ewdutskv/if-youre-watching-v3.mp4",
+      poster: "https://blazingbeard.github.io/_p/if-youre-watching-y1ewdutskv/poster.jpg",
+      link: "https://blazingbeard.github.io/_p/if-youre-watching-y1ewdutskv/", duration: 216 },
     { title: "Shhh, We're Cute", sub: "For kids", line: "Three sleepy kittens just want a nap while the whole world gets loud around their bed.",
       video: "https://blazingbeard.github.io/_p/shhh-were-cute-1mp0hnr8xb/shhh-were-cute-v1.mp4",
       poster: "https://blazingbeard.github.io/_p/shhh-were-cute-1mp0hnr8xb/poster.jpg",
