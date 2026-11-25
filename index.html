@@ -96,6 +96,8 @@ section.block{padding:clamp(80px,12vw,160px) var(--pad) 0}
 .thesis{margin-top:clamp(60px,9vw,120px);display:grid;grid-template-columns:200px 1fr;gap:30px}
 .thesis blockquote{font-family:var(--serif);font-style:italic;font-size:clamp(34px,5vw,78px);line-height:1.02;letter-spacing:-.02em;max-width:18ch}
 .thesis blockquote b{font-style:normal;font-family:var(--display);font-weight:800;color:var(--signal);letter-spacing:-.04em}
+.fire-triangle{width:min(100%,760px);margin:clamp(32px,6vw,64px) auto 0}
+.fire-triangle img{width:100%;height:auto;border-radius:16px}
 
 /* music */
 .mx{display:grid;grid-template-columns:1.7fr 1fr;gap:clamp(24px,3vw,44px);align-items:start}
@@ -218,6 +220,7 @@ footer .brand{color:var(--ink);font-size:18px}
       <div class="mono" style="padding-top:14px;border-top:1.5px solid var(--ink)">The thesis</div>
       <blockquote id="thesis"></blockquote>
     </div>
+    <figure class="fire-triangle" id="fireTriangle" data-reveal></figure>
   </section>
 
   <section class="block" id="music">
@@ -273,6 +276,7 @@ $("#marq").innerHTML = seq + seq;
 $("#practiceGrid").innerHTML = L.practice.map((s, i) =>
   `<div class="step" data-reveal style="transition-delay:${i * 90}ms"><div class="n">${esc(s.n)}</div><h3>${esc(s.title)}</h3><p>${esc(s.body)}</p></div>`).join("");
 $("#thesis").innerHTML = esc(L.thesis).replace("colleagues.", "<b>colleagues.</b>");
+$("#fireTriangle").innerHTML = `<a href="${esc(L.fireTriangle.image)}" aria-label="Open the AI Fire Triangle image"><img src="${esc(L.fireTriangle.image)}" alt="${esc(L.fireTriangle.alt)}" width="1024" height="1536" loading="lazy"></a>`;
 
 /* ---------- music experiment ---------- */
 const M = L.music, vid = $("#mxVideo"), tracks = $("#tracks");

@@ -24,6 +24,10 @@ window.LAB = {
     { n: "04", title: "Teach it so it spreads", body: "Turn the working thing into a quest, a walkthrough or a story, so the next person can do it without me." }
   ],
   thesis: "Are you AI Enabled? Let me unlock you!",
+  fireTriangle: {
+    image: "home-assets/howardai-fire-triangle-v2.png",
+    alt: "HowardAI's AI Fire Triangle: Chief Ignition Officer, The Spark Starter, brings creativity; Chief Oxygen Officer, The Possibility Maker, brings room to imagine; Chief Fuel Officer, The Story Stoker, brings stories. Embers of Possibility. Unlocking stories. Igniting what's possible."
+  },
 
   experiment: {
     status: "Running",
